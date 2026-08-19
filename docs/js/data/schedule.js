@@ -9,7 +9,7 @@
  */
 const EVENT = {
   name: "DevFest Campinas",
-  date: "2026-11-14", // TBD — ajustar quando confirmado (America/Sao_Paulo, sem horário de verão)
+  date: "2026-11-28", // America/Sao_Paulo, sem horário de verão
   timezone: "America/Sao_Paulo",
   utcOffset: "-03:00",
   venue: "Local a definir",
