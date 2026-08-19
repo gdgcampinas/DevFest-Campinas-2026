@@ -1,0 +1,375 @@
+:root{
+  /* base */
+  --bg: oklch(11% 0.014 260);
+  --card-a: oklch(19% 0.017 260);
+  --card-b: oklch(15.5% 0.015 260);
+  --card-border: oklch(30% 0.02 260);
+  --text: oklch(90% 0.01 260);
+  --muted: oklch(65% 0.02 260);
+  --muted-dim: oklch(45% 0.02 260);
+  --radius: 14px;
+  --track-count: 3; /* setado dinamicamente via JS a partir de TRACKS.length */
+
+  /* paleta base por trilha — usada pelos tokens `color` de cada trilha em schedule.js;
+     ajustar aqui se o número/nome de trilhas mudar, nada mais no CSS depende disso */
+  --ia: oklch(66% 0.16 260);
+  --webdata: oklch(80% 0.16 85);
+  --mentoring: oklch(66% 0.19 27);
+
+  /* acentos */
+  --neon: #2ee878;                /* fallback sólido — navegadores sem suporte a oklch usam este */
+  --neon: oklch(82% 0.23 145);   /* datas, contador regressivo */
+  --amber: var(--webdata);       /* CTAs */
+  --live: oklch(64% 0.21 25);    /* dot "AO VIVO" */
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background: linear-gradient(rgba(5,6,10,.55), rgba(5,6,10,.9) 420px, var(--bg) 900px);
+  background-color: var(--bg);
+  color:var(--text);
+  font:400 15px/1.5 "Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  min-height:100vh;
+  padding-bottom:calc(48px + env(safe-area-inset-bottom));
+  padding-top:env(safe-area-inset-top);
+  -webkit-tap-highlight-color:transparent;
+}
+h1,h2,h3,.numeric{font-family:"Manrope", -apple-system, sans-serif}
+a{color:inherit}
+
+#stickyStatus{
+  position:sticky;top:0;z-index:50;
+  display:none;
+  padding:8px 14px;
+  background:rgba(5,6,10,.92);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--card-border);
+}
+#stickyStatus.show{display:block}
+#stickyStatus .row{
+  display:flex;align-items:center;gap:8px;max-width:1180px;margin:0 auto;
+  font:600 13px "Public Sans",sans-serif;
+}
+#stickyStatus .pulse{
+  display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--live);flex:0 0 auto;
+  animation:pulse 1.6s infinite;
+}
+#stickyStatus .txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* header */
+header{
+  max-width:1180px;margin:0 auto;padding:24px 24px 16px;
+}
+.header-top{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  margin-bottom:14px;
+}
+/* .brand aceita 1..N coanfitriões/patrocinadores — sem "+" fixo no HTML,
+   o separador é gerado pelo JS (renderBrand) entre cada logo */
+.brand{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.brand-icon{height:32px;width:auto;flex:0 0 auto}
+.brand-plus{color:var(--muted-dim);font:700 13px "Public Sans",sans-serif}
+.brand span{font:700 13px "Public Sans",sans-serif;color:oklch(80% 0.01 260)}
+
+.status-pill{
+  font:700 13px "Public Sans",sans-serif;
+  color:var(--text);
+  background:oklch(19% 0.017 260);
+  border:1px solid var(--card-border);
+  border-radius:100px;
+  padding:7px 16px;
+  display:inline-flex;align-items:center;gap:8px;
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+.status-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--muted-dim);flex:0 0 auto}
+.status-pill.live .dot{background:var(--live);animation:pulse 1.6s infinite}
+.status-pill.live{color:oklch(88% 0.01 260)}
+
+/* wordmark é texto (JS a partir de EVENT.name), não imagem — troca de evento não exige novo asset */
+.wordmark{
+  font:800 clamp(1.8rem,5vw,2.6rem) "Manrope",sans-serif;
+  color:oklch(97% 0.005 260);
+  margin:4px 0 8px;letter-spacing:-.5px;
+}
+
+.meta-line{
+  display:flex;flex-wrap:wrap;align-items:center;gap:6px;
+  font:500 14px "Public Sans",sans-serif;color:var(--muted);
+}
+.meta-line .when{color:var(--neon);font-weight:700}
+.meta-line .sep{color:var(--muted-dim)}
+.meta-line a{color:var(--amber);text-decoration:underline;text-underline-offset:2px;font-weight:700}
+
+/* hero */
+#hero{max-width:1180px;margin:0 auto 24px;padding:0 24px}
+.hero-card{
+  background:linear-gradient(135deg,var(--card-a),var(--card-b));
+  border:1px solid var(--card-border);
+  border-radius:var(--radius);
+  padding:28px 24px;
+}
+.hero-card.live{border-color:oklch(30% 0.02 260)}
+
+.hero-label{
+  display:flex;align-items:center;gap:8px;
+  font:700 12px "Public Sans",sans-serif;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--muted);margin-bottom:10px;
+}
+.hero-label .dot{width:8px;height:8px;border-radius:50%;background:var(--live);animation:pulse 1.6s infinite}
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 color-mix(in oklch, var(--live) 60%, transparent)}
+  70%{box-shadow:0 0 0 9px transparent}
+  100%{box-shadow:0 0 0 0 transparent}
+}
+
+.hero-before{text-align:center}
+.hero-before .hero-label{justify-content:center}
+.countdown{
+  font:800 clamp(2.2rem,7vw,3.4rem) "Manrope",sans-serif;
+  color:var(--neon);
+  font-variant-numeric:tabular-nums;
+  margin:6px 0 16px;
+}
+.hero-before-row{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.pill-amber{
+  font:700 13px "Public Sans",sans-serif;color:var(--amber);
+  background:color-mix(in oklch, var(--amber) 12%, transparent);
+  border:1px solid color-mix(in oklch, var(--amber) 40%, transparent);
+  border-radius:100px;padding:5px 14px;
+}
+.hero-hint{font:500 14px "Public Sans",sans-serif;color:var(--muted)}
+
+.hero-live-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.next-change{font:500 13px "Public Sans",sans-serif;color:var(--muted);font-variant-numeric:tabular-nums}
+
+.hero-after{text-align:center;padding:8px 0}
+.hero-after .title{font:800 24px "Manrope",sans-serif;color:oklch(97% 0.005 260);margin-bottom:8px}
+.hero-after .sub{font:500 14px "Public Sans",sans-serif;color:var(--muted)}
+
+main{max-width:1180px;margin:36px auto 0;padding:0 24px}
+
+/* legenda de trilhas — grid dinâmica pelo número real de trilhas (--track-count) */
+.tracks-legend{
+  display:none;
+  grid-template-columns:repeat(var(--track-count,3),1fr);gap:12px;
+  margin-bottom:16px;
+}
+@media(min-width:860px){.tracks-legend{display:grid}}
+.tracks-legend .item{display:flex;flex-direction:column;gap:2px;padding:0 4px}
+.tracks-legend .name{display:flex;align-items:center;gap:6px;font:700 13px "Public Sans",sans-serif;color:oklch(88% 0.01 260)}
+.tracks-legend .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+.tracks-legend .sub{display:flex;flex-wrap:wrap;align-items:center;gap:5px;font:500 11.5px "Public Sans",sans-serif;color:var(--muted-dim);padding-left:15px}
+.tracks-legend .mc{color:var(--text);font-weight:700}
+
+/* filtro / segmented control — cor por trilha via --track-color inline (JS), sem regra por id */
+.filter-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.filter-row h2{margin:0;font:700 22px "Manrope",sans-serif;color:oklch(95% 0.005 260)}
+.session-format{margin:4px 0 0;font:700 12.5px "Public Sans",sans-serif;color:var(--neon)}
+.tabs{
+  display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+  background:oklch(16% 0.015 260);border:1px solid var(--card-border);border-radius:100px;padding:4px;
+}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  flex:0 0 auto;padding:8px 15px;border-radius:100px;font:600 13px "Public Sans",sans-serif;
+  background:transparent;border:none;color:var(--muted);cursor:pointer;white-space:nowrap;
+}
+.tab.active{background:var(--track-color, var(--text));color:oklch(12% 0.01 260)}
+
+/* agenda */
+#agenda{display:flex;flex-direction:column;gap:12px}
+
+.slot{display:grid;grid-template-columns:56px 1fr;gap:14px}
+.slot-time{font:700 13px "Public Sans",sans-serif;color:var(--text);padding-top:14px;font-variant-numeric:tabular-nums}
+.slot.active .slot-time{color:var(--text);font-weight:700}
+.slot.past{opacity:.4}
+
+.banner{
+  background:linear-gradient(135deg,var(--card-a),var(--card-b));
+  border:1px solid var(--card-border);border-left:3px solid var(--muted-dim);
+  border-radius:var(--radius);
+  padding:14px 17px;display:flex;flex-direction:column;gap:2px;
+}
+.banner .t{font:700 14px "Manrope",sans-serif;color:oklch(90% 0.01 260)}
+.banner .r{font:700 12.5px "Public Sans",sans-serif;color:var(--neon)}
+
+/* grid de cards de trilha — largura dinâmica pelo número real de trilhas */
+.talks{display:grid;grid-template-columns:repeat(var(--track-count,3),1fr);gap:12px}
+.talks[data-view]:not([data-view="all"]) .talk{display:none}
+.talks[data-view]:not([data-view="all"]) .talk.shown{display:block}
+.talks[data-view]:not([data-view="all"]){grid-template-columns:1fr}
+@media(max-width:860px){.talks{grid-template-columns:1fr}}
+
+/* card de trilha — cor 100% via --track-color inline (setado pelo JS a partir de track.color),
+   nenhuma regra CSS por id de trilha: funciona pra qualquer número/nome de trilha sem tocar aqui */
+.talk{
+  --track-color: var(--card-border);
+  background:linear-gradient(135deg,var(--card-a),var(--card-b));
+  border:1px solid var(--card-border);border-radius:13px;
+  border-top:3px solid var(--track-color);
+  padding:15px 17px 16px;display:flex;flex-direction:column;gap:8px;height:100%;
+}
+.talk .track-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.talk .track-label{display:flex;align-items:center;gap:6px;font:600 10.5px "Public Sans",sans-serif;text-transform:uppercase;letter-spacing:.5px;color:var(--track-color)}
+.talk .track-label .dot{width:6px;height:6px;border-radius:50%}
+.talk .now-tag{
+  display:inline-flex;align-items:center;gap:5px;font:700 10px "Public Sans",sans-serif;letter-spacing:.5px;
+  background:oklch(12% 0.01 260);border:1px solid var(--card-border);border-radius:100px;padding:3px 9px;
+}
+.talk .now-tag .dot{width:6px;height:6px;border-radius:50%;background:var(--live);animation:pulse 1.6s infinite}
+.talk .title{font:700 15.5px "Manrope",sans-serif;color:oklch(96% 0.006 260);line-height:1.35}
+.talk .speaker{font:600 12.5px "Public Sans",sans-serif;color:oklch(80% 0.01 260)}
+.talk .foot{margin-top:auto;padding-top:6px;display:flex;align-items:center;gap:8px;font:500 12px "Public Sans",sans-serif;color:var(--muted-dim)}
+.talk .foot .time{color:var(--text);font-weight:700}
+/* pill de sala — cor da trilha; reusado no card, legenda e modal de detalhe */
+.room-tag{
+  font:600 11px "Public Sans",sans-serif;padding:2px 10px;border-radius:100px;
+  background:color-mix(in oklch, var(--track-color, var(--muted)) 14%, transparent);
+  border:1px solid color-mix(in oklch, var(--track-color, var(--muted)) 40%, transparent);
+  color:var(--track-color, var(--muted));
+}
+
+.slot.active .talk{
+  background:linear-gradient(135deg, oklch(23% 0.02 260), var(--card-b));
+  border-color:var(--track-color);
+  box-shadow:0 0 20px color-mix(in oklch, var(--track-color) 25%, transparent);
+}
+
+/* seção "Antes de vir" — cards genéricos (info-card.js), acento de cor
+   sempre via --track-color inline, mesmo sem relação temática com a trilha */
+.faq{max-width:1180px;margin:36px auto 0;padding:0 24px}
+.faq-head{margin-bottom:16px}
+.faq-head h2{margin:0 0 4px;font:700 22px "Manrope",sans-serif;color:oklch(95% 0.005 260)}
+.faq-sub{margin:0;font:700 14px "Public Sans",sans-serif;color:var(--neon)}
+.faq-grid{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:780px){.faq-grid{grid-template-columns:repeat(var(--track-count,3),1fr)}}
+
+.faq-item{
+  --track-color: var(--muted);
+  position:relative;overflow:hidden;
+  background:linear-gradient(180deg,var(--card-a),var(--card-b));
+  border:1px solid var(--card-border);border-radius:var(--radius);
+  padding:20px 18px 18px;
+}
+.faq-item::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--track-color)}
+.faq-icon{
+  width:44px;height:44px;border-radius:12px;
+  background:color-mix(in oklch, var(--track-color) 16%, transparent);
+  color:var(--track-color);display:flex;align-items:center;justify-content:center;margin-bottom:14px;
+}
+.faq-item h3{margin:0 0 7px;font:700 16px "Manrope",sans-serif;color:oklch(95% 0.006 260)}
+.faq-item p{margin:0;font:500 13.5px "Public Sans",sans-serif;color:var(--muted);line-height:1.55}
+.faq-item.clickable{cursor:pointer}
+.faq-item.clickable:hover{border-color:var(--track-color)}
+.faq-link{display:inline-block;margin-top:10px;font:700 12.5px "Public Sans",sans-serif;color:var(--track-color)}
+
+.menu-carousel{position:relative;margin-top:16px;border-radius:10px;overflow:hidden;border:1px solid var(--card-border);background:var(--card-b)}
+.menu-track{display:flex;height:min(70vh,560px);transition:transform .3s ease}
+.menu-track img{width:100%;height:100%;flex:0 0 100%;display:block;object-fit:contain;background:#000}
+.menu-nav{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:36px;height:36px;border-radius:50%;
+  background:oklch(15% 0.02 260 / .8);border:1px solid var(--card-border);
+  color:var(--text);font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+}
+.menu-nav:hover{background:oklch(22% 0.02 260 / .9)}
+.menu-nav.prev{left:10px}
+.menu-nav.next{right:10px}
+.menu-dots{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px}
+.menu-dots span{width:6px;height:6px;border-radius:50%;background:oklch(80% 0.01 260 / .35)}
+.menu-dots span.active{background:var(--amber)}
+
+.venue-addr{margin:0 0 14px;font:500 13.5px "Public Sans",sans-serif;color:var(--muted);line-height:1.55}
+.venue-actions{display:flex;flex-wrap:wrap;gap:8px}
+.venue-actions .go{
+  font:700 12px "Public Sans",sans-serif;color:oklch(15% 0.02 260);
+  border-radius:100px;padding:7px 14px;text-decoration:none;
+}
+.venue-actions .go-primary{background:var(--mentoring)}
+.venue-actions .go-cal{background:var(--mentoring)}
+
+.venue-map-card{
+  margin-top:12px;
+  background:linear-gradient(180deg,var(--card-a),var(--card-b));
+  border:1px solid var(--card-border);border-radius:var(--radius);
+  padding:16px 18px 0;
+}
+.venue-map-card .label{margin-bottom:12px;font:700 15px "Manrope",sans-serif;color:oklch(95% 0.006 260)}
+.venue-map-card .frame{border-radius:10px;overflow:hidden;margin:0 -1px -1px}
+.venue-map-card iframe{width:100%;height:180px;border:0;display:block;filter:grayscale(1) invert(.92) brightness(.9)}
+
+/* patrocinadores/parceiros — some por completo enquanto SPONSORS estiver vazio (ver sponsors.js) */
+.sponsors{max-width:1180px;margin:36px auto 0;padding:0 24px}
+.sponsors h2{margin:0 0 16px;font:700 22px "Manrope",sans-serif;color:oklch(95% 0.005 260)}
+.sponsors-grid{display:flex;flex-direction:column;gap:22px}
+.sponsor-tier-label{font:700 12px "Public Sans",sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.sponsor-logos{display:flex;flex-wrap:wrap;align-items:center;gap:22px}
+.sponsor-logo{display:flex;align-items:center;justify-content:center;height:56px}
+.sponsor-logo img{max-height:100%;max-width:160px;width:auto;filter:grayscale(.2);opacity:.92}
+.sponsor-logo:hover img{filter:none;opacity:1}
+
+footer{max-width:1180px;margin:36px auto 0;padding:0 24px;display:flex;flex-direction:column;gap:18px}
+
+.social-links{display:flex;justify-content:center;gap:18px;padding-top:4px}
+.social-links a{font:700 12.5px "Public Sans",sans-serif;color:var(--muted);text-decoration:underline;text-underline-offset:2px}
+.social-links a:hover{color:var(--text)}
+
+.credits{text-align:center;color:var(--muted-dim);font-size:.78rem;padding-bottom:14px}
+.credits a{text-decoration:underline}
+.credits .tag{display:block;margin-top:4px;color:var(--muted)}
+
+/* card clicável (abre modal de detalhe ou galeria) */
+.talk[data-slot-index],.faq-item.clickable{cursor:pointer;transition:transform .12s ease}
+.talk[data-slot-index]:hover,.faq-item.clickable:hover{transform:translateY(-2px)}
+.talk[data-slot-index]:focus-visible,.faq-item.clickable:focus-visible{outline:2px solid var(--text);outline-offset:2px}
+
+/* modal — genérico, reusado pra detalhe de palestra e galerias (cardápio, mapa etc) */
+.modal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal[hidden]{display:none}
+.modal-backdrop{position:absolute;inset:0;background:rgba(3,4,8,.75);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.modal-card{
+  position:relative;max-width:540px;width:100%;max-height:85vh;overflow-y:auto;
+  background:linear-gradient(135deg,var(--card-a),var(--card-b));
+  border:1px solid var(--card-border);border-radius:16px;padding:28px 26px;
+}
+.modal-close{
+  position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;
+  background:transparent;border:1px solid var(--card-border);color:var(--muted);
+  font-size:16px;cursor:pointer;line-height:1;
+}
+.modal-close:hover{background:rgba(255,255,255,.06);color:var(--text)}
+
+.detail{
+  --track-color: var(--card-border);
+  border-top:4px solid var(--track-color);margin:-28px -26px 0;padding:24px 26px 0;
+}
+.detail .track-label{display:flex;align-items:center;gap:6px;font:700 11px "Public Sans",sans-serif;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;color:var(--track-color)}
+.detail .track-label .dot{width:7px;height:7px;border-radius:50%}
+.detail-title{margin:0 0 12px;font:800 22px "Manrope",sans-serif;color:oklch(97% 0.005 260);line-height:1.3}
+.detail-desc{margin:0 0 16px;font:500 14px "Public Sans",sans-serif;color:var(--muted);line-height:1.6;white-space:pre-line}
+.detail-meta{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:14px}
+.detail-meta .room-tag{font-size:12.5px;padding:5px 13px}
+.detail-meta span:not(.room-tag){
+  font:600 12.5px "Public Sans",sans-serif;color:var(--text);
+  background:rgba(255,255,255,.04);border:1px solid var(--card-border);
+  border-radius:100px;padding:5px 13px;
+}
+.detail-speakers{display:flex;flex-direction:column;gap:8px}
+.detail-speaker{font:700 15px "Public Sans",sans-serif;color:oklch(88% 0.01 260)}
+a.detail-speaker{display:inline-flex;align-items:center;gap:7px;text-decoration:none}
+a.detail-speaker:hover{text-decoration:underline}
+a.detail-speaker .li-icon{
+  width:18px;height:18px;border-radius:4px;background:#0a66c2;color:#fff;
+  font:700 10px/18px "Public Sans",sans-serif;text-align:center;
+}
+
+@media(max-width:480px){
+  .modal{padding:12px}
+  .modal-card{padding:22px 18px;max-height:90vh}
+  .detail{margin:-22px -18px 0;padding:20px 18px 0}
+  .detail-title{font-size:19px}
+  .detail-desc{font-size:13.5px}
+}

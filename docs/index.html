@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DevFest Campinas 2026 — Agenda</title>
+<meta name="description" content="Agenda ao vivo do DevFest Campinas 2026 — GDG Campinas">
+<meta name="theme-color" content="#05060a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DevFest Campinas">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" href="assets/icons/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css?v=1">
+</head>
+<body>
+
+<div id="stickyStatus"><div class="row"><span class="pulse" id="stickyPulse"></span><span class="txt" id="stickyTxt"></span></div></div>
+
+<header>
+  <div class="header-top">
+    <div class="brand" id="brand"></div>
+    <span class="status-pill" id="statusPill">Carregando…</span>
+  </div>
+  <h1 class="wordmark" id="wordmark"></h1>
+  <div class="meta-line" id="headerMeta"></div>
+</header>
+
+<section id="hero"></section>
+
+<section class="faq">
+  <div class="faq-head">
+    <h2>Antes de vir</h2>
+    <p class="faq-sub">Está chegando! O que você precisa saber para aproveitar 100%.</p>
+  </div>
+  <div class="faq-grid" id="beforeYouCome"></div>
+  <div class="venue-map-card" id="venueMap"></div>
+</section>
+
+<main>
+  <div class="tracks-legend"></div>
+  <div class="filter-row">
+    <div>
+      <h2>Programação completa</h2>
+      <p class="session-format">Horários e formato de sessão sujeitos a confirmação</p>
+    </div>
+    <div class="tabs"></div>
+  </div>
+  <div id="agenda"></div>
+</main>
+
+<section class="sponsors" id="sponsorsSection" hidden>
+  <h2>Patrocinadores e parceiros</h2>
+  <div class="sponsors-grid"></div>
+</section>
+
+<footer>
+  <div class="social-links">
+    <a href="https://www.instagram.com/gdgcampinas" target="_blank" rel="noopener">Instagram</a>
+    <a href="https://www.linkedin.com/company/gdg-campinas/" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="https://linktr.ee/gdgcampinas" target="_blank" rel="noopener">Linktree</a>
+  </div>
+  <div class="credits">
+    DevFest Campinas — realizado pelo <a href="https://gdg.community.dev/gdg-campinas/" target="_blank" rel="noopener">GDG Campinas</a>.
+    <span class="tag">#DevFestCampinas2026</span>
+  </div>
+</footer>
+
+<div class="modal" id="talkModal" hidden>
+  <div class="modal-backdrop"></div>
+  <div class="modal-card">
+    <button class="modal-close" aria-label="Fechar">✕</button>
+    <div id="talkModalContent"></div>
+  </div>
+</div>
+
+<!--
+  DEV/PROD: tenta schedule.dev.js (dados reais, só local, gitignored);
+  se não existir (produção), cai pra schedule.js (mock). Padrão clássico
+  de fallback com onerror — funciona em qualquer navegador, sem depender
+  de carregamento dinâmico assíncrono.
+-->
+<script src="js/data/schedule.dev.js" onerror="this.onerror=null;document.write('\x3Cscript src=&quot;js/data/schedule.js?v=1&quot;\x3E\x3C/script\x3E')"></script>
+<script src="js/data/sponsors.js?v=1"></script>
+<script src="js/components/track-card.js?v=1"></script>
+<script src="js/components/info-card.js?v=1"></script>
+<script src="js/components/sponsor-card.js?v=1"></script>
+<script src="js/features/agenda.js?v=1"></script>
+<script src="js/features/live-status.js?v=1"></script>
+<script src="js/features/talk-modal.js?v=1"></script>
+<script src="js/features/sponsors.js?v=1"></script>
+<script src="js/app.js?v=1"></script>
+</body>
+</html>
