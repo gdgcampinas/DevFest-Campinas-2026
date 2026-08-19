@@ -1,0 +1,32 @@
+name: Promote to main
+
+# Roda depois que o workflow Validate termina em development — reaproveita
+# o resultado dele em vez de rodar o check de novo aqui.
+on:
+  workflow_run:
+    workflows: [Validate]
+    branches: [development]
+    types: [completed]
+
+jobs:
+  promote:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: development
+          fetch-depth: 0
+
+      - name: Fast-forward main to development
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout main
+          # --ff-only: se main tiver commit que development não tem
+          # (ex.: alguém commitou direto em main), falha em vez de criar
+          # merge commit estranho — força resolver manualmente.
+          git merge --ff-only origin/development
+          git push origin main
