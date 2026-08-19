@@ -11,7 +11,12 @@
  */
 const HIDDEN_SPEAKER_LABEL = "Em breve";
 
-/** Normaliza speaker único ou `speakers: [{name, linkedin}]` (palestra em dupla/painel). */
+/**
+ * Normaliza speaker único ou `speakers: [{name, linkedin}]` (palestra
+ * em dupla/painel). O atalho `speaker`/`linkedin` só carrega nome+link;
+ * pra foto/empresa/cargo por palestrante, usar o formato array mesmo
+ * com 1 pessoa só: `speakers: [{name, linkedin, photo, company, title}]`.
+ */
 function speakerList(data) {
   if (Array.isArray(data.speakers)) return data.speakers;
   if (!data.speaker) return [];
@@ -19,9 +24,11 @@ function speakerList(data) {
 }
 
 function trackCardMarkup(track, data, { reveal = true, live = false, timeRange = "", slotIndex = null } = {}) {
-  const speaker = reveal ? speakerList(data).map((s) => s.name).join(" & ") || data.speaker : HIDDEN_SPEAKER_LABEL;
+  const speakers = reveal ? speakerList(data) : [];
+  const speaker = reveal ? speakers.map((s) => s.name).join(" & ") || data.speaker : HIDDEN_SPEAKER_LABEL;
   const title = reveal ? data.title : "";
   const room = reveal ? track.room : "";
+  const level = reveal ? data.level : "";
 
   const nowTag = live
     ? `<span class="now-tag"><span class="dot"></span>AGORA</span>`
@@ -36,14 +43,19 @@ function trackCardMarkup(track, data, { reveal = true, live = false, timeRange =
 
   const clickable = slotIndex !== null ? ` data-slot-index="${slotIndex}" tabindex="0" role="button"` : "";
 
+  // avatar só aparece com speaker real revelado e foto cadastrada —
+  // sem foto, cai pra iniciais (avatarMarkup já resolve isso sozinho).
+  const avatar = speakers[0] ? avatarMarkup(speakers[0].name, speakers[0].photo, "talk-avatar") : "";
+
   return `
     <div class="talk" data-track="${track.id}" style="--track-color:${track.color}"${clickable}>
       <div class="track-row">
         <span class="track-label"><span class="dot" style="background:${track.color}"></span>${track.label}</span>
         ${nowTag}
       </div>
+      ${level ? `<span class="level-tag">${level}</span>` : ""}
       ${title ? `<div class="title">${title}</div>` : ""}
-      <div class="speaker">${speaker}</div>
+      <div class="speaker-row">${avatar}<div class="speaker">${speaker}</div></div>
       ${foot}
     </div>`;
 }
@@ -66,17 +78,19 @@ function talkDetailMarkup(track, data, { reveal = true, timeRange = "", room = "
   const metaItems = [
     timeRange && `<span>${timeRange}</span>`,
     roomLabel && `<span class="room-tag">${roomLabel}</span>`,
+    reveal && data.level && `<span>${data.level}</span>`,
   ].filter(Boolean).join("");
 
-  // company/title são opcionais no dado do speaker — palestra sem eles
-  // renderiza igual ao formato original, sem linha extra.
+  // avatar/company/title são opcionais no dado do speaker — palestra
+  // sem eles renderiza igual ao formato original, sem linha/foto extra.
   const speakerLine = speakers.length
     ? `<div class="detail-speakers">${speakers.map((s) => {
         const nameEl = s.linkedin
           ? `<a class="detail-speaker" href="${s.linkedin}" target="_blank" rel="noopener">${s.name} <span class="li-icon">in</span></a>`
           : `<div class="detail-speaker">${s.name}</div>`;
         const meta = speakerMetaLine(s);
-        return meta ? `<div class="detail-speaker-block">${nameEl}<div class="detail-speaker-meta">${meta}</div></div>` : nameEl;
+        const block = meta ? `<div class="detail-speaker-block">${nameEl}<div class="detail-speaker-meta">${meta}</div></div>` : nameEl;
+        return `<div class="detail-speaker-row">${avatarMarkup(s.name, s.photo, "detail-avatar")}${block}</div>`;
       }).join("")}</div>`
     : `<div class="detail-speaker">${HIDDEN_SPEAKER_LABEL}</div>`;
 

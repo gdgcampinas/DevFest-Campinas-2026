@@ -1,15 +1,10 @@
 /**
  * Card genérico de pessoa — usado na seção de organizadores/time.
- * Foto é opcional (mostra iniciais se faltar); LinkedIn é opcional.
+ * Foto/iniciais vêm de components/avatar.js (avatarMarkup) — não
+ * duplica essa lógica aqui.
  */
-function initials(name) {
-  return name.split(" ").filter(Boolean).slice(0, 2).map(w => w[0]).join("").toUpperCase();
-}
-
 function personCardMarkup(person) {
-  const photo = person.photo
-    ? `<img class="person-photo" src="${person.photo}" alt="${person.name}" loading="lazy">`
-    : `<div class="person-photo person-photo--fallback">${initials(person.name)}</div>`;
+  const photo = avatarMarkup(person.name, person.photo, "person-photo");
   const social = person.linkedin
     ? `<a class="person-social" href="${person.linkedin}" target="_blank" rel="noopener" aria-label="LinkedIn de ${person.name}">in</a>`
     : "";
