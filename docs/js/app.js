@@ -213,6 +213,9 @@ function initApp() {
   initMenuCarousel(document.getElementById("talkModal"));
 
   renderSponsors(SPONSORS, document.getElementById("sponsorsSection"), document.querySelector(".sponsors-grid"));
+  renderTeamSection(TEAM, document.getElementById("teamSection"), document.querySelector(".team-grid"));
+  renderCod(CODE_OF_CONDUCT, document.getElementById("codSection"));
+  injectEventSchema(buildEventSchema(EVENT, SCHEDULE));
 
   const liveStatus = createLiveStatus({
     schedule: SCHEDULE,

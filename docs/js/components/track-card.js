@@ -52,6 +52,11 @@ function trackCardMarkup(track, data, { reveal = true, live = false, timeRange =
  * Conteúdo do modal de detalhe — mesma trilha/dados do card, formato
  * maior com descrição completa. reveal segue a mesma regra do card.
  */
+/** "Cargo · Empresa" — só aparece se pelo menos um dos dois vier preenchido no speaker. */
+function speakerMetaLine(speaker) {
+  return [speaker.title, speaker.company].filter(Boolean).join(" · ");
+}
+
 function talkDetailMarkup(track, data, { reveal = true, timeRange = "", room = "" } = {}) {
   const speakers = reveal ? speakerList(data) : [];
   const title = reveal ? data.title : "Palestra a confirmar";
@@ -63,10 +68,16 @@ function talkDetailMarkup(track, data, { reveal = true, timeRange = "", room = "
     roomLabel && `<span class="room-tag">${roomLabel}</span>`,
   ].filter(Boolean).join("");
 
+  // company/title são opcionais no dado do speaker — palestra sem eles
+  // renderiza igual ao formato original, sem linha extra.
   const speakerLine = speakers.length
-    ? `<div class="detail-speakers">${speakers.map((s) => s.linkedin
-        ? `<a class="detail-speaker" href="${s.linkedin}" target="_blank" rel="noopener">${s.name} <span class="li-icon">in</span></a>`
-        : `<div class="detail-speaker">${s.name}</div>`).join("")}</div>`
+    ? `<div class="detail-speakers">${speakers.map((s) => {
+        const nameEl = s.linkedin
+          ? `<a class="detail-speaker" href="${s.linkedin}" target="_blank" rel="noopener">${s.name} <span class="li-icon">in</span></a>`
+          : `<div class="detail-speaker">${s.name}</div>`;
+        const meta = speakerMetaLine(s);
+        return meta ? `<div class="detail-speaker-block">${nameEl}<div class="detail-speaker-meta">${meta}</div></div>` : nameEl;
+      }).join("")}</div>`
     : `<div class="detail-speaker">${HIDDEN_SPEAKER_LABEL}</div>`;
 
   return `
