@@ -59,5 +59,5 @@ const SCHEDULE = [
       webdata: { speaker: "Palestrante a confirmar", title: "Título a confirmar", description: "" },
       mentoring: { speaker: "Palestrante a confirmar", title: "Título a confirmar", description: "" },
   }},
-  { start: eventTime("11:40"), end: eventTime("12:00"), banner: "Encerramento", room: "Auditório principal" },
+  { start: eventTime("17:30"), end: eventTime("18:00"), banner: "Encerramento", room: "Auditório principal" },
 ];
