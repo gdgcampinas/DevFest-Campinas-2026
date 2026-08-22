@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=3">
+<link rel="stylesheet" href="css/styles.css?v=4">
 </head>
 <body>
 
@@ -31,6 +31,18 @@
 </header>
 
 <section id="hero"></section>
+
+<section class="stats" id="statsSection" hidden>
+  <h2></h2>
+  <div class="stats-grid"></div>
+</section>
+
+<section class="highlights" id="highlightsSection" hidden>
+  <h2></h2>
+  <div class="highlights-grid"></div>
+</section>
+
+<section class="about" id="aboutSection"></section>
 
 <section class="faq">
   <div class="faq-head">
@@ -58,19 +70,35 @@
   <div class="speakers-grid"></div>
 </section>
 
+<section class="realizacao" id="realizacaoSection">
+  <h2>Realização</h2>
+  <div class="realizacao-grid"></div>
+</section>
+
 <section class="sponsors" id="sponsorsSection" hidden>
   <h2>Patrocinadores e parceiros</h2>
   <div class="sponsors-grid"></div>
 </section>
 
+<section class="partner-communities" id="partnerCommunitiesSection" hidden>
+  <h2>Comunidades parceiras</h2>
+  <div class="partner-communities-grid"></div>
+</section>
+
+<section class="tickets" id="ticketsSection">
+  <h2>Ingressos</h2>
+  <div id="ticketsAction"></div>
+</section>
+
 <section class="team" id="teamSection" hidden>
-  <h2>Organização</h2>
+  <h2>Organização e voluntariado</h2>
   <div class="team-grid"></div>
 </section>
 
 <section class="cod" id="codSection"></section>
 
 <footer>
+  <div class="footer-columns"></div>
   <div class="social-links">
     <a href="https://www.instagram.com/gdgcampinas" target="_blank" rel="noopener">Instagram</a>
     <a href="https://www.linkedin.com/company/gdg-campinas/" target="_blank" rel="noopener">LinkedIn</a>
@@ -95,12 +123,18 @@
   DEV/PROD: tenta schedule.dev.js (dados reais, só local, gitignored);
   se não existir (produção), cai pra schedule.js (mock). Padrão clássico
   de fallback com onerror — funciona em qualquer navegador, sem depender
-  de carregamento dinâmico assíncrono.
+  de carregamento dinâmico assíncrona.
 -->
-<script src="js/data/schedule.dev.js" onerror="this.onerror=null;document.write('\x3Cscript src=&quot;js/data/schedule.js?v=3&quot;\x3E\x3C/script\x3E')"></script>
-<script src="js/data/sponsors.js?v=1"></script>
-<script src="js/data/team.js?v=1"></script>
+<script src="js/data/schedule.dev.js" onerror="this.onerror=null;document.write('\x3Cscript src=&quot;js/data/schedule.js?v=4&quot;\x3E\x3C/script\x3E')"></script>
+<script src="js/data/placeholder.js?v=1"></script>
+<script src="js/data/sponsors.js?v=2"></script>
+<script src="js/data/partner-communities.js?v=1"></script>
+<script src="js/data/highlights.js?v=1"></script>
+<script src="js/data/stats.js?v=1"></script>
+<script src="js/data/about.js?v=1"></script>
+<script src="js/data/team.js?v=2"></script>
 <script src="js/data/cod.js?v=1"></script>
+<script src="js/data/footer.js?v=1"></script>
 <script src="js/components/avatar.js?v=1"></script>
 <script src="js/components/track-card.js?v=3"></script>
 <script src="js/components/info-card.js?v=1"></script>
@@ -114,6 +148,13 @@
 <script src="js/features/cod.js?v=1"></script>
 <script src="js/features/seo.js?v=1"></script>
 <script src="js/features/speakers.js?v=1"></script>
-<script src="js/app.js?v=3"></script>
+<script src="js/features/stats.js?v=1"></script>
+<script src="js/features/about.js?v=1"></script>
+<script src="js/features/highlights.js?v=1"></script>
+<script src="js/features/realizacao.js?v=1"></script>
+<script src="js/features/partner-communities.js?v=1"></script>
+<script src="js/features/tickets.js?v=1"></script>
+<script src="js/features/footer.js?v=1"></script>
+<script src="js/app.js?v=4"></script>
 </body>
 </html>

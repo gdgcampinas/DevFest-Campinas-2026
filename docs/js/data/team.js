@@ -1,8 +1,9 @@
 /**
- * Organizadores/time do DevFest Campinas 2026 — PROD. Vazio até
- * confirmado; a seção some sozinha enquanto TEAM estiver vazio (ver
- * features/team.js), mesmo padrão de sponsors.js.
+ * Organizadores/voluntários do DevFest Campinas 2026 — MOCK abaixo
+ * até confirmar nomes reais. Mesmo grid pra organização e voluntariado
+ * — o campo `role` distingue, sem duplicar componente.
  */
 const TEAM = [
-  // { name: "Nome", role: "Papel na organização", photo: "assets/team/nome.jpg", linkedin: "https://..." },
+  { name: "Nome Exemplo", role: "Organização", linkedin: "https://linkedin.com" },
+  { name: "Nome Exemplo", role: "Voluntário(a)", linkedin: "https://linkedin.com" },
 ];

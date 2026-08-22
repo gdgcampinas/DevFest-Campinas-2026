@@ -18,9 +18,17 @@ const EVENT = {
   // 1..N coanfitriões/patrocinadores exibidos no header, nessa ordem.
   // Adicionar entradas aqui quando parceiros forem confirmados — o
   // separador "+" entre logos é gerado automaticamente (ver app.js renderBrand).
+  // Reaproveitado também na seção "Realização" (features/realizacao.js).
   hosts: [
     { name: "GDG Campinas", icon: "assets/icons/gdg-icon.png" },
   ],
+  // Seção de ingressos na home — url vazia esconde o botão de compra
+  // (mostra só o status). Preencher quando as inscrições abrirem.
+  tickets: {
+    url: "",
+    label: "Garanta sua vaga",
+    status: "Em breve",
+  },
 };
 
 /**

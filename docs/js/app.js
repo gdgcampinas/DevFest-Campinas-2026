@@ -212,10 +212,18 @@ function initApp() {
     galleryMarkup("Cardápio", "Informações em breve.", FOOD_IMAGES));
   initMenuCarousel(document.getElementById("talkModal"));
 
+  renderStats(LAST_EDITION_STATS, document.getElementById("statsSection"), document.querySelector(".stats-grid"));
+  renderHighlights(HIGHLIGHTS, document.getElementById("highlightsSection"), document.querySelector(".highlights-grid"), modal);
+  renderAbout(ABOUT_SECTIONS, document.getElementById("aboutSection"));
+
   renderSpeakersSection(SCHEDULE, TRACKS, document.getElementById("speakersSection"), document.querySelector(".speakers-grid"), { reveal });
+  renderRealizacao(EVENT.hosts, document.querySelector(".realizacao-grid"));
   renderSponsors(SPONSORS, document.getElementById("sponsorsSection"), document.querySelector(".sponsors-grid"));
+  renderPartnerCommunities(PARTNER_COMMUNITIES, document.getElementById("partnerCommunitiesSection"), document.querySelector(".partner-communities-grid"));
+  renderTickets(EVENT.tickets, document.getElementById("ticketsAction"));
   renderTeamSection(TEAM, document.getElementById("teamSection"), document.querySelector(".team-grid"));
   renderCod(CODE_OF_CONDUCT, document.getElementById("codSection"));
+  renderFooterColumns(FOOTER_COLUMNS, document.querySelector(".footer-columns"));
   injectEventSchema(buildEventSchema(EVENT, SCHEDULE));
 
   const liveStatus = createLiveStatus({
