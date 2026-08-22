@@ -58,12 +58,18 @@ function resolveEventState(now, schedule) {
   return { phase: "live", activeIndex: -1, nextSlot: nextIndex >= 0 ? schedule[nextIndex] : null };
 }
 
-function createLiveStatus({ schedule, tracks, event, elements, now = () => new Date(), reveal = true }) {
+/**
+ * elements aceita subconjunto — páginas sem hero/pill (ex.: Grade,
+ * que só tem a agenda) passam só o que têm; o resto vira no-op sem
+ * precisar de outra função duplicada só pra isso.
+ */
+function createLiveStatus({ schedule, tracks, event, elements = {}, now = () => new Date(), reveal = true }) {
   const { statusPill, hero, stickyTxt, stickyPulse } = elements;
 
   // dot fica num nó fixo, criado uma vez só — só o texto é trocado a
   // cada tick, então a animação de pulso nunca reinicia sozinha.
   function renderStatusPill(state) {
+    if (!statusPill) return;
     if (!statusPill.querySelector(".txt")) {
       statusPill.innerHTML = `<span class="dot"></span><span class="txt"></span>`;
     }
@@ -75,6 +81,7 @@ function createLiveStatus({ schedule, tracks, event, elements, now = () => new D
   }
 
   function renderHeroBefore(state) {
+    if (!hero) return;
     hero.innerHTML = `
       <div class="hero-card hero-before">
         <div class="hero-label">O EVENTO COMEÇA EM</div>
@@ -89,6 +96,7 @@ function createLiveStatus({ schedule, tracks, event, elements, now = () => new D
   }
 
   function renderHeroAfter() {
+    if (!hero) return;
     hero.innerHTML = `
       <div class="hero-card hero-after">
         <div class="title">Obrigado por participar! 🎉</div>
@@ -99,6 +107,7 @@ function createLiveStatus({ schedule, tracks, event, elements, now = () => new D
   }
 
   function renderHeroLive(state) {
+    if (!hero) return;
     const slot = state.activeSlot;
 
     if (!slot) {
@@ -154,7 +163,7 @@ function createLiveStatus({ schedule, tracks, event, elements, now = () => new D
     if (state.phase === "before") {
       const el = document.getElementById("heroCountdown");
       if (el) el.textContent = formatDaysHMS(state.first - now());
-      stickyTxt.textContent = `Começa em ${formatDaysHMS(state.first - now())}`;
+      if (stickyTxt) stickyTxt.textContent = `Começa em ${formatDaysHMS(state.first - now())}`;
     } else if (state.phase === "live" && state.activeSlot) {
       const el = document.getElementById("nextChangeText");
       if (el) el.textContent = `próxima troca em ${formatMS(state.activeSlot.end - now())}`;

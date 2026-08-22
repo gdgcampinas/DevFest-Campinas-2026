@@ -1,8 +1,8 @@
 /**
- * Bootstrap: liga os módulos (header, agenda, filtro, status ao vivo,
- * antes-de-vir, patrocinadores) aos dados definidos em
- * schedule.js/schedule.dev.js e sponsors.js. Trocar de evento ou de
- * sala/MC/patrocinador = trocar só os arquivos de dados, nada aqui.
+ * Bootstrap compartilhado por todas as páginas (Principal/Grade/
+ * Palestrantes/Time/Código de Conduta): header (marca, wordmark, meta),
+ * nav do site, rodapé e SEO. Cada página chama initShell(seu-id) uma
+ * vez e depois monta só as seções que são dela — ver js/pages/*.js.
  */
 
 /**
@@ -182,67 +182,23 @@ function buildBeforeYouComeItems(tracks) {
   ];
 }
 
-function initApp() {
+/**
+ * Roda em toda página: header, nav, rodapé, SEO, aviso de modo demo.
+ * Retorna `reveal` (se o line-up deve aparecer) — cada página usa
+ * esse valor pra decidir o que mostrar de dado sensível.
+ */
+function initShell(activePageId) {
   warnIfDemoMode();
   const reveal = resolveReveal();
 
   renderBrand(EVENT.hosts, document.getElementById("brand"));
   renderWordmark(EVENT, document.getElementById("wordmark"));
   renderHeaderMeta(EVENT, SCHEDULE, document.getElementById("headerMeta"));
-
-  document.documentElement.style.setProperty("--track-count", TRACKS.length);
-  const tabsEl = document.querySelector(".tabs");
-  const agendaEl = document.getElementById("agenda");
-  renderLegend(TRACKS, document.querySelector(".tracks-legend"));
-  renderTabs(TRACKS, tabsEl);
-  renderAgenda(SCHEDULE, TRACKS, EVENT.timezone, agendaEl, { reveal });
-  initTrackFilter(tabsEl, agendaEl);
-
-  initStickyStatus(document.getElementById("hero"), document.getElementById("stickyStatus"));
-
-  const modal = createTalkModal(document.getElementById("talkModal"), document.getElementById("talkModalContent"));
-  initTalkDetails(document.body, { schedule: SCHEDULE, tracks: TRACKS, timezone: EVENT.timezone, reveal, modal });
-
-  renderInfoCards(buildBeforeYouComeItems(TRACKS), document.getElementById("beforeYouCome"));
-  renderVenueInfo(EVENT, document.getElementById("venueInfo"), SCHEDULE);
-  renderVenueMap(EVENT, document.getElementById("venueMap"));
-  initClickableCard(document.querySelector('[data-item="parking"]'), modal, () =>
-    galleryMarkup("Estacionamento", "Informações em breve.", PARKING_IMAGES));
-  initClickableCard(document.querySelector('[data-item="food"]'), modal, () =>
-    galleryMarkup("Cardápio", "Informações em breve.", FOOD_IMAGES));
-  initMenuCarousel(document.getElementById("talkModal"));
-
-  renderStats(LAST_EDITION_STATS, document.getElementById("statsSection"), document.querySelector(".stats-grid"));
-  renderHighlights(HIGHLIGHTS, document.getElementById("highlightsSection"), document.querySelector(".highlights-grid"), modal);
-  renderAbout(ABOUT_SECTIONS, document.getElementById("aboutSection"));
-
-  renderSpeakersSection(SCHEDULE, TRACKS, document.getElementById("speakersSection"), document.querySelector(".speakers-grid"), { reveal });
-  renderRealizacao(EVENT.hosts, document.querySelector(".realizacao-grid"));
-  renderSponsors(SPONSORS, document.getElementById("sponsorsSection"), document.querySelector(".sponsors-grid"));
-  renderPartnerCommunities(PARTNER_COMMUNITIES, document.getElementById("partnerCommunitiesSection"), document.querySelector(".partner-communities-grid"));
-  renderTickets(EVENT.tickets, document.getElementById("ticketsAction"));
-  renderTeamSection(TEAM, document.getElementById("teamSection"), document.querySelector(".team-grid"));
-  renderCod(CODE_OF_CONDUCT, document.getElementById("codSection"));
+  renderSiteNav(activePageId, document.getElementById("siteNav"));
   renderFooterColumns(FOOTER_COLUMNS, document.querySelector(".footer-columns"));
   injectEventSchema(buildEventSchema(EVENT, SCHEDULE));
 
-  const liveStatus = createLiveStatus({
-    schedule: SCHEDULE,
-    tracks: TRACKS,
-    event: EVENT,
-    reveal,
-    elements: {
-      statusPill: document.getElementById("statusPill"),
-      hero: document.getElementById("hero"),
-      stickyTxt: document.getElementById("stickyTxt"),
-      stickyPulse: document.getElementById("stickyPulse"),
-    },
-    now: resolveNow(),
-  });
+  document.documentElement.style.setProperty("--track-count", TRACKS.length);
 
-  liveStatus.tick();
-  setInterval(liveStatus.tick, 1000);
+  return reveal;
 }
-
-// carregado depois que o DOM já está pronto (script no fim do body) — roda direto.
-initApp();
