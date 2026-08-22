@@ -282,6 +282,19 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
 .stat-label{font:600 13px "Public Sans",sans-serif;color:var(--text);margin-top:2px}
 .stat-sub{font:500 12px "Public Sans",sans-serif;color:var(--muted-dim);margin-top:2px;line-height:1.4}
 
+/* vídeo de recap — fachada com thumbnail, iframe só carrega no clique */
+.video{max-width:1180px;margin:36px auto 0;padding:0 24px}
+.video h2{margin:0 0 16px;font:700 22px "Manrope",sans-serif;color:oklch(95% 0.005 260)}
+.video-embed{position:relative;width:100%;aspect-ratio:16/9;border-radius:var(--radius);overflow:hidden;border:1px solid var(--card-border);background:#000}
+.video-embed iframe{width:100%;height:100%;border:0;display:block}
+.video-facade{position:relative;width:100%;height:100%;padding:0;border:0;cursor:pointer;background-size:cover;background-position:center}
+.video-facade::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.25)}
+.video-play{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1;
+  width:64px;height:64px;border-radius:50%;background:rgba(234,67,53,.92);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+}
+
 /* "veja como foi" — grid de fotos, abre no modal genérico */
 .highlights{max-width:1180px;margin:36px auto 0;padding:0 24px}
 .highlights h2{margin:0 0 16px;font:700 22px "Manrope",sans-serif;color:oklch(95% 0.005 260)}

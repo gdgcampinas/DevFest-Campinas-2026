@@ -12,6 +12,7 @@ function initHome() {
   initTalkDetails(document.body, { schedule: SCHEDULE, tracks: TRACKS, timezone: EVENT.timezone, reveal, modal });
 
   renderStats(LAST_EDITION_STATS, document.getElementById("statsSection"), document.querySelector(".stats-grid"));
+  renderVideo(RECAP_VIDEO, document.getElementById("videoSection"), document.querySelector(".video-embed"));
   renderHighlights(HIGHLIGHTS, document.getElementById("highlightsSection"), document.querySelector(".highlights-grid"), modal);
   renderAbout(ABOUT_SECTIONS, document.getElementById("aboutSection"));
   initMenuCarousel(document.getElementById("talkModal"));
