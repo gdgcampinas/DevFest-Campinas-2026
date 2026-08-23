@@ -1,13 +1,12 @@
 /**
- * Fotos de "como foi a última edição" — MOCK abaixo (placeholder
- * inline via placeholder.js) até termos fotos reais do DevFest 2025.
- * Trocar `photos` pelas fotos de verdade quando disponíveis.
+ * Fotos de "como foi a última edição" — DevFest Campinas 2025. Mesma
+ * quantidade de fotos da referência (2018): 16. Imagens já comprimidas
+ * (sips -Z 900 -s formatOptions 60) em assets/img/highlights/.
  */
 const HIGHLIGHTS = {
   title: "Veja como foi o DevFest 2025",
-  photos: [
-    { file: placeholderImage("Foto 1 — exemplo", 640, 420), alt: "Foto exemplo 1 do DevFest 2025" },
-    { file: placeholderImage("Foto 2 — exemplo", 640, 420), alt: "Foto exemplo 2 do DevFest 2025" },
-    { file: placeholderImage("Foto 3 — exemplo", 640, 420), alt: "Foto exemplo 3 do DevFest 2025" },
-  ],
+  photos: Array.from({ length: 16 }, (_, i) => ({
+    file: `assets/img/highlights/devfest-2025-${String(i + 1).padStart(2, "0")}.jpg`,
+    alt: `Foto ${i + 1} do DevFest Campinas 2025`,
+  })),
 };

@@ -4,6 +4,6 @@
  * 2025). Vazio/null esconde a seção inteira.
  */
 const RECAP_VIDEO = {
-  title: "Veja como foi o DevFest",
+  title: "Veja como foi o DevFest 2025",
   youtubeId: "qXGQG-G3Jw8",
 };
