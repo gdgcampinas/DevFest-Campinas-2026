@@ -21,12 +21,12 @@ function extractSpeakers(schedule, tracks) {
   return [...seen.values()];
 }
 
-/** Reusa avatarMarkup (components/avatar.js), speakerMetaLine e .person-social (já em styles.css) — nada novo duplicado aqui. */
+/** Reusa avatarMarkup (components/avatar.js), speakerMetaLine e socialIconMarkup (components/person-card.js) — nada de marcação de link social reescrita aqui. */
 function speakerGalleryCardMarkup(speaker) {
   const avatar = avatarMarkup(speaker.name, speaker.photo, "speaker-photo");
   const meta = speakerMetaLine(speaker);
   const social = speaker.linkedin
-    ? `<a class="person-social" href="${speaker.linkedin}" target="_blank" rel="noopener" aria-label="LinkedIn de ${speaker.name}">in</a>`
+    ? socialIconMarkup({ name: "linkedin", link: speaker.linkedin })
     : "";
   return `
     <div class="speaker-card" style="--track-color:${speaker.track.color}">

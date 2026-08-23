@@ -455,7 +455,7 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
 .speaker-card-name{font:700 15px "Manrope",sans-serif;color:oklch(95% 0.006 260)}
 .speaker-card-meta{font:500 12px "Public Sans",sans-serif;color:var(--muted-dim)}
 .speaker-card-talk{margin-top:6px;font:600 12.5px "Public Sans",sans-serif;color:var(--muted);line-height:1.4}
-.speaker-card .person-social{margin-top:10px}
+.speaker-card .social-icon{margin-top:10px}
 
 /* patrocinadores/parceiros — some por completo enquanto SPONSORS estiver vazio (ver sponsors.js) */
 .sponsors{max-width:1180px;margin:36px auto 0;padding:0 24px}
@@ -554,13 +554,15 @@ a.detail-speaker .li-icon{
   width:100%;height:170px;display:flex;align-items:center;justify-content:center;
   font:700 30px "Manrope",sans-serif;color:var(--muted);
 }
+/* .social-icon é o badge em si (usado sozinho ou dentro de um wrapper);
+   .person-social é só o posicionamento no canto da foto do card de time. */
 .person-social{position:absolute;top:10px;right:10px;display:flex;gap:6px}
-.person-social .social-icon{
+.social-icon{
   width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;
   background:rgba(3,4,8,.6);backdrop-filter:blur(3px);color:#fff;
   font:700 10.5px "Public Sans",sans-serif;text-decoration:none;
 }
-.person-social .social-icon:hover{background:rgba(3,4,8,.85)}
+.social-icon:hover{background:rgba(3,4,8,.85)}
 .person-info{padding:12px 14px 14px}
 .person-name{font:700 13.5px "Public Sans",sans-serif;color:oklch(92% 0.006 260);text-transform:uppercase;letter-spacing:.2px}
 .person-name strong{font-weight:800}
