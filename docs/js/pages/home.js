@@ -13,6 +13,7 @@ function initHome() {
 
   renderStats(LAST_EDITION_STATS, document.getElementById("statsSection"), document.querySelector(".stats-grid"));
   renderVideo(RECAP_VIDEO, document.getElementById("videoSection"), document.querySelector(".video-embed"));
+  initFeaturedSpeakers(MOCK_SPEAKERS, document.getElementById("featuredSpeakersSection"), document.querySelector(".featured-speakers-grid"), { count: 4, intervalMs: 15000 });
   renderHighlights(HIGHLIGHTS, document.getElementById("highlightsSection"), document.querySelector(".highlights-grid"), modal);
   renderAbout(ABOUT_SECTIONS, document.getElementById("aboutSection"));
   initMenuCarousel(document.getElementById("talkModal"));

@@ -282,6 +282,22 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
 .stat-label{font:600 13px "Public Sans",sans-serif;color:var(--text);margin-top:2px}
 .stat-sub{font:500 12px "Public Sans",sans-serif;color:var(--muted-dim);margin-top:2px;line-height:1.4}
 
+/* destaques — N palestrantes aleatórios do pool mock, trocam sozinhos
+   (ver features/featured-speakers.js) */
+.featured-speakers{max-width:1180px;margin:36px auto 0;padding:0 24px;text-align:center}
+.featured-speakers h2{margin:0 0 20px;font:700 22px "Manrope",sans-serif;color:oklch(95% 0.005 260)}
+.featured-speakers-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px 16px;margin-bottom:22px}
+@media(min-width:640px){.featured-speakers-grid{grid-template-columns:repeat(4,1fr)}}
+.featured-speaker{display:flex;flex-direction:column;align-items:center;gap:6px}
+.featured-avatar{width:110px;height:110px;border-radius:50%;object-fit:cover;border:3px solid var(--card-border)}
+.featured-avatar--fallback{
+  width:110px;height:110px;border-radius:50%;border:3px solid var(--card-border);background:var(--card-b);
+  display:flex;align-items:center;justify-content:center;font:700 32px "Manrope",sans-serif;color:var(--muted);
+}
+.featured-name{font:700 14px "Public Sans",sans-serif;color:oklch(92% 0.006 260)}
+.featured-company{font:600 12px "Public Sans",sans-serif;color:var(--amber)}
+.featured-speakers-cta{display:inline-block}
+
 /* vídeo de recap — fachada com thumbnail, iframe só carrega no clique */
 .video{max-width:1180px;margin:36px auto 0;padding:0 24px}
 .video h2{margin:0 0 16px;font:700 22px "Manrope",sans-serif;color:oklch(95% 0.005 260)}

@@ -47,25 +47,27 @@ function eventTime(hhmm) {
   return new Date(`${EVENT.date}T${hhmm}:00${EVENT.utcOffset}`);
 }
 
-// Mock — horários e conteúdo de placeholder até o line-up ser fechado.
+// Mock — horários de placeholder, palestrantes vêm do pool
+// compartilhado MOCK_SPEAKERS (data/mock-speakers.js) até o line-up
+// real ser fechado — nenhum nome mock duplicado aqui.
 const SCHEDULE = [
   { start: eventTime("08:00"), end: eventTime("08:30"), banner: "Credenciamento", room: "Recepção" },
   { start: eventTime("08:30"), end: eventTime("08:50"), banner: "Abertura — GDG Campinas", room: "Auditório principal" },
   { start: eventTime("09:00"), end: eventTime("09:35"), talks: {
-      ia: { speaker: "Palestrante a confirmar", title: "Título a confirmar", description: "" },
-      webdata: { speaker: "Palestrante a confirmar", title: "Título a confirmar", description: "" },
-      mentoring: { speaker: "Palestrante a confirmar", title: "Título a confirmar", description: "" },
+      ia: { speakers: [MOCK_SPEAKERS[0]], title: "Título a confirmar", description: "" },
+      webdata: { speakers: [MOCK_SPEAKERS[1]], title: "Título a confirmar", description: "" },
+      mentoring: { speakers: [MOCK_SPEAKERS[2]], title: "Título a confirmar", description: "" },
   }},
   { start: eventTime("09:40"), end: eventTime("10:15"), talks: {
-      ia: { speaker: "Palestrante a confirmar", title: "Título a confirmar", description: "" },
-      webdata: { speaker: "Palestrante a confirmar", title: "Título a confirmar", description: "" },
-      mentoring: { speaker: "Palestrante a confirmar", title: "Título a confirmar", description: "" },
+      ia: { speakers: [MOCK_SPEAKERS[3]], title: "Título a confirmar", description: "" },
+      webdata: { speakers: [MOCK_SPEAKERS[4]], title: "Título a confirmar", description: "" },
+      mentoring: { speakers: [MOCK_SPEAKERS[5]], title: "Título a confirmar", description: "" },
   }},
   { start: eventTime("10:20"), end: eventTime("10:55"), banner: "Pausa / Intervalo" },
   { start: eventTime("11:00"), end: eventTime("11:35"), talks: {
-      ia: { speaker: "Palestrante a confirmar", title: "Título a confirmar", description: "" },
-      webdata: { speaker: "Palestrante a confirmar", title: "Título a confirmar", description: "" },
-      mentoring: { speaker: "Palestrante a confirmar", title: "Título a confirmar", description: "" },
+      ia: { speakers: [MOCK_SPEAKERS[6]], title: "Título a confirmar", description: "" },
+      webdata: { speakers: [MOCK_SPEAKERS[7]], title: "Título a confirmar", description: "" },
+      mentoring: { speakers: [MOCK_SPEAKERS[8]], title: "Título a confirmar", description: "" },
   }},
   { start: eventTime("17:30"), end: eventTime("18:00"), banner: "Encerramento", room: "Auditório principal" },
 ];

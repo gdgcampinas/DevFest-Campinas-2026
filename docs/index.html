@@ -43,6 +43,12 @@
   <div class="video-embed"></div>
 </section>
 
+<section class="featured-speakers" id="featuredSpeakersSection" hidden>
+  <h2>Destaques</h2>
+  <div class="featured-speakers-grid"></div>
+  <a class="go go-primary featured-speakers-cta" href="palestrantes.html">Todos palestrantes</a>
+</section>
+
 <section class="highlights" id="highlightsSection" hidden>
   <h2></h2>
   <div class="highlights-grid"></div>
@@ -122,8 +128,12 @@
   time/codigo-de-conduta) — site zero-build, sem templating, então o
   esqueleto HTML se repete por página; toda a lógica/dado fica nos
   arquivos JS compartilhados. Só o último <script> muda por página.
+
+  mock-speakers.js precisa carregar ANTES de schedule.dev.js/schedule.js
+  — o SCHEDULE mock referencia MOCK_SPEAKERS direto na definição.
 -->
-<script src="js/data/schedule.dev.js" onerror="this.onerror=null;document.write('\x3Cscript src=&quot;js/data/schedule.js?v=4&quot;\x3E\x3C/script\x3E')"></script>
+<script src="js/data/mock-speakers.js?v=1"></script>
+<script src="js/data/schedule.dev.js" onerror="this.onerror=null;document.write('\x3Cscript src=&quot;js/data/schedule.js?v=5&quot;\x3E\x3C/script\x3E')"></script>
 <script src="js/data/placeholder.js?v=1"></script>
 <script src="js/data/sponsors.js?v=2"></script>
 <script src="js/data/partner-communities.js?v=1"></script>
@@ -158,7 +168,8 @@
 <script src="js/features/partner-communities.js?v=1"></script>
 <script src="js/features/tickets.js?v=1"></script>
 <script src="js/features/footer.js?v=1"></script>
+<script src="js/features/featured-speakers.js?v=1"></script>
 <script src="js/app.js?v=5"></script>
-<script src="js/pages/home.js?v=1"></script>
+<script src="js/pages/home.js?v=2"></script>
 </body>
 </html>
