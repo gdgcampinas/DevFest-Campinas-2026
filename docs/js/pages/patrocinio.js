@@ -2,10 +2,10 @@
 function initPatrocinio() {
   initShell("patrocinio");
 
-  renderPatrocinioIntro(PATROCINIO_INTRO, document.getElementById("patrocinioIntro"));
-  renderInfoCards(PATROCINIO_BENEFITS, document.querySelector("#beneficiosSection .faq-grid"));
-  renderSponsors(SPONSORS, document.getElementById("sponsorsSection"), document.querySelector(".sponsors-grid"));
-  renderTestimonials(TESTIMONIALS, document.getElementById("testimonialsSection"), document.querySelector(".testimonials-grid"));
+  renderPatrocinioIntro(patrocinioIntroRepository.getAll(), document.getElementById("patrocinioIntro"));
+  renderInfoCards(patrocinioBenefitsRepository.getAll(), document.querySelector("#beneficiosSection .faq-grid"));
+  renderSponsors(sponsorsRepository.getAll(), document.getElementById("sponsorsSection"), document.querySelector(".sponsors-grid"));
+  renderTestimonials(testimonialsRepository.getAll(), document.getElementById("testimonialsSection"), document.querySelector(".testimonials-grid"));
 }
 
 initPatrocinio();

@@ -26,3 +26,5 @@ const FOOTER_COLUMNS = [
     ],
   },
 ];
+
+const footerRepository = createRepository(FOOTER_COLUMNS);

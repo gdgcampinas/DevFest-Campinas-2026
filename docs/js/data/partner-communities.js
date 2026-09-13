@@ -6,3 +6,5 @@ const PARTNER_COMMUNITIES = [
   { name: "Comunidade Exemplo A", link: "https://example.com", imageUrl: placeholderImage("Comunidade A") },
   { name: "Comunidade Exemplo B", link: "https://example.com", imageUrl: placeholderImage("Comunidade B") },
 ];
+
+const partnerCommunitiesRepository = createRepository(PARTNER_COMMUNITIES);

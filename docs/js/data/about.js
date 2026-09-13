@@ -12,3 +12,5 @@ const ABOUT_SECTIONS = [
     body: "O GDG Campinas é parte de um programa do Google (Google Developer Group), uma entre mais de 700 comunidades espalhadas pelo mundo. O objetivo é criar espaços de compartilhamento de conhecimento sobre desenvolvimento de software, da forma mais acessível possível pra quem quer aprender e compartilhar.",
   },
 ];
+
+const aboutRepository = createRepository(ABOUT_SECTIONS);

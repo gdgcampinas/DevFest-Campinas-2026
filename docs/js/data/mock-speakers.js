@@ -21,3 +21,5 @@ const MOCK_SPEAKERS = [
   { name: "Noah Bryant", company: "GDG Campinas", photo: "https://i.pravatar.cc/300?img=19" },
   { name: "Grace Coleman", company: "GDG Campinas", photo: "https://i.pravatar.cc/300?img=41" },
 ];
+
+const mockSpeakersRepository = createRepository(MOCK_SPEAKERS);

@@ -11,3 +11,5 @@ const TEAM_PHOTOS = {
     { file: placeholderImage("Foto do time 2 — exemplo", 640, 420), alt: "Foto exemplo 2 do time" },
   ],
 };
+
+const teamPhotosRepository = createRepository(TEAM_PHOTOS);

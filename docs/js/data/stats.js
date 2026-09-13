@@ -12,3 +12,5 @@ const LAST_EDITION_STATS = {
     { value: "4", label: "trilhas", sub: "simultâneas" },
   ],
 };
+
+const statsRepository = createRepository(LAST_EDITION_STATS);

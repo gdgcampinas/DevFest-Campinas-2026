@@ -25,3 +25,7 @@ const TEAM = [
     ],
   },
 ];
+
+const teamRepository = createRepository(TEAM, {
+  getByType: type => TEAM.filter(person => person.type === type),
+});

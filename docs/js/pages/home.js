@@ -11,11 +11,11 @@ function initHome() {
   const modal = createTalkModal(document.getElementById("talkModal"), document.getElementById("talkModalContent"));
   initTalkDetails(document.body, { schedule: SCHEDULE, tracks: TRACKS, timezone: EVENT.timezone, reveal, modal });
 
-  renderStats(LAST_EDITION_STATS, document.getElementById("statsSection"), document.querySelector(".stats-grid"));
-  renderVideo(RECAP_VIDEO, document.getElementById("videoSection"), document.querySelector(".video-embed"));
-  initFeaturedSpeakers(MOCK_SPEAKERS, document.getElementById("featuredSpeakersSection"), document.querySelector(".featured-speakers-grid"), { count: 4, intervalMs: 15000 });
-  renderHighlights(HIGHLIGHTS, document.getElementById("highlightsSection"), document.querySelector(".highlights-grid"), modal);
-  renderAbout(ABOUT_SECTIONS, document.getElementById("aboutSection"));
+  renderStats(statsRepository.getAll(), document.getElementById("statsSection"), document.querySelector(".stats-grid"));
+  renderVideo(videoRepository.getAll(), document.getElementById("videoSection"), document.querySelector(".video-embed"));
+  initFeaturedSpeakers(mockSpeakersRepository.getAll(), document.getElementById("featuredSpeakersSection"), document.querySelector(".featured-speakers-grid"), { count: 4, intervalMs: 15000 });
+  renderHighlights(highlightsRepository.getAll(), document.getElementById("highlightsSection"), document.querySelector(".highlights-grid"), modal);
+  renderAbout(aboutRepository.getAll(), document.getElementById("aboutSection"));
   initMenuCarousel(document.getElementById("talkModal"));
 
   renderInfoCards(buildBeforeYouComeItems(TRACKS), document.getElementById("beforeYouCome"));
@@ -28,9 +28,9 @@ function initHome() {
   renderTracksOverview(TRACKS, document.getElementById("tracksOverviewSection"), document.querySelector(".tracks-overview-grid"));
 
   renderRealizacao(EVENT.hosts, document.querySelector(".realizacao-grid"));
-  renderTestimonials(TESTIMONIALS, document.getElementById("testimonialsSection"), document.querySelector(".testimonials-grid"));
-  renderSponsors(SPONSORS, document.getElementById("sponsorsSection"), document.querySelector(".sponsors-grid"));
-  renderPartnerCommunities(PARTNER_COMMUNITIES, document.getElementById("partnerCommunitiesSection"), document.querySelector(".partner-communities-grid"));
+  renderTestimonials(testimonialsRepository.getAll(), document.getElementById("testimonialsSection"), document.querySelector(".testimonials-grid"));
+  renderSponsors(sponsorsRepository.getAll(), document.getElementById("sponsorsSection"), document.querySelector(".sponsors-grid"));
+  renderPartnerCommunities(partnerCommunitiesRepository.getAll(), document.getElementById("partnerCommunitiesSection"), document.querySelector(".partner-communities-grid"));
   renderTickets(EVENT.tickets, document.getElementById("ticketsAction"));
   renderTicker(EVENT, SCHEDULE, document.getElementById("ticker"));
 

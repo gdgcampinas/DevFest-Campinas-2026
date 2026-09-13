@@ -17,3 +17,5 @@ const HIGHLIGHTS = {
     alt: `Foto ${i + 1} do DevFest Campinas 2025`,
   })),
 };
+
+const highlightsRepository = createRepository(HIGHLIGHTS);

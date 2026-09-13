@@ -16,3 +16,5 @@ const CODE_OF_CONDUCT = {
     // { name: "Nome do organizador", contact: "email ou telefone" },
   ],
 };
+
+const codRepository = createRepository(CODE_OF_CONDUCT);

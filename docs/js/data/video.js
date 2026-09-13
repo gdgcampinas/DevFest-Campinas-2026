@@ -7,3 +7,5 @@ const RECAP_VIDEO = {
   title: "Veja como foi o DevFest 2025",
   youtubeId: "qXGQG-G3Jw8",
 };
+
+const videoRepository = createRepository(RECAP_VIDEO);

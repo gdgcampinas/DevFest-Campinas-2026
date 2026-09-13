@@ -13,3 +13,7 @@ const SPONSORS = [
   { tier: "Intern", elements: [{ name: "Patrocinador Intern", link: "https://example.com", imageUrl: placeholderImage("Intern"), description: "Descrição de 1-2 linhas sobre o que a empresa faz — trocar pelo texto real do patrocinador." }] },
   { tier: "Apoio", elements: [{ name: "Apoiador", link: "https://example.com", imageUrl: placeholderImage("Apoio"), description: "Descrição de 1-2 linhas sobre o que a empresa faz — trocar pelo texto real do patrocinador." }] },
 ];
+
+const sponsorsRepository = createRepository(SPONSORS, {
+  getByTier: tier => SPONSORS.find(t => t.tier === tier),
+});
