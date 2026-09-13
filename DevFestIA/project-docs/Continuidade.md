@@ -4,9 +4,10 @@ Este projeto é documentado pra qualquer IA ou pessoa retomar o
 trabalho sem depender do histórico de uma conversa específica.
 
 - **[../CLAUDE.md](../CLAUDE.md)** / **[../AGENTS.md](../AGENTS.md)** —
-  ponteiro curto na raiz: o que ler primeiro, Diretiva Master.
-- **[../NEW_CHAT_PROMPT.md](../NEW_CHAT_PROMPT.md)** — bloco pronto
-  pra colar como primeira mensagem de um chat novo.
+  diretivas de IA (tudo relacionado a IA fica isolado em `DevFestIA/`):
+  o que ler primeiro, Diretiva Master.
+- **[../NEW_CHAT_PROMPT.md](../NEW_CHAT_PROMPT.md)** —
+  bloco pronto pra colar como primeira mensagem de um chat novo.
 - **[PROJECT_CONTEXT.md](PROJECT_CONTEXT.md)** — arquitetura
   permanente: stack, estrutura de arquivos, decisões de design que não
   mudam com o tempo (por que não tem CSS por trilha, por que
@@ -33,14 +34,27 @@ Se houver contradição (ex.: handoff diz "não commitado" mas já tem
 commits em `development`/`main`), sinalizar isso antes de agir, e dar
 mais peso ao git do que ao texto do handoff.
 
-Depois de terminar uma task:
+## Diretiva de Documentação Sempre Atualizada
+
+Documentação desatualizada é tratada como um bug, não como débito
+técnico aceitável. Regra obrigatória, não best-effort:
+
+Depois de terminar qualquer task:
 
 1. Validar impacto em `PROJECT_CONTEXT.md`, `handoff/HANDOFF_CURRENT.md`
-   e `README.md` — atualizar os que foram impactados.
-2. Atualizar o handoff sempre que houver mudança funcional,
-   arquitetural, decisão, pendência nova ou próximo passo relevante.
-   Evitar virar diário de ruído (não registrar detalhe pequeno demais).
-3. Se o handoff não for atualizado, explicar o motivo no resumo final.
+   e `README.md` (raiz do repo) — atualizar os que foram impactados,
+   **antes** de considerar a task concluída, não numa sessão futura.
+2. Mudança que altera arquitetura, estrutura de pastas, padrão de
+   código (ex.: `repository.js`), ou faz dado sair de mock pra real →
+   sempre reflete em `PROJECT_CONTEXT.md`.
+3. Mudança de estado, decisão tomada, pendência nova, risco ou próximo
+   passo → sempre reflete em `handoff/HANDOFF_CURRENT.md`. Evitar virar
+   diário de ruído (não registrar detalhe pequeno demais).
+4. Se algum doc ficar sem atualizar mesmo assim, explicar o motivo no
+   resumo final da sessão — nunca deixar em silêncio.
+5. Numa revisão geral (Renato pedindo "atualiza toda a documentação"):
+   reler o código real (`docs/js/**`) antes de reescrever os docs — não
+   confiar em versões antigas do próprio doc como fonte de verdade.
 
 Nunca commitar com assinatura de IA. Nunca mudar nada sem autorização
 explícita de quem está pedindo o trabalho.

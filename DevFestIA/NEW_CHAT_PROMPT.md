@@ -8,9 +8,9 @@ Cole o bloco abaixo como primeira mensagem do novo chat. Sem precisar adicionar 
 Você está entrando no repositório do site do DevFest Campinas 2026 (GDG Campinas).
 
 PASSO 1 — Leia o contexto (nesta ordem)
-1. project-docs/PROJECT_CONTEXT.md  ← arquitetura permanente, decisões de design
-2. handoff/HANDOFF_CURRENT.md       ← estado atual, pendências, próximos passos
-3. CLAUDE.md                        ← diretivas de comportamento
+1. DevFestIA/project-docs/PROJECT_CONTEXT.md  ← arquitetura permanente, decisões de design
+2. DevFestIA/handoff/HANDOFF_CURRENT.md       ← estado atual, pendências, próximos passos
+3. DevFestIA/CLAUDE.md                        ← diretivas de comportamento
 
 PASSO 2 — Valide o estado Git (o handoff pode estar desatualizado — o git não mente)
 git status --short --branch

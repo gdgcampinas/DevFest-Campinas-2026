@@ -7,11 +7,12 @@ grade completa, palestrantes, patrocínio, time e código de conduta.
 
 **[Ver site no ar →](https://gdgcampinas.github.io/DevFest-Campinas-2026/)**
 
-Leia primeiro (continuidade entre sessões):
-- [CLAUDE.md](CLAUDE.md) / [AGENTS.md](AGENTS.md) — diretivas de IA
-- [project-docs/PROJECT_CONTEXT.md](project-docs/PROJECT_CONTEXT.md) — arquitetura permanente
-- [handoff/HANDOFF_CURRENT.md](handoff/HANDOFF_CURRENT.md) — estado atual
-- [NEW_CHAT_PROMPT.md](NEW_CHAT_PROMPT.md) — prompt pra iniciar um chat novo
+Leia primeiro (continuidade entre sessões — tudo relacionado a IA fica
+isolado em [DevFestIA/](DevFestIA)):
+- [DevFestIA/CLAUDE.md](DevFestIA/CLAUDE.md) / [DevFestIA/AGENTS.md](DevFestIA/AGENTS.md) — diretivas de IA
+- [DevFestIA/project-docs/PROJECT_CONTEXT.md](DevFestIA/project-docs/PROJECT_CONTEXT.md) — arquitetura permanente
+- [DevFestIA/handoff/HANDOFF_CURRENT.md](DevFestIA/handoff/HANDOFF_CURRENT.md) — estado atual
+- [DevFestIA/NEW_CHAT_PROMPT.md](DevFestIA/NEW_CHAT_PROMPT.md) — prompt pra iniciar um chat novo
 
 ## Stack
 
@@ -21,41 +22,31 @@ GitHub Pages direto da pasta `docs/`.
 
 ## Arquitetura de pastas
 
+Visão resumida — lista completa de arquivos e responsabilidades em
+[DevFestIA/project-docs/PROJECT_CONTEXT.md](DevFestIA/project-docs/PROJECT_CONTEXT.md):
+
 ```
-docs/                       ← fonte do GitHub Pages (site em si)
-  index.html                  estrutura da página, sem lógica
+docs/                       ← fonte do GitHub Pages (site em si), 6 páginas
+  index.html, grade.html, palestrantes.html,
+  time.html, patrocinio.html, codigo-de-conduta.html
   css/styles.css               design tokens (oklch) + todo o visual
-  assets/icons/                 ícones/favicons
+  assets/icons/, assets/img/highlights/   favicons, fotos do evento
   js/
-    data/                        dados do evento (o que muda a cada edição)
-      schedule.js                  PROD — mock até a revelação do line-up
-      schedule.dev.js              DEV — dados reais, gitignored, só local
-      sponsors.js                  patrocinadores/parceiros por tier
-      team.js                      organizadores
-      cod.js                       texto do código de conduta
+    data/                        dados do evento — repository.js dá acesso padrão
     components/                  templates reusáveis (uma responsabilidade cada)
-      avatar.js                    foto ou iniciais — fallback automático
-      track-card.js                 card de palestra (agenda + hero) + modal de detalhe
-      info-card.js                  card genérico "antes de vir"
-      sponsor-card.js               logo de patrocinador por tier
-      person-card.js                 card de pessoa (time)
     features/                    liga dado + template + comportamento
-      agenda.js                    legenda, abas de filtro, agenda completa
-      live-status.js                calcula e renderiza o estado ao vivo
-      talk-modal.js                  modal genérico (palestra + galerias)
-      speakers.js                    galeria de palestrantes (extraída do schedule)
-      sponsors.js                    seção de patrocinadores
-      team.js                        seção de organizadores
-      cod.js                         seção de código de conduta
-      seo.js                         JSON-LD (schema.org/Event)
-    app.js                       bootstrap — liga tudo, overrides de URL
+    pages/                       um bootstrap por página (home.js, grade.js, ...)
+    app.js                       initShell() — header/nav/footer/SEO compartilhado
 
-project-docs/                ← documentação do projeto (não é o site)
-  PROJECT_CONTEXT.md            arquitetura permanente, decisões de design
-  Continuidade.md                como esses docs se relacionam
-
-handoff/
-  HANDOFF_CURRENT.md            estado atual, diário de bordo
+DevFestIA/                   ← tudo relacionado a continuidade de IA
+  CLAUDE.md                     diretivas de comportamento, Diretiva Master
+  AGENTS.md                     mesmo conteúdo do CLAUDE.md, pra outras ferramentas
+  NEW_CHAT_PROMPT.md            prompt pronto pra colar num chat novo
+  project-docs/                 documentação do projeto (não é o site)
+    PROJECT_CONTEXT.md            arquitetura permanente, decisões de design
+    Continuidade.md                como esses docs se relacionam
+  handoff/
+    HANDOFF_CURRENT.md            estado atual, diário de bordo
 
 .github/workflows/
   validate.yml                  CI: node --check em todo .js, todo push/PR
@@ -78,7 +69,7 @@ dado chegar — não precisam de HTML/CSS comentado esperando conteúdo.
 ## Dado sensível (line-up antes da revelação pública)
 
 `docs/js/data/schedule.dev.js` tem os dados reais e é **gitignored**
-— nunca é commitado antes da revelação. `index.html` tenta carregá-lo
+— nunca é commitado antes da revelação. Cada página tenta carregá-lo
 primeiro; se não existir (sempre o caso em produção), cai pra
 `schedule.js` (mock). Pra revelar de verdade: copiar o conteúdo de
 `schedule.dev.js` pra `schedule.js`, commit, push.
@@ -107,7 +98,7 @@ Overrides de URL:
 
 1. Editar
 2. `node --check` em todo `.js` alterado
-3. Bumpar `?v=N` nos `<link>`/`<script>` do `index.html` cujo arquivo mudou
+3. Bumpar `?v=N` nos `<link>`/`<script>` de toda página `.html` cujo arquivo referenciado mudou
 4. Testar local (`?demo=` nos pontos de transição, console sem erro)
 5. Commit (PT-BR, sem menção de IA) → push em `development`
 6. CI cuida do resto

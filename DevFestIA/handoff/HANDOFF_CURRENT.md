@@ -17,10 +17,9 @@ de 6 páginas com dado real parcial.
   (templates), `features/` (dado+template+comportamento), `pages/` (um
   bootstrap por página), `app.js` (`initShell()` compartilhado: header,
   nav, footer, SEO, overrides de URL).
-- Nova camada `docs/js/data/repository.js` (`createRepository()`) —
-  padrão de acesso a dado tipo DI-lite, usada pelos data files mais
-  recentes (stats, sponsors, patrocínio). Ainda não documentada em
-  `project-docs/PROJECT_CONTEXT.md`.
+- Camada `docs/js/data/repository.js` (`createRepository()`) — padrão
+  de acesso a dado tipo DI-lite, usada pelos data files mais recentes
+  (stats, sponsors, patrocínio). Documentada em `PROJECT_CONTEXT.md`.
 - Zero CSS por trilha mantido: cor/ícone/nível vêm de `TRACKS` em
   `schedule.js`, aplicados via `--track-color` inline.
 - Seções que dependem de dado ainda não confirmado somem sozinhas
@@ -36,9 +35,14 @@ de 6 páginas com dado real parcial.
   push/PR) + `promote.yml` (auto-merge `development` → `main` quando
   o Validate passa).
 - Estrutura de continuidade entre sessões alinhada ao padrão usado no
-  Tá de Graça: `CLAUDE.md`, `AGENTS.md`, `NEW_CHAT_PROMPT.md` na raiz;
-  `project-docs/Continuidade.md` com regra de cruzar handoff com git
-  log antes de confiar nele.
+  Tá de Graça, isolada em `DevFestIA/`: `CLAUDE.md`, `AGENTS.md`,
+  `NEW_CHAT_PROMPT.md`, `project-docs/` e `handoff/` (este arquivo)
+  moveram todos pra lá. `Continuidade.md` tem a regra de cruzar handoff
+  com git log antes de confiar nele.
+- `PROJECT_CONTEXT.md` revisado e reescrito (2026-09-13) pra refletir
+  a arquitetura real: 6 páginas, `pages/`, `site-nav.js`, `repository.js`,
+  lista completa de `data/`/`features/`. Diretiva de Documentação
+  Sempre Atualizada formalizada em `CLAUDE.md`/`AGENTS.md`/`Continuidade.md`.
 
 ## Not done yet / TBD
 
@@ -50,15 +54,10 @@ de 6 páginas com dado real parcial.
 - `PARKING_IMAGES` / `FOOD_IMAGES` (em `app.js`) — vazios, comentados;
   falta imagem/copy de estacionamento e comida.
 - Background/og-image — ainda gradiente puro, sem asset de foto.
-- `project-docs/PROJECT_CONTEXT.md` não reflete a arquitetura
-  multi-página nem o `repository.js` — desatualizado, precisa de
-  revisão (pendente autorização).
 
 ## Next steps
 
-1. Revisar `project-docs/PROJECT_CONTEXT.md` pra refletir a
-   arquitetura real (páginas, repository pattern).
-2. Preencher dado real conforme for confirmado: patrocinadores,
+1. Preencher dado real conforme for confirmado: patrocinadores,
    local/endereço, imagens de estacionamento/comida.
-3. Quando o line-up for revelado: copiar `schedule.dev.js` →
+2. Quando o line-up for revelado: copiar `schedule.dev.js` →
    `schedule.js`, commit, push (ver `PROJECT_CONTEXT.md`).
