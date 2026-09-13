@@ -1,11 +1,17 @@
 # DevFest Campinas 2026
 
-Site de agenda ao vivo do DevFest Campinas 2026 (GDG Campinas). Página
-única, estática, que muda de estado sozinha conforme o horário: antes
-do evento (contador regressivo), ao vivo agora (trilha por trilha) e
-encerrado.
+Site do DevFest Campinas 2026 (GDG Campinas): estático, sem build,
+com página inicial de agenda ao vivo (muda de estado sozinha conforme
+o horário — antes do evento, ao vivo agora, encerrado) e páginas de
+grade completa, palestrantes, patrocínio, time e código de conduta.
 
 **[Ver site no ar →](https://gdgcampinas.github.io/DevFest-Campinas-2026/)**
+
+Leia primeiro (continuidade entre sessões):
+- [CLAUDE.md](CLAUDE.md) / [AGENTS.md](AGENTS.md) — diretivas de IA
+- [project-docs/PROJECT_CONTEXT.md](project-docs/PROJECT_CONTEXT.md) — arquitetura permanente
+- [handoff/HANDOFF_CURRENT.md](handoff/HANDOFF_CURRENT.md) — estado atual
+- [NEW_CHAT_PROMPT.md](NEW_CHAT_PROMPT.md) — prompt pra iniciar um chat novo
 
 ## Stack
 
