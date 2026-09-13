@@ -1,6 +1,6 @@
 /**
- * Nav do site — 1 fonte só pras 5 páginas (Principal/Grade/
- * Palestrantes/Time/Código de Conduta). Cada página só chama
+ * Nav do site — 1 fonte só pras páginas (Principal/Grade/Palestrantes/
+ * Time/Patrocínio/Código de Conduta). Cada página só chama
  * renderSiteNav(seu-id, mountEl); trocar um link ou adicionar página
  * nova é editar só aqui, nunca precisa tocar HTML de cada página.
  */
@@ -9,6 +9,7 @@ const SITE_PAGES = [
   { id: "grade", label: "Grade", href: "grade.html" },
   { id: "palestrantes", label: "Palestrantes", href: "palestrantes.html" },
   { id: "time", label: "Time", href: "time.html" },
+  { id: "patrocinio", label: "Patrocínio", href: "patrocinio.html" },
   { id: "cod", label: "Código de Conduta", href: "codigo-de-conduta.html" },
 ];
 
