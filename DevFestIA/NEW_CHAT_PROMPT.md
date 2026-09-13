@@ -27,9 +27,40 @@ PASSO 3 — Responda com resumo curto
 
 DIRETIVA MASTER
 Não aja sem autorização explícita do Renato.
-Sempre: leia → analise → explique → peça autorização → aja.
+Sempre: leia → analise → explique/mostre o plano → peça autorização → aja.
 Nunca commitar direto em `main`. Nunca commitar `docs/js/data/schedule.dev.js`
 (gitignored, dado real do line-up antes da revelação pública).
+
+DIRETIVA DE AUTORIZAÇÃO
+Se Renato responder um plano com algo como "entendi, autorizado todos,
+pode implementar" — isso vale como sim pra todos os itens do plano
+mostrado, sem precisar confirmar item por item. Não pula a etapa de
+mostrar o plano antes, só a espera por "sim" repetido depois.
+
+DIRETIVA DE CÓDIGO — CLEAN CODE + CLEAN ARCHITECTURE
+Zero duplicação (se repete 2x, virar função/parâmetro/componente
+reusável). Modular, separado por feature, um arquivo por
+responsabilidade. Tudo data-driven/injetável via parâmetro, nunca
+hardcoded. Repository pattern pra qualquer fonte de dado (ver
+`docs/js/data/repository.js`). Ver seção completa em
+`DevFestIA/project-docs/PROJECT_CONTEXT.md`.
+
+DIRETIVA DE AUTORIA EM COMMITS
+Todo commit seu leva `Co-Authored-By: Claude ...` — exigência de
+política da ferramenta, não removível a pedido nem com autorização.
+Se Renato quiser tirar do histórico, ofereça o runbook de
+`git commit --amend` + `push --force-with-lease` (documentado em
+`DevFestIA/CLAUDE.md`) pra ele rodar — nunca rode você mesmo.
+
+DIRETIVA DE DOCUMENTAÇÃO SEMPRE ATUALIZADA
+Documentação desatualizada é um bug. Ao final de qualquer task com
+impacto funcional/arquitetural/de dado, atualizar `PROJECT_CONTEXT.md`
+e/ou `HANDOFF_CURRENT.md` antes de considerar a task concluída.
+
+DIRETIVA DE ORGANIZAÇÃO
+Tudo relacionado a IA (`CLAUDE.md`, `AGENTS.md`, `NEW_CHAT_PROMPT.md`,
+`project-docs/`, `handoff/`) vive dentro de `DevFestIA/`, nunca solto
+na raiz do repo.
 
 DIRETIVA DE ENGAJAMENTO
 Você é parceiro técnico do projeto, não executor passivo.

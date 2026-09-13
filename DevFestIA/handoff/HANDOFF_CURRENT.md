@@ -5,9 +5,11 @@
 ## Status
 
 Site publicado e em evolução ativa no branch `development` (sincronizado
-com `origin/development`, working tree limpo). Não é mais o scaffold de
-página única descrito em versões antigas deste arquivo — hoje é um site
-de 6 páginas com dado real parcial.
+com `origin/development`, working tree limpo, `main` idêntico). Não é
+mais o scaffold de página única descrito em versões antigas deste
+arquivo — hoje é um site de 6 páginas com dado real parcial. HEAD atual:
+`1a73386` ("Move project-docs and handoff into DevFestIA folder, review
+and refresh all documentation, add standing directives").
 
 ## Done
 
@@ -41,8 +43,24 @@ de 6 páginas com dado real parcial.
   com git log antes de confiar nele.
 - `PROJECT_CONTEXT.md` revisado e reescrito (2026-09-13) pra refletir
   a arquitetura real: 6 páginas, `pages/`, `site-nav.js`, `repository.js`,
-  lista completa de `data/`/`features/`. Diretiva de Documentação
-  Sempre Atualizada formalizada em `CLAUDE.md`/`AGENTS.md`/`Continuidade.md`.
+  lista completa de `data/`/`features/`. Seção "Diretiva de Código —
+  Clean Code + Clean Architecture" adicionada (zero duplicação, modular
+  por feature, data-driven/injetável via parâmetro, repository pattern
+  pra qualquer fonte de dado).
+- Diretivas formalizadas em `CLAUDE.md`/`AGENTS.md`: Documentação
+  Sempre Atualizada, Autorização (frase-gatilho "entendi, autorizado
+  todos, pode implementar" = sim pro plano inteiro apresentado, sem
+  pular a etapa de mostrar o plano), Organização (tudo de IA sempre em
+  `DevFestIA/`), Autoria em Commits (a IA sempre leva `Co-Authored-By`
+  por política da ferramenta, não removível a pedido — runbook de
+  amend + force-push documentado pro Renato rodar quando quiser tirar
+  do histórico público).
+- Histórico do repo (público) limpo de qualquer menção a
+  Claude/Anthropic — confirmado com `git log --all` em todos os
+  branches/commits (2026-09-13). Contributors do GitHub pode continuar
+  mostrando por um tempo — é cache assíncrono, não reflete git em
+  tempo real; se não sumir sozinho depois de alguns dias, só suporte
+  do GitHub resolve.
 
 ## Not done yet / TBD
 
