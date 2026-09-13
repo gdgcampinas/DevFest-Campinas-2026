@@ -1,0 +1,13 @@
+/**
+ * Feature: faixa animada (marquee) no topo — texto montado a partir
+ * de EVENT/SCHEDULE que já existem (eventDateLabel de agenda.js),
+ * nenhum nome/data duplicado num dado próprio só pra isso. CSS puro
+ * (@keyframes), sem lib de carrossel.
+ */
+function renderTicker(event, schedule, mountEl) {
+  const dateLabel = eventDateLabel(schedule, event.timezone);
+  const status = event.tickets?.status || "Em breve";
+  const text = `${event.name} ${event.date.slice(0, 4)} · ${dateLabel} · Ingressos: ${status}`;
+  const repeated = Array(6).fill(`<span>${text}</span>`).join("");
+  mountEl.innerHTML = `<div class="ticker-track">${repeated}</div>`;
+}

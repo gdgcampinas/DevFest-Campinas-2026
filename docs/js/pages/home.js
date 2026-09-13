@@ -25,11 +25,14 @@ function initHome() {
     galleryMarkup("Estacionamento", "Informações em breve.", PARKING_IMAGES));
   initClickableCard(document.querySelector('[data-item="food"]'), modal, () =>
     galleryMarkup("Cardápio", "Informações em breve.", FOOD_IMAGES));
+  renderTracksOverview(TRACKS, document.getElementById("tracksOverviewSection"), document.querySelector(".tracks-overview-grid"));
 
   renderRealizacao(EVENT.hosts, document.querySelector(".realizacao-grid"));
+  renderTestimonials(TESTIMONIALS, document.getElementById("testimonialsSection"), document.querySelector(".testimonials-grid"));
   renderSponsors(SPONSORS, document.getElementById("sponsorsSection"), document.querySelector(".sponsors-grid"));
   renderPartnerCommunities(PARTNER_COMMUNITIES, document.getElementById("partnerCommunitiesSection"), document.querySelector(".partner-communities-grid"));
   renderTickets(EVENT.tickets, document.getElementById("ticketsAction"));
+  renderTicker(EVENT, SCHEDULE, document.getElementById("ticker"));
 
   const liveStatus = createLiveStatus({
     schedule: SCHEDULE,

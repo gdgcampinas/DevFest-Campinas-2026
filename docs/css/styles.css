@@ -356,10 +356,10 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
 .realizacao-item img{height:36px;width:auto}
 .realizacao-item span{font:700 14px "Public Sans",sans-serif;color:oklch(88% 0.01 260)}
 
-/* comunidades parceiras — reusa .sponsor-logo */
+/* comunidades parceiras — reusa .sponsor-item (sem description = item simples) */
 .partner-communities{max-width:1180px;margin:36px auto 0;padding:0 24px}
 .partner-communities h2{margin:0 0 16px;font:700 22px "Manrope",sans-serif;color:oklch(95% 0.005 260)}
-.partner-communities-grid{display:flex;flex-wrap:wrap;align-items:center;gap:22px}
+.partner-communities-grid{display:flex;flex-wrap:wrap;align-items:flex-start;gap:22px}
 
 /* ingressos */
 .tickets{max-width:1180px;margin:36px auto 0;padding:0 24px}
@@ -457,15 +457,59 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
 .speaker-card-talk{margin-top:6px;font:600 12.5px "Public Sans",sans-serif;color:var(--muted);line-height:1.4}
 .speaker-card .social-icon{margin-top:10px}
 
+/* faixa animada (marquee) — texto de EVENT/SCHEDULE, CSS puro */
+.ticker{overflow:hidden;background:var(--live);border-bottom:1px solid var(--card-border)}
+.ticker-track{
+  display:flex;white-space:nowrap;width:max-content;
+  animation:ticker-scroll 32s linear infinite;
+}
+.ticker-track span{
+  padding:8px 28px;font:700 12px "Public Sans",sans-serif;letter-spacing:.5px;text-transform:uppercase;
+  color:oklch(15% 0.02 260);
+}
+@keyframes ticker-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion: reduce){.ticker-track{animation:none}}
+
+/* depoimentos de edições anteriores */
+.testimonials{max-width:1180px;margin:36px auto 0;padding:0 24px}
+.testimonials h2{margin:0 0 16px;font:700 22px "Manrope",sans-serif;color:oklch(95% 0.005 260)}
+.testimonials-grid{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:780px){.testimonials-grid{grid-template-columns:repeat(3,1fr)}}
+.testimonial{
+  background:linear-gradient(180deg,var(--card-a),var(--card-b));
+  border:1px solid var(--card-border);border-radius:var(--radius);padding:20px 18px;
+}
+.testimonial-quote{margin:0 0 12px;font:500 13.5px "Public Sans",sans-serif;color:var(--muted);line-height:1.6;font-style:italic}
+.testimonial-name{font:700 13px "Public Sans",sans-serif;color:var(--neon)}
+
 /* patrocinadores/parceiros — some por completo enquanto SPONSORS estiver vazio (ver sponsors.js) */
 .sponsors{max-width:1180px;margin:36px auto 0;padding:0 24px}
 .sponsors h2{margin:0 0 16px;font:700 22px "Manrope",sans-serif;color:oklch(95% 0.005 260)}
-.sponsors-grid{display:flex;flex-direction:column;gap:22px}
-.sponsor-tier-label{font:700 12px "Public Sans",sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
-.sponsor-logos{display:flex;flex-wrap:wrap;align-items:center;gap:22px}
-.sponsor-logo{display:flex;align-items:center;justify-content:center;height:56px}
-.sponsor-logo img{max-height:100%;max-width:160px;width:auto;filter:grayscale(.2);opacity:.92}
-.sponsor-logo:hover img{filter:none;opacity:1}
+.sponsors-grid{display:flex;flex-direction:column;gap:28px}
+.sponsor-tier-label{font:700 12px "Public Sans",sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+/* grid de cards quando o tier tem descrição; comunidades parceiras
+   usam .partner-communities-grid (flex, sem grid) pro mesmo .sponsor-item */
+.sponsor-logos{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+@media(min-width:640px){.sponsor-logos{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:900px){.sponsor-logos{grid-template-columns:repeat(4,1fr)}}
+
+.sponsor-item{
+  display:flex;flex-direction:column;gap:10px;text-decoration:none;
+  background:linear-gradient(180deg,var(--card-a),var(--card-b));
+  border:1px solid var(--card-border);border-radius:var(--radius);
+  padding:16px;transition:border-color .12s ease;
+}
+.sponsor-item:hover{border-color:var(--amber)}
+/* fundo branco pro logo — legível independente da cor/transparência do PNG/SVG do patrocinador */
+.sponsor-logo-box{
+  background:#fff;border-radius:10px;height:64px;
+  display:flex;align-items:center;justify-content:center;padding:8px 14px;
+}
+.sponsor-logo-box img{max-height:100%;max-width:100%;width:auto}
+.sponsor-name{font:700 13.5px "Public Sans",sans-serif;color:oklch(94% 0.006 260)}
+.sponsor-desc{margin:0;font:500 12px "Public Sans",sans-serif;color:var(--muted);line-height:1.5}
+/* comunidades parceiras: sem descrição, item vira só logo+nome flutuando lado a lado */
+.partner-communities-grid .sponsor-item{flex-direction:column;width:140px;border:0;background:none;padding:0}
 
 footer{max-width:1180px;margin:36px auto 0;padding:0 24px;display:flex;flex-direction:column;gap:18px}
 

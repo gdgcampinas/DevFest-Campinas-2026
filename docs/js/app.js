@@ -98,7 +98,7 @@ function renderWordmark(event, mountEl) {
 function renderHeaderMeta(event, schedule, mountEl) {
   const start = hourLabel(schedule[0].start, event.timezone);
   const end = hourLabel(schedule[schedule.length - 1].end, event.timezone);
-  const dateLabel = schedule[0].start.toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric", timeZone: event.timezone });
+  const dateLabel = eventDateLabel(schedule, event.timezone);
   const { directions } = googleMapsUrls(event.address);
   mountEl.innerHTML = `
     <span class="when">${dateLabel}</span>

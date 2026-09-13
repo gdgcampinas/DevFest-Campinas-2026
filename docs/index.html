@@ -15,9 +15,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;700;800&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/styles.css?v=10">
+<link rel="stylesheet" href="css/styles.css?v=11">
 </head>
 <body>
+
+<div class="ticker" id="ticker"></div>
 
 <div id="stickyStatus"><div class="row"><span class="pulse" id="stickyPulse"></span><span class="txt" id="stickyTxt"></span></div></div>
 
@@ -67,6 +69,11 @@
   <div class="venue-map-card" id="venueMap"></div>
 </section>
 
+<section class="tracks-overview" id="tracksOverviewSection" hidden>
+  <h2>Trilhas</h2>
+  <div class="tracks-overview-grid faq-grid"></div>
+</section>
+
 <section class="page-teasers">
   <a class="page-teaser" href="grade.html">
     <h3>Programação completa</h3>
@@ -81,6 +88,11 @@
 <section class="realizacao" id="realizacaoSection">
   <h2>Realização</h2>
   <div class="realizacao-grid"></div>
+</section>
+
+<section class="testimonials" id="testimonialsSection" hidden>
+  <h2>Histórias de quem viveu essa experiência</h2>
+  <div class="testimonials-grid"></div>
 </section>
 
 <section class="sponsors" id="sponsorsSection" hidden>
@@ -148,6 +160,7 @@
 <script src="js/data/team-photos.js?v=1"></script>
 <script src="js/data/cod.js?v=1"></script>
 <script src="js/data/footer.js?v=1"></script>
+<script src="js/data/testimonials.js?v=1"></script>
 <script src="js/components/site-nav.js?v=1"></script>
 <script src="js/components/avatar.js?v=1"></script>
 <script src="js/components/track-card.js?v=3"></script>
@@ -171,7 +184,10 @@
 <script src="js/features/tickets.js?v=1"></script>
 <script src="js/features/footer.js?v=1"></script>
 <script src="js/features/featured-speakers.js?v=1"></script>
-<script src="js/app.js?v=5"></script>
-<script src="js/pages/home.js?v=2"></script>
+<script src="js/features/tracks-overview.js?v=1"></script>
+<script src="js/features/testimonials.js?v=1"></script>
+<script src="js/features/ticker.js?v=1"></script>
+<script src="js/app.js?v=6"></script>
+<script src="js/pages/home.js?v=3"></script>
 </body>
 </html>

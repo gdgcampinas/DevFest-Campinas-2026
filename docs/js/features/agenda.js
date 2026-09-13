@@ -17,6 +17,11 @@ function timeRangeLabel(slot, timezone) {
   return `${formatEventTime(slot.start, timezone)} — ${formatEventTime(slot.end, timezone)}`;
 }
 
+/** "28 de novembro de 2026" — usado no header e no ticker (app.js/ticker.js), 1 lugar só. */
+function eventDateLabel(schedule, timezone) {
+  return schedule[0].start.toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric", timeZone: timezone });
+}
+
 function renderLegend(tracks, mountEl) {
   mountEl.innerHTML = tracks
     .map(track => {
