@@ -374,6 +374,11 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
 .faq-grid{display:grid;grid-template-columns:1fr;gap:12px}
 @media(min-width:780px){.faq-grid{grid-template-columns:repeat(var(--track-count,3),1fr)}}
 
+/* seção "Trilhas" — mesmo container/padding de todas as outras
+   seções da home; .faq-grid cuida do grid dos cards (reusado) */
+.tracks-overview{max-width:1180px;margin:36px auto 0;padding:0 24px}
+.tracks-overview h2{margin:0 0 16px;font:700 22px "Manrope",sans-serif;color:oklch(95% 0.005 260)}
+
 .faq-item{
   --track-color: var(--muted);
   position:relative;overflow:hidden;
