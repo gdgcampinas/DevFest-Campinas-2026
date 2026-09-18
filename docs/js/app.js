@@ -198,6 +198,8 @@ function initShell(activePageId) {
   renderHeaderMeta(EVENT, SCHEDULE, document.getElementById("headerMeta"));
   renderSiteNav(activePageId, document.getElementById("siteNav"));
   renderFooterColumns(FOOTER_COLUMNS, document.querySelector(".footer-columns"));
+  const tickerEl = document.getElementById("ticker");
+  if (tickerEl) renderTicker(EVENT, SCHEDULE, tickerEl);
   injectEventSchema(buildEventSchema(EVENT, SCHEDULE));
 
   document.documentElement.style.setProperty("--track-count", TRACKS.length);

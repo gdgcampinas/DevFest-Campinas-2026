@@ -32,7 +32,6 @@ function initHome() {
   renderSponsors(sponsorsRepository.getAll(), document.getElementById("sponsorsSection"), document.querySelector(".sponsors-grid"));
   renderPartnerCommunities(partnerCommunitiesRepository.getAll(), document.getElementById("partnerCommunitiesSection"), document.querySelector(".partner-communities-grid"));
   renderTickets(EVENT.tickets, document.getElementById("ticketsAction"));
-  renderTicker(EVENT, SCHEDULE, document.getElementById("ticker"));
 
   const liveStatus = createLiveStatus({
     schedule: SCHEDULE,
