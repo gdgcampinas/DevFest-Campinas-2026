@@ -151,7 +151,9 @@ const ICON_VENUE = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" 
  * nada aqui.
  */
 function buildBeforeYouComeItems(tracks) {
-  const [trackA, trackB, trackC] = tracks;
+  // 3º card usa a última trilha (mantém o acento coral do Local, independente do nº de trilhas)
+  const [trackA, trackB] = tracks;
+  const trackC = tracks[tracks.length - 1];
   const fallback = "var(--muted)";
   return [
     {

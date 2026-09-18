@@ -8,12 +8,13 @@
   --muted: oklch(65% 0.02 260);
   --muted-dim: oklch(45% 0.02 260);
   --radius: 14px;
-  --track-count: 3; /* setado dinamicamente via JS a partir de TRACKS.length */
+  --track-count: 4; /* setado dinamicamente via JS a partir de TRACKS.length */
 
   /* paleta base por trilha — usada pelos tokens `color` de cada trilha em schedule.js;
      ajustar aqui se o número/nome de trilhas mudar, nada mais no CSS depende disso */
   --ia: oklch(66% 0.16 260);
   --webdata: oklch(80% 0.16 85);
+  --mobile: oklch(72% 0.15 165);
   --mentoring: oklch(66% 0.19 27);
 
   /* acentos */
@@ -372,7 +373,8 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
 .faq-head h2{margin:0 0 4px;font:700 22px "Manrope",sans-serif;color:oklch(95% 0.005 260)}
 .faq-sub{margin:0;font:700 14px "Public Sans",sans-serif;color:var(--neon)}
 .faq-grid{display:grid;grid-template-columns:1fr;gap:12px}
-@media(min-width:780px){.faq-grid{grid-template-columns:repeat(var(--track-count,3),1fr)}}
+/* colunas pelo nº de cards (não pelo de trilhas): 3 cards → 3 colunas, 4 → 4 */
+@media(min-width:780px){.faq-grid{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}}
 
 /* seção "Trilhas" — mesmo container/padding de todas as outras
    seções da home; .faq-grid cuida do grid dos cards (reusado) */

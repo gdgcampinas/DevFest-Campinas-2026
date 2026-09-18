@@ -45,7 +45,9 @@ const TRACKS = [
     description: "Modelos, agentes e aplicações de inteligência artificial na prática — do fundamento ao que já roda em produção." },
   { id: "webdata", label: "Front-end / Back-end / Data", shortLabel: "Front/Back/Data", room: "Sala a definir", mc: "MC a definir", color: "var(--webdata)",
     description: "Arquitetura, engenharia de dados e desenvolvimento web — as bases que sustentam qualquer produto digital." },
-  { id: "mentoring", label: "Carreira em Tecnologia", shortLabel: "Carreira", room: "Sala a definir", mc: "MC a definir", color: "var(--mentoring)",
+  { id: "mobile", label: "Mobile / Agile", shortLabel: "Mobile/Agile", room: "Sala a definir", mc: "MC a definir", color: "var(--mobile)",
+    description: "Apps nativos e multiplataforma, e os métodos ágeis que fazem times entregarem rápido e com qualidade." },
+  { id: "mentoring", label: "Carreiras & Mentorias", shortLabel: "Carreiras", room: "Sala a definir", mc: "MC a definir", color: "var(--mentoring)",
     description: "Trajetórias, mentoria e como crescer na área — de quem já passou pelos mesmos desafios." },
 ];
 
@@ -53,27 +55,20 @@ function eventTime(hhmm) {
   return new Date(`${EVENT.date}T${hhmm}:00${EVENT.utcOffset}`);
 }
 
-// Mock — horários de placeholder, palestrantes vêm do pool
-// compartilhado MOCK_SPEAKERS (data/mock-speakers.js) até o line-up
-// real ser fechado — nenhum nome mock duplicado aqui.
-const SCHEDULE = [
-  { start: eventTime("08:00"), end: eventTime("08:30"), banner: "Credenciamento", room: "Recepção" },
-  { start: eventTime("08:30"), end: eventTime("08:50"), banner: "Abertura — GDG Campinas", room: "Auditório principal" },
-  { start: eventTime("09:00"), end: eventTime("09:35"), talks: {
-      ia: { speakers: [MOCK_SPEAKERS[0]], title: "Título a confirmar", description: "" },
-      webdata: { speakers: [MOCK_SPEAKERS[1]], title: "Título a confirmar", description: "" },
-      mentoring: { speakers: [MOCK_SPEAKERS[2]], title: "Título a confirmar", description: "" },
-  }},
-  { start: eventTime("09:40"), end: eventTime("10:15"), talks: {
-      ia: { speakers: [MOCK_SPEAKERS[3]], title: "Título a confirmar", description: "" },
-      webdata: { speakers: [MOCK_SPEAKERS[4]], title: "Título a confirmar", description: "" },
-      mentoring: { speakers: [MOCK_SPEAKERS[5]], title: "Título a confirmar", description: "" },
-  }},
-  { start: eventTime("10:20"), end: eventTime("10:55"), banner: "Pausa / Intervalo" },
-  { start: eventTime("11:00"), end: eventTime("11:35"), talks: {
-      ia: { speakers: [MOCK_SPEAKERS[6]], title: "Título a confirmar", description: "" },
-      webdata: { speakers: [MOCK_SPEAKERS[7]], title: "Título a confirmar", description: "" },
-      mentoring: { speakers: [MOCK_SPEAKERS[8]], title: "Título a confirmar", description: "" },
-  }},
-  { start: eventTime("17:30"), end: eventTime("18:00"), banner: "Encerramento", room: "Auditório principal" },
+/**
+ * Plano do dia — palestra = 40 min (com perguntas) + 5 min de troca,
+ * via talkWindows() de schedule-builder.js. Almoço 12:00-13:20 mais
+ * 10 min pra voltar pra sala. Talks mock rotacionam o pool
+ * MOCK_SPEAKERS até o line-up real ser fechado.
+ */
+const DAY_PLAN = [
+  { banner: "Credenciamento", room: "Recepção", start: "08:00", end: "08:30" },
+  { banner: "Abertura — GDG Campinas", room: "Auditório principal", start: "08:30", end: "08:55" },
+  { talks: talkWindows("09:00", 4) },
+  { banner: "Almoço", start: "12:00", end: "13:20" },
+  { banner: "Retorno para a sala", start: "13:20", end: "13:30" },
+  { talks: talkWindows("13:30", 5) },
+  { banner: "Encerramento", room: "Auditório principal", start: "17:15", end: "18:00" },
 ];
+
+const SCHEDULE = buildSchedule(DAY_PLAN, { eventTime, tracks: TRACKS, speakerPool: MOCK_SPEAKERS });
