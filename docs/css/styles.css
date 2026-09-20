@@ -560,6 +560,7 @@ a.featured-speaker:focus-visible{outline:2px solid var(--text);outline-offset:4p
 }
 .testimonial-quote{margin:0 0 12px;font:500 13.5px var(--font-body);color:var(--muted);line-height:1.6;font-style:italic}
 .testimonial-name{font:700 13px var(--font-body);color:var(--accent)}
+.testimonial-role{margin-top:2px;font:500 12px var(--font-body);color:var(--muted-dim)}
 
 /* patrocinadores/parceiros — some por completo enquanto SPONSORS estiver vazio (ver sponsors.js) */
 .sponsors{max-width:1180px;margin:36px auto 0;padding:0 24px}

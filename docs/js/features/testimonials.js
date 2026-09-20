@@ -4,6 +4,7 @@ function testimonialCardMarkup(testimonial) {
     <div class="testimonial">
       <p class="testimonial-quote">“${testimonial.quote}”</p>
       <div class="testimonial-name">${testimonial.name}</div>
+      ${testimonial.role ? `<div class="testimonial-role">${testimonial.role}</div>` : ""}
     </div>`;
 }
 

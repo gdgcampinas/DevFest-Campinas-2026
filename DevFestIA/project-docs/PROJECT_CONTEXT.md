@@ -49,8 +49,10 @@ docs/
       favorites.js              favoritesRepository + talkKey(slot, trackId)
       icons.js                  ICONS (svg paths by name) + iconsRepository.get(); also the per-track icons (`TRACKS[].icon`)
       talk-formats.js           TALK_FORMATS (palestra/workshop/painel/bate-papo) + getById()
-      mock-avatar.js            mockAvatar(seed): deterministic diverse SVG avatar (no real faces)
-      mock-speakers.js          38 mock speakers (id, name, cargo, avatar, LinkedIn) + getById (loads before schedule)
+      mock-links.js             MOCK_LINKEDIN_URL / MOCK_FACEBOOK_URL / MOCK_SPONSOR_URL (one place for all mock links)
+      mock-photo.js             mockPhoto(id): hand-picked stock portraits (pravatar.cc) by number
+      mock-logo.js              mockLogo({name, shape, color}): fictional company logo as inline SVG
+      mock-speakers.js          38 mock speakers (id, name, cargo, photo, LinkedIn) + getById (loads before schedule)
       mock-talks.js             36 mock talks (9 per track, by position) linked to speakers by speakerIds
       schedule-builder.js        talkWindows/buildSchedule/catalogTalks (loads before schedule)
       schedule.js               PROD: EVENT, TRACKS, DAY_PLAN → SCHEDULE (mock until reveal)
@@ -128,8 +130,8 @@ talks live once in `data/schedule-builder.js`:
   17:15 to 18:00 Encerramento (9 slots × 4 tracks).
 - Changing hours or slot count = editing `DAY_PLAN`. `schedule.dev.js`
   must mirror it (edit both).
-- Load order in every page: `repository.js`, `mock-avatar.js`, `mock-speakers.js`,
-  `mock-talks.js`, `schedule-builder.js`, then `schedule.dev.js`/`schedule.js`.
+- Load order in every page: `repository.js`, `mock-links.js`, `mock-photo.js`,
+  `mock-logo.js`, `mock-speakers.js`, `mock-talks.js`, `schedule-builder.js`, then `schedule.dev.js`/`schedule.js`.
 
 ## Design tokens (colors and fonts)
 
@@ -192,7 +194,7 @@ Each entry in `TRACKS` (schedule.js/.dev.js) has `icon`, a name from `data/icons
 
 - One source of people (`mock-speakers.js`, later the real line-up) and one catalog of talks (`mock-talks.js`). A talk references people only by `speakerIds`; `buildSchedule(plan, { speakerPool, talkCatalog })` resolves them into the same speaker objects (no copies) and warns in the console on an unknown id.
 - Everything else derives from `SCHEDULE`: `extractSpeakers()` (features/speakers.js) builds the Palestrantes gallery AND the home "Destaques" pool, dedup by `id`, listing every talk of each person.
-- Navigation both ways: speaker card -> talk (same modal as Grade, via `[data-slot-index][data-track]`), talk modal -> speaker profile (`palestrantes.html#speaker-<id>`, highlighted and scrolled on arrival), Destaques -> profile. LinkedIn appears on the talk card, the modal, the gallery card (mock URL: `MOCK_LINKEDIN_URL`, one place).
+- Navigation both ways: speaker card -> talk (same modal as Grade, via `[data-slot-index][data-track]`), talk modal -> speaker profile (`palestrantes.html#speaker-<id>`, highlighted and scrolled on arrival), Destaques -> profile. LinkedIn appears on the talk card, the modal, the gallery card (mock URL: `MOCK_LINKEDIN_URL` in `mock-links.js`, one place).
 - Favorites (`Minha agenda`) work in Grade, home hero, modal, and Palestrantes.
 - The line-up is public (`EVENT.lineupRevealed = true`) with mock data, by decision of the organizers. Real line-up = replace the catalog/speakers with same-shape data (photo, real LinkedIn).
 
@@ -202,6 +204,10 @@ Each entry in `TRACKS` (schedule.js/.dev.js) has `icon`, a name from `data/icons
 (`SITE_PAGES`). Every page calls `renderSiteNav(activePageId, mountEl)`
 once from `initShell()`. Adding, renaming, or reordering a page is a
 one-line change there — never edit nav HTML per page.
+
+## Mock content (until real data arrives)
+
+All mock people, companies and links are fictional and live in `data/`: speakers and talks (see "Line-up model"), team (`team.js`, 6 organizers and 8 volunteers with Brazilian names), sponsors (`sponsors.js`, 5 tiers, 12 fictional companies with generated logos), partner communities (4), testimonials (3, with optional `role`), team photos (reuse 2025 event photos through `highlightPhoto()`). Person photos come from `mockPhoto()` (external stock service, hand-picked numbers; do not add numbers without looking at the image), logos from `mockLogo()`. Replacing mock with real = same shapes, real `photo`/`imageUrl`/`link`.
 
 ## Sponsors section
 

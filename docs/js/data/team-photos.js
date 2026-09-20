@@ -1,15 +1,13 @@
 /**
- * Fotos do time em ação — MOCK até termos fotos reais. Mesmo formato
- * de HIGHLIGHTS (data/highlights.js); reusa a mesma feature de galeria
+ * Fotos do time em ação — MOCK: reaproveita fotos reais da última
+ * edição (highlightPhoto, data/highlights.js) até termos as do time.
+ * Mesmo formato de HIGHLIGHTS; reusa a mesma feature de galeria
  * (renderHighlights), só com dado diferente — sem duplicar código de
- * grid/modal.
+ * grid/modal. Precisa carregar depois de highlights.js.
  */
 const TEAM_PHOTOS = {
   title: "Fotos",
-  photos: [
-    { file: placeholderImage("Foto do time 1 — exemplo", 640, 420), alt: "Foto exemplo 1 do time" },
-    { file: placeholderImage("Foto do time 2 — exemplo", 640, 420), alt: "Foto exemplo 2 do time" },
-  ],
+  photos: [3, 6, 9, 12, 15, 16].map(highlightPhoto),
 };
 
 const teamPhotosRepository = createRepository(TEAM_PHOTOS);

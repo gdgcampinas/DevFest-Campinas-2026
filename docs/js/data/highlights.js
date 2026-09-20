@@ -10,12 +10,17 @@
  */
 const HIGHLIGHTS_VERSION = 2;
 
+/** Foto de número `number` (1..16) da última edição — único lugar que sabe o caminho e o ?v=. */
+function highlightPhoto(number) {
+  return {
+    file: `assets/img/highlights/devfest-2025-${String(number).padStart(2, "0")}.jpg?v=${HIGHLIGHTS_VERSION}`,
+    alt: `Foto ${number} do DevFest Campinas 2025`,
+  };
+}
+
 const HIGHLIGHTS = {
   title: "Veja como foi o DevFest 2025",
-  photos: Array.from({ length: 16 }, (_, i) => ({
-    file: `assets/img/highlights/devfest-2025-${String(i + 1).padStart(2, "0")}.jpg?v=${HIGHLIGHTS_VERSION}`,
-    alt: `Foto ${i + 1} do DevFest Campinas 2025`,
-  })),
+  photos: Array.from({ length: 16 }, (_, i) => highlightPhoto(i + 1)),
 };
 
 const highlightsRepository = createRepository(HIGHLIGHTS);

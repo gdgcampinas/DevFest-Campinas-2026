@@ -101,6 +101,13 @@ de confiar neste texto.
 - Testado: 36 talks x 4 trilhas com título/formato/tags/descrição, ninguém em duas trilhas no mesmo slot, 38 avatares distintos, links e hash, estados ao vivo (09:20, 10:27, 12:30, 17:30, 18:30), produção sem `schedule.dev.js`, mobile.
 - Pendente: trocar o mock pelo line-up real quando existir (mesmo formato); filtro por trilha na página Palestrantes (38 cards); nomes de sala por bairro (em discussão).
 
+## Sessão 2g (2026-09-20): fotos de pessoas de volta e mock de time/patrocínio
+
+- Renato preferiu fotos de pessoas às ilustrações: `mock-avatar.js` saiu; `mock-photo.js` usa retratos do pravatar.cc por número, escolhidos à mão (só adequados, coerentes com o nome; a foto sensual e as caretas do pool antigo ficaram de fora).
+- Mock brasileiro completo: Time (6 organizadores e 8 voluntários com fotos e redes), Fotos do time (fotos reais de 2025), Patrocinadores (5 tiers, 12 empresas fictícias com logo SVG gerado), Comunidades parceiras (4), Depoimentos (3, com cargo opcional). "Marcas que já apoiam" na página Patrocínio usa o mesmo `sponsorsRepository`.
+- Novos: `data/mock-links.js`, `data/mock-photo.js`, `data/mock-logo.js`; `highlightPhoto()` em `highlights.js`.
+- Atenção: pravatar.cc é serviço externo; se cair, as fotos caem para iniciais (avatarMarkup). Trocar por fotos reais quando existirem.
+
 ## Decisão pendente do Renato (plenárias)
 
 Mockups v2 (desenho aprovado visualmente, pelo Renato: faixa larga, avatar 104 px com anel multi-cor, selo "Plenária") ficaram só no scratchpad. Variantes: A 3 plenárias (28 talks), B só 17:15 (36 talks, custo zero, recomendada), C só 13:30 (32 talks). Renato disse que segue com a plenária depois da agenda.
