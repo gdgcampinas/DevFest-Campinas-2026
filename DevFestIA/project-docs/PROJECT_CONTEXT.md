@@ -73,6 +73,8 @@ docs/
     components/              reusable templates, one responsibility each
       avatar.js                 photo or initials — automatic fallback
       icon.js                    iconMarkup(name) — only svg template
+      calendar-links.js          "Adicionar ao calendário" buttons of the talk modal
+      agenda-actions.js          Minha agenda action bar markup (export, WhatsApp, copy link)
       speaker-link.js            speakerAnchorId/speakerProfileHref: how a speaker links to palestrantes.html#speaker-<id>
       favorite-button.js         favoriteButtonMarkup() — star, used in card/hero/modal
       talk-meta.js               talkTagsMarkup/talkAvatarsMarkup/talkLinksMarkup (format+tags, avatars, LinkedIn)
@@ -82,7 +84,7 @@ docs/
       sponsor-card.js               sponsor/community item (logo box + name + optional description)
       person-card.js                 person card (team/speakers)
     features/                data + template + behavior, one section each
-      agenda.js, track-filter.js, a11y.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
+      agenda.js, track-filter.js, a11y.js, calendar.js, talk-index.js, calendar-actions.js, agenda-share.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
       featured-speakers.js, sponsors.js, partner-communities.js,
       team.js, cod.js, seo.js, stats.js, about.js, highlights.js,
       video.js, realizacao.js, tickets.js, footer.js,
@@ -214,6 +216,13 @@ one-line change there — never edit nav HTML per page.
 ## Mock content (until real data arrives)
 
 All mock people, companies and links are fictional and live in `data/`: speakers and talks (see "Line-up model"), team (`team.js`, 6 organizers and 8 volunteers with Brazilian names; the Time page has no photo gallery), sponsors (`sponsors.js`, 5 tiers, 12 fictional companies with generated logos), partner communities (4), testimonials (3, with optional `role`). Person photos come from `mockPhoto()` (external stock service, hand-picked numbers; do not add numbers without looking at the image), logos from `mockLogo()`. Replacing mock with real = same shapes, real `photo`/`imageUrl`/`link`.
+
+## Calendar and sharing
+
+- `features/calendar.js` is pure: one entry shape `{ uid, title, start, end, location, details, url }` feeds the Google Agenda link and the `.ics` (RFC 5545: CRLF, escapes, 75-octet folding, UTC times, 10 min alarm). `eventLocationLabel()` only includes the venue when `EVENT.venueConfirmed` is true.
+- `features/talk-index.js` maps talkKey and a short share code (`0945.ia` = start time + track id) to schedule entries, and turns a talk into a calendar entry.
+- `features/calendar-actions.js` (delegated click): per-talk `.ics` from the modal, and "Exportar (.ics)" for the whole Minha agenda. It returns the `{ index, event, siteUrl }` context that `initTalkDetails` and the share feature reuse.
+- Sharing has no backend: `?agenda=0900.ia,1030.webdata` on the Grade. The owner gets a bar (export, WhatsApp, copy link); whoever opens the link sees a banner and can save all of it to their own agenda (`favoritesRepository.addAll`). Unknown codes are ignored.
 
 ## Accessibility rules (keep them)
 

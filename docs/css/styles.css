@@ -1,4 +1,6 @@
 *{box-sizing:border-box}
+/* [hidden] vence qualquer display definido em componente (senão .status-pill e afins aparecem vazios) */
+[hidden]{display:none !important}
 /* foco de teclado visível em qualquer elemento interativo (uma regra só) */
 :focus-visible{outline:2px solid var(--text);outline-offset:2px}
 .skip-link{
@@ -330,6 +332,32 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
 .fav-count{min-width:20px;padding:0 6px;border-radius:100px;text-align:center;font-size:12px;background:rgba(255,255,255,.08)}
 .fav-toggle.active .fav-count{background:rgba(0,0,0,.14)}
 .agenda-empty{margin:0 0 12px;padding:18px 20px;border:1px dashed var(--card-border);border-radius:var(--radius);color:var(--muted);font-size:14px;text-align:center}
+/* barra de ações e aviso de agenda compartilhada */
+.agenda-actions,.shared-banner{
+  display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px;margin:0 0 14px;padding:10px 14px;
+  border:1px solid var(--card-border);border-radius:var(--radius);background:rgba(255,255,255,.03);
+  font:600 13px var(--font-body);color:var(--text);
+}
+.shared-banner{border-color:color-mix(in oklch, var(--accent) 45%, var(--card-border));background:color-mix(in oklch, var(--accent) 8%, transparent)}
+.agenda-actions-count{margin-right:auto;color:var(--muted)}
+.chip-btn{
+  display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:100px;cursor:pointer;text-decoration:none;
+  font:700 12px var(--font-body);color:var(--text);background:rgba(255,255,255,.05);border:1px solid var(--card-border);transition:.15s;
+}
+.chip-btn:hover{border-color:var(--text)}
+.chip-btn .icon{width:14px;height:14px}
+.chip-btn--primary{background:var(--accent);border-color:var(--accent);color:oklch(14% 0.01 260)}
+.chip-btn--primary:hover{border-color:var(--accent);box-shadow:0 4px 14px color-mix(in oklch, var(--accent) 35%, transparent)}
+/* adicionar ao calendário no modal da palestra */
+.cal-links{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:14px 0 4px}
+.cal-label{display:inline-flex;align-items:center;gap:6px;font:600 12px var(--font-body);color:var(--muted)}
+.cal-label .icon{width:14px;height:14px}
+.cal-link{
+  padding:5px 12px;border-radius:100px;cursor:pointer;text-decoration:none;font:700 12px var(--font-body);
+  color:var(--track-color, var(--text));background:color-mix(in oklch, var(--track-color, var(--text)) 10%, transparent);
+  border:1px solid color-mix(in oklch, var(--track-color, var(--text)) 40%, transparent);
+}
+.cal-link:hover{background:color-mix(in oklch, var(--track-color, var(--text)) 20%, transparent)}
 .favs-only .slot.no-fav{display:none}
 .favs-only .talks[data-view="all"]{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
 /* maior que .talks[data-view]:not(...) .talk.shown — favoritos-only vence o filtro de trilha */

@@ -50,6 +50,14 @@ function createPersistedSetRepository({ storageKey, storage = browserStorage() }
       listeners.forEach(listener => listener());
       return items.has(key);
     },
+    /** Adiciona várias chaves de uma vez (uma única gravação e um único aviso). Devolve quantas eram novas. */
+    addAll(keys) {
+      const before = items.size;
+      keys.forEach(key => items.add(key));
+      write();
+      listeners.forEach(listener => listener());
+      return items.size - before;
+    },
     /** Retorna a função que cancela a inscrição. */
     subscribe(listener) {
       listeners.add(listener);

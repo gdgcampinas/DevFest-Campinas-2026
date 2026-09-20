@@ -61,22 +61,14 @@ function googleMapsUrls(address) {
   };
 }
 
-/** yyyymmddThhmmssZ — formato exigido pelo link de adicionar ao Google Calendar. */
-function toGCalStamp(date) {
-  return date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
-}
-
 function googleCalendarUrl(event, schedule) {
-  const start = schedule[0].start;
-  const end = schedule[schedule.length - 1].end;
-  const params = new URLSearchParams({
-    action: "TEMPLATE",
-    text: event.name,
-    dates: `${toGCalStamp(start)}/${toGCalStamp(end)}`,
-    location: `${event.venue}, ${event.address}`,
+  return googleCalendarLink({
+    title: event.name,
+    start: schedule[0].start,
+    end: schedule[schedule.length - 1].end,
+    location: eventLocationLabel(event),
     details: `Agenda ao vivo: ${location.href}`,
   });
-  return `https://calendar.google.com/calendar/render?${params}`;
 }
 
 /**

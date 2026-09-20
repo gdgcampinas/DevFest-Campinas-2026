@@ -13,6 +13,7 @@ const EVENT = {
   timezone: "America/Sao_Paulo",
   utcOffset: "-03:00",
   venue: "Local a definir",
+  venueConfirmed: false, // false = calendário/agenda usam só o endereço (cidade) em vez do nome do local
   address: "Campinas, SP",
   lineupRevealed: true,
   // 1..N coanfitriões/patrocinadores exibidos no header, nessa ordem.

@@ -85,7 +85,7 @@ function speakerMetaLine(speaker) {
   return [speaker.title, speaker.company].filter(Boolean).join(" · ");
 }
 
-function talkDetailMarkup(track, data, { reveal = true, timeRange = "", room = "", talkKey = "", favorite = false } = {}) {
+function talkDetailMarkup(track, data, { reveal = true, timeRange = "", room = "", talkKey = "", favorite = false, calendarHtml = "" } = {}) {
   const speakers = reveal ? speakerList(data) : [];
   const title = reveal ? data.title : "Palestra a confirmar";
   const description = reveal && data.description ? data.description : "";
@@ -120,6 +120,7 @@ function talkDetailMarkup(track, data, { reveal = true, timeRange = "", room = "
       ${reveal ? talkTagsMarkup(data) : ""}
       ${description ? `<p class="detail-desc">${description}</p>` : ""}
       ${metaItems ? `<div class="detail-meta">${metaItems}</div>` : ""}
+      ${reveal ? calendarHtml : ""}
       ${speakerLine}
     </div>`;
 }

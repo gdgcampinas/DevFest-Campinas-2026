@@ -9,7 +9,8 @@ function initHome() {
   initStickyStatus(document.getElementById("hero"), document.getElementById("stickyStatus"));
 
   const modal = createTalkModal(document.getElementById("talkModal"), document.getElementById("talkModalContent"));
-  initTalkDetails(document.body, { schedule: SCHEDULE, tracks: TRACKS, timezone: EVENT.timezone, reveal, modal, favorites: favoritesRepository });
+  const calendar = initCalendarActions(document.body, { schedule: SCHEDULE, tracks: TRACKS, event: EVENT, favorites: favoritesRepository });
+  initTalkDetails(document.body, { schedule: SCHEDULE, tracks: TRACKS, timezone: EVENT.timezone, reveal, modal, favorites: favoritesRepository, calendar });
   initFavorites(document.body, favoritesRepository);
 
   renderStats(statsRepository.getAll(), document.getElementById("statsSection"), document.querySelector(".stats-grid"));
