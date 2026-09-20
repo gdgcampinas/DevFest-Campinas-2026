@@ -197,6 +197,8 @@ function initShell(activePageId) {
 
   initTicketCta(EVENT.tickets, { headerTopEl: document.querySelector(".header-top"), sectionEl: document.getElementById("ticketsSection") });
 
+  initPwa();
+
   document.documentElement.style.setProperty("--track-count", TRACKS.length);
 
   return reveal;

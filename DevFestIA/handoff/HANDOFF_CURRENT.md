@@ -142,6 +142,8 @@ Ordem: 1 ingressos e CTA, 2 acessibilidade, 3 calendário e compartilhar agenda,
 
 - **5. Fontes locais (feito):** Google Sans variável (OFL) hospedada em `docs/assets/fonts/` (36 KB, com `OFL.txt`), `css/fonts.css`, preload nas 6 páginas, zero chamadas ao Google Fonts (privacidade/LGPD, desempenho e offline). **O Google Sans Text saiu**: não está no repositório aberto do Google Fonts (licença de hospedagem não confirmada); o corpo do texto usa Google Sans. Só o subconjunto latino (cobre português).
 
+- **6. PWA offline (feito):** manifest, ícones 192/512, `sw.js` sem lista manual de arquivos (precache derivado das páginas), `?nosw=1` como botão de emergência, aviso "sem internet", botão "Instalar app". Testado em Chrome real (registro, precache de ~90 arquivos, home/grade/palestrantes e `?agenda=` funcionando com o servidor desligado, cenário de produção sem `schedule.dev.js`, kill switch). O painel do app não roda service worker. CI agora checa `docs/sw.js` e o manifesto. Limitação: cache de arquivos versionados antigos só é limpo ao trocar `SW_VERSION`.
+
 ## Decisão pendente do Renato (plenárias)
 
 Mockups v2 (desenho aprovado visualmente, pelo Renato: faixa larga, avatar 104 px com anel multi-cor, selo "Plenária") ficaram só no scratchpad. Variantes: A 3 plenárias (28 talks), B só 17:15 (36 talks, custo zero, recomendada), C só 13:30 (32 talks). Renato disse que segue com a plenária depois da agenda.

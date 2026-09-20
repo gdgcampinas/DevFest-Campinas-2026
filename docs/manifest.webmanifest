@@ -1,0 +1,20 @@
+{
+  "name": "DevFest Campinas 2026",
+  "short_name": "DevFest Campinas",
+  "description": "Programação, palestrantes e sua agenda do DevFest Campinas 2026, funcionando até sem internet.",
+  "lang": "pt-BR",
+  "start_url": "index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#05060a",
+  "theme_color": "#05060a",
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Grade completa", "short_name": "Grade", "url": "grade.html" },
+    { "name": "Palestrantes", "url": "palestrantes.html" }
+  ]
+}

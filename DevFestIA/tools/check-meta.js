@@ -1,6 +1,6 @@
 /**
  * Confere a coerência dos metadados de compartilhamento (OG, Twitter,
- * canonical), do sitemap, do robots e da imagem. Roda no CI:
+ * canonical), do sitemap, do robots, da imagem e da PWA (manifesto, ícones, sw.js). Roda no CI:
  *   node DevFestIA/tools/check-meta.js
  * As tags ficam estáticas em cada .html (robôs sociais não executam
  * JavaScript), então este script é a rede de segurança contra uma
@@ -58,8 +58,24 @@ pages.forEach(file => {
 const robots = fs.existsSync(path.join(docs, "robots.txt")) ? fs.readFileSync(path.join(docs, "robots.txt"), "utf8") : "";
 if (!robots.includes(`Sitemap: ${baseUrl}sitemap.xml`)) fail("robots.txt sem a linha Sitemap");
 
+// PWA: manifesto linkado em toda página, ícones existentes, service worker presente
+const manifestPath = path.join(docs, "manifest.webmanifest");
+if (!fs.existsSync(manifestPath)) {
+  fail("manifest.webmanifest não existe");
+} else {
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  if (!manifest.name || !manifest.start_url) fail("manifesto sem name/start_url");
+  if (!fs.existsSync(path.join(docs, manifest.start_url))) fail(`start_url ${manifest.start_url} não existe`);
+  (manifest.icons || []).forEach(icon => { if (!fs.existsSync(path.join(docs, icon.src))) fail(`ícone ${icon.src} não existe`); });
+  if (!(manifest.icons || []).some(icon => icon.sizes === "192x192") || !(manifest.icons || []).some(icon => icon.sizes === "512x512")) fail("manifesto precisa de ícones 192x192 e 512x512");
+}
+if (!fs.existsSync(path.join(docs, "sw.js"))) fail("sw.js não existe");
+pages.forEach(file => {
+  if (!fs.readFileSync(path.join(docs, file), "utf8").includes('<link rel="manifest" href="manifest.webmanifest">')) fail(`${file}: falta o link do manifesto`);
+});
+
 if (errors.length) {
   console.error(errors.map(e => `FAIL: ${e}`).join("\n"));
   process.exit(1);
 }
-console.log(`OK: metadados de ${pages.length} páginas, sitemap, robots e imagem coerentes`);
+console.log(`OK: metadados de ${pages.length} páginas, sitemap, robots, imagem e PWA coerentes`);

@@ -1,0 +1,16 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><!--
+  Fonte do ícone do app (docs/assets/icons/icon-512.png, 512x512, "any maskable":
+  logo dentro da zona segura de 60%). Regerar quando o logo novo chegar:
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --hide-scrollbars \
+      --window-size=512,512 --screenshot=docs/assets/icons/icon-512.png file://$PWD/DevFestIA/design/app-icon.html
+    sips -z 192 192 docs/assets/icons/icon-512.png --out docs/assets/icons/icon-192.png
+-->
+<style>
+  *{margin:0}html,body{width:512px;height:512px;overflow:hidden}
+  body{display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(80% 80% at 100% 0%, rgba(66,133,244,.45), transparent 60%),
+               radial-gradient(70% 70% at 0% 100%, rgba(52,168,83,.28), transparent 60%), #05060a}
+  img{width:60%;height:60%}
+</style></head>
+<body><img src="../../docs/assets/icons/gdg-icon.png" alt=""></body></html>

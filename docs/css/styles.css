@@ -484,6 +484,12 @@ a.featured-speaker:focus-visible{outline:2px solid var(--text);outline-offset:4p
 .tickets-note{margin:14px 0 0;font:500 12px var(--font-body);color:var(--muted)}
 .tickets-note:empty{display:none}
 
+/* aviso de "sem internet" (features/pwa.js) */
+.offline-bar{
+  position:fixed;left:0;right:0;top:0;z-index:250;padding:8px 14px;text-align:center;
+  font:700 13px var(--font-body);color:oklch(14% 0.01 260);background:var(--amber);
+}
+
 /* CTA de inscrição — cabeçalho, barra fixa no mobile, hero e cards (features/tickets.js) */
 .cta{
   display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border-radius:100px;
