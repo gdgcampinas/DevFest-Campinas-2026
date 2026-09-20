@@ -48,7 +48,7 @@ function warnIfDemoMode() {
   banner.textContent = valid
     ? "⚠️ MODO TESTE — data simulada, não é o horário real do evento"
     : `⚠️ ?demo="${demo}" inválido — mostrando horário real. Formato: AAAA-MM-DDTHH:MM`;
-  banner.style.cssText = "background:#ea4335;color:#fff;text-align:center;font-size:.75rem;font-weight:700;padding:6px;position:sticky;top:0;z-index:100";
+  banner.style.cssText = "background:var(--google-red);color:#fff;text-align:center;font-size:.75rem;font-weight:700;padding:6px;position:sticky;top:0;z-index:100";
   document.body.prepend(banner);
 }
 

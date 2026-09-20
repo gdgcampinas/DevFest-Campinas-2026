@@ -74,6 +74,12 @@ de confiar neste texto.
 - Limitações conhecidas: favorito não sincroniza entre abas abertas ao mesmo tempo; chave usa horário do slot, então mudar horário de uma palestra perde o favorito dela.
 - Ideias não feitas: painel/dupla com meta por pessoa, exportar Minha agenda (calendário/compartilhar), alerta de conflito.
 
+## Sessão 2b (2026-09-20): cores Google e fonte Google Sans
+
+- Novo `docs/css/tokens.css` (cores e fontes, carrega antes de `styles.css`). Trilhas agora apontam pra paleta do logo novo: IA azul, Front/Back/Data amarelo, Mobile/Agile verde, Carreiras vermelho. `--neon` virou `--accent` (verde Google). Fonte: Google Sans (títulos) + Google Sans Text (corpo), no lugar de Manrope + Public Sans. `styles.css` só consome tokens (`--font-display`, `--font-body`).
+- Origem: PDF `apresentacao.pdf` do Renato (proposta de logo novo, "Nova proposta", ainda sem arquivos de logo no repo).
+- Pendente: logo novo (SVG/PNG do símbolo colorido, branco e completo) pra trocar `EVENT.hosts` e favicons; confirmar aprovação do logo com a organização e as regras de marca do programa GDG; link do Sympla em `EVENT.tickets.url`.
+
 ## Decisão pendente do Renato (plenárias)
 
 Mockups v2 (desenho aprovado visualmente, pelo Renato: faixa larga, avatar 104 px com anel multi-cor, selo "Plenária") ficaram só no scratchpad. Variantes: A 3 plenárias (28 talks), B só 17:15 (36 talks, custo zero, recomendada), C só 13:30 (32 talks). Renato disse que segue com a plenária depois da agenda.

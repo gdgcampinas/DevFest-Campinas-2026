@@ -1,0 +1,45 @@
+/*
+ * Design tokens — única fonte de cor e tipografia do site.
+ * Camadas, de baixo pra cima (só a de baixo tem valor literal):
+ *   1. paleta da marca  → --google-*  (mesmas 4 cores do logo GDG Campinas)
+ *   2. semântica        → trilhas (--ia...), --accent, --live
+ *   3. tipografia       → --font-display / --font-body
+ * styles.css só consome estes tokens. Trocar a paleta ou a fonte é
+ * editar este arquivo (mais o <link> das fontes nas páginas), sem
+ * tocar em nenhuma regra de componente.
+ * Carrega antes de styles.css.
+ */
+:root{
+  /* neutros e layout */
+  --bg: oklch(11% 0.014 260);
+  --card-a: oklch(19% 0.017 260);
+  --card-b: oklch(15.5% 0.015 260);
+  --card-border: oklch(30% 0.02 260);
+  --text: oklch(90% 0.01 260);
+  --muted: oklch(65% 0.02 260);
+  --muted-dim: oklch(45% 0.02 260);
+  --radius: 14px;
+  --track-count: 4; /* setado dinamicamente via JS a partir de TRACKS.length */
+
+  /* 1. paleta da marca — hex é fallback pra navegador sem oklch */
+  --google-blue: #4285f4;   --google-blue: oklch(63% 0.18 260);
+  --google-red: #ea4335;    --google-red: oklch(63% 0.206 29);
+  --google-yellow: #fbbc04; --google-yellow: oklch(83% 0.17 84);
+  --google-green: #34a853;  --google-green: oklch(65% 0.16 148);
+
+  /* 2. cor por trilha — usada pelos tokens `color` de cada trilha em schedule.js;
+     trocar a cor de uma trilha é apontar pra outro item da paleta, nada mais no CSS depende disso */
+  --ia: var(--google-blue);
+  --webdata: var(--google-yellow);
+  --mobile: var(--google-green);
+  --mentoring: var(--google-red);
+
+  /* acentos */
+  --accent: var(--google-green); /* datas, números, destaques (antes --neon) */
+  --amber: var(--webdata);       /* CTAs */
+  --live: var(--google-red);     /* dot "AO VIVO" */
+
+  /* 3. tipografia — Google Sans (títulos) + Google Sans Text (corpo), via Google Fonts */
+  --font-display: "Google Sans", "Product Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --font-body: "Google Sans Text", "Google Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+}

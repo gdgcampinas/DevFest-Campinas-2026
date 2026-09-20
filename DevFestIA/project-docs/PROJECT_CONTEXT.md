@@ -4,7 +4,7 @@ Multi-page site for DevFest Campinas 2026 (GDG Campinas), built the same way as 
 
 ## Stack (non-negotiable)
 
-- Plain HTML/CSS/JS. Zero build, zero npm dependency. Fonts via Google Fonts CDN (Manrope + Public Sans).
+- Plain HTML/CSS/JS. Zero build, zero npm dependency. Fonts via Google Fonts CDN (Google Sans for titles + Google Sans Text for body).
 - GitHub Pages source: `docs/` folder on `main`.
 - Working branch: `development`. CI (`.github/workflows/validate.yml`) runs `node --check` on every push/PR to `development`; if it passes, `.github/workflows/promote.yml` fast-forward-merges `development` into `main` automatically. Never commit directly to `main`.
 
@@ -39,7 +39,8 @@ Six pages, all zero-build HTML that share the same `<script>` block
 docs/
   index.html, grade.html, palestrantes.html, time.html,
   patrocinio.html, codigo-de-conduta.html   structure only, no logic
-  css/styles.css                             design tokens (oklch) + all visual rules
+  css/tokens.css                             design tokens ONLY: brand palette, per-track colors, accent, fonts (loads first)
+  css/styles.css                             all visual rules; consumes tokens, no literal brand color or font name
   assets/icons/, assets/img/highlights/       favicons, event photos
   js/
     data/                    static data — nothing here touches the DOM
@@ -127,6 +128,14 @@ talks live once in `data/schedule-builder.js`:
 - Load order in every page: `repository.js`, `mock-speakers.js`,
   `schedule-builder.js`, then `schedule.dev.js`/`schedule.js`.
 
+## Design tokens (colors and fonts)
+
+All in `docs/css/tokens.css`, in three layers (only the first holds literals):
+1. Brand palette `--google-blue/red/yellow/green` (same 4 colors as the new GDG Campinas logo; hex fallback then oklch).
+2. Semantic: track colors `--ia`, `--webdata`, `--mobile`, `--mentoring` point at palette items; `--accent` (green, was `--neon`), `--live`, `--amber`.
+3. Typography: `--font-display` (Google Sans) and `--font-body` (Google Sans Text). `styles.css` never names a font.
+Changing a color or the font = edit `tokens.css` (plus the fonts `<link>` in the 6 pages). Google Sans tops out at weight 700 on Google Fonts, so `800` declarations render as 700.
+
 ## Key design decision: zero per-track CSS
 
 Every track-colored element (talk card, tab, legend item, modal detail,
@@ -135,8 +144,7 @@ Every track-colored element (talk card, tab, legend item, modal detail,
 targets a track id** (no `.talk[data-track="ia"]{...}` style blocks).
 Adding, renaming, or recoloring a track is a one-line change in
 `TRACKS`; the only CSS involved is the color token itself
-(`--ia`, `--webdata`, `--mobile`, `--mentoring` in `:root` of
-`styles.css`), never a per-track rule. 4 tracks today: IA,
+(`--ia`, `--webdata`, `--mobile`, `--mentoring` in `tokens.css`), never a per-track rule. 4 tracks today: IA,
 Front-end/Back-end/Data, Mobile/Agile, Carreiras & Mentorias.
 
 Same principle applies to track count: the agenda grid and legend use
