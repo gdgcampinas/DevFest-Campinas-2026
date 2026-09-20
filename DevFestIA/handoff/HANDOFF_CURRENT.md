@@ -108,6 +108,10 @@ de confiar neste texto.
 - Novos: `data/mock-links.js`, `data/mock-photo.js`, `data/mock-logo.js`; `highlightPhoto()` em `highlights.js`.
 - Atenção: pravatar.cc é serviço externo; se cair, as fotos caem para iniciais (avatarMarkup). Trocar por fotos reais quando existirem.
 
+## Sessão 2h (2026-09-20): Time sem galeria de fotos
+
+- Seção "Fotos" da página Time removida a pedido do Renato: HTML, `data/team-photos.js`, modal e scripts que só ela usava, e o trecho de `pages/time.js`. A página agora é Quem somos, Organizadores, Voluntários. `highlightPhoto()` continua em `highlights.js` (usado pela home).
+
 ## Decisão pendente do Renato (plenárias)
 
 Mockups v2 (desenho aprovado visualmente, pelo Renato: faixa larga, avatar 104 px com anel multi-cor, selo "Plenária") ficaram só no scratchpad. Variantes: A 3 plenárias (28 talks), B só 17:15 (36 talks, custo zero, recomendada), C só 13:30 (32 talks). Renato disse que segue com a plenária depois da agenda.
@@ -133,7 +137,7 @@ card largo na Grade e no "ao vivo agora" da home. Esperar o "pode fazer".
 - `sponsors.js` e `partner-communities.js`: mock (`example.com`).
 - Fotos dos palestrantes (Destaques e agenda) são stock do pravatar.cc
   (não há ferramenta de imagem/IA na sessão). Trocar pelas reais.
-- Time, testimonials, team-photos: mock.
+- Time, testimonials: mock.
 - `PARKING_IMAGES` / `FOOD_IMAGES` (em `app.js`): vazios.
 - Background/og-image: ainda gradiente puro.
 - Descrição do repo no GitHub: a conta `renatoramos-7` não tem admin,

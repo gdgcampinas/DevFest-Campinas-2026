@@ -64,7 +64,7 @@ docs/
       video.js                    recap video embed data
       stats.js                    last-edition stats (home)
       about.js                    "about the event" copy
-      team.js, team-intro.js, team-photos.js   organizers (Time page)
+      team.js, team-intro.js   organizers (Time page)
       cod.js                      code of conduct text
       footer.js                   footer columns
       testimonials.js             testimonial quotes
@@ -207,7 +207,7 @@ one-line change there — never edit nav HTML per page.
 
 ## Mock content (until real data arrives)
 
-All mock people, companies and links are fictional and live in `data/`: speakers and talks (see "Line-up model"), team (`team.js`, 6 organizers and 8 volunteers with Brazilian names), sponsors (`sponsors.js`, 5 tiers, 12 fictional companies with generated logos), partner communities (4), testimonials (3, with optional `role`), team photos (reuse 2025 event photos through `highlightPhoto()`). Person photos come from `mockPhoto()` (external stock service, hand-picked numbers; do not add numbers without looking at the image), logos from `mockLogo()`. Replacing mock with real = same shapes, real `photo`/`imageUrl`/`link`.
+All mock people, companies and links are fictional and live in `data/`: speakers and talks (see "Line-up model"), team (`team.js`, 6 organizers and 8 volunteers with Brazilian names; the Time page has no photo gallery), sponsors (`sponsors.js`, 5 tiers, 12 fictional companies with generated logos), partner communities (4), testimonials (3, with optional `role`). Person photos come from `mockPhoto()` (external stock service, hand-picked numbers; do not add numbers without looking at the image), logos from `mockLogo()`. Replacing mock with real = same shapes, real `photo`/`imageUrl`/`link`.
 
 ## Sponsors section
 
