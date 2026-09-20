@@ -1,37 +1,24 @@
 /**
- * Feature: modal de detalhe da palestra + infraestrutura genérica de
- * modal reaproveitada por qualquer outro conteúdo (galerias etc).
+ * Feature: modal de detalhe da palestra, construído sobre o modal
+ * genérico (components/modal.js), que também serve galerias etc.
  * Abre ao clicar num card clicável (data-slot-index), busca os dados
  * no schedule por índice + trilha — não duplica nada do card, só
  * formata maior via talkDetailMarkup (components/track-card.js).
  */
-function createTalkModal(modalEl, contentEl) {
-  function openHTML(html) {
-    contentEl.innerHTML = html;
-    modalEl.hidden = false;
-    document.body.style.overflow = "hidden";
-  }
+function createTalkModal() {
+  const modal = createModal("talkModal", { label: "Detalhes da palestra" });
 
   function open(track, data, meta) {
-    openHTML(talkDetailMarkup(track, data, meta));
+    modal.openHTML(talkDetailMarkup(track, data, meta));
   }
 
-  function close() {
-    modalEl.hidden = true;
-    document.body.style.overflow = "";
-  }
-
-  modalEl.addEventListener("click", event => {
-    if (event.target.closest(".modal-close") || event.target.classList.contains("modal-backdrop")) close();
+  modal.el.addEventListener("click", event => {
     // link pra âncora da própria página (ex.: perfil do palestrante em palestrantes.html): fecha o modal
     const link = event.target.closest("a[href]");
-    if (link && link.origin === location.origin && link.pathname === location.pathname) close();
-  });
-  document.addEventListener("keydown", event => {
-    if (event.key === "Escape" && !modalEl.hidden) close();
+    if (link && link.origin === location.origin && link.pathname === location.pathname) modal.close();
   });
 
-  return { open, openHTML, close };
+  return { ...modal, open };
 }
 
 /**

@@ -15,7 +15,7 @@ function initPalestrantes() {
   renderSpeakersSection(speakers, document.getElementById("speakersSection"), gridEl, { reveal, showAll: () => filter.select(ALL_TRACKS) });
 
   initFavorites(document.body, favoritesRepository);
-  const modal = createTalkModal(document.getElementById("talkModal"), document.getElementById("talkModalContent"));
+  const modal = createTalkModal();
   const calendar = initCalendarActions(document.body, { schedule: SCHEDULE, tracks: TRACKS, event: EVENT, favorites: favoritesRepository });
   initTalkDetails(document.body, { schedule: SCHEDULE, tracks: TRACKS, timezone: EVENT.timezone, reveal, modal, favorites: favoritesRepository, calendar });
 }

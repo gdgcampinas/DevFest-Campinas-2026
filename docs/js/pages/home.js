@@ -8,7 +8,7 @@ function initHome() {
 
   initStickyStatus(document.getElementById("hero"), document.getElementById("stickyStatus"));
 
-  const modal = createTalkModal(document.getElementById("talkModal"), document.getElementById("talkModalContent"));
+  const modal = createTalkModal();
   const calendar = initCalendarActions(document.body, { schedule: SCHEDULE, tracks: TRACKS, event: EVENT, favorites: favoritesRepository });
   initTalkDetails(document.body, { schedule: SCHEDULE, tracks: TRACKS, timezone: EVENT.timezone, reveal, modal, favorites: favoritesRepository, calendar });
   initFavorites(document.body, favoritesRepository);
@@ -18,7 +18,7 @@ function initHome() {
   initFeaturedSpeakers(extractSpeakers(SCHEDULE, TRACKS, EVENT.timezone), document.getElementById("featuredSpeakersSection"), document.querySelector(".featured-speakers-grid"), { count: 4, intervalMs: 15000, reveal });
   renderHighlights(highlightsRepository.getAll(), document.getElementById("highlightsSection"), document.querySelector(".highlights-grid"), modal);
   renderAbout(aboutRepository.getAll(), document.getElementById("aboutSection"));
-  initMenuCarousel(document.getElementById("talkModal"));
+  initMenuCarousel(modal.el);
 
   renderInfoCards(buildBeforeYouComeItems(TRACKS), document.getElementById("beforeYouCome"));
   renderVenueInfo(EVENT, document.getElementById("venueInfo"), SCHEDULE);

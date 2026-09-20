@@ -27,7 +27,7 @@ function initGrade() {
     onSaved: () => { if (!agendaEl.classList.contains("favs-only")) favToggleEl.click(); },
   });
 
-  const modal = createTalkModal(document.getElementById("talkModal"), document.getElementById("talkModalContent"));
+  const modal = createTalkModal();
   initTalkDetails(document.body, { schedule: SCHEDULE, tracks: TRACKS, timezone: EVENT.timezone, reveal, modal, favorites: favoritesRepository, calendar });
 
   const liveStatus = createLiveStatus({ schedule: SCHEDULE, tracks: TRACKS, event: EVENT, reveal, favorites: favoritesRepository, now: resolveNow() });
