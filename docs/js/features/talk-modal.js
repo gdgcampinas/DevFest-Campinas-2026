@@ -23,6 +23,9 @@ function createTalkModal(modalEl, contentEl) {
 
   modalEl.addEventListener("click", event => {
     if (event.target.closest(".modal-close") || event.target.classList.contains("modal-backdrop")) close();
+    // link pra âncora da própria página (ex.: perfil do palestrante em palestrantes.html): fecha o modal
+    const link = event.target.closest("a[href]");
+    if (link && link.origin === location.origin && link.pathname === location.pathname) close();
   });
   document.addEventListener("keydown", event => {
     if (event.key === "Escape" && !modalEl.hidden) close();
@@ -32,24 +35,26 @@ function createTalkModal(modalEl, contentEl) {
 }
 
 /**
- * Delega clique em qualquer .talk[data-slot-index] dentro de rootEl
+ * Delega clique em qualquer [data-slot-index][data-track] dentro de rootEl
  * (agenda completa ou hero "ao vivo") e abre o modal com os dados reais
  * daquele slot/trilha — funciona pros dois sem duplicar handler.
  */
 /** Controles dentro do card (estrela, LinkedIn) têm ação própria e não abrem o modal. */
 const CARD_INNER_CONTROLS = ".fav-btn, a";
+/** Qualquer elemento que aponte pra uma palestra (card da agenda, do hero ou da galeria de palestrantes). */
+const TALK_TRIGGER = "[data-slot-index][data-track]";
 
 function initTalkDetails(rootEl, { schedule, tracks, timezone, reveal, modal, favorites = null }) {
   rootEl.addEventListener("click", event => {
     if (event.target.closest(CARD_INNER_CONTROLS)) return;
-    const card = event.target.closest(".talk[data-slot-index]");
+    const card = event.target.closest(TALK_TRIGGER);
     if (!card) return;
     openFromCard(card);
   });
   rootEl.addEventListener("keydown", event => {
     if (event.key !== "Enter" && event.key !== " ") return;
     if (event.target.closest(CARD_INNER_CONTROLS)) return;
-    const card = event.target.closest(".talk[data-slot-index]");
+    const card = event.target.closest(TALK_TRIGGER);
     if (!card) return;
     event.preventDefault();
     openFromCard(card);

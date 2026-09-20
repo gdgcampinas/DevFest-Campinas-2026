@@ -49,8 +49,10 @@ docs/
       favorites.js              favoritesRepository + talkKey(slot, trackId)
       icons.js                  ICONS (svg paths by name) + iconsRepository.get(); also the per-track icons (`TRACKS[].icon`)
       talk-formats.js           TALK_FORMATS (palestra/workshop/painel/bate-papo) + getById()
-      mock-speakers.js          mock speaker data (loads before schedule)
-      schedule-builder.js        talkWindows/buildSchedule/mockTalks (loads before schedule)
+      mock-avatar.js            mockAvatar(seed): deterministic diverse SVG avatar (no real faces)
+      mock-speakers.js          38 mock speakers (id, name, cargo, avatar, LinkedIn) + getById (loads before schedule)
+      mock-talks.js             36 mock talks (9 per track, by position) linked to speakers by speakerIds
+      schedule-builder.js        talkWindows/buildSchedule/catalogTalks (loads before schedule)
       schedule.js               PROD: EVENT, TRACKS, DAY_PLAN → SCHEDULE (mock until reveal)
       schedule.dev.js            DEV schedule (real, gitignored, local only)
       placeholder.js             placeholder image generator (mock logos)
@@ -68,6 +70,7 @@ docs/
     components/              reusable templates, one responsibility each
       avatar.js                 photo or initials — automatic fallback
       icon.js                    iconMarkup(name) — only svg template
+      speaker-link.js            speakerAnchorId/speakerProfileHref: how a speaker links to palestrantes.html#speaker-<id>
       favorite-button.js         favoriteButtonMarkup() — star, used in card/hero/modal
       talk-meta.js               talkTagsMarkup/talkAvatarsMarkup/talkLinksMarkup (format+tags, avatars, LinkedIn)
       site-nav.js                nav links shared by every page
@@ -125,8 +128,8 @@ talks live once in `data/schedule-builder.js`:
   17:15 to 18:00 Encerramento (9 slots × 4 tracks).
 - Changing hours or slot count = editing `DAY_PLAN`. `schedule.dev.js`
   must mirror it (edit both).
-- Load order in every page: `repository.js`, `mock-speakers.js`,
-  `schedule-builder.js`, then `schedule.dev.js`/`schedule.js`.
+- Load order in every page: `repository.js`, `mock-avatar.js`, `mock-speakers.js`,
+  `mock-talks.js`, `schedule-builder.js`, then `schedule.dev.js`/`schedule.js`.
 
 ## Design tokens (colors and fonts)
 
@@ -184,6 +187,14 @@ confirmed; no HTML/CSS change needed.
 ## Track icons
 
 Each entry in `TRACKS` (schedule.js/.dev.js) has `icon`, a name from `data/icons.js` (IA `sparkles`, Front/Back/Data `code`, Mobile/Agile `phone`, Carreiras `rocket`). Only the home "Trilhas" section shows it (`tracks-overview.js` via `iconMarkup`, default `grid` when a track has none). New track icon = one entry in `icons.js` + the `icon` field.
+
+## Line-up model: talk <-> speaker <-> schedule (all interlinked)
+
+- One source of people (`mock-speakers.js`, later the real line-up) and one catalog of talks (`mock-talks.js`). A talk references people only by `speakerIds`; `buildSchedule(plan, { speakerPool, talkCatalog })` resolves them into the same speaker objects (no copies) and warns in the console on an unknown id.
+- Everything else derives from `SCHEDULE`: `extractSpeakers()` (features/speakers.js) builds the Palestrantes gallery AND the home "Destaques" pool, dedup by `id`, listing every talk of each person.
+- Navigation both ways: speaker card -> talk (same modal as Grade, via `[data-slot-index][data-track]`), talk modal -> speaker profile (`palestrantes.html#speaker-<id>`, highlighted and scrolled on arrival), Destaques -> profile. LinkedIn appears on the talk card, the modal, the gallery card (mock URL: `MOCK_LINKEDIN_URL`, one place).
+- Favorites (`Minha agenda`) work in Grade, home hero, modal, and Palestrantes.
+- The line-up is public (`EVENT.lineupRevealed = true`) with mock data, by decision of the organizers. Real line-up = replace the catalog/speakers with same-shape data (photo, real LinkedIn).
 
 ## Site nav
 

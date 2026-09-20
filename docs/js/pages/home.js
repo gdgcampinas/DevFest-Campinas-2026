@@ -14,7 +14,7 @@ function initHome() {
 
   renderStats(statsRepository.getAll(), document.getElementById("statsSection"), document.querySelector(".stats-grid"));
   renderVideo(videoRepository.getAll(), document.getElementById("videoSection"), document.querySelector(".video-embed"));
-  initFeaturedSpeakers(mockSpeakersRepository.getAll(), document.getElementById("featuredSpeakersSection"), document.querySelector(".featured-speakers-grid"), { count: 4, intervalMs: 15000 });
+  initFeaturedSpeakers(extractSpeakers(SCHEDULE, TRACKS, EVENT.timezone), document.getElementById("featuredSpeakersSection"), document.querySelector(".featured-speakers-grid"), { count: 4, intervalMs: 15000, reveal });
   renderHighlights(highlightsRepository.getAll(), document.getElementById("highlightsSection"), document.querySelector(".highlights-grid"), modal);
   renderAbout(aboutRepository.getAll(), document.getElementById("aboutSection"));
   initMenuCarousel(document.getElementById("talkModal"));

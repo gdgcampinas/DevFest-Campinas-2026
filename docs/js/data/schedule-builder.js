@@ -28,8 +28,8 @@ function talkWindows(startHHMM, count, { talkMin = 40, gapMin = 5 } = {}) {
   });
 }
 
-/** Talks mock (uma por trilha), rotacionando o pool de palestrantes até o line-up real. */
-function mockTalks(tracks, speakerPool, talkIndex) {
+/** Talk provisória (uma por trilha), rotacionando o pool de palestrantes — fallback quando o catálogo não cobre o slot. */
+function placeholderTalks(tracks, speakerPool, talkIndex) {
   return Object.fromEntries(tracks.map((track, i) => [
     track.id,
     {
@@ -42,18 +42,41 @@ function mockTalks(tracks, speakerPool, talkIndex) {
 }
 
 /**
+ * Talks do catálogo para uma janela: liga cada `speakerIds` às pessoas
+ * do pool (mesmos objetos, sem cópia). Id que não existe no pool é
+ * avisado no console e ignorado, pra erro de dado nunca passar em branco.
+ * Trilha sem palestra no catálogo cai no fallback só daquela trilha.
+ */
+function catalogTalks(tracks, speakerPool, talkCatalog, talkIndex) {
+  const fallback = placeholderTalks(tracks, speakerPool, talkIndex);
+  return Object.fromEntries(tracks.map(track => {
+    const entry = talkCatalog.getFor(track.id, talkIndex);
+    if (!entry) return [track.id, fallback[track.id]];
+    const { speakerIds = [], ...talk } = entry;
+    const speakers = speakerIds.map(id => {
+      const speaker = speakerPool.find(candidate => candidate.id === id);
+      if (!speaker) console.warn(`[schedule] palestrante "${id}" não existe (trilha ${track.id}, palestra ${talkIndex})`);
+      return speaker;
+    }).filter(Boolean);
+    return [track.id, { ...talk, speakers }];
+  }));
+}
+
+/**
  * Plano do dia → SCHEDULE. Cada item do plano é:
  *   { banner, room?, start, end }   → sessão combinada (credenciamento, almoço...)
  *   { talks: [{start, end}, ...] }  → uma sessão de palestras por janela
+ * `talkCatalog` (opcional, ver data/mock-talks.js) traz título, formato, tags
+ * e palestrantes por trilha/posição; sem ele, tudo vira placeholder.
  */
-function buildSchedule(plan, { eventTime, tracks, speakerPool }) {
+function buildSchedule(plan, { eventTime, tracks, speakerPool, talkCatalog = null }) {
   let talkIndex = 0;
   return plan.flatMap(item => {
     if (item.talks) {
       return item.talks.map(window => ({
         start: eventTime(window.start),
         end: eventTime(window.end),
-        talks: mockTalks(tracks, speakerPool, talkIndex++),
+        talks: talkCatalog ? catalogTalks(tracks, speakerPool, talkCatalog, talkIndex++) : placeholderTalks(tracks, speakerPool, talkIndex++),
       }));
     }
     const { start, end, ...banner } = item;

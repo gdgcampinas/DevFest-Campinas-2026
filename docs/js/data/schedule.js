@@ -1,8 +1,8 @@
 /**
- * Dados PROD do DevFest Campinas 2026 — mock genérico até a revelação
- * pública do line-up. Quando confirmado: copiar schedule.dev.js pra cá
- * (os dois ficam idênticos a partir da revelação) e trocar
- * EVENT.lineupRevealed pra true.
+ * Dados PROD do DevFest Campinas 2026 — line-up MOCK liberado pra todos
+ * (EVENT.lineupRevealed true). Quando o line-up real for confirmado:
+ * trocar o catálogo mock pelos dados reais (mesmo formato) e manter
+ * schedule.dev.js idêntico a este arquivo.
  *
  * TBD: data, horário, local e trilhas ainda não confirmados — ajustar
  * abaixo assim que o time fechar.
@@ -14,7 +14,7 @@ const EVENT = {
   utcOffset: "-03:00",
   venue: "Local a definir",
   address: "Campinas, SP",
-  lineupRevealed: false,
+  lineupRevealed: true,
   // 1..N coanfitriões/patrocinadores exibidos no header, nessa ordem.
   // Adicionar entradas aqui quando parceiros forem confirmados — o
   // separador "+" entre logos é gerado automaticamente (ver app.js renderBrand).
@@ -59,8 +59,8 @@ function eventTime(hhmm) {
 /**
  * Plano do dia — palestra = 40 min (com perguntas) + 5 min de troca,
  * via talkWindows() de schedule-builder.js. Almoço 12:00-13:20 mais
- * 10 min pra voltar pra sala. Talks mock rotacionam o pool
- * MOCK_SPEAKERS até o line-up real ser fechado.
+ * 10 min pra voltar pra sala. Talks mock vêm do catálogo; sem ele rotacionam o pool
+ * o catálogo mock (mock-talks.js + mock-speakers.js) até o line-up real ser fechado.
  */
 const DAY_PLAN = [
   { banner: "Credenciamento", room: "Recepção", start: "08:00", end: "08:30" },
@@ -72,4 +72,4 @@ const DAY_PLAN = [
   { banner: "Encerramento", room: "Auditório principal", start: "17:15", end: "18:00" },
 ];
 
-const SCHEDULE = buildSchedule(DAY_PLAN, { eventTime, tracks: TRACKS, speakerPool: MOCK_SPEAKERS });
+const SCHEDULE = buildSchedule(DAY_PLAN, { eventTime, tracks: TRACKS, speakerPool: mockSpeakersRepository.getAll(), talkCatalog: mockTalksRepository });

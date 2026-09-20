@@ -93,6 +93,14 @@ de confiar neste texto.
 
 - "Números do DevFest 2025" agora fica logo antes de "Veja como foi o DevFest 2025" (vídeo): ordem hero, Destaques, Números, vídeo, fotos, Sobre. Só HTML (`index.html`); nenhum JS depende da ordem.
 
+## Sessão 2f (2026-09-20): line-up mock completo e interligado
+
+- 36 palestras (`data/mock-talks.js`) e 38 palestrantes (`data/mock-speakers.js`) mock, ligados por `speakerIds`; avatares SVG gerados e diversos (`data/mock-avatar.js`, sem pravatar); LinkedIn mock único (`MOCK_LINKEDIN_URL`). Painéis com 2 pessoas e 3 pessoas com 2 palestras cada (larissa-nunes, renata-cardoso, gabriela-martins) exercitam as ligações.
+- `EVENT.lineupRevealed` agora é `true` (Renato liberou o mock pra todos). Destaques e Palestrantes aparecem pra qualquer visitante.
+- Ligação: card do palestrante lista as palestras (abre o modal), modal leva ao perfil (`#speaker-<id>`), Destaques levam ao perfil; Palestrantes ganhou modal e favoritos. Detalhes em `PROJECT_CONTEXT.md` (seção "Line-up model").
+- Testado: 36 talks x 4 trilhas com título/formato/tags/descrição, ninguém em duas trilhas no mesmo slot, 38 avatares distintos, links e hash, estados ao vivo (09:20, 10:27, 12:30, 17:30, 18:30), produção sem `schedule.dev.js`, mobile.
+- Pendente: trocar o mock pelo line-up real quando existir (mesmo formato); filtro por trilha na página Palestrantes (38 cards); nomes de sala por bairro (em discussão).
+
 ## Decisão pendente do Renato (plenárias)
 
 Mockups v2 (desenho aprovado visualmente, pelo Renato: faixa larga, avatar 104 px com anel multi-cor, selo "Plenária") ficaram só no scratchpad. Variantes: A 3 plenárias (28 talks), B só 17:15 (36 talks, custo zero, recomendada), C só 13:30 (32 talks). Renato disse que segue com a plenária depois da agenda.

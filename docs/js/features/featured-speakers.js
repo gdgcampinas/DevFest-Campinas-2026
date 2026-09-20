@@ -2,7 +2,9 @@
  * Feature: "Destaques" — N palestrantes aleatórios do pool, foto
  * redonda (avatarMarkup, mesmo componente do resto do site). Sorteia
  * de novo a cada reload E a cada intervalo (setInterval) — mesma
- * função pros dois casos, só chamada em momentos diferentes.
+ * função pros dois casos, só chamada em momentos diferentes. O pool é o
+ * mesmo extractSpeakers() da galeria (features/speakers.js), então cada
+ * destaque leva ao perfil da própria pessoa em Palestrantes.
  */
 function pickRandom(pool, count) {
   const shuffled = [...pool].sort(() => Math.random() - 0.5);
@@ -10,12 +12,16 @@ function pickRandom(pool, count) {
 }
 
 function featuredSpeakerCardMarkup(person) {
+  const meta = speakerMetaLine(person);
+  const profile = speakerProfileHref(person);
+  const tag = profile ? "a" : "div";
+  const href = profile ? ` href="${profile}"` : "";
   return `
-    <div class="featured-speaker">
+    <${tag} class="featured-speaker"${href}>
       ${avatarMarkup(person.name, person.photo, "featured-avatar")}
       <div class="featured-name">${person.name}</div>
-      ${person.company ? `<div class="featured-company">${person.company}</div>` : ""}
-    </div>`;
+      ${meta ? `<div class="featured-company">${meta}</div>` : ""}
+    </${tag}>`;
 }
 
 function renderFeaturedSpeakers(pool, gridEl, count) {
@@ -23,13 +29,13 @@ function renderFeaturedSpeakers(pool, gridEl, count) {
 }
 
 /**
- * Liga a seção: some se o pool estiver vazio; renderiza na hora (novo
+ * Liga a seção: some se o line-up não estiver revelado ou o pool estiver vazio; renderiza na hora (novo
  * sorteio a cada carregamento de página) e troca sozinho a cada
  * `intervalMs`. Retorna o intervalId — chamador não precisa, mas fica
  * disponível se algum dia quiser parar a rotação.
  */
-function initFeaturedSpeakers(pool, sectionEl, gridEl, { count = 4, intervalMs = 15000 } = {}) {
-  if (!pool.length) {
+function initFeaturedSpeakers(pool, sectionEl, gridEl, { count = 4, intervalMs = 15000, reveal = true } = {}) {
+  if (!reveal || !pool.length) {
     sectionEl.hidden = true;
     return null;
   }

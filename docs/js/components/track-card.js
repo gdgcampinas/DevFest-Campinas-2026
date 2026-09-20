@@ -100,12 +100,13 @@ function talkDetailMarkup(track, data, { reveal = true, timeRange = "", room = "
   // sem eles renderiza igual ao formato original, sem linha/foto extra.
   const speakerLine = speakers.length
     ? `<div class="detail-speakers">${speakers.map((s) => {
-        const nameEl = s.linkedin
-          ? `<a class="detail-speaker" href="${s.linkedin}" target="_blank" rel="noopener">${s.name} <span class="li-icon">in</span></a>`
+        const profile = speakerProfileHref(s);
+        const nameEl = profile
+          ? `<a class="detail-speaker" href="${profile}">${s.name}</a>`
           : `<div class="detail-speaker">${s.name}</div>`;
         const meta = speakerMetaLine(s);
-        const block = meta ? `<div class="detail-speaker-block">${nameEl}<div class="detail-speaker-meta">${meta}</div></div>` : nameEl;
-        return `<div class="detail-speaker-row">${avatarMarkup(s.name, s.photo, "detail-avatar")}${block}</div>`;
+        const block = `<div class="detail-speaker-block">${nameEl}${meta ? `<div class="detail-speaker-meta">${meta}</div>` : ""}</div>`;
+        return `<div class="detail-speaker-row">${avatarMarkup(s.name, s.photo, "detail-avatar")}${block}${talkLinksMarkup([s])}</div>`;
       }).join("")}</div>`
     : `<div class="detail-speaker">${HIDDEN_SPEAKER_LABEL}</div>`;
 
