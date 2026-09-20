@@ -20,3 +20,6 @@ jobs:
             node --check "$file" || status=1
           done < <(find docs/js -name '*.js' -print0)
           exit $status
+
+      - name: Check share metadata, sitemap and robots
+        run: node DevFestIA/tools/check-meta.js

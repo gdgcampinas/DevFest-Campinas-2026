@@ -193,7 +193,7 @@ function initShell(activePageId) {
   renderFooterColumns(FOOTER_COLUMNS, document.querySelector(".footer-columns"));
   const tickerEl = document.getElementById("ticker");
   if (tickerEl) renderTicker(EVENT, SCHEDULE, tickerEl);
-  injectEventSchema(buildEventSchema(EVENT, SCHEDULE));
+  injectEventSchema(buildEventSchema(EVENT, SCHEDULE, ticketsRepository.getAll()));
 
   initTicketCta(EVENT.tickets, { headerTopEl: document.querySelector(".header-top"), sectionEl: document.getElementById("ticketsSection") });
 

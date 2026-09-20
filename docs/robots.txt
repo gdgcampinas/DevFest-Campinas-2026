@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://gdgcampinas.github.io/DevFest-Campinas-2026/sitemap.xml

@@ -138,6 +138,8 @@ Ordem: 1 ingressos e CTA, 2 acessibilidade, 3 calendário e compartilhar agenda,
 
 - **3. Calendário e compartilhar agenda (feito):** "Adicionar ao calendário" no modal (Google Agenda e .ics), exportar Minha agenda (.ics), link `?agenda=` com WhatsApp e copiar, banner "Salvar na minha agenda" pra quem abre o link. Testado com harness em Node (estrutura do .ics, dobra de linhas, escapes, ida e volta do link) e no navegador. Bug achado no caminho: `.status-pill` (display) ignorava o atributo `hidden` e aparecia vazio; regra global `[hidden]{display:none !important}`. `EVENT.venueConfirmed` (false) faz o calendário usar só a cidade enquanto o local não sai. Detalhes em `PROJECT_CONTEXT.md` ("Calendar and sharing").
 
+- **4. Compartilhamento e SEO (feito):** tags OG/Twitter/canonical estáticas nas 6 páginas, imagem 1200x630 gerada (`og-image.png`, fonte em `DevFestIA/design/og-image.html`), sitemap.xml, robots.txt, JSON-LD com ingressos (`Offer`, PreOrder até `salesOpen`), `DevFestIA/tools/check-meta.js` no CI (testei o caso de falha). Trocar a imagem quando o logo novo chegar. Detalhes em `PROJECT_CONTEXT.md` ("Share metadata and SEO").
+
 ## Decisão pendente do Renato (plenárias)
 
 Mockups v2 (desenho aprovado visualmente, pelo Renato: faixa larga, avatar 104 px com anel multi-cor, selo "Plenária") ficaram só no scratchpad. Variantes: A 3 plenárias (28 talks), B só 17:15 (36 talks, custo zero, recomendada), C só 13:30 (32 talks). Renato disse que segue com a plenária depois da agenda.

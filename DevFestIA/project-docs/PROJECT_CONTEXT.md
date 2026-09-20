@@ -217,6 +217,13 @@ one-line change there — never edit nav HTML per page.
 
 All mock people, companies and links are fictional and live in `data/`: speakers and talks (see "Line-up model"), team (`team.js`, 6 organizers and 8 volunteers with Brazilian names; the Time page has no photo gallery), sponsors (`sponsors.js`, 5 tiers, 12 fictional companies with generated logos), partner communities (4), testimonials (3, with optional `role`). Person photos come from `mockPhoto()` (external stock service, hand-picked numbers; do not add numbers without looking at the image), logos from `mockLogo()`. Replacing mock with real = same shapes, real `photo`/`imageUrl`/`link`.
 
+## Share metadata and SEO
+
+- Every page has static `og:*`, `twitter:*`, `canonical` and a per-page `description` in its `<head>` (social crawlers do not run JavaScript, so this repetition across the 6 pages is unavoidable in a zero-build site). `DevFestIA/tools/check-meta.js` (also a CI step) fails if any page is missing tags or has a wrong `og:url`, `og:image`, sitemap entry or robots line.
+- `EVENT.url`, `EVENT.description`, `EVENT.image` in schedule.js/.dev.js are the source; `docs/assets/img/og-image.png` (1200x630) is rendered from `DevFestIA/design/og-image.html` (headless Chrome command in the file). Re-render it when the new logo arrives.
+- `features/seo.js` builds the schema.org `Event` JSON-LD from EVENT, SCHEDULE and the ticket types (one `Offer` per type, `PreOrder` until `EVENT.tickets.salesOpen` is true; the venue name only when `EVENT.venueConfirmed`).
+- `docs/sitemap.xml` and `docs/robots.txt` are static; add a page there and in `SITE_PAGES`.
+
 ## Calendar and sharing
 
 - `features/calendar.js` is pure: one entry shape `{ uid, title, start, end, location, details, url }` feeds the Google Agenda link and the `.ics` (RFC 5545: CRLF, escapes, 75-octet folding, UTC times, 10 min alarm). `eventLocationLabel()` only includes the venue when `EVENT.venueConfirmed` is true.

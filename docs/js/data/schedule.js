@@ -12,6 +12,9 @@ const EVENT = {
   date: "2026-11-28", // America/Sao_Paulo, sem horário de verão
   timezone: "America/Sao_Paulo",
   utcOffset: "-03:00",
+  url: "https://gdgcampinas.github.io/DevFest-Campinas-2026/", // endereço público (canonical, compartilhamento, dados estruturados)
+  description: "Um dia de tecnologia em Campinas: 4 trilhas de palestras, comunidade e networking. 28 de novembro de 2026.",
+  image: "assets/img/og-image.png", // imagem de compartilhamento (relativa a url)
   venue: "Local a definir",
   venueConfirmed: false, // false = calendário/agenda usam só o endereço (cidade) em vez do nome do local
   address: "Campinas, SP",
@@ -30,6 +33,7 @@ const EVENT = {
     url: "https://www.sympla.com.br", // página principal do Sympla enquanto o evento não está publicado
     label: "Garanta sua vaga",
     status: "Em breve",
+    salesOpen: false, // true quando as vendas abrirem de verdade (dados estruturados: PreOrder vira InStock)
     waitlistUrl: "", // opcional: sem url de compra, vira "Avise-me quando abrir" (Instagram/WhatsApp)
   },
 };
