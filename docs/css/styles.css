@@ -443,6 +443,7 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
   background:color-mix(in oklch, var(--track-color) 16%, transparent);
   color:var(--track-color);display:flex;align-items:center;justify-content:center;margin-bottom:14px;
 }
+.faq-icon .icon{width:26px;height:26px}
 .faq-item h3{margin:0 0 7px;font:700 16px var(--font-display);color:oklch(95% 0.006 260)}
 .faq-item p{margin:0;font:500 13.5px var(--font-body);color:var(--muted);line-height:1.55}
 .faq-item.clickable{cursor:pointer}

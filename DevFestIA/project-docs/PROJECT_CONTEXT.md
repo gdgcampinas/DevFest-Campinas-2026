@@ -47,7 +47,7 @@ docs/
       repository.js            createRepository() factory — see below
       persisted-set-repository.js  createPersistedSetRepository(): set of keys in an injected storage (localStorage)
       favorites.js              favoritesRepository + talkKey(slot, trackId)
-      icons.js                  ICONS (svg paths by name) + iconsRepository.get()
+      icons.js                  ICONS (svg paths by name) + iconsRepository.get(); also the per-track icons (`TRACKS[].icon`)
       talk-formats.js           TALK_FORMATS (palestra/workshop/painel/bate-papo) + getById()
       mock-speakers.js          mock speaker data (loads before schedule)
       schedule-builder.js        talkWindows/buildSchedule/mockTalks (loads before schedule)
@@ -180,6 +180,10 @@ confirmed; no HTML/CSS change needed.
 - Favorites: `favoritesRepository` (localStorage key `devfest-campinas-2026:favorites`, no backend, per browser). Key = `talkKey(slot, trackId)` = slot start ISO + track id. `initFavorites(rootEl, repo)` is one delegated listener that syncs every star sharing a key (grade card, home hero, modal). Grade also has the "Minha agenda" toggle (`favorites-filter.js`), which respects the active track tab. Home hero shows the star too.
 - Swap storage (or the whole repository for an API) by changing only the `createPersistedSetRepository` call in `data/favorites.js`.
 - Formats and icons are data (`talk-formats.js`, `icons.js`): a new format is one line, no CSS.
+
+## Track icons
+
+Each entry in `TRACKS` (schedule.js/.dev.js) has `icon`, a name from `data/icons.js` (IA `sparkles`, Front/Back/Data `code`, Mobile/Agile `phone`, Carreiras `rocket`). Only the home "Trilhas" section shows it (`tracks-overview.js` via `iconMarkup`, default `grid` when a track has none). New track icon = one entry in `icons.js` + the `icon` field.
 
 ## Site nav
 

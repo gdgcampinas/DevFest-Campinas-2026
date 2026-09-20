@@ -36,18 +36,19 @@ const EVENT = {
  * SCHEDULE[].talks. `color` é a única coisa que o CSS/JS de trilha
  * precisa pra pintar qualquer componente (card, tab, legenda, modal):
  * nenhuma regra de estilo por id de trilha existe em styles.css.
- * `description` é opcional — usada na seção "Trilhas" da home
+ * `icon` é o nome de um ícone de data/icons.js (usado na seção "Trilhas" da home;
+ * sem ele cai no ícone padrão). `description` é opcional — usada na seção "Trilhas" da home
  * (features/tracks-overview.js), reaproveitando o card genérico de
  * info-card.js. Sem ela, a trilha só não aparece lá.
  */
 const TRACKS = [
-  { id: "ia", label: "IA", shortLabel: "IA", room: "Sala a definir", mc: "MC a definir", color: "var(--ia)",
+  { id: "ia", label: "IA", shortLabel: "IA", room: "Sala a definir", mc: "MC a definir", color: "var(--ia)", icon: "sparkles",
     description: "Modelos, agentes e aplicações de inteligência artificial na prática — do fundamento ao que já roda em produção." },
-  { id: "webdata", label: "Front-end / Back-end / Data", shortLabel: "Front/Back/Data", room: "Sala a definir", mc: "MC a definir", color: "var(--webdata)",
+  { id: "webdata", label: "Front-end / Back-end / Data", shortLabel: "Front/Back/Data", room: "Sala a definir", mc: "MC a definir", color: "var(--webdata)", icon: "code",
     description: "Arquitetura, engenharia de dados e desenvolvimento web — as bases que sustentam qualquer produto digital." },
-  { id: "mobile", label: "Mobile / Agile", shortLabel: "Mobile/Agile", room: "Sala a definir", mc: "MC a definir", color: "var(--mobile)",
+  { id: "mobile", label: "Mobile / Agile", shortLabel: "Mobile/Agile", room: "Sala a definir", mc: "MC a definir", color: "var(--mobile)", icon: "phone",
     description: "Apps nativos e multiplataforma, e os métodos ágeis que fazem times entregarem rápido e com qualidade." },
-  { id: "mentoring", label: "Carreiras & Mentorias", shortLabel: "Carreiras", room: "Sala a definir", mc: "MC a definir", color: "var(--mentoring)",
+  { id: "mentoring", label: "Carreiras & Mentorias", shortLabel: "Carreiras", room: "Sala a definir", mc: "MC a definir", color: "var(--mentoring)", icon: "rocket",
     description: "Trajetórias, mentoria e como crescer na área — de quem já passou pelos mesmos desafios." },
 ];
 

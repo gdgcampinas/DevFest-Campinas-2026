@@ -80,6 +80,11 @@ de confiar neste texto.
 - Origem: PDF `apresentacao.pdf` do Renato (proposta de logo novo, "Nova proposta", ainda sem arquivos de logo no repo).
 - Pendente: logo novo (SVG/PNG do símbolo colorido, branco e completo) pra trocar `EVENT.hosts` e favicons; confirmar aprovação do logo com a organização e as regras de marca do programa GDG; link do Sympla em `EVENT.tickets.url`.
 
+## Sessão 2c (2026-09-20): ícones das trilhas na home
+
+- `TRACKS[].icon` (sparkles, code, phone, rocket) + 4 ícones novos em `data/icons.js`; `tracks-overview.js` usa `iconMarkup()` (o SVG fixo `ICON_TRACK` saiu). Só na home, como pedido (legenda da Grade ficou sem ícone).
+- Gotcha local: `schedule.dev.js` é carregado sem `?v=`, então o navegador pode servir versão em cache depois de editar; recarregar forçado resolve. Em produção o `schedule.js?v=N` é bumpado normalmente.
+
 ## Decisão pendente do Renato (plenárias)
 
 Mockups v2 (desenho aprovado visualmente, pelo Renato: faixa larga, avatar 104 px com anel multi-cor, selo "Plenária") ficaram só no scratchpad. Variantes: A 3 plenárias (28 talks), B só 17:15 (36 talks, custo zero, recomendada), C só 13:30 (32 talks). Renato disse que segue com a plenária depois da agenda.
