@@ -85,6 +85,10 @@ de confiar neste texto.
 - `TRACKS[].icon` (sparkles, code, phone, rocket) + 4 ícones novos em `data/icons.js`; `tracks-overview.js` usa `iconMarkup()` (o SVG fixo `ICON_TRACK` saiu). Só na home, como pedido (legenda da Grade ficou sem ícone).
 - Gotcha local: `schedule.dev.js` é carregado sem `?v=`, então o navegador pode servir versão em cache depois de editar; recarregar forçado resolve. Em produção o `schedule.js?v=N` é bumpado normalmente.
 
+## Sessão 2d (2026-09-20): estrela sobre o X do modal
+
+- Bug: no modal de detalhe a estrela ficava por baixo do botão X (posição absoluta no canto). Correção: `.modal-card` define `--modal-close-size` e `--modal-close-inset`, usados pelo `.modal-close` e pelo `padding-right` de `.detail-top`, então o espaço do X é reservado em um lugar só. Qualquer conteúdo futuro no canto do modal deve usar as mesmas variáveis.
+
 ## Decisão pendente do Renato (plenárias)
 
 Mockups v2 (desenho aprovado visualmente, pelo Renato: faixa larga, avatar 104 px com anel multi-cor, selo "Plenária") ficaram só no scratchpad. Variantes: A 3 plenárias (28 talks), B só 17:15 (36 talks, custo zero, recomendada), C só 13:30 (32 talks). Renato disse que segue com a plenária depois da agenda.

@@ -602,12 +602,13 @@ footer{max-width:1180px;margin:36px auto 0;padding:0 24px;display:flex;flex-dire
 .modal[hidden]{display:none}
 .modal-backdrop{position:absolute;inset:0;background:rgba(3,4,8,.75);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .modal-card{
+  --modal-close-size:32px;--modal-close-inset:14px; /* botão X: tamanho e recuo, também usados por quem precisa desviar dele */
   position:relative;max-width:540px;width:100%;max-height:85vh;overflow-y:auto;
   background:linear-gradient(135deg,var(--card-a),var(--card-b));
   border:1px solid var(--card-border);border-radius:16px;padding:28px 26px;
 }
 .modal-close{
-  position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;
+  position:absolute;top:var(--modal-close-inset);right:var(--modal-close-inset);width:var(--modal-close-size);height:var(--modal-close-size);border-radius:50%;
   background:transparent;border:1px solid var(--card-border);color:var(--muted);
   font-size:16px;cursor:pointer;line-height:1;
 }
@@ -676,7 +677,8 @@ a.detail-speaker .li-icon{
 .person-name strong{font-weight:800}
 .person-role{margin-top:3px;font:500 11.5px var(--font-body);color:var(--muted-dim)}
 
-.detail-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+/* padding-right reserva o canto do botão X do modal, pra estrela nunca ficar por baixo dele */
+.detail-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;padding-right:calc(var(--modal-close-size) + var(--modal-close-inset))}
 .detail-top .track-label{margin-bottom:0}
 .detail .talk-tags{margin:2px 0 10px}
 
