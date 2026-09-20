@@ -128,6 +128,12 @@ de confiar neste texto.
 - Renato trocou bairros por lugares da cidade ("cadê meu bairro?"): IA Sala Observatório, Front/Back/Data Sala Estação, Mobile/Agile Sala Lagoa do Taquaral, Carreiras Sala Mercadão Central, Abertura e Encerramento Sala Calçadão Central (substitui "Auditório principal"). Tudo via `roomFor(place)`; só dado (schedule.js/.dev.js).
 - Não verifiquei online grafia/existência de cada lugar (Observatório e Estação foram sugestões minhas); confirmar com a organização. Salas reais do local ainda a definir.
 
+## Sessão 3 (2026-09-20): melhorias do site (lista aprovada pelo Renato)
+
+Ordem: 1 ingressos e CTA, 2 acessibilidade, 3 calendário e compartilhar agenda, 4 SEO e imagem de compartilhamento, 5 fontes locais, 6 PWA offline, 7 analytics (GoatCounter, sem cookies). Mocks ficam como estão.
+
+- **1. Ingressos e CTA (feito):** 3 tipos de ingresso (Grátis, Ingresso com camiseta, VIP; valores mock) em cards na home; botão "Garanta sua vaga" no cabeçalho, barra fixa no mobile e hero; estados buy/waitlist/soon; link do Sympla é a home do Sympla enquanto o evento não existe lá (`EVENT.tickets.url`). Detalhes em `PROJECT_CONTEXT.md` (seção "Tickets and the registration CTA").
+
 ## Decisão pendente do Renato (plenárias)
 
 Mockups v2 (desenho aprovado visualmente, pelo Renato: faixa larga, avatar 104 px com anel multi-cor, selo "Plenária") ficaram só no scratchpad. Variantes: A 3 plenárias (28 talks), B só 17:15 (36 talks, custo zero, recomendada), C só 13:30 (32 talks). Renato disse que segue com a plenária depois da agenda.

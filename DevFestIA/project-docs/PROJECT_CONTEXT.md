@@ -48,6 +48,7 @@ docs/
       persisted-set-repository.js  createPersistedSetRepository(): set of keys in an injected storage (localStorage)
       favorites.js              favoritesRepository + talkKey(slot, trackId)
       icons.js                  ICONS (svg paths by name) + iconsRepository.get(); also the per-track icons (`TRACKS[].icon`)
+      tickets.js                TICKET_TYPES (Grátis / com camiseta / VIP, mock values) + TICKETS_NOTE
       talk-formats.js           TALK_FORMATS (palestra/workshop/painel/bate-papo) + getById()
       mock-links.js             MOCK_LINKEDIN_URL / MOCK_FACEBOOK_URL / MOCK_SPONSOR_URL (one place for all mock links)
       mock-photo.js             mockPhoto(id): hand-picked stock portraits (pravatar.cc) by number
@@ -213,6 +214,10 @@ one-line change there — never edit nav HTML per page.
 ## Mock content (until real data arrives)
 
 All mock people, companies and links are fictional and live in `data/`: speakers and talks (see "Line-up model"), team (`team.js`, 6 organizers and 8 volunteers with Brazilian names; the Time page has no photo gallery), sponsors (`sponsors.js`, 5 tiers, 12 fictional companies with generated logos), partner communities (4), testimonials (3, with optional `role`). Person photos come from `mockPhoto()` (external stock service, hand-picked numbers; do not add numbers without looking at the image), logos from `mockLogo()`. Replacing mock with real = same shapes, real `photo`/`imageUrl`/`link`.
+
+## Tickets and the registration CTA
+
+`features/tickets.js` has one source of CTA state, `ticketCtaState(EVENT.tickets)`: `url` set = buy button (Sympla), no url but `waitlistUrl` = "Avise-me quando abrir", neither = status pill ("Em breve"). It feeds every place the button shows: header (all pages, via `initShell`), fixed bottom bar on mobile (hides while the tickets section is on screen), hero countdown card, and the ticket cards on the home. Ticket types are data (`data/tickets.js`): name, price, benefits, color, `featured`/`badge`, optional per-type `url`. Prices and benefits are mock. `EVENT.tickets.url` points to the Sympla home page while the event is not published there.
 
 ## Sponsors section
 

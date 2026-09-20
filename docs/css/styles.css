@@ -418,7 +418,57 @@ a.featured-speaker:focus-visible{outline:2px solid var(--text);outline-offset:4p
 
 /* ingressos */
 .tickets{max-width:1180px;margin:36px auto 0;padding:0 24px}
-.tickets h2{margin:0 0 12px;font:700 22px var(--font-display);color:oklch(95% 0.005 260)}
+.tickets h2{margin:0 0 16px;font:700 22px var(--font-display);color:oklch(95% 0.005 260)}
+.tickets-grid{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:780px){.tickets-grid{grid-template-columns:repeat(3,1fr)}}
+.ticket{
+  --ticket-color:var(--muted);
+  position:relative;overflow:hidden;display:flex;flex-direction:column;gap:10px;
+  padding:22px 20px 20px;border-radius:var(--radius);border:1px solid var(--card-border);
+  background:
+    radial-gradient(120% 80% at 0% 0%, color-mix(in oklch, var(--ticket-color) 12%, transparent), transparent 60%),
+    linear-gradient(180deg,var(--card-a),var(--card-b));
+}
+.ticket::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--ticket-color)}
+.ticket--featured{border-color:var(--ticket-color);box-shadow:0 0 28px color-mix(in oklch, var(--ticket-color) 22%, transparent)}
+.ticket-badge{
+  position:absolute;top:14px;right:14px;padding:3px 10px;border-radius:100px;
+  font:700 11px var(--font-body);color:oklch(14% 0.01 260);background:var(--ticket-color);
+}
+.ticket-name{margin:0;font:700 16px var(--font-display);color:oklch(95% 0.006 260);padding-right:96px}
+.ticket-price{font:800 34px/1 var(--font-display);color:var(--ticket-color)}
+.ticket-desc{margin:0;font:500 13.5px/1.5 var(--font-body);color:var(--muted)}
+.ticket-benefits{list-style:none;margin:6px 0 14px;padding:0;display:flex;flex-direction:column;gap:8px}
+.ticket-benefits li{display:flex;gap:8px;font:500 13.5px/1.4 var(--font-body);color:var(--text)}
+.ticket-benefits .icon{width:16px;height:16px;margin-top:2px;color:var(--ticket-color)}
+.ticket .cta{margin-top:auto;background:var(--ticket-color)}
+.tickets-note{margin:14px 0 0;font:500 12px var(--font-body);color:var(--muted)}
+.tickets-note:empty{display:none}
+
+/* CTA de inscrição — cabeçalho, barra fixa no mobile, hero e cards (features/tickets.js) */
+.cta{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border-radius:100px;
+  background:var(--accent);color:oklch(14% 0.01 260);border:0;cursor:pointer;white-space:nowrap;text-decoration:none;
+  font:700 14px var(--font-body);transition:transform .12s ease,box-shadow .15s ease;
+}
+.cta:hover{transform:translateY(-1px);box-shadow:0 6px 18px color-mix(in oklch, var(--accent) 35%, transparent)}
+.cta--header{padding:8px 16px;font-size:13px}
+.cta--block{width:100%}
+.cta--soon{background:transparent;color:var(--amber);border:1px solid color-mix(in oklch, var(--amber) 40%, transparent);cursor:default}
+.cta--soon:hover{transform:none;box-shadow:none}
+.header-actions{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+.cta-bar{display:none}
+@media(max-width:719px){
+  .cta-bar{
+    position:fixed;left:0;right:0;bottom:0;z-index:60;display:block;
+    padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+    background:rgba(5,6,10,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border-top:1px solid var(--card-border);transition:transform .2s ease;
+  }
+  .cta-bar.is-hidden{transform:translateY(110%)}
+  body.has-cta-bar{padding-bottom:calc(48px + 68px + env(safe-area-inset-bottom))}
+  .cta--header{display:none}
+}
 
 /* seção "Antes de vir" — cards genéricos (info-card.js), acento de cor
    sempre via --track-color inline, mesmo sem relação temática com a trilha */

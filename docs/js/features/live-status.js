@@ -92,7 +92,7 @@ function createLiveStatus({ schedule, tracks, event, elements = {}, now = () => 
         <div class="hero-label">O EVENTO COMEÇA EM</div>
         <div class="countdown" id="heroCountdown">${formatDaysHMS(state.first - now())}</div>
         <div class="hero-before-row">
-          <span class="pill-amber">${event.tickets?.status ?? "Inscrições encerradas"}</span>
+          ${event.tickets ? ticketButtonMarkup(ticketCtaState(event.tickets), { className: "cta", place: "hero" }) : ""}
           <span class="hero-hint">Programação abaixo em modo prévia</span>
         </div>
       </div>`;

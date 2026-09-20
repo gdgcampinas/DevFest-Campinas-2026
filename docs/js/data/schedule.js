@@ -22,12 +22,14 @@ const EVENT = {
   hosts: [
     { name: "GDG Campinas", icon: "assets/icons/gdg-icon.png" },
   ],
-  // Seção de ingressos na home — url vazia esconde o botão de compra
-  // (mostra só o status). Preencher quando as inscrições abrirem.
+  // CTA de inscrição (cabeçalho, barra mobile, hero e cards de ingresso, ver
+  // features/tickets.js): url preenchida = compra; vazia + waitlistUrl = "avise-me";
+  // os dois vazios = só o status. Tipos de ingresso: data/tickets.js.
   tickets: {
-    url: "",
+    url: "https://www.sympla.com.br", // página principal do Sympla enquanto o evento não está publicado
     label: "Garanta sua vaga",
     status: "Em breve",
+    waitlistUrl: "", // opcional: sem url de compra, vira "Avise-me quando abrir" (Instagram/WhatsApp)
   },
 };
 

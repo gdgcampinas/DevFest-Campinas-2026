@@ -202,6 +202,8 @@ function initShell(activePageId) {
   if (tickerEl) renderTicker(EVENT, SCHEDULE, tickerEl);
   injectEventSchema(buildEventSchema(EVENT, SCHEDULE));
 
+  initTicketCta(EVENT.tickets, { headerTopEl: document.querySelector(".header-top"), sectionEl: document.getElementById("ticketsSection") });
+
   document.documentElement.style.setProperty("--track-count", TRACKS.length);
 
   return reveal;

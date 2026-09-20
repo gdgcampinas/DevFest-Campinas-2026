@@ -32,7 +32,7 @@ function initHome() {
   renderTestimonials(testimonialsRepository.getAll(), document.getElementById("testimonialsSection"), document.querySelector(".testimonials-grid"));
   renderSponsors(sponsorsRepository.getAll(), document.getElementById("sponsorsSection"), document.querySelector(".sponsors-grid"));
   renderPartnerCommunities(partnerCommunitiesRepository.getAll(), document.getElementById("partnerCommunitiesSection"), document.querySelector(".partner-communities-grid"));
-  renderTickets(EVENT.tickets, document.getElementById("ticketsAction"));
+  renderTickets(EVENT.tickets, ticketsRepository.getAll(), document.getElementById("ticketsSection"), { note: TICKETS_NOTE });
 
   const liveStatus = createLiveStatus({
     schedule: SCHEDULE,
