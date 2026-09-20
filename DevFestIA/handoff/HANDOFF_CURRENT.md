@@ -1,6 +1,6 @@
 # Handoff — Current State
 
-**Last updated:** 2026-09-20, fim da sessão 3. Antes de confiar neste texto, rode
+**Last updated:** 2026-09-20, sessão 4 (botão Instalar app corrigido). Antes de confiar neste texto, rode
 `git status --short --branch` e `git log --oneline --decorate -10` (o git não mente).
 
 ## Status em uma olhada
@@ -64,30 +64,20 @@ metadata and SEO", "Offline (PWA)", "Usage analytics", "Accessibility rules",
 
 ## Pendências (com quem depende)
 
-0. **BUG CONFIRMADO: o botão "Instalar app" não aparece no iPhone (Safari e Chrome do
-   iOS).** Causa: todo navegador no iOS usa WebKit, que não dispara
-   `beforeinstallprompt`; o botão de `initInstallPrompt` (`docs/js/features/pwa.js`) só
-   nasce desse evento. O service worker e o uso offline não dependem disso e seguem
-   valendo. Prioridade antes de qualquer coisa nova. **Plano proposto (não
-   implementado):**
-   - detectar iOS (iPhone/iPad/iPod, e iPadOS que se apresenta como Mac com toque) e
-     "ainda não instalado" (`navigator.standalone` falso e `display-mode: standalone`
-     falso) e mostrar o mesmo botão "Instalar app";
-   - o clique abre um guia curto no modal existente (`createTalkModal().openHTML`):
-     1) toque em Compartilhar (ícone de quadrado com seta), 2) role e toque em
-     "Adicionar à Tela de Início", 3) confirme em Adicionar. No Chrome do iOS o passo
-     é parecido (menu Compartilhar do Chrome). Em navegadores embutidos (Instagram,
-     WhatsApp) avisar para abrir no Safari;
-   - textos e passos como dado (`data/install-guide.js`, repository), lógica de
-     detecção separada da tela (funções puras testáveis em Node), marcar o botão com
-     `data-track-event="pwa_install"` (target `ios-guide`) para o analytics;
-   - já existem `apple-touch-icon.png` (180 px) e as meta `apple-mobile-web-app-*`;
-     conferir no aparelho o nome e o ícone do app na tela inicial;
-   - no Android/Chrome desktop o fluxo por `beforeinstallprompt` continua; validar
-     ali também com o site publicado (DevTools > Application > Manifest) e
-     considerar separar `purpose: "any"` e `"maskable"` nos ícones do manifesto.
-   - Testar: funções de detecção em Node com user agents reais; guia no navegador
-     (simulando user agent); o teste no iPhone real é do Renato.
+0. **CORRIGIDO (sessão 4, falta conferir no aparelho): botão "Instalar app".**
+   Causa confirmada pelo Renato: no iPhone (Safari e Chrome do iOS, ambos WebKit) não
+   existe `beforeinstallprompt`, então o botão não nascia. Em Chrome real via CDP a
+   instalabilidade não tinha erro e o evento disparava, ou seja, servidor e manifesto
+   estavam certos. Correção: botão sempre visível até instalar, nativo quando há
+   evento, senão modal com o guia da plataforma (ver "Offline (PWA)" no
+   PROJECT_CONTEXT). Extras: Patrocínio não carregava `icons.js`/`icon.js` (o botão
+   lançaria erro lá); manifesto com `any` e `maskable` separados e `id`; modal
+   genérico (`components/modal.js`, o modal de palestra agora é criado por ele e some
+   do HTML das páginas); `tools/check-install.js` no CI (detecção, guias, dependências
+   de script por página, ícones). O guia do Chrome iOS assume Compartilhar > Adicionar
+   à Tela de Início (iOS 16.4+) com o Safari como plano B.
+   **Falta o Renato:** testar no iPhone real (Safari e Chrome) e no Android após o
+   deploy; conferir nome e ícone do app na tela inicial.
 1. **Plenárias (decisão do Renato):** faixa larga com o palestrante de destaque
    ocupando todas as trilhas. Desenho aprovado no mockup (avatar 104 px com anel
    multi-cor, selo "Plenária", barra com as 4 cores). Variantes: A 3 plenárias

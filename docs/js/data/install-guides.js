@@ -18,9 +18,9 @@ const INSTALL_GUIDES = [
     id: "ios-other",
     title: "Instalar no iPhone ou iPad",
     steps: [
-      "No iPhone, a instalação funciona pelo Safari. Abra este endereço nele.",
-      "Toque em Compartilhar, o quadrado com a seta para cima.",
-      "Escolha Adicionar à Tela de Início e confirme.",
+      "Toque em Compartilhar, o quadrado com a seta para cima, na barra do navegador.",
+      "Escolha Adicionar à Tela de Início e confirme em Adicionar.",
+      "Se essa opção não aparecer, abra este endereço no Safari e repita os passos.",
     ],
   },
   {
