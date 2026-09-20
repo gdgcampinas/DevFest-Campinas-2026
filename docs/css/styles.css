@@ -271,9 +271,9 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
 .talk:hover .talk-links .social-icon{color:var(--track-color);border-color:color-mix(in oklch, var(--track-color) 50%, var(--card-border))}
 
 /* rodapé: duração · favoritar · sala */
-.talk-foot{display:flex;align-items:center;gap:10px;padding-top:11px;border-top:1px solid color-mix(in oklch, var(--card-border) 70%, transparent)}
+.talk-foot{display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px;padding-top:11px;border-top:1px solid color-mix(in oklch, var(--card-border) 70%, transparent)}
 .talk-foot .room-tag{margin-left:auto}
-.talk-duration{display:inline-flex;align-items:center;gap:5px;font:600 11.5px var(--font-body);color:var(--muted)}
+.talk-duration{white-space:nowrap;display:inline-flex;align-items:center;gap:5px;font:600 11.5px var(--font-body);color:var(--muted)}
 .talk-duration .icon{width:13px;height:13px}
 .icon{width:1em;height:1em;flex:0 0 auto;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .fav-btn{
@@ -292,7 +292,7 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
 
 /* pill de sala — cor da trilha; reusado no card, legenda e modal de detalhe */
 .room-tag{
-  font:600 11px var(--font-body);padding:2px 10px;border-radius:100px;
+  white-space:nowrap;font:600 11px var(--font-body);padding:2px 10px;border-radius:100px;
   background:color-mix(in oklch, var(--track-color, var(--muted)) 14%, transparent);
   border:1px solid color-mix(in oklch, var(--track-color, var(--muted)) 40%, transparent);
   color:var(--track-color, var(--muted));

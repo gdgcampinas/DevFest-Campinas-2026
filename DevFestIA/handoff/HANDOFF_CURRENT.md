@@ -118,6 +118,11 @@ de confiar neste texto.
 - Link `#speaker-<id>` pra alguém escondido pelo filtro volta o filtro pra "Todas as trilhas" e rola até o card.
 - Testado: contagens por trilha, cards e palestras corretos, hash, regressão da Grade (trilha e Minha agenda), mobile. Obs.: o scroll suave da aba não anima na pane de teste, mas a matemática foi validada.
 
+## Sessão 2j (2026-09-20): salas por bairro
+
+- Salas das trilhas agora são bairros de Campinas via `roomFor()`: IA Barão Geraldo, Front/Back/Data Centro, Mobile/Agile Taquaral, Carreiras & Mentorias Guanabara (escolha minha, fácil de trocar em `TRACKS`). Só dado, mais o ajuste do rodapé do card (`.talk-foot` quebra em 2 linhas quando a sala é longa; "40 min" e a sala não quebram no meio).
+- Em aberto da conversa de bairros: nomes reais das salas do local (ainda "Local a definir"), incluir cidades da RMC (crítica do PDF do logo), votação da comunidade.
+
 ## Decisão pendente do Renato (plenárias)
 
 Mockups v2 (desenho aprovado visualmente, pelo Renato: faixa larga, avatar 104 px com anel multi-cor, selo "Plenária") ficaram só no scratchpad. Variantes: A 3 plenárias (28 talks), B só 17:15 (36 talks, custo zero, recomendada), C só 13:30 (32 talks). Renato disse que segue com a plenária depois da agenda.
@@ -136,7 +141,7 @@ card largo na Grade e no "ao vivo agora" da home. Esperar o "pode fazer".
 ## Not done yet / TBD
 
 - `EVENT.venue` / endereço: ainda `"Local a definir"`.
-- Salas e MCs das 4 trilhas: `"Sala a definir"` / `"MC a definir"`.
+- MCs das 4 trilhas: `"MC a definir"`. Salas: bairros mock (ver Sessão 2j).
 - `EVENT.lineupRevealed` é `false`. `schedule.dev.js` existe local
   (gitignored) espelhando o `schedule.js` mock; line-up real não carregado.
   Sempre editar os dois juntos.

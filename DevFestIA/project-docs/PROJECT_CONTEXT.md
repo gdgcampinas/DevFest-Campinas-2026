@@ -186,6 +186,10 @@ confirmed; no HTML/CSS change needed.
 - Swap storage (or the whole repository for an API) by changing only the `createPersistedSetRepository` call in `data/favorites.js`.
 - Formats and icons are data (`talk-formats.js`, `icons.js`): a new format is one line, no CSS.
 
+## Track rooms (neighborhoods)
+
+`TRACKS[].room` is built with `roomFor(neighborhood)` in schedule.js/.dev.js ("Sala <bairro>"): IA `Barão Geraldo`, Front/Back/Data `Centro`, Mobile/Agile `Taquaral`, Carreiras `Guanabara`. The name pattern lives only in `roomFor`; changing a track's neighborhood is one argument. It shows in the Grade legend, talk cards, modal and home "ao vivo agora" with no other code. Neighborhoods are decorative and may not match the real venue rooms.
+
 ## Track icons
 
 Each entry in `TRACKS` (schedule.js/.dev.js) has `icon`, a name from `data/icons.js` (IA `sparkles`, Front/Back/Data `code`, Mobile/Agile `phone`, Carreiras `rocket`). Only the home "Trilhas" section shows it (`tracks-overview.js` via `iconMarkup`, default `grid` when a track has none). New track icon = one entry in `icons.js` + the `icon` field.
@@ -250,7 +254,7 @@ that has a `#ticker` element (all six do, right after `<body>`).
 
 - Event venue, address (`EVENT.venue`/`EVENT.address` in
   schedule.js/.dev.js — date `2026-11-28` already set).
-- Track rooms/MCs (`TRACKS`, still "Sala a definir" / "MC a definir"); names are set.
+- Track MCs (`TRACKS[].mc`, still "MC a definir"). Room names are mock neighborhoods (see "Track icons" section note below); confirm the real room names with the venue once it is chosen.
 - Plenárias (full-width featured-speaker slot): mockup shown, decision pending, see handoff.
 - Real sponsors/partners (`sponsors.js` — still 1 mock item per tier).
 - Real line-up (`schedule.dev.js`, gitignored — not created yet locally).
