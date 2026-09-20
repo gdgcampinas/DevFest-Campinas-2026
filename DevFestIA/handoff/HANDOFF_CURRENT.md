@@ -89,6 +89,10 @@ de confiar neste texto.
 
 - Bug: no modal de detalhe a estrela ficava por baixo do botão X (posição absoluta no canto). Correção: `.modal-card` define `--modal-close-size` e `--modal-close-inset`, usados pelo `.modal-close` e pelo `padding-right` de `.detail-top`, então o espaço do X é reservado em um lugar só. Qualquer conteúdo futuro no canto do modal deve usar as mesmas variáveis.
 
+## Sessão 2e (2026-09-20): ordem na home
+
+- "Números do DevFest 2025" agora fica logo antes de "Veja como foi o DevFest 2025" (vídeo): ordem hero, Destaques, Números, vídeo, fotos, Sobre. Só HTML (`index.html`); nenhum JS depende da ordem.
+
 ## Decisão pendente do Renato (plenárias)
 
 Mockups v2 (desenho aprovado visualmente, pelo Renato: faixa larga, avatar 104 px com anel multi-cor, selo "Plenária") ficaram só no scratchpad. Variantes: A 3 plenárias (28 talks), B só 17:15 (36 talks, custo zero, recomendada), C só 13:30 (32 talks). Renato disse que segue com a plenária depois da agenda.
