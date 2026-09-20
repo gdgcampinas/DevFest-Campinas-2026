@@ -4,7 +4,7 @@ Multi-page site for DevFest Campinas 2026 (GDG Campinas), built the same way as 
 
 ## Stack (non-negotiable)
 
-- Plain HTML/CSS/JS. Zero build, zero npm dependency. Fonts via Google Fonts CDN (Google Sans for titles + Google Sans Text for body).
+- Plain HTML/CSS/JS. Zero build, zero npm dependency. Fonts are self-hosted (Google Sans, OFL, `assets/fonts/`, `css/fonts.css`); no runtime calls to Google Fonts.
 - GitHub Pages source: `docs/` folder on `main`.
 - Working branch: `development`. CI (`.github/workflows/validate.yml`) runs `node --check` on every push/PR to `development`; if it passes, `.github/workflows/promote.yml` fast-forward-merges `development` into `main` automatically. Never commit directly to `main`.
 
@@ -39,6 +39,7 @@ Six pages, all zero-build HTML that share the same `<script>` block
 docs/
   index.html, grade.html, palestrantes.html, time.html,
   patrocinio.html, codigo-de-conduta.html   structure only, no logic
+  css/fonts.css                              @font-face for the self-hosted Google Sans (loads first)
   css/tokens.css                             design tokens ONLY: brand palette, per-track colors, accent, fonts (loads first)
   css/styles.css                             all visual rules; consumes tokens, no literal brand color or font name
   assets/icons/, assets/img/highlights/       favicons, event photos
@@ -141,8 +142,8 @@ talks live once in `data/schedule-builder.js`:
 All in `docs/css/tokens.css`, in three layers (only the first holds literals):
 1. Brand palette `--google-blue/red/yellow/green` (same 4 colors as the new GDG Campinas logo; hex fallback then oklch).
 2. Semantic: track colors `--ia`, `--webdata`, `--mobile`, `--mentoring` point at palette items; `--accent` (green, was `--neon`), `--live`, `--amber`.
-3. Typography: `--font-display` (Google Sans) and `--font-body` (Google Sans Text). `styles.css` never names a font.
-Changing a color or the font = edit `tokens.css` (plus the fonts `<link>` in the 6 pages). Google Sans tops out at weight 700 on Google Fonts, so `800` declarations render as 700.
+3. Typography: `--font-display` and `--font-body`, both Google Sans (variable, weight 400-700, latin subset, self-hosted). Google Sans Text is NOT bundled: it is not in the open-source `google/fonts` repo, so its license for self-hosting is unconfirmed. `styles.css` never names a font.
+Changing a color = edit `tokens.css`; changing the font = `fonts.css` + `tokens.css` + the `<link rel=preload>` in the 6 pages. Google Sans tops out at weight 700 on Google Fonts, so `800` declarations render as 700.
 
 ## Key design decision: zero per-track CSS
 

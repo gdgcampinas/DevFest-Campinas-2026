@@ -140,6 +140,8 @@ Ordem: 1 ingressos e CTA, 2 acessibilidade, 3 calendário e compartilhar agenda,
 
 - **4. Compartilhamento e SEO (feito):** tags OG/Twitter/canonical estáticas nas 6 páginas, imagem 1200x630 gerada (`og-image.png`, fonte em `DevFestIA/design/og-image.html`), sitemap.xml, robots.txt, JSON-LD com ingressos (`Offer`, PreOrder até `salesOpen`), `DevFestIA/tools/check-meta.js` no CI (testei o caso de falha). Trocar a imagem quando o logo novo chegar. Detalhes em `PROJECT_CONTEXT.md` ("Share metadata and SEO").
 
+- **5. Fontes locais (feito):** Google Sans variável (OFL) hospedada em `docs/assets/fonts/` (36 KB, com `OFL.txt`), `css/fonts.css`, preload nas 6 páginas, zero chamadas ao Google Fonts (privacidade/LGPD, desempenho e offline). **O Google Sans Text saiu**: não está no repositório aberto do Google Fonts (licença de hospedagem não confirmada); o corpo do texto usa Google Sans. Só o subconjunto latino (cobre português).
+
 ## Decisão pendente do Renato (plenárias)
 
 Mockups v2 (desenho aprovado visualmente, pelo Renato: faixa larga, avatar 104 px com anel multi-cor, selo "Plenária") ficaram só no scratchpad. Variantes: A 3 plenárias (28 talks), B só 17:15 (36 talks, custo zero, recomendada), C só 13:30 (32 talks). Renato disse que segue com a plenária depois da agenda.

@@ -39,7 +39,7 @@
   --amber: var(--webdata);       /* CTAs */
   --live: var(--google-red);     /* dot "AO VIVO" */
 
-  /* 3. tipografia — Google Sans (títulos) + Google Sans Text (corpo), via Google Fonts */
+  /* 3. tipografia — Google Sans (OFL), hospedada em assets/fonts via css/fonts.css */
   --font-display: "Google Sans", "Product Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-  --font-body: "Google Sans Text", "Google Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --font-body: "Google Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
 }
