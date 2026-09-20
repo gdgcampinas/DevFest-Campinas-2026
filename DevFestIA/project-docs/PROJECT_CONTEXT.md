@@ -49,6 +49,7 @@ docs/
       persisted-set-repository.js  createPersistedSetRepository(): set of keys in an injected storage (localStorage)
       favorites.js              favoritesRepository + talkKey(slot, trackId)
       icons.js                  ICONS (svg paths by name) + iconsRepository.get(); also the per-track icons (`TRACKS[].icon`)
+      install-guides.js         INSTALL_GUIDES (passo a passo por plataforma) + installGuidesRepository.getByPlatform()
       analytics.js              ANALYTICS config (provider, endpoint, notice); empty endpoint = off
       tickets.js                TICKET_TYPES (Grátis / com camiseta / VIP, mock values) + TICKETS_NOTE
       talk-formats.js           TALK_FORMATS (palestra/workshop/painel/bate-papo) + getById()
@@ -73,6 +74,8 @@ docs/
       testimonials.js             testimonial quotes
       patrocinio.js                Patrocínio page copy/benefits
     components/              reusable templates, one responsibility each
+      modal.js                   createModal(id): the only modal markup and close behavior (X, backdrop, Esc)
+      install-guide.js           installGuideMarkup(guide): body of the "how to install" modal
       avatar.js                 photo or initials — automatic fallback
       icon.js                    iconMarkup(name) — only svg template
       calendar-links.js          "Adicionar ao calendário" buttons of the talk modal
@@ -86,7 +89,7 @@ docs/
       sponsor-card.js               sponsor/community item (logo box + name + optional description)
       person-card.js                 person card (team/speakers)
     features/                data + template + behavior, one section each
-      agenda.js, track-filter.js, a11y.js, pwa.js, analytics.js, calendar.js, talk-index.js, calendar-actions.js, agenda-share.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
+      agenda.js, track-filter.js, a11y.js, pwa.js, install-platform.js, analytics.js, calendar.js, talk-index.js, calendar-actions.js, agenda-share.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
       featured-speakers.js, sponsors.js, partner-communities.js,
       team.js, cod.js, seo.js, stats.js, about.js, highlights.js,
       video.js, realizacao.js, tickets.js, footer.js,
@@ -100,7 +103,7 @@ DevFestIA/                  ← AI continuity and dev tooling, not part of the s
   CLAUDE.md, AGENTS.md, NEW_CHAT_PROMPT.md
   project-docs/PROJECT_CONTEXT.md, project-docs/Continuidade.md
   handoff/HANDOFF_CURRENT.md
-  tools/                     check-meta.js (CI), check-lineup.js, check-calendar.js, e2e-offline.js, e2e-kill-switch.js
+  tools/                     check-meta.js (CI), check-install.js (CI), check-lineup.js, check-calendar.js, e2e-offline.js, e2e-kill-switch.js
   design/                    og-image.html, app-icon.html (sources of generated images)
 
 .github/workflows/
@@ -232,6 +235,8 @@ All mock people, companies and links are fictional and live in `data/`: speakers
 - `docs/manifest.webmanifest` (installable, standalone), icons `assets/icons/icon-192.png` and `icon-512.png` (source `DevFestIA/design/app-icon.html`, regenerate when the new logo arrives), `docs/sw.js` (service worker) and `features/pwa.js` (registration, "Instalar app" button, "sem internet" bar).
 - `sw.js` has no hand-written file list: on install it reads `SITE_PAGES` (importScripts of `site-nav.js`), fetches every page, everything they reference (src/href, including the schedule loaded through `onerror`), CSS `url()`s and the manifest icons. Pages are network-first (cache when offline, keyed by path so `?demo=`/`?agenda=` reuse it), files with `?v=N` or under `/assets/` are cache-first (the URL changes when the file does), everything else network-first. Same origin only (mock avatars from pravatar are not cached).
 - Bump `SW_VERSION` in `sw.js` only when the worker logic changes (it drops old caches). Emergency: open any page with `?nosw=1` to remove the worker and its caches.
+- "Instalar app" (`initInstallPrompt` in `pwa.js`): the button is always shown until the app is installed (`isRunningAsInstalledApp()`). With the native `beforeinstallprompt` (Chrome, Edge, Android) it opens the browser dialog; without it (iPhone/Safari, Firefox, in-app browsers) it opens a modal with the steps of the platform. `features/install-platform.js` picks the platform id from ordered rules (`INSTALL_PLATFORM_RULES`, pure, takes `{ ua, maxTouchPoints }`), `data/install-guides.js` holds the steps, `components/install-guide.js` the markup, `components/modal.js` the modal. New platform = one guide + one rule. The click carries `data-track-kind` `native` or `guide`. Every page that loads `pwa.js` must also load the six scripts above; `tools/check-install.js` (CI) fails if one is missing (Patrocínio was missing two, so the button would have thrown there).
+- The manifest lists `any` and `maskable` icons separately (same files: the artwork already sits in the 60% safe zone) and has an `id`.
 - The Browser pane in the desktop app does NOT support service workers; test with real Chrome (a CDP script drove it: install, offline reload of home/grade/speakers, kill switch).
 
 ## Share metadata and SEO

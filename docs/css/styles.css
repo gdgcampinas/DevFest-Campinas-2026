@@ -490,6 +490,12 @@ a.featured-speaker:focus-visible{outline:2px solid var(--text);outline-offset:4p
   font:700 13px var(--font-body);color:oklch(14% 0.01 260);background:var(--amber);
 }
 
+/* guia "como instalar" (components/install-guide.js) */
+.install-guide-title{display:flex;align-items:center;gap:8px;margin:0 0 14px;padding-right:calc(var(--modal-close-size) + var(--modal-close-inset));font:700 19px var(--font-display);color:oklch(97% 0.005 260)}
+.install-guide-title .icon{width:20px;height:20px;color:var(--accent)}
+.install-guide-steps{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px;font:500 15px/1.5 var(--font-body);color:var(--text)}
+.install-guide-steps li::marker{color:var(--accent);font-weight:700}
+
 .analytics-notice{margin-top:4px;font:500 12px var(--font-body);color:var(--muted)}
 
 /* CTA de inscrição — cabeçalho, barra fixa no mobile, hero e cards (features/tickets.js) */

@@ -1,7 +1,7 @@
 /**
  * Feature: app instalável e uso offline. Registra o service worker
- * (sw.js), mostra o botão "Instalar app" quando o navegador oferece, e
- * avisa quando a pessoa fica sem internet. Botão de emergência: abrir
+ * (sw.js), mostra o botão "Instalar app" (nativo ou com o guia da
+ * plataforma) e avisa quando a pessoa fica sem internet. Botão de emergência: abrir
  * qualquer página com ?nosw=1 remove o service worker e os caches.
  */
 const SW_PATH = "sw.js";
@@ -47,32 +47,57 @@ function initOfflineNotice({ message = "Você está sem internet. Mostrando a ve
   window.addEventListener("offline", () => (bar.hidden = false));
 }
 
-/** Guarda o evento do navegador e mostra o botão "Instalar app" no cabeçalho. */
-function initInstallPrompt({ mountEl, label = "Instalar app" }) {
+/**
+ * Botão "Instalar app" no cabeçalho, sempre presente enquanto o app não
+ * está instalado. Com o evento nativo (Chrome, Edge, Android) abre o
+ * diálogo do navegador; sem ele (iPhone, Firefox, app embutido) abre o
+ * guia de instalação da plataforma. Tudo entra por parâmetro: onde
+ * montar, qual plataforma, de onde vêm os guias e como abrir o modal.
+ */
+function initInstallPrompt({ mountEl, platform, guides, createGuideModal, label = "Instalar app" }) {
+  if (isRunningAsInstalledApp()) return;
+  mountEl.insertAdjacentHTML("afterbegin", `<button type="button" class="chip-btn" data-install data-track-event="pwa_install" data-track-kind="guide">${iconMarkup("download")}${label}</button>`);
+  const buttonEl = mountEl.querySelector("[data-install]");
   let deferred = null;
+  let guideModal = null;
+
   window.addEventListener("beforeinstallprompt", event => {
     event.preventDefault();
     deferred = event;
-    mountEl.insertAdjacentHTML("afterbegin", `<button type="button" class="chip-btn" data-install data-track-event="pwa_install">${iconMarkup("download")}${label}</button>`);
+    buttonEl.dataset.trackKind = "native";
   });
-  mountEl.addEventListener("click", async event => {
-    if (!event.target.closest("[data-install]") || !deferred) return;
-    deferred.prompt();
-    await deferred.userChoice;
-    deferred = null;
-    mountEl.querySelector("[data-install]")?.remove();
+  window.addEventListener("appinstalled", () => buttonEl.remove());
+
+  buttonEl.addEventListener("click", async () => {
+    if (deferred) {
+      const promptEvent = deferred;
+      deferred = null;
+      buttonEl.dataset.trackKind = "guide";
+      promptEvent.prompt();
+      await promptEvent.userChoice;
+      return;
+    }
+    guideModal = guideModal || createGuideModal();
+    guideModal.openHTML(installGuideMarkup(guides.getByPlatform(platform)));
   });
-  window.addEventListener("appinstalled", () => mountEl.querySelector("[data-install]")?.remove());
 }
 
 function initPwa() {
   initOfflineNotice();
-  if (!canUseServiceWorker()) return;
-  if (getParam("nosw") === "1") {
-    killServiceWorker();
-    return;
+  if (canUseServiceWorker()) {
+    if (getParam("nosw") === "1") {
+      killServiceWorker();
+      return;
+    }
+    window.addEventListener("load", () => navigator.serviceWorker.register(SW_PATH).catch(() => {}));
   }
-  window.addEventListener("load", () => navigator.serviceWorker.register(SW_PATH).catch(() => {}));
   const actionsEl = document.querySelector(".header-actions");
-  if (actionsEl) initInstallPrompt({ mountEl: actionsEl });
+  if (actionsEl) {
+    initInstallPrompt({
+      mountEl: actionsEl,
+      platform: detectInstallPlatform({ ua: navigator.userAgent, maxTouchPoints: navigator.maxTouchPoints }),
+      guides: installGuidesRepository,
+      createGuideModal: () => createModal("installModal", { label: "Como instalar o app" }),
+    });
+  }
 }

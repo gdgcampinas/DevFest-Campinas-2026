@@ -23,3 +23,6 @@ jobs:
 
       - name: Check share metadata, sitemap and robots
         run: node DevFestIA/tools/check-meta.js
+
+      - name: Check install flow and script dependencies
+        run: node DevFestIA/tools/check-install.js
