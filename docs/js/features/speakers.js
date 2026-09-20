@@ -75,7 +75,7 @@ function focusSpeakerFromHash(gridEl, { showAll = () => {} } = {}) {
   if (!card) return;
   if (card.classList.contains("is-filtered-out")) showAll();
   card.classList.add("is-target");
-  card.scrollIntoView({ block: "center", behavior: "smooth" });
+  card.scrollIntoView({ block: "center", behavior: motionSafeBehavior() });
 }
 
 /** `speakers` vem de extractSpeakers() — a feature só desenha, não sabe de onde vêm. */

@@ -82,7 +82,7 @@ docs/
       sponsor-card.js               sponsor/community item (logo box + name + optional description)
       person-card.js                 person card (team/speakers)
     features/                data + template + behavior, one section each
-      agenda.js, track-filter.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
+      agenda.js, track-filter.js, a11y.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
       featured-speakers.js, sponsors.js, partner-communities.js,
       team.js, cod.js, seo.js, stats.js, about.js, highlights.js,
       video.js, realizacao.js, tickets.js, footer.js,
@@ -214,6 +214,12 @@ one-line change there — never edit nav HTML per page.
 ## Mock content (until real data arrives)
 
 All mock people, companies and links are fictional and live in `data/`: speakers and talks (see "Line-up model"), team (`team.js`, 6 organizers and 8 volunteers with Brazilian names; the Time page has no photo gallery), sponsors (`sponsors.js`, 5 tiers, 12 fictional companies with generated logos), partner communities (4), testimonials (3, with optional `role`). Person photos come from `mockPhoto()` (external stock service, hand-picked numbers; do not add numbers without looking at the image), logos from `mockLogo()`. Replacing mock with real = same shapes, real `photo`/`imageUrl`/`link`.
+
+## Accessibility rules (keep them)
+
+- `--muted-dim` (tokens.css) is text-safe: at least 4.5:1 (WCAG AA) over cards and background. Do not go darker.
+- No visible text below 12px. Keyboard focus is one global `:focus-visible` rule in styles.css; only add a specific one if the offset or radius must differ.
+- `features/a11y.js`: skip link ("Pular para o conteúdo", target = first block after `<header>`, no markup per page), `prefersReducedMotion()` and `motionSafeBehavior()` for programmatic scrolling; CSS also shortens animations and transitions under `prefers-reduced-motion`.
 
 ## Tickets and the registration CTA
 

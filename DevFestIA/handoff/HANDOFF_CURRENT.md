@@ -134,6 +134,8 @@ Ordem: 1 ingressos e CTA, 2 acessibilidade, 3 calendário e compartilhar agenda,
 
 - **1. Ingressos e CTA (feito):** 3 tipos de ingresso (Grátis, Ingresso com camiseta, VIP; valores mock) em cards na home; botão "Garanta sua vaga" no cabeçalho, barra fixa no mobile e hero; estados buy/waitlist/soon; link do Sympla é a home do Sympla enquanto o evento não existe lá (`EVENT.tickets.url`). Detalhes em `PROJECT_CONTEXT.md` (seção "Tickets and the registration CTA").
 
+- **2. Acessibilidade (feito):** `--muted-dim` clareado para passar 4,5:1 (era ~2,7:1) e `--muted` subiu junto; nenhum texto abaixo de 12 px; foco de teclado global (uma regra só, as duplicadas saíram); link "Pular para o conteúdo"; `features/a11y.js` (`motionSafeBehavior`, usado no scroll suave); animações reduzidas com `prefers-reduced-motion`. Regras em `PROJECT_CONTEXT.md` ("Accessibility rules").
+
 ## Decisão pendente do Renato (plenárias)
 
 Mockups v2 (desenho aprovado visualmente, pelo Renato: faixa larga, avatar 104 px com anel multi-cor, selo "Plenária") ficaram só no scratchpad. Variantes: A 3 plenárias (28 talks), B só 17:15 (36 talks, custo zero, recomendada), C só 13:30 (32 talks). Renato disse que segue com a plenária depois da agenda.

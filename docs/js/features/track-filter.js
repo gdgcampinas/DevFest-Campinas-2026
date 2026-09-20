@@ -22,7 +22,7 @@ function renderTabs(tracks, mountEl, { counts = null } = {}) {
 function centerTab(tabsEl, tab) {
   if (tabsEl.scrollWidth <= tabsEl.clientWidth) return;
   const tabLeft = tab.getBoundingClientRect().left - tabsEl.getBoundingClientRect().left + tabsEl.scrollLeft;
-  tabsEl.scrollTo({ left: tabLeft - (tabsEl.clientWidth - tab.offsetWidth) / 2, behavior: "smooth" });
+  tabsEl.scrollTo({ left: tabLeft - (tabsEl.clientWidth - tab.offsetWidth) / 2, behavior: motionSafeBehavior() });
 }
 
 /**

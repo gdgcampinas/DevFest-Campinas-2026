@@ -191,6 +191,7 @@ function buildBeforeYouComeItems(tracks) {
  */
 function initShell(activePageId) {
   warnIfDemoMode();
+  initSkipLink();
   const reveal = resolveReveal();
 
   renderBrand(EVENT.hosts, document.getElementById("brand"));

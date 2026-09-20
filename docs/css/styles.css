@@ -1,4 +1,16 @@
 *{box-sizing:border-box}
+/* foco de teclado visível em qualquer elemento interativo (uma regra só) */
+:focus-visible{outline:2px solid var(--text);outline-offset:2px}
+.skip-link{
+  position:absolute;left:12px;top:-64px;z-index:300;padding:10px 16px;border-radius:100px;
+  background:var(--text);color:oklch(12% 0.01 260);font:700 13px var(--font-body);text-decoration:none;
+  transition:top .15s ease;
+}
+.skip-link:focus{top:12px}
+/* respeita quem pede menos movimento: sem animações longas nem transições */
+@media(prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important}
+}
 html,body{margin:0;padding:0}
 body{
   background: linear-gradient(rgba(5,6,10,.55), rgba(5,6,10,.9) 420px, var(--bg) 900px);
@@ -161,7 +173,7 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
 .tracks-legend .item{display:flex;flex-direction:column;gap:2px;padding:0 4px}
 .tracks-legend .name{display:flex;align-items:center;gap:6px;font:700 13px var(--font-body);color:oklch(88% 0.01 260)}
 .tracks-legend .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
-.tracks-legend .sub{display:flex;flex-wrap:wrap;align-items:center;gap:5px;font:500 11.5px var(--font-body);color:var(--muted-dim);padding-left:15px}
+.tracks-legend .sub{display:flex;flex-wrap:wrap;align-items:center;gap:5px;font:500 12px var(--font-body);color:var(--muted-dim);padding-left:15px}
 .tracks-legend .mc{color:var(--text);font-weight:700}
 
 /* filtro / segmented control — cor por trilha via --track-color inline (JS), sem regra por id */
@@ -178,7 +190,7 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
   background:transparent;border:none;color:var(--muted);cursor:pointer;white-space:nowrap;
 }
 .tab.active{background:var(--track-color, var(--text));color:oklch(12% 0.01 260)}
-.tab-count{margin-left:7px;padding:0 6px;border-radius:100px;font-size:11px;background:rgba(255,255,255,.08)}
+.tab-count{margin-left:7px;padding:0 6px;border-radius:100px;font-size:12px;background:rgba(255,255,255,.08)}
 .tab.active .tab-count{background:rgba(0,0,0,.16)}
 
 /* agenda */
@@ -223,10 +235,10 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
   box-shadow:0 10px 28px color-mix(in oklch, var(--track-color) 18%, transparent);
 }
 .talk-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.track-label{display:flex;align-items:center;gap:6px;font:700 10.5px var(--font-body);text-transform:uppercase;letter-spacing:.6px;color:var(--track-color)}
+.track-label{display:flex;align-items:center;gap:6px;font:700 12px var(--font-body);text-transform:uppercase;letter-spacing:.6px;color:var(--track-color)}
 .track-label .dot{width:6px;height:6px;border-radius:50%;box-shadow:0 0 8px var(--track-color)}
 .time-chip{
-  white-space:nowrap;font:700 11.5px var(--font-body);font-variant-numeric:tabular-nums;color:var(--text);
+  white-space:nowrap;font:700 12px var(--font-body);font-variant-numeric:tabular-nums;color:var(--text);
   background:rgba(255,255,255,.06);border:1px solid var(--card-border);border-radius:100px;padding:2px 9px;
 }
 .slot.soon .time-chip{
@@ -234,7 +246,7 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
   background:color-mix(in oklch, var(--accent) 10%, transparent);
 }
 .now-tag{
-  display:inline-flex;align-items:center;gap:5px;white-space:nowrap;font:800 10px var(--font-body);letter-spacing:.6px;
+  display:inline-flex;align-items:center;gap:5px;white-space:nowrap;font:800 12px var(--font-body);letter-spacing:.6px;
   color:oklch(97% 0.005 260);background:var(--live);border-radius:100px;padding:3px 10px;
 }
 .now-tag .dot{width:6px;height:6px;border-radius:50%;background:#fff;animation:pulse 1.4s infinite}
@@ -244,7 +256,7 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
 /* formato + tags de tema — usado no card e no modal de detalhe */
 .talk-tags{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px}
 .talk-format{
-  display:inline-flex;align-items:center;gap:5px;font:700 10.5px var(--font-body);letter-spacing:.4px;text-transform:uppercase;
+  display:inline-flex;align-items:center;gap:5px;font:700 12px var(--font-body);letter-spacing:.4px;text-transform:uppercase;
   color:var(--track-color);border-radius:8px;padding:3px 8px;
   background:color-mix(in oklch, var(--track-color) 12%, transparent);
   border:1px solid color-mix(in oklch, var(--track-color) 35%, transparent);
@@ -273,7 +285,7 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
 /* rodapé: duração · favoritar · sala */
 .talk-foot{display:flex;align-items:center;flex-wrap:wrap;gap:8px 10px;padding-top:11px;border-top:1px solid color-mix(in oklch, var(--card-border) 70%, transparent)}
 .talk-foot .room-tag{margin-left:auto}
-.talk-duration{white-space:nowrap;display:inline-flex;align-items:center;gap:5px;font:600 11.5px var(--font-body);color:var(--muted)}
+.talk-duration{white-space:nowrap;display:inline-flex;align-items:center;gap:5px;font:600 12px var(--font-body);color:var(--muted)}
 .talk-duration .icon{width:13px;height:13px}
 .icon{width:1em;height:1em;flex:0 0 auto;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .fav-btn{
@@ -284,7 +296,6 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
 .fav-btn:hover{color:var(--track-color, var(--accent));border-color:var(--track-color, var(--accent))}
 .fav-btn.on{color:oklch(14% 0.01 260);background:var(--track-color, var(--accent));border-color:var(--track-color, var(--accent))}
 .fav-btn.on .icon{fill:currentColor}
-.fav-btn:focus-visible{outline:2px solid var(--text);outline-offset:2px}
 
 /* barra de progresso do "AGORA" — atualizada por live-status.js a cada tick */
 .talk-progress{position:absolute;left:0;right:0;bottom:0;height:3px;background:color-mix(in oklch, var(--track-color) 18%, transparent)}
@@ -292,7 +303,7 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
 
 /* pill de sala — cor da trilha; reusado no card, legenda e modal de detalhe */
 .room-tag{
-  white-space:nowrap;font:600 11px var(--font-body);padding:2px 10px;border-radius:100px;
+  white-space:nowrap;font:600 12px var(--font-body);padding:2px 10px;border-radius:100px;
   background:color-mix(in oklch, var(--track-color, var(--muted)) 14%, transparent);
   border:1px solid color-mix(in oklch, var(--track-color, var(--muted)) 40%, transparent);
   color:var(--track-color, var(--muted));
@@ -316,7 +327,7 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
 .fav-toggle:hover{color:var(--text)}
 .fav-toggle.active{color:oklch(14% 0.01 260);background:var(--accent);border-color:var(--accent)}
 .fav-toggle.active .icon{fill:currentColor}
-.fav-count{min-width:20px;padding:0 6px;border-radius:100px;text-align:center;font-size:11.5px;background:rgba(255,255,255,.08)}
+.fav-count{min-width:20px;padding:0 6px;border-radius:100px;text-align:center;font-size:12px;background:rgba(255,255,255,.08)}
 .fav-toggle.active .fav-count{background:rgba(0,0,0,.14)}
 .agenda-empty{margin:0 0 12px;padding:18px 20px;border:1px dashed var(--card-border);border-radius:var(--radius);color:var(--muted);font-size:14px;text-align:center}
 .favs-only .slot.no-fav{display:none}
@@ -369,7 +380,7 @@ a.featured-speaker:focus-visible{outline:2px solid var(--text);outline-offset:4p
 .featured-company{font:600 13px var(--font-body);color:var(--ia)}
 .featured-speakers-cta{
   display:inline-block;margin-top:4px;
-  font:700 11.5px var(--font-body);letter-spacing:1.5px;text-transform:uppercase;
+  font:700 12px var(--font-body);letter-spacing:1.5px;text-transform:uppercase;
   color:oklch(94% 0.005 260);background:transparent;
   border:1px solid rgba(255,255,255,.35);border-radius:100px;
   padding:11px 24px;text-decoration:none;transition:background .12s ease,border-color .12s ease;
@@ -433,7 +444,7 @@ a.featured-speaker:focus-visible{outline:2px solid var(--text);outline-offset:4p
 .ticket--featured{border-color:var(--ticket-color);box-shadow:0 0 28px color-mix(in oklch, var(--ticket-color) 22%, transparent)}
 .ticket-badge{
   position:absolute;top:14px;right:14px;padding:3px 10px;border-radius:100px;
-  font:700 11px var(--font-body);color:oklch(14% 0.01 260);background:var(--ticket-color);
+  font:700 12px var(--font-body);color:oklch(14% 0.01 260);background:var(--ticket-color);
 }
 .ticket-name{margin:0;font:700 16px var(--font-display);color:oklch(95% 0.006 260);padding-right:96px}
 .ticket-price{font:800 34px/1 var(--font-display);color:var(--ticket-color)}
@@ -573,8 +584,7 @@ a.featured-speaker:focus-visible{outline:2px solid var(--text);outline-offset:4p
   transition:border-color .15s ease,background .15s ease;
 }
 .speaker-talk:hover{border-color:var(--track-color);background:color-mix(in oklch, var(--track-color) 8%, transparent)}
-.speaker-talk:focus-visible{outline:2px solid var(--text);outline-offset:2px}
-.speaker-talk-track{display:flex;align-items:center;gap:6px;font:700 10.5px var(--font-body);text-transform:uppercase;letter-spacing:.5px;color:var(--track-color)}
+.speaker-talk-track{display:flex;align-items:center;gap:6px;font:700 12px var(--font-body);text-transform:uppercase;letter-spacing:.5px;color:var(--track-color)}
 .speaker-talk-track .dot{width:6px;height:6px;border-radius:50%}
 .speaker-talk-title{display:block;margin-top:3px;font:600 13px/1.35 var(--font-body);color:oklch(90% 0.01 260)}
 .speaker-card.is-filtered-out,.speaker-talk.is-filtered-out{display:none}
@@ -664,7 +674,6 @@ footer{max-width:1180px;margin:36px auto 0;padding:0 24px;display:flex;flex-dire
 /* card clicável (abre modal de detalhe ou galeria) */
 .talk[data-slot-index],.faq-item.clickable{cursor:pointer;transition:transform .12s ease}
 .talk[data-slot-index]:hover,.faq-item.clickable:hover{transform:translateY(-2px)}
-.talk[data-slot-index]:focus-visible,.faq-item.clickable:focus-visible{outline:2px solid var(--text);outline-offset:2px}
 
 /* modal — genérico, reusado pra detalhe de palestra e galerias (cardápio, mapa etc) */
 .modal{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
@@ -687,7 +696,7 @@ footer{max-width:1180px;margin:36px auto 0;padding:0 24px;display:flex;flex-dire
   --track-color: var(--card-border);
   border-top:4px solid var(--track-color);margin:-28px -26px 0;padding:24px 26px 0;
 }
-.detail .track-label{display:flex;align-items:center;gap:6px;font:700 11px var(--font-body);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;color:var(--track-color)}
+.detail .track-label{display:flex;align-items:center;gap:6px;font:700 12px var(--font-body);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;color:var(--track-color)}
 .detail .track-label .dot{width:7px;height:7px;border-radius:50%}
 .detail-title{margin:0 0 12px;font:800 22px var(--font-display);color:oklch(97% 0.005 260);line-height:1.3}
 .detail-desc{margin:0 0 16px;font:500 14px var(--font-body);color:var(--muted);line-height:1.6;white-space:pre-line}
@@ -708,7 +717,7 @@ a.detail-speaker{display:inline-flex;align-items:center;gap:7px;text-decoration:
 a.detail-speaker:hover{text-decoration:underline}
 a.detail-speaker .li-icon{
   width:18px;height:18px;border-radius:4px;background:#0a66c2;color:#fff;
-  font:700 10px/18px var(--font-body);text-align:center;
+  font:700 12px/18px var(--font-body);text-align:center;
 }
 /* cargo/empresa do speaker — opcional, só aparece quando o dado vem preenchido */
 .detail-speaker-row .talk-links{margin-left:auto}
@@ -740,13 +749,13 @@ a.detail-speaker .li-icon{
 .social-icon{
   width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;
   background:rgba(3,4,8,.6);backdrop-filter:blur(3px);color:#fff;
-  font:700 10.5px var(--font-body);text-decoration:none;
+  font:700 12px var(--font-body);text-decoration:none;
 }
 .social-icon:hover{background:rgba(3,4,8,.85)}
 .person-info{padding:12px 14px 14px}
 .person-name{font:700 13.5px var(--font-body);color:oklch(92% 0.006 260);text-transform:uppercase;letter-spacing:.2px}
 .person-name strong{font-weight:800}
-.person-role{margin-top:3px;font:500 11.5px var(--font-body);color:var(--muted-dim)}
+.person-role{margin-top:3px;font:500 12px var(--font-body);color:var(--muted-dim)}
 
 /* padding-right reserva o canto do botão X do modal, pra estrela nunca ficar por baixo dele */
 .detail-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;padding-right:calc(var(--modal-close-size) + var(--modal-close-inset))}

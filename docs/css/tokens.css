@@ -16,8 +16,8 @@
   --card-b: oklch(15.5% 0.015 260);
   --card-border: oklch(30% 0.02 260);
   --text: oklch(90% 0.01 260);
-  --muted: oklch(65% 0.02 260);
-  --muted-dim: oklch(45% 0.02 260);
+  --muted: oklch(70% 0.02 260);
+  --muted-dim: oklch(62% 0.02 260); /* texto secundário: >= 4.5:1 (WCAG AA) sobre card e fundo */
   --radius: 14px;
   --track-count: 4; /* setado dinamicamente via JS a partir de TRACKS.length */
 
