@@ -81,8 +81,7 @@ metadata and SEO", "Offline (PWA)", "Usage analytics", "Accessibility rules",
    partir do ícone do app (comandos no `design/app-icon.html`) e linkados com `?v=2`
    (o iOS e o service worker guardam ícone pela URL).
    **Falta o Renato:** conferir o ícone novo no iPhone (remover o app antigo e
-   reinstalar; o iOS guarda o ícone) e testar no Android (Safari e Chrome) e no Android após o
-   deploy; conferir nome e ícone do app na tela inicial.
+   reinstalar; o iOS guarda o ícone) e testar o Android (Chrome).
 1. **Plenárias (decisão do Renato):** faixa larga com o palestrante de destaque
    ocupando todas as trilhas. Desenho aprovado no mockup (avatar 104 px com anel
    multi-cor, selo "Plenária", barra com as 4 cores). Variantes: A 3 plenárias
