@@ -35,7 +35,7 @@ palestras de cada pessoa (abre o mesmo modal), o modal leva ao perfil
 
 **Conversão e alcance:** 3 tipos de ingresso (Grátis, Ingresso com camiseta, VIP;
 valores de exemplo) e um CTA único (`ticketCtaState`) no cabeçalho, barra fixa
-mobile, hero e cards; link do Sympla é a home do Sympla (estamos em dev). Tags
+mobile, hero e cards; sem link do Sympla ainda: todos os botões mostram "Em breve" e os preços pagos mostram "Valor a definir" (só o Grátis tem R$ 0). Tags
 OG/Twitter/canonical nas 6 páginas, imagem 1200x630, sitemap, robots, JSON-LD do
 evento com ingressos.
 

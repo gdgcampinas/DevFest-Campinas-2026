@@ -30,7 +30,7 @@ const EVENT = {
   // features/tickets.js): url preenchida = compra; vazia + waitlistUrl = "avise-me";
   // os dois vazios = só o status. Tipos de ingresso: data/tickets.js.
   tickets: {
-    url: "https://www.sympla.com.br", // página principal do Sympla enquanto o evento não está publicado
+    url: "", // link do evento no Sympla; vazio = todos os botões viram "Em breve" (sem link morto)
     label: "Garanta sua vaga",
     status: "Em breve",
     salesOpen: false, // true quando as vendas abrirem de verdade (dados estruturados: PreOrder vira InStock)

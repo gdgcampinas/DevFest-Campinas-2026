@@ -9,8 +9,10 @@
  */
 const priceFormatter = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 
-function priceLabel(price) {
-  return priceFormatter.format(price);
+/** Preço ausente (ainda não definido) vira o texto de `tbdLabel`, em vez de um valor inventado. */
+function ticketPriceMarkup(price, { tbdLabel = "" } = {}) {
+  if (price == null) return `<div class="ticket-price ticket-price--tbd">${tbdLabel}</div>`;
+  return `<div class="ticket-price">${priceFormatter.format(price)}</div>`;
 }
 
 function ticketCtaState(tickets, { label = tickets.label, url = tickets.url } = {}) {
@@ -33,7 +35,7 @@ function ticketCardMarkup(type, tickets) {
     <div class="ticket${type.featured ? " ticket--featured" : ""}" style="--ticket-color:${type.color}">
       ${type.badge ? `<span class="ticket-badge">${type.badge}</span>` : ""}
       <h3 class="ticket-name">${type.name}</h3>
-      <div class="ticket-price">${priceLabel(type.price)}</div>
+      ${ticketPriceMarkup(type.price, { tbdLabel: TICKET_PRICE_TBD })}
       <p class="ticket-desc">${type.description}</p>
       <ul class="ticket-benefits">${benefits}</ul>
       ${ticketButtonMarkup(state, { className: "cta cta--block", place: `ticket-${type.id}` })}

@@ -261,7 +261,7 @@ All mock people, companies and links are fictional and live in `data/`: speakers
 
 ## Tickets and the registration CTA
 
-`features/tickets.js` has one source of CTA state, `ticketCtaState(EVENT.tickets)`: `url` set = buy button (Sympla), no url but `waitlistUrl` = "Avise-me quando abrir", neither = status pill ("Em breve"). It feeds every place the button shows: header (all pages, via `initShell`), fixed bottom bar on mobile (hides while the tickets section is on screen), hero countdown card, and the ticket cards on the home. Ticket types are data (`data/tickets.js`): name, price, benefits, color, `featured`/`badge`, optional per-type `url`. Prices and benefits are mock. `EVENT.tickets.url` points to the Sympla home page while the event is not published there.
+`features/tickets.js` has one source of CTA state, `ticketCtaState(EVENT.tickets)`: `url` set = buy button (Sympla), no url but `waitlistUrl` = "Avise-me quando abrir", neither = status pill ("Em breve"). It feeds every place the button shows: header (all pages, via `initShell`), fixed bottom bar on mobile (hides while the tickets section is on screen), hero countdown card, and the ticket cards on the home. Ticket types are data (`data/tickets.js`): name, price, benefits, color, `featured`/`badge`, optional per-type `url`. A type without `price` shows `TICKET_PRICE_TBD` ("Valor a definir") and no schema.org Offer; today only Grátis has a price (0). `EVENT.tickets.url` is empty until the event is published on Sympla, so every CTA (header, bar, hero, cards) shows the "Em breve" pill instead of a link; fill it and set `salesOpen: true` when sales open.
 
 ## Sponsors section
 
