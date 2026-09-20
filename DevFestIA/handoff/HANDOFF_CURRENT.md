@@ -112,6 +112,12 @@ de confiar neste texto.
 
 - Seção "Fotos" da página Time removida a pedido do Renato: HTML, `data/team-photos.js`, modal e scripts que só ela usava, e o trecho de `pages/time.js`. A página agora é Quem somos, Organizadores, Voluntários. `highlightPhoto()` continua em `highlights.js` (usado pela home).
 
+## Sessão 2i (2026-09-20): filtro por trilha em Palestrantes
+
+- Novo `features/track-filter.js` (abas + filtros) extraído de `agenda.js` e reusado por Grade e Palestrantes; abas com contador (38 / IA 10 / Front-Back-Data 10 / Mobile-Agile 10 / Carreiras 8), `aria-pressed`, e a aba escolhida é centralizada no mobile. `renderSpeakersSection` agora recebe a lista de palestrantes pronta (`extractSpeakers`), sem depender de schedule.
+- Link `#speaker-<id>` pra alguém escondido pelo filtro volta o filtro pra "Todas as trilhas" e rola até o card.
+- Testado: contagens por trilha, cards e palestras corretos, hash, regressão da Grade (trilha e Minha agenda), mobile. Obs.: o scroll suave da aba não anima na pane de teste, mas a matemática foi validada.
+
 ## Decisão pendente do Renato (plenárias)
 
 Mockups v2 (desenho aprovado visualmente, pelo Renato: faixa larga, avatar 104 px com anel multi-cor, selo "Plenária") ficaram só no scratchpad. Variantes: A 3 plenárias (28 talks), B só 17:15 (36 talks, custo zero, recomendada), C só 13:30 (32 talks). Renato disse que segue com a plenária depois da agenda.

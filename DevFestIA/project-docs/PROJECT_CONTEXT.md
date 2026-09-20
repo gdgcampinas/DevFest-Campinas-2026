@@ -81,7 +81,7 @@ docs/
       sponsor-card.js               sponsor/community item (logo box + name + optional description)
       person-card.js                 person card (team/speakers)
     features/                data + template + behavior, one section each
-      agenda.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
+      agenda.js, track-filter.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
       featured-speakers.js, sponsors.js, partner-communities.js,
       team.js, cod.js, seo.js, stats.js, about.js, highlights.js,
       video.js, realizacao.js, tickets.js, footer.js,
@@ -196,6 +196,7 @@ Each entry in `TRACKS` (schedule.js/.dev.js) has `icon`, a name from `data/icons
 - Everything else derives from `SCHEDULE`: `extractSpeakers()` (features/speakers.js) builds the Palestrantes gallery AND the home "Destaques" pool, dedup by `id`, listing every talk of each person.
 - Navigation both ways: speaker card -> talk (same modal as Grade, via `[data-slot-index][data-track]`), talk modal -> speaker profile (`palestrantes.html#speaker-<id>`, highlighted and scrolled on arrival), Destaques -> profile. LinkedIn appears on the talk card, the modal, the gallery card (mock URL: `MOCK_LINKEDIN_URL` in `mock-links.js`, one place).
 - Favorites (`Minha agenda`) work in Grade, home hero, modal, and Palestrantes.
+- Track filter (`features/track-filter.js`): one module for the tabs (`renderTabs`, optional per-track counts, `initTabSelection`) reused by Grade (`initTrackFilter`, cards) and Palestrantes (`initSpeakerTrackFilter`, people with a talk in that track, showing only that track's talks). A link to a speaker hidden by the filter (`#speaker-<id>`) resets the filter to "Todas as trilhas" via the injected `showAll`. The selected tab is centered on narrow screens.
 - The line-up is public (`EVENT.lineupRevealed = true`) with mock data, by decision of the organizers. Real line-up = replace the catalog/speakers with same-shape data (photo, real LinkedIn).
 
 ## Site nav

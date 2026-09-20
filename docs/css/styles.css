@@ -178,6 +178,8 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
   background:transparent;border:none;color:var(--muted);cursor:pointer;white-space:nowrap;
 }
 .tab.active{background:var(--track-color, var(--text));color:oklch(12% 0.01 260)}
+.tab-count{margin-left:7px;padding:0 6px;border-radius:100px;font-size:11px;background:rgba(255,255,255,.08)}
+.tab.active .tab-count{background:rgba(0,0,0,.16)}
 
 /* agenda */
 #agenda{display:flex;flex-direction:column;gap:12px}
@@ -491,7 +493,7 @@ a.featured-speaker:focus-visible{outline:2px solid var(--text);outline-offset:4p
 
 /* galeria de palestrantes — extraída do schedule, some antes da revelação */
 .speakers{max-width:1180px;margin:36px auto 0;padding:0 24px}
-.speakers h2{margin:0 0 16px;font:700 22px var(--font-display);color:oklch(95% 0.005 260)}
+.speakers h2{margin:0;font:700 22px var(--font-display);color:oklch(95% 0.005 260)}
 .speakers-grid{display:grid;grid-template-columns:1fr;gap:12px}
 @media(min-width:640px){.speakers-grid{grid-template-columns:repeat(2,1fr)}}
 @media(min-width:980px){.speakers-grid{grid-template-columns:repeat(3,1fr)}}
@@ -525,6 +527,7 @@ a.featured-speaker:focus-visible{outline:2px solid var(--text);outline-offset:4p
 .speaker-talk-track{display:flex;align-items:center;gap:6px;font:700 10.5px var(--font-body);text-transform:uppercase;letter-spacing:.5px;color:var(--track-color)}
 .speaker-talk-track .dot{width:6px;height:6px;border-radius:50%}
 .speaker-talk-title{display:block;margin-top:3px;font:600 13px/1.35 var(--font-body);color:oklch(90% 0.01 260)}
+.speaker-card.is-filtered-out,.speaker-talk.is-filtered-out{display:none}
 .speaker-card{scroll-margin-top:24px;transition:border-color .2s ease,box-shadow .2s ease}
 .speaker-card.is-target{border-color:var(--track-color);box-shadow:0 0 26px color-mix(in oklch, var(--track-color) 30%, transparent)}
 .speaker-card .social-icon{margin-top:10px}

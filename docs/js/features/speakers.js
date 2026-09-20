@@ -5,7 +5,8 @@
  * um slot aparece uma vez só, com todas as suas palestras listadas.
  * Cada palestra listada abre o mesmo modal da Grade (ver TALK_TRIGGER
  * em talk-modal.js). Some por completo antes da revelação do line-up.
- * O mesmo extractSpeakers() alimenta os Destaques da home.
+ * O mesmo extractSpeakers() alimenta os Destaques da home e o filtro
+ * por trilha (track-filter.js).
  */
 function extractSpeakers(schedule, tracks, timezone) {
   const people = new Map();
@@ -42,8 +43,9 @@ function speakerGalleryCardMarkup(speaker) {
     ? socialIconMarkup({ name: "linkedin", link: speaker.linkedin })
     : "";
   const anchor = speaker.id ? ` id="${speakerAnchorId(speaker)}"` : "";
+  const trackIds = [...new Set(speaker.talks.map(talk => talk.track.id))].join(" ");
   return `
-    <div class="speaker-card"${anchor} style="--track-color:${speaker.track.color}">
+    <div class="speaker-card"${anchor} data-tracks="${trackIds}" style="--track-color:${speaker.track.color}">
       ${avatar}
       <div class="speaker-card-name">${speaker.name}</div>
       ${meta ? `<div class="speaker-card-meta">${meta}</div>` : ""}
@@ -52,25 +54,35 @@ function speakerGalleryCardMarkup(speaker) {
     </div>`;
 }
 
-/** Destaca e rola até o card do palestrante indicado no #hash (vindo do modal ou dos Destaques). */
-function focusSpeakerFromHash(gridEl) {
+/** Quantidade de palestrantes por trilha (e no total, em ALL_TRACKS) — alimenta os contadores das abas. */
+function speakerCountsByTrack(speakers, tracks) {
+  const counts = { [ALL_TRACKS]: speakers.length };
+  tracks.forEach(track => {
+    counts[track.id] = speakers.filter(speaker => speaker.talks.some(talk => talk.track.id === track.id)).length;
+  });
+  return counts;
+}
+
+/**
+ * Destaca e rola até o card do palestrante indicado no #hash (vindo do
+ * modal ou dos Destaques). Se o filtro de trilha o estiver escondendo,
+ * `showAll` (injetado) volta pra "Todas as trilhas" antes de rolar.
+ */
+function focusSpeakerFromHash(gridEl, { showAll = () => {} } = {}) {
   gridEl.querySelectorAll(".speaker-card.is-target").forEach(card => card.classList.remove("is-target"));
   const id = decodeURIComponent(location.hash.slice(1));
   const card = id ? gridEl.querySelector(`#${CSS.escape(id)}`) : null;
   if (!card) return;
+  if (card.classList.contains("is-filtered-out")) showAll();
   card.classList.add("is-target");
   card.scrollIntoView({ block: "center", behavior: "smooth" });
 }
 
-function renderSpeakersSection(schedule, tracks, sectionEl, gridEl, { reveal = true, timezone } = {}) {
-  if (!reveal) {
-    sectionEl.hidden = true;
-    return;
-  }
-  const speakers = extractSpeakers(schedule, tracks, timezone);
-  sectionEl.hidden = speakers.length === 0;
-  if (speakers.length === 0) return;
+/** `speakers` vem de extractSpeakers() — a feature só desenha, não sabe de onde vêm. */
+function renderSpeakersSection(speakers, sectionEl, gridEl, { reveal = true, showAll } = {}) {
+  sectionEl.hidden = !reveal || speakers.length === 0;
+  if (sectionEl.hidden) return;
   gridEl.innerHTML = speakers.map(speakerGalleryCardMarkup).join("");
-  focusSpeakerFromHash(gridEl);
-  window.addEventListener("hashchange", () => focusSpeakerFromHash(gridEl));
+  focusSpeakerFromHash(gridEl, { showAll });
+  window.addEventListener("hashchange", () => focusSpeakerFromHash(gridEl, { showAll }));
 }

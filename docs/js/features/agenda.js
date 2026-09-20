@@ -1,5 +1,5 @@
 /**
- * Feature: agenda completa + legenda + abas de filtro por trilha.
+ * Feature: agenda completa + legenda (o filtro por trilha vive em track-filter.js).
  * Tudo injetado por parâmetro (schedule, tracks) — nada hardcoded aqui,
  * então essa mesma função serve pra qualquer lista de trilhas/horários.
  */
@@ -61,14 +61,6 @@ function renderLegend(tracks, mountEl) {
     .join("");
 }
 
-function renderTabs(tracks, mountEl) {
-  const allTab = `<button class="tab active" data-track="all">Todas as trilhas</button>`;
-  const trackTabs = tracks
-    .map(track => `<button class="tab" data-track="${track.id}" style="--track-color:${track.color}">${track.shortLabel}</button>`)
-    .join("");
-  mountEl.innerHTML = allTab + trackTabs;
-}
-
 function renderAgenda(schedule, tracks, timezone, mountEl, { reveal = true, favorites = null } = {}) {
   mountEl.innerHTML = schedule
     .map((slot, index) => {
@@ -79,25 +71,4 @@ function renderAgenda(schedule, tracks, timezone, mountEl, { reveal = true, favo
       return `<div class="slot" data-index="${index}"><div class="slot-time">${time}</div>${body}</div>`;
     })
     .join("");
-}
-
-/**
- * scopeEl delimita onde o filtro atua — só a agenda completa, nunca o
- * card "acontecendo agora" do hero (mesmo que reaproveite .talks/.talk).
- */
-function initTrackFilter(tabsEl, scopeEl) {
-  tabsEl.addEventListener("click", event => {
-    const btn = event.target.closest(".tab");
-    if (!btn) return;
-
-    tabsEl.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-
-    const track = btn.dataset.track;
-    scopeEl.querySelectorAll(".talks").forEach(t => (t.dataset.view = track));
-    scopeEl.querySelectorAll(".talk").forEach(card => {
-      card.classList.toggle("shown", track === "all" || card.dataset.track === track);
-    });
-    scopeEl.dispatchEvent(new CustomEvent("trackfilterchange"));
-  });
 }
