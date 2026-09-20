@@ -1,210 +1,163 @@
 # Handoff — Current State
 
-**Last updated:** 2026-09-20 (sessão 2: cards + favoritos)
+**Last updated:** 2026-09-20, fim da sessão 3. Antes de confiar neste texto, rode
+`git status --short --branch` e `git log --oneline --decorate -10` (o git não mente).
 
-## Status
+## Status em uma olhada
 
-Site publicado (`main` = `development`, CI verde na última verificação)
-e em evolução ativa no branch `development`. Site de 6 páginas com dado
-real parcial e o resto mock. Último commit de código: `0683580` ("Show
-the ticker banner on every page, not only the home"); a sessão fecha com
-um commit de documentação em cima dele. Sempre conferir `git log` antes
-de confiar neste texto.
+- Site estático de 6 páginas (Principal, Grade, Palestrantes, Time, Patrocínio,
+  Código de Conduta), sem build, sem backend. Publicado por GitHub Pages a partir
+  de `docs/` no `main`; trabalho no `development`, o CI valida e promove sozinho.
+- Último commit de código da sessão 3: `5f01f5b` (GoatCounter ligado). Sequência
+  da sessão: `1580d1d` ingressos/CTA, `bbac628` acessibilidade, `94400b6` calendário
+  e compartilhar, `6e78d11` SEO/imagem, `fac34c9` fontes locais, `88b7e82` PWA
+  offline, `9ce13c7` analytics, `5f01f5b` endpoint do GoatCounter.
+- Todo o conteúdo de pessoas, empresas e ingressos é **MOCK de propósito** (Renato
+  pediu para deixar; os dados reais vêm depois no mesmo formato). O line-up mock
+  está público (`EVENT.lineupRevealed = true`).
 
-## Done (sessão 2026-09-13 a 2026-09-20)
+## O que o site tem hoje
 
-**Grade e trilhas**
-- 4 trilhas: IA, Front-end/Back-end/Data, Mobile/Agile (nova, token
-  `--mobile` em `styles.css`), Carreiras & Mentorias (renomeada de
-  "Carreira em Tecnologia"). Cada trilha tem `description` opcional.
-- Grade do dia (evento 28/11, 08h às 18h), gerada por parâmetro:
-  08:00 Credenciamento, 08:30 Abertura, 4 slots de manhã
-  (09:00, 09:45, 10:30, 11:15), 12:00 até 13:20 Almoço (1h20),
-  13:20 até 13:30 Retorno para a sala, 5 slots à tarde (13:30, 14:15,
-  15:00, 15:45, 16:30), 17:15 até 18:00 Encerramento. Regra: palestra
-  40 min (com perguntas) + 5 min de troca = 45 min por slot.
-- `docs/js/data/schedule-builder.js` (novo): `talkWindows()` calcula os
-  horários, `buildSchedule()` monta `SCHEDULE` a partir do `DAY_PLAN`
-  declarativo em `schedule.js`, `mockTalks()` rotaciona o pool
-  `MOCK_SPEAKERS`. Os 36 talks mock escritos à mão saíram. Mudar
-  horário ou número de slots = editar o `DAY_PLAN`.
-- `live-status.js`: texto sticky "Agora: ..." usava `speaker.name` do
-  formato antigo e mostrava `undefined`; corrigido com `speakerList()`.
-- `.faq-grid` passou a usar `repeat(auto-fit, minmax(240px, 1fr))`
-  (colunas pelo nº de cards, não pelo nº de trilhas): "Antes de vir"
-  segue com 3 cards, "Trilhas" mostra 4.
+**Grade e agenda:** 4 trilhas (IA, Front/Back/Data, Mobile/Agile, Carreiras &
+Mentorias), 9 slots x 4 = 36 palestras, gerados por `schedule-builder.js` a partir
+do `DAY_PLAN`. Salas com nomes de lugares históricos via `roomFor(lugar)`:
+Observatório, Estação, Lagoa do Taquaral, Mercadão Central; Abertura e
+Encerramento na Sala Calçadão Central. Cards novos (formato, tags, LinkedIn,
+duração, sala), "acontecendo agora" (hero da home, pílula AO VIVO, barra fixa,
+progresso, "Em N min"), filtro por trilha com contadores, "Minha agenda"
+(favoritos em localStorage) com exportar .ics, WhatsApp, copiar link e banner para
+quem abre `?agenda=`.
 
-**Conteúdo novo (inspirado no Campinas Innovation Week)**
-- Patrocinadores com `description` opcional e logo em caixa branca
-  (`sponsor-card.js`, mesma função serve as comunidades parceiras).
-- Seção "Trilhas" na home (`tracks-overview.js`, reusa `info-card.js`).
-- Depoimentos (`testimonials.js`), ticker/faixa animada, página
-  **Patrocínio** (6ª página, nav atualizado em `site-nav.js`).
-- Ticker agora aparece nas 6 páginas: `renderTicker()` roda dentro de
-  `initShell()` (guardado por `#ticker` existir na página).
-- `eventDateLabel()` em `agenda.js` (formato de data em 1 lugar só).
-- Home: Números reais do DevFest 2025 (700 / 36+ / 37 / 4), Destaques
-  (4 palestrantes aleatórios, troca a cada reload e a cada 15 s), vídeo
-  recap (youtubeId `qXGQG-G3Jw8`, é do DevFest 2017, trocar pelo de
-  2025), 16 fotos reais escolhidas por contagem de rostos (Vision
-  framework do macOS).
-- Páginas: Time (Quem somos / Organizadores / Fotos / Voluntários),
-  Palestrantes (galeria extraída do schedule), Código de Conduta.
+**Line-up ligado:** 36 palestras (`mock-talks.js`) e 38 palestrantes
+(`mock-speakers.js`) ligados só por `speakerIds`; galeria de Palestrantes lista as
+palestras de cada pessoa (abre o mesmo modal), o modal leva ao perfil
+(`palestrantes.html#speaker-<id>`), Destaques da home também.
 
-**Arquitetura**
-- Repository pattern (`repository.js`, `createRepository()`) cobre toda
-  coleção standalone (sponsors, team, testimonials, stats, video,
-  highlights, about, cod, footer, patrocínio, mock-speakers,
-  partner-communities). Páginas consomem via `xRepository.getAll()`.
-  **Fora:** `EVENT`, `TRACKS`, `SCHEDULE` continuam globals diretos (usados
-  em dezenas de lugares; envolver exige passada própria).
-- Bug corrigido: seção `.tracks-overview` não tinha CSS de container e
-  estourava a largura toda; agora tem `max-width`/`padding` como as demais.
-- Bug corrigido: ícone de LinkedIn na galeria de palestrantes usava
-  classe errada e agora reusa `socialIconMarkup()`.
-- Cache: URL de imagem com `?v=` via `HIGHLIGHTS_VERSION`, porque trocar
-  bytes sem trocar nome não invalida o CDN do GitHub Pages.
+**Conversão e alcance:** 3 tipos de ingresso (Grátis, Ingresso com camiseta, VIP;
+valores de exemplo) e um CTA único (`ticketCtaState`) no cabeçalho, barra fixa
+mobile, hero e cards; link do Sympla é a home do Sympla (estamos em dev). Tags
+OG/Twitter/canonical nas 6 páginas, imagem 1200x630, sitemap, robots, JSON-LD do
+evento com ingressos.
 
-## Sessão 2 (2026-09-20): agenda com cards novos e favoritos
+**Qualidade:** contraste AA no texto secundário, fonte mínima 12 px, foco global,
+link "Pular para o conteúdo", `prefers-reduced-motion`. Fontes locais (Google Sans,
+OFL). PWA: instalável e funcionando sem internet. Analytics: GoatCounter (conta
+`gdgcampinas`, painel em https://gdgcampinas.goatcounter.com), sem cookies, 13
+eventos por `data-track-event`.
 
-- Cards de palestra redesenhados (glow na cor da trilha, avatar com anel, horário em chip, formato + tags, LinkedIn, duração, sala, AGORA com barra de progresso, "Em N min" no próximo slot). O campo `level` foi removido (Renato pediu trocar): entrou `format` + `tags`.
-- "Minha agenda": estrela por palestra, salva em localStorage (cada pessoa monta a sua, sem backend). Filtro na Grade, estrela também no hero da home e no modal. Detalhes em `PROJECT_CONTEXT.md` (seção "Talk card and Minha agenda").
-- Arquivos novos: `data/{persisted-set-repository,favorites,icons,talk-formats}.js`, `components/{icon,favorite-button,talk-meta}.js`, `features/{favorites,favorites-filter}.js`.
-- Dado novo a preencher no line-up real: `format` e `tags` por palestra (opcionais; sem eles a linha some). Mock usa `format: "palestra"`.
-- Limitações conhecidas: favorito não sincroniza entre abas abertas ao mesmo tempo; chave usa horário do slot, então mudar horário de uma palestra perde o favorito dela.
-- Ideias não feitas: painel/dupla com meta por pessoa, exportar Minha agenda (calendário/compartilhar), alerta de conflito.
+Arquitetura, padrões e decisões: `project-docs/PROJECT_CONTEXT.md` (seções "Line-up
+model", "Tickets and the registration CTA", "Calendar and sharing", "Share
+metadata and SEO", "Offline (PWA)", "Usage analytics", "Accessibility rules",
+"Design tokens", "Track rooms").
 
-## Sessão 2b (2026-09-20): cores Google e fonte Google Sans
+## Decisões que o Renato já tomou (não reabrir sem motivo)
 
-- Novo `docs/css/tokens.css` (cores e fontes, carrega antes de `styles.css`). Trilhas agora apontam pra paleta do logo novo: IA azul, Front/Back/Data amarelo, Mobile/Agile verde, Carreiras vermelho. `--neon` virou `--accent` (verde Google). Fonte: Google Sans (títulos) + Google Sans Text (corpo), no lugar de Manrope + Public Sans. `styles.css` só consome tokens (`--font-display`, `--font-body`).
-- Origem: PDF `apresentacao.pdf` do Renato (proposta de logo novo, "Nova proposta", ainda sem arquivos de logo no repo).
-- Pendente: logo novo (SVG/PNG do símbolo colorido, branco e completo) pra trocar `EVENT.hosts` e favicons; confirmar aprovação do logo com a organização e as regras de marca do programa GDG; link do Sympla em `EVENT.tickets.url`.
+- Nada de backend; persistência opcional só atrás de repository (sem banco hoje).
+- Cores/marca: paleta do Google (azul, amarelo, verde, vermelho), tokens em
+  `css/tokens.css`. Fonte: Google Sans (o Google Sans Text não entra: licença de
+  hospedagem não confirmada).
+- Fotos: pessoas (pravatar.cc por número, escolhidas à mão) em vez de avatares
+  ilustrados. Nomes mistos, brasileiros e internacionais.
+- Salas: lugares históricos, não bairros ("cadê meu bairro?"). Time sem galeria de
+  fotos. Mock público.
+- Ingressos: Grátis, Ingresso com camiseta, VIP; Sympla (link real ainda não existe).
 
-## Sessão 2c (2026-09-20): ícones das trilhas na home
+## Pendências (com quem depende)
 
-- `TRACKS[].icon` (sparkles, code, phone, rocket) + 4 ícones novos em `data/icons.js`; `tracks-overview.js` usa `iconMarkup()` (o SVG fixo `ICON_TRACK` saiu). Só na home, como pedido (legenda da Grade ficou sem ícone).
-- Gotcha local: `schedule.dev.js` é carregado sem `?v=`, então o navegador pode servir versão em cache depois de editar; recarregar forçado resolve. Em produção o `schedule.js?v=N` é bumpado normalmente.
+1. **Plenárias (decisão do Renato):** faixa larga com o palestrante de destaque
+   ocupando todas as trilhas. Desenho aprovado no mockup (avatar 104 px com anel
+   multi-cor, selo "Plenária", barra com as 4 cores). Variantes: A 3 plenárias
+   (09:00, 13:30, 17:15; 28 talks), **B só 17:15 (36 talks, custo zero,
+   recomendada)**, C só 13:30 (32 talks). Falta escolher A, B ou C. Implementação:
+   item `{ plenary: { start, end, room, speakers, title } }` no `DAY_PLAN`
+   (schedule.js e .dev.js), ramo em `buildSchedule()`, `plenaryMarkup()` reusando
+   `avatarMarkup`/`speakerList`/`speakerMetaLine`/`favoriteButtonMarkup`/
+   `iconMarkup`, card largo na Grade e no "ao vivo agora" (`live-status.js`),
+   CSS com tokens (sem regra por trilha), `talkKey` para favoritar.
+2. **Logo novo (Renato envia):** SVG/PNG do símbolo colorido, branco e completo
+   ("GDG Campinas"). Trocar: `EVENT.hosts[].icon` (header), favicons
+   (`assets/icons/favicon-32.png`, `apple-touch-icon.png`), ícones do app
+   (`assets/icons/icon-192.png` e `icon-512.png`, fonte
+   `DevFestIA/design/app-icon.html`), imagem de compartilhamento
+   (`assets/img/og-image.png`, fonte `DevFestIA/design/og-image.html`),
+   `theme-color`. O PDF `apresentacao.pdf` chama de "Nova proposta": confirmar
+   aprovação e regras de marca do programa GDG.
+3. **Dados reais (Renato/organização):** local (`EVENT.venue`, `venueConfirmed`),
+   salas reais e MCs (`TRACKS[].room/mc`), line-up real (mesmo formato de
+   `mock-talks.js`/`mock-speakers.js`, com `format`, `tags`, foto e LinkedIn reais),
+   patrocinadores e comunidades reais, depoimentos, time, estacionamento e comida
+   (`PARKING_IMAGES`/`FOOD_IMAGES` em `app.js`), vídeo de recap 2025 em
+   `data/video.js` (hoje é o de 2017), valores e benefícios reais dos ingressos,
+   link real do Sympla (`EVENT.tickets.url`, `salesOpen: true` quando abrir).
+   Descrição do repo no GitHub só pela interface (conta sem admin); texto sugerido:
+   "O DevFest Campinas é um evento realizado pelo GDG Campinas, criado para conectar
+   pessoas, compartilhar conhecimento e fortalecer a comunidade de tecnologia da
+   região."
+4. Confirmar grafia/existência dos lugares das salas (não verifiquei online).
+5. Opcional: estender o repository pattern a `EVENT`/`TRACKS`/`SCHEDULE`.
 
-## Sessão 2d (2026-09-20): estrela sobre o X do modal
+## Backlog de ideias (aprovadas em espírito, nada implementado)
 
-- Bug: no modal de detalhe a estrela ficava por baixo do botão X (posição absoluta no canto). Correção: `.modal-card` define `--modal-close-size` e `--modal-close-inset`, usados pelo `.modal-close` e pelo `padding-right` de `.detail-top`, então o espaço do X é reservado em um lugar só. Qualquer conteúdo futuro no canto do modal deve usar as mesmas variáveis.
+**Identidade e "uau" (o Renato citou de novo no fim da sessão 3):**
+- **Redemoinho do logo animado / ícone girando**: o símbolo em espiral do logo
+  novo girando (CSS/SVG) como fundo do hero, sob o tema "Do Local ao Infinito", com
+  estrelas sutis (respeitar `prefers-reduced-motion`, já há infraestrutura).
+  Depende do logo novo em SVG.
+- **Cartão de compartilhamento pessoal** "Vou ao DevFest Campinas": imagem gerada no
+  navegador (canvas) com nome, foto opcional e a Minha agenda, para baixar/compartilhar.
 
-## Sessão 2e (2026-09-20): ordem na home
+**Outras ideias da análise:** quiz "Monte sua trilha" (preenche a Minha agenda),
+feedback por palestra (formulário do Google pré-preenchido por palestra),
+certificado de participação gerado no navegador (horas complementares),
+mentorias com agendamento (trilha Carreiras & Mentorias), vagas dos patrocinadores,
+mapa do local com as salas, credencial digital com QR, perguntas ao vivo/enquetes,
+passaporte DevFest com QR nos estandes, mural da hashtag; card de painel mostrando
+os dois cargos; incluir cidades da RMC nas salas ou votação da comunidade.
 
-- "Números do DevFest 2025" agora fica logo antes de "Veja como foi o DevFest 2025" (vídeo): ordem hero, Destaques, Números, vídeo, fotos, Sobre. Só HTML (`index.html`); nenhum JS depende da ordem.
+## Como trabalhar e testar aqui
 
-## Sessão 2f (2026-09-20): line-up mock completo e interligado
+- Servidor local: `cd docs && python3 -m http.server 8080`. Parâmetros úteis:
+  `?lineup=1` (força o line-up), `?demo=2026-11-28T09:20` (simula o horário; teste
+  09:20, 10:27 "Em N min", 12:30 almoço, 17:30, 18:30 encerrado), `?analytics=debug`
+  (loga eventos), `?nosw=1` (remove service worker e caches).
+- Toda mudança em `.js`/`.css` exige `node --check` e bump de `?v=N` em todas as
+  páginas que o referenciam (arquivo novo: tag em todas as páginas do bloco
+  compartilhado). `?v=` esquecido = navegador serve versão velha.
+- `docs/js/data/schedule.dev.js` (gitignored, espelho local) é carregado SEM `?v=`:
+  o navegador pode servir cache depois de editar; força com
+  `fetch('/js/data/schedule.dev.js',{cache:'reload'})` e recarrega. Edite sempre
+  `schedule.js` e `schedule.dev.js` juntos. Nunca commitar o dev.
+- Ferramentas em `DevFestIA/tools/`: `check-meta.js` (roda no CI: OG, sitemap,
+  robots, manifesto, ícones, sw.js), `check-lineup.js` e `check-calendar.js`
+  (Node, sem navegador; o de line-up tem contagens do mock), `e2e-offline.js` e
+  `e2e-kill-switch.js` (Chrome real via DevTools; o painel do app NÃO roda service
+  worker). Fontes das imagens geradas em `DevFestIA/design/` (comando de regerar
+  dentro de cada arquivo).
+- O painel de navegador do app é instável (screenshot preto, aba some): tire uma
+  segunda captura ou confira via `javascript_tool`. O scroll suave não anima lá.
+  Clicar em link real navega de verdade (o CTA do Sympla abre o Sympla): em testes,
+  intercepte cliques em `a[href]`.
+- Fluxo de entrega que o Renato aprovou: implementar, testar (navegador, mobile,
+  node), atualizar `PROJECT_CONTEXT.md` e este arquivo, **um commit por melhoria**
+  em inglês e sem menção de IA, push no `development`, conferir CI e promoção.
+  Frase "ENTENDI.. AUTORIZADO TODOS E PODE SIM IMPLEMENTAR" vale sim para o plano
+  mostrado. Chamar de "Renatão"; sem travessão nos textos; resposta objetiva.
+- Push rejeitado (non-fast-forward): `git pull --rebase origin development`.
+  `Promote to main` já falhou por erro transiente do GitHub; runbook:
+  `git fetch origin && git checkout main && git merge --ff-only origin/development
+  && git push origin main && git checkout development`. Validate costuma levar
+  ~10 s, Pages 40 s a 2 min.
+- `[hidden]` é forçado a `display:none !important` (regra global); não use `display`
+  em componente esperando que `hidden` seja ignorado.
+- Mock que precisa de cuidado: fotos do pravatar são de terceiros (se cair, cai
+  para iniciais); só use números de foto que você conferiu visualmente.
 
-- 36 palestras (`data/mock-talks.js`) e 38 palestrantes (`data/mock-speakers.js`) mock, ligados por `speakerIds`; avatares SVG gerados e diversos (`data/mock-avatar.js`, sem pravatar); LinkedIn mock único (`MOCK_LINKEDIN_URL`). Painéis com 2 pessoas e 3 pessoas com 2 palestras cada (larissa-nunes, renata-cardoso, gabriela-martins) exercitam as ligações.
-- `EVENT.lineupRevealed` agora é `true` (Renato liberou o mock pra todos). Destaques e Palestrantes aparecem pra qualquer visitante.
-- Ligação: card do palestrante lista as palestras (abre o modal), modal leva ao perfil (`#speaker-<id>`), Destaques levam ao perfil; Palestrantes ganhou modal e favoritos. Detalhes em `PROJECT_CONTEXT.md` (seção "Line-up model").
-- Testado: 36 talks x 4 trilhas com título/formato/tags/descrição, ninguém em duas trilhas no mesmo slot, 38 avatares distintos, links e hash, estados ao vivo (09:20, 10:27, 12:30, 17:30, 18:30), produção sem `schedule.dev.js`, mobile.
-- Pendente: trocar o mock pelo line-up real quando existir (mesmo formato); filtro por trilha na página Palestrantes (38 cards); nomes de sala por bairro (em discussão).
+## Histórico resumido (para arqueologia; detalhes no git)
 
-## Sessão 2g (2026-09-20): fotos de pessoas de volta e mock de time/patrocínio
-
-- Renato preferiu fotos de pessoas às ilustrações: `mock-avatar.js` saiu; `mock-photo.js` usa retratos do pravatar.cc por número, escolhidos à mão (só adequados, coerentes com o nome; a foto sensual e as caretas do pool antigo ficaram de fora).
-- Mock brasileiro completo: Time (6 organizadores e 8 voluntários com fotos e redes), Fotos do time (fotos reais de 2025), Patrocinadores (5 tiers, 12 empresas fictícias com logo SVG gerado), Comunidades parceiras (4), Depoimentos (3, com cargo opcional). "Marcas que já apoiam" na página Patrocínio usa o mesmo `sponsorsRepository`.
-- Novos: `data/mock-links.js`, `data/mock-photo.js`, `data/mock-logo.js`; `highlightPhoto()` em `highlights.js`.
-- Atenção: pravatar.cc é serviço externo; se cair, as fotos caem para iniciais (avatarMarkup). Trocar por fotos reais quando existirem.
-
-## Sessão 2h (2026-09-20): Time sem galeria de fotos
-
-- Seção "Fotos" da página Time removida a pedido do Renato: HTML, `data/team-photos.js`, modal e scripts que só ela usava, e o trecho de `pages/time.js`. A página agora é Quem somos, Organizadores, Voluntários. `highlightPhoto()` continua em `highlights.js` (usado pela home).
-
-## Sessão 2i (2026-09-20): filtro por trilha em Palestrantes
-
-- Novo `features/track-filter.js` (abas + filtros) extraído de `agenda.js` e reusado por Grade e Palestrantes; abas com contador (38 / IA 10 / Front-Back-Data 10 / Mobile-Agile 10 / Carreiras 8), `aria-pressed`, e a aba escolhida é centralizada no mobile. `renderSpeakersSection` agora recebe a lista de palestrantes pronta (`extractSpeakers`), sem depender de schedule.
-- Link `#speaker-<id>` pra alguém escondido pelo filtro volta o filtro pra "Todas as trilhas" e rola até o card.
-- Testado: contagens por trilha, cards e palestras corretos, hash, regressão da Grade (trilha e Minha agenda), mobile. Obs.: o scroll suave da aba não anima na pane de teste, mas a matemática foi validada.
-
-## Sessão 2j (2026-09-20): salas por bairro
-
-- Salas das trilhas agora são bairros de Campinas via `roomFor()`: IA Barão Geraldo, Front/Back/Data Centro, Mobile/Agile Taquaral, Carreiras & Mentorias Guanabara (escolha minha, fácil de trocar em `TRACKS`). Só dado, mais o ajuste do rodapé do card (`.talk-foot` quebra em 2 linhas quando a sala é longa; "40 min" e a sala não quebram no meio).
-- Em aberto da conversa de bairros: nomes reais das salas do local (ainda "Local a definir"), incluir cidades da RMC (crítica do PDF do logo), votação da comunidade.
-
-## Sessão 2k (2026-09-20): salas com nomes de lugares históricos
-
-- Renato trocou bairros por lugares da cidade ("cadê meu bairro?"): IA Sala Observatório, Front/Back/Data Sala Estação, Mobile/Agile Sala Lagoa do Taquaral, Carreiras Sala Mercadão Central, Abertura e Encerramento Sala Calçadão Central (substitui "Auditório principal"). Tudo via `roomFor(place)`; só dado (schedule.js/.dev.js).
-- Não verifiquei online grafia/existência de cada lugar (Observatório e Estação foram sugestões minhas); confirmar com a organização. Salas reais do local ainda a definir.
-
-## Sessão 3 (2026-09-20): melhorias do site (lista aprovada pelo Renato)
-
-Ordem: 1 ingressos e CTA, 2 acessibilidade, 3 calendário e compartilhar agenda, 4 SEO e imagem de compartilhamento, 5 fontes locais, 6 PWA offline, 7 analytics (GoatCounter, sem cookies). Mocks ficam como estão.
-
-- **1. Ingressos e CTA (feito):** 3 tipos de ingresso (Grátis, Ingresso com camiseta, VIP; valores mock) em cards na home; botão "Garanta sua vaga" no cabeçalho, barra fixa no mobile e hero; estados buy/waitlist/soon; link do Sympla é a home do Sympla enquanto o evento não existe lá (`EVENT.tickets.url`). Detalhes em `PROJECT_CONTEXT.md` (seção "Tickets and the registration CTA").
-
-- **2. Acessibilidade (feito):** `--muted-dim` clareado para passar 4,5:1 (era ~2,7:1) e `--muted` subiu junto; nenhum texto abaixo de 12 px; foco de teclado global (uma regra só, as duplicadas saíram); link "Pular para o conteúdo"; `features/a11y.js` (`motionSafeBehavior`, usado no scroll suave); animações reduzidas com `prefers-reduced-motion`. Regras em `PROJECT_CONTEXT.md` ("Accessibility rules").
-
-- **3. Calendário e compartilhar agenda (feito):** "Adicionar ao calendário" no modal (Google Agenda e .ics), exportar Minha agenda (.ics), link `?agenda=` com WhatsApp e copiar, banner "Salvar na minha agenda" pra quem abre o link. Testado com harness em Node (estrutura do .ics, dobra de linhas, escapes, ida e volta do link) e no navegador. Bug achado no caminho: `.status-pill` (display) ignorava o atributo `hidden` e aparecia vazio; regra global `[hidden]{display:none !important}`. `EVENT.venueConfirmed` (false) faz o calendário usar só a cidade enquanto o local não sai. Detalhes em `PROJECT_CONTEXT.md` ("Calendar and sharing").
-
-- **4. Compartilhamento e SEO (feito):** tags OG/Twitter/canonical estáticas nas 6 páginas, imagem 1200x630 gerada (`og-image.png`, fonte em `DevFestIA/design/og-image.html`), sitemap.xml, robots.txt, JSON-LD com ingressos (`Offer`, PreOrder até `salesOpen`), `DevFestIA/tools/check-meta.js` no CI (testei o caso de falha). Trocar a imagem quando o logo novo chegar. Detalhes em `PROJECT_CONTEXT.md` ("Share metadata and SEO").
-
-- **5. Fontes locais (feito):** Google Sans variável (OFL) hospedada em `docs/assets/fonts/` (36 KB, com `OFL.txt`), `css/fonts.css`, preload nas 6 páginas, zero chamadas ao Google Fonts (privacidade/LGPD, desempenho e offline). **O Google Sans Text saiu**: não está no repositório aberto do Google Fonts (licença de hospedagem não confirmada); o corpo do texto usa Google Sans. Só o subconjunto latino (cobre português).
-
-- **6. PWA offline (feito):** manifest, ícones 192/512, `sw.js` sem lista manual de arquivos (precache derivado das páginas), `?nosw=1` como botão de emergência, aviso "sem internet", botão "Instalar app". Testado em Chrome real (registro, precache de ~90 arquivos, home/grade/palestrantes e `?agenda=` funcionando com o servidor desligado, cenário de produção sem `schedule.dev.js`, kill switch). O painel do app não roda service worker. CI agora checa `docs/sw.js` e o manifesto. Limitação: cache de arquivos versionados antigos só é limpo ao trocar `SW_VERSION`.
-
-- **7. Analytics (feito, desligado até haver conta):** medição declarativa por `data-track-event` (13 eventos), adapter GoatCounter injetável, aviso de privacidade no rodapé quando ligado, `?analytics=debug` no console. **Ação do Renato:** criar o site em goatcounter.com (ex.: código `devfestcampinas`) e colocar `https://devfestcampinas.goatcounter.com/count` em `endpoint` de `docs/js/data/analytics.js`; sem isso nada é enviado. Testado: eventos, script só com endpoint, adapter injetado, provedor desconhecido, pesquisa em todas as páginas.
-
-**Sessão 3 fechada:** os 7 itens da lista aprovada foram implementados (ingressos/CTA, acessibilidade, calendário/compartilhar, SEO/imagem, fontes locais, PWA offline, analytics).
-
-## Decisão pendente do Renato (plenárias)
-
-Mockups v2 (desenho aprovado visualmente, pelo Renato: faixa larga, avatar 104 px com anel multi-cor, selo "Plenária") ficaram só no scratchpad. Variantes: A 3 plenárias (28 talks), B só 17:15 (36 talks, custo zero, recomendada), C só 13:30 (32 talks). Renato disse que segue com a plenária depois da agenda.
-
-Renato quer avaliar "plenárias": um palestrante de destaque ocupando a
-faixa inteira (todas as trilhas juntas), como o "Pokemão Standup" da
-planilha original. Foi mostrado um mockup (só visual, **nada implementado**).
-Proposta em análise, 3 plenárias: 09:00 (abertura), 13:30 (pós-almoço),
-17:15 (encerramento), com o Encerramento encolhendo pra 17:55 até 18:00.
-Custo: 7 slots × 4 trilhas = 28 talks (hoje 9 × 4 = 36). Alternativa de
-custo zero: destaque só dentro de Abertura/Encerramento. Se aprovar,
-implementar: item `{ plenary: {...} }` no `DAY_PLAN`, ramo no
-`buildSchedule()`, `plenaryMarkup()` reusando `avatarMarkup`/`speakerList`,
-card largo na Grade e no "ao vivo agora" da home. Esperar o "pode fazer".
-
-## Not done yet / TBD
-
-- `EVENT.venue` / endereço: ainda `"Local a definir"`.
-- MCs das 4 trilhas: `"MC a definir"`. Salas: lugares históricos mock (ver Sessão 2k).
-- `EVENT.lineupRevealed` é `false`. `schedule.dev.js` existe local
-  (gitignored) espelhando o `schedule.js` mock; line-up real não carregado.
-  Sempre editar os dois juntos.
-- `sponsors.js` e `partner-communities.js`: mock (`example.com`).
-- Fotos dos palestrantes (Destaques e agenda) são stock do pravatar.cc
-  (não há ferramenta de imagem/IA na sessão). Trocar pelas reais.
-- Time, testimonials: mock.
-- `PARKING_IMAGES` / `FOOD_IMAGES` (em `app.js`): vazios.
-- Background/og-image: ainda gradiente puro.
-- Descrição do repo no GitHub: a conta `renatoramos-7` não tem admin,
-  então tem que ser pela interface (Settings do repo → About).
-  Texto sugerido: "O DevFest Campinas é um evento realizado pelo GDG
-  Campinas, criado para conectar pessoas, compartilhar conhecimento e
-  fortalecer a comunidade de tecnologia da região."
-
-## Gotchas conhecidos
-
-- Push rejeitado com "non-fast-forward": outra sessão/máquina pode ter
-  commitado (aconteceu com os docs em `DevFestIA/`). `git pull --rebase
-  origin development` e push de novo.
-- CI `Promote to main` já falhou uma vez com "fatal error in commit_refs"
-  (erro transiente do GitHub). Runbook: `git fetch origin && git checkout
-  main && git merge --ff-only origin/development && git push origin main
-  && git checkout development`.
-- O Validate às vezes demora ~2 min (normalmente ~10 s); é lentidão, não
-  falha. Pages leva de 40 s a 2 min.
-- Preview do browser da ferramenta é instável (screenshot em branco,
-  aba some): verificar via `javascript_tool` (DOM/estilos computados).
-- Todo script/CSS alterado precisa de bump de `?v=N` nas 6 páginas. Ao
-  incluir arquivo novo que só uma página usa, basta incluir nela.
-
-## Next steps
-
-1. Decidir a variante das plenárias (A/B/C) e implementar (o card de plenária deve reusar `favoriteButtonMarkup`, `talkAvatarsMarkup`, `iconMarkup`).
-2. Preencher dado real conforme confirmado: local, salas/MCs,
-   patrocinadores, comunidades, fotos de palestrantes, imagens de
-   estacionamento/comida.
-3. Quando o line-up for revelado: copiar `schedule.dev.js` →
-   `schedule.js`, commit, push (ver `PROJECT_CONTEXT.md`).
-4. Opcional: estender o repository pattern a `EVENT`/`TRACKS`/`SCHEDULE`.
-5. Trocar o vídeo de recap (2017) pelo de 2025 em `data/video.js`.
+Sessão 1: 4 trilhas, `schedule-builder.js`, repository pattern, páginas Time,
+Palestrantes, Código de Conduta, Patrocínio, ticker. Sessão 2: cards e favoritos,
+tokens (`tokens.css`), ícones de trilha, line-up mock ligado, mock brasileiro de
+time/patrocínio/depoimentos, filtro por trilha em Palestrantes, salas com lugares
+históricos. Sessão 3: os 7 itens da lista de melhorias (ingressos/CTA,
+acessibilidade, calendário/compartilhar, SEO/imagem, fontes locais, PWA offline,
+analytics).

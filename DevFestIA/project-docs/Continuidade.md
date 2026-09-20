@@ -15,6 +15,10 @@ trabalho sem depender do histórico de uma conversa específica.
 - **[handoff/HANDOFF_CURRENT.md](../handoff/HANDOFF_CURRENT.md)** —
   estado atual do projeto, diário de bordo. Atualizar a cada task
   concluída: o que foi feito, o que falta, próximos passos.
+- **[../tools/](../tools/)** — scripts de verificação (`check-meta.js` roda no
+  CI; `check-lineup.js`, `check-calendar.js` e os `e2e-*.js` são manuais) e
+  **[../design/](../design/)** — fontes HTML das imagens geradas (share image e
+  ícones do app). Como usar: seção "Como trabalhar e testar aqui" do handoff.
 - **Este arquivo** — explica como os itens acima se relacionam.
 
 ## Regra de trabalho

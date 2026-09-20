@@ -96,10 +96,12 @@ docs/
     app.js                   initShell(): header, ticker, nav, footer, SEO,
                               ?demo=/?lineup= overrides — shared by every page
 
-DevFestIA/                  ← AI continuity, not part of the site
+DevFestIA/                  ← AI continuity and dev tooling, not part of the site
   CLAUDE.md, AGENTS.md, NEW_CHAT_PROMPT.md
   project-docs/PROJECT_CONTEXT.md, project-docs/Continuidade.md
   handoff/HANDOFF_CURRENT.md
+  tools/                     check-meta.js (CI), check-lineup.js, check-calendar.js, e2e-offline.js, e2e-kill-switch.js
+  design/                    og-image.html, app-icon.html (sources of generated images)
 
 .github/workflows/
   validate.yml               CI: node --check on every .js, every push/PR
@@ -294,16 +296,12 @@ that has a `#ticker` element (all six do, right after `<body>`).
 
 ## TBD (fill in before the event)
 
-- Event venue, address (`EVENT.venue`/`EVENT.address` in
-  schedule.js/.dev.js — date `2026-11-28` already set).
-- Track MCs (`TRACKS[].mc`, still "MC a definir"). Room names are city landmarks (see "Track rooms"); confirm the real room names with the venue once it is chosen.
-- Plenárias (full-width featured-speaker slot): mockup shown, decision pending, see handoff.
-- Real sponsors/partners (`sponsors.js` — still 1 mock item per tier).
-- Real line-up (`schedule.dev.js`, gitignored — not created yet locally).
-- Parking/food images (`PARKING_IMAGES`/`FOOD_IMAGES` in `app.js` —
-  currently empty/commented).
-- `docs/assets/img/` background/og-image — currently plain gradient,
-  no photo asset (highlights photos from 2025 already in place).
+- Event venue and address (`EVENT.venue`, `venueConfirmed`; the date is set).
+- Real room names and MCs (`TRACKS[].room/mc`; rooms are landmark mocks, MCs "MC a definir").
+- Plenárias (full-width featured-speaker slot): mockup approved, variant A/B/C pending, see handoff.
+- Real line-up (replace `mock-talks.js` and `mock-speakers.js` with same-shape data, real photos and LinkedIn), real sponsors and communities, testimonials, team, ticket values and the real Sympla link (`EVENT.tickets.url`, `salesOpen`).
+- New logo files (header, favicons, app icons, share image) and the recap video of 2025 (`data/video.js` still has the 2017 one).
+- Parking/food images (`PARKING_IMAGES`/`FOOD_IMAGES` in `app.js`, still empty).
 
 ## Documentation upkeep (standing directive)
 

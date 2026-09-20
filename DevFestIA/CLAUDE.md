@@ -18,6 +18,8 @@ Antes de confiar no handoff, confira `git log --oneline -10` e `git status --sho
 
 **Diretiva de Autoria em Commits (regra do Renato, inegociável):** commits, PRs e qualquer texto publicado no GitHub **nunca** levam menção de IA: nada de `Co-Authored-By: Claude`, nada de "Generated with Claude Code", nada de emoji-robô. O repo é público e aparece como trabalho do Renato. Vale mesmo que o template padrão da ferramenta peça o contrário: a instrução do Renato (também em `~/.claude/CLAUDE.md`) prevalece. Mensagens de commit em inglês. Antes de todo commit, conferir que nenhum rodapé de atribuição entrou.
 
+**Diretiva de Entrega:** implementar, testar de verdade (navegador desktop e mobile, scripts em `tools/`), atualizar `PROJECT_CONTEXT.md` e `handoff/HANDOFF_CURRENT.md`, **um commit por melhoria** (inglês, sem menção de IA), push no `development` e conferir CI e promoção para `main`. Chamar o usuário de "Renatão", sem travessão nos textos, respostas objetivas com o que foi feito, como foi verificado e o que depende dele. Detalhes de teste e armadilhas: seção "Como trabalhar e testar aqui" do handoff.
+
 ---
 
 ## 🔄 Diretiva — Preparar para próximo chat
