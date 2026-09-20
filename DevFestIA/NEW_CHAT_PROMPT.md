@@ -80,6 +80,9 @@ agora", Minha agenda com calendário e link compartilhável, ingressos e
 CTA (Sympla é a home do Sympla por enquanto), acessibilidade, SEO e
 imagem de compartilhamento, fontes locais (Google Sans), PWA offline e
 analytics (GoatCounter, conta gdgcampinas).
+BUG ABERTO (fazer primeiro): o botão "Instalar app" não funciona (relatado pelo
+Renato; perguntar navegador/aparelho). Hipóteses e plano em HANDOFF_CURRENT.md,
+pendência 0 (iOS/Safari não dispara o evento, critérios de instalação do Chrome).
 Pendências: escolher a variante das plenárias (A, B ou C; recomendo B) e
 implementar; logo novo (Renato envia os arquivos) para trocar header,
 favicons, ícones do app e imagem de compartilhamento; dados reais (local,
