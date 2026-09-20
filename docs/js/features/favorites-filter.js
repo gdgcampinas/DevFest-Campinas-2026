@@ -7,6 +7,7 @@
  * inscrição no repository), pra .is-fav já estar atualizado.
  */
 function renderFavoritesToggle(toggleEl, label) {
+  toggleEl.dataset.trackEvent = "my_agenda_view";
   toggleEl.innerHTML = `${iconMarkup("star")}<span>${label}</span><span class="fav-count" data-fav-count>0</span>`;
 }
 

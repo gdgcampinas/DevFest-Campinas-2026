@@ -8,7 +8,7 @@ function renderFooterColumns(columns, mountEl) {
     .map(col => `
       <div class="footer-col">
         <div class="footer-col-title">${col.title}</div>
-        ${col.items.map(item => `<a href="${item.url}" target="_blank" rel="noopener">${item.label}</a>`).join("")}
+        ${col.items.map(item => `<a href="${item.url}" target="_blank" rel="noopener" data-track-event="footer_link" data-track-target="${item.label}">${item.label}</a>`).join("")}
       </div>`)
     .join("");
 }

@@ -29,7 +29,7 @@ function extractSpeakers(schedule, tracks, timezone) {
 /** Palestra da pessoa: bloco clicável (abre o modal), com a cor da trilha dela. */
 function speakerTalkRefMarkup(ref) {
   return `
-    <div class="speaker-talk" role="button" tabindex="0" data-slot-index="${ref.slotIndex}" data-track="${ref.track.id}" style="--track-color:${ref.track.color}">
+    <div class="speaker-talk" role="button" tabindex="0" data-slot-index="${ref.slotIndex}" data-track="${ref.track.id}" data-track-event="talk_open" data-track-target="${ref.track.id}" style="--track-color:${ref.track.color}">
       <span class="speaker-talk-track"><span class="dot" style="background:${ref.track.color}"></span>${ref.track.shortLabel} · ${ref.startLabel}</span>
       <span class="speaker-talk-title">${ref.title}</span>
     </div>`;

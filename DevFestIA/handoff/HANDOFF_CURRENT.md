@@ -144,6 +144,10 @@ Ordem: 1 ingressos e CTA, 2 acessibilidade, 3 calendário e compartilhar agenda,
 
 - **6. PWA offline (feito):** manifest, ícones 192/512, `sw.js` sem lista manual de arquivos (precache derivado das páginas), `?nosw=1` como botão de emergência, aviso "sem internet", botão "Instalar app". Testado em Chrome real (registro, precache de ~90 arquivos, home/grade/palestrantes e `?agenda=` funcionando com o servidor desligado, cenário de produção sem `schedule.dev.js`, kill switch). O painel do app não roda service worker. CI agora checa `docs/sw.js` e o manifesto. Limitação: cache de arquivos versionados antigos só é limpo ao trocar `SW_VERSION`.
 
+- **7. Analytics (feito, desligado até haver conta):** medição declarativa por `data-track-event` (13 eventos), adapter GoatCounter injetável, aviso de privacidade no rodapé quando ligado, `?analytics=debug` no console. **Ação do Renato:** criar o site em goatcounter.com (ex.: código `devfestcampinas`) e colocar `https://devfestcampinas.goatcounter.com/count` em `endpoint` de `docs/js/data/analytics.js`; sem isso nada é enviado. Testado: eventos, script só com endpoint, adapter injetado, provedor desconhecido, pesquisa em todas as páginas.
+
+**Sessão 3 fechada:** os 7 itens da lista aprovada foram implementados (ingressos/CTA, acessibilidade, calendário/compartilhar, SEO/imagem, fontes locais, PWA offline, analytics).
+
 ## Decisão pendente do Renato (plenárias)
 
 Mockups v2 (desenho aprovado visualmente, pelo Renato: faixa larga, avatar 104 px com anel multi-cor, selo "Plenária") ficaram só no scratchpad. Variantes: A 3 plenárias (28 talks), B só 17:15 (36 talks, custo zero, recomendada), C só 13:30 (32 talks). Renato disse que segue com a plenária depois da agenda.

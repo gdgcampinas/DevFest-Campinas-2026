@@ -11,9 +11,9 @@ const ALL_TRACKS = "all";
 /** `counts` (opcional): { all, [trackId]: n } mostra a quantidade ao lado do rótulo. */
 function renderTabs(tracks, mountEl, { counts = null } = {}) {
   const countMarkup = key => (counts && counts[key] !== undefined ? `<span class="tab-count">${counts[key]}</span>` : "");
-  const allTab = `<button class="tab active" data-track="${ALL_TRACKS}" aria-pressed="true">Todas as trilhas${countMarkup(ALL_TRACKS)}</button>`;
+  const allTab = `<button class="tab active" data-track="${ALL_TRACKS}" aria-pressed="true" data-track-event="track_filter" data-track-target="${ALL_TRACKS}">Todas as trilhas${countMarkup(ALL_TRACKS)}</button>`;
   const trackTabs = tracks
-    .map(track => `<button class="tab" data-track="${track.id}" aria-pressed="false" style="--track-color:${track.color}">${track.shortLabel}${countMarkup(track.id)}</button>`)
+    .map(track => `<button class="tab" data-track="${track.id}" aria-pressed="false" data-track-event="track_filter" data-track-target="${track.id}" style="--track-color:${track.color}">${track.shortLabel}${countMarkup(track.id)}</button>`)
     .join("");
   mountEl.innerHTML = allTab + trackTabs;
 }

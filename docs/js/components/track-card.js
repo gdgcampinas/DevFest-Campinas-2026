@@ -51,7 +51,7 @@ function trackCardMarkup(track, data, {
   ].filter(Boolean).join("");
 
   const attrs = [
-    slotIndex !== null && `data-slot-index="${slotIndex}" tabindex="0" role="button"`,
+    slotIndex !== null && `data-slot-index="${slotIndex}" tabindex="0" role="button" data-track-event="talk_open" data-track-target="${track.id}"`,
     talkKey && `data-talk-key="${talkKey}"`,
   ].filter(Boolean).join(" ");
 
@@ -102,7 +102,7 @@ function talkDetailMarkup(track, data, { reveal = true, timeRange = "", room = "
     ? `<div class="detail-speakers">${speakers.map((s) => {
         const profile = speakerProfileHref(s);
         const nameEl = profile
-          ? `<a class="detail-speaker" href="${profile}">${s.name}</a>`
+          ? `<a class="detail-speaker" href="${profile}" data-track-event="speaker_profile" data-track-target="modal">${s.name}</a>`
           : `<div class="detail-speaker">${s.name}</div>`;
         const meta = speakerMetaLine(s);
         const block = `<div class="detail-speaker-block">${nameEl}${meta ? `<div class="detail-speaker-meta">${meta}</div>` : ""}</div>`;

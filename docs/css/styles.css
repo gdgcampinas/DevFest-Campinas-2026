@@ -490,6 +490,8 @@ a.featured-speaker:focus-visible{outline:2px solid var(--text);outline-offset:4p
   font:700 13px var(--font-body);color:oklch(14% 0.01 260);background:var(--amber);
 }
 
+.analytics-notice{margin-top:4px;font:500 12px var(--font-body);color:var(--muted)}
+
 /* CTA de inscrição — cabeçalho, barra fixa no mobile, hero e cards (features/tickets.js) */
 .cta{
   display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border-radius:100px;

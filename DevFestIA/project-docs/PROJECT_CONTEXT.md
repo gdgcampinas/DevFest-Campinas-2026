@@ -49,6 +49,7 @@ docs/
       persisted-set-repository.js  createPersistedSetRepository(): set of keys in an injected storage (localStorage)
       favorites.js              favoritesRepository + talkKey(slot, trackId)
       icons.js                  ICONS (svg paths by name) + iconsRepository.get(); also the per-track icons (`TRACKS[].icon`)
+      analytics.js              ANALYTICS config (provider, endpoint, notice); empty endpoint = off
       tickets.js                TICKET_TYPES (Grátis / com camiseta / VIP, mock values) + TICKETS_NOTE
       talk-formats.js           TALK_FORMATS (palestra/workshop/painel/bate-papo) + getById()
       mock-links.js             MOCK_LINKEDIN_URL / MOCK_FACEBOOK_URL / MOCK_SPONSOR_URL (one place for all mock links)
@@ -85,7 +86,7 @@ docs/
       sponsor-card.js               sponsor/community item (logo box + name + optional description)
       person-card.js                 person card (team/speakers)
     features/                data + template + behavior, one section each
-      agenda.js, track-filter.js, a11y.js, pwa.js, calendar.js, talk-index.js, calendar-actions.js, agenda-share.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
+      agenda.js, track-filter.js, a11y.js, pwa.js, analytics.js, calendar.js, talk-index.js, calendar-actions.js, agenda-share.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
       featured-speakers.js, sponsors.js, partner-communities.js,
       team.js, cod.js, seo.js, stats.js, about.js, highlights.js,
       video.js, realizacao.js, tickets.js, footer.js,
@@ -217,6 +218,12 @@ one-line change there — never edit nav HTML per page.
 ## Mock content (until real data arrives)
 
 All mock people, companies and links are fictional and live in `data/`: speakers and talks (see "Line-up model"), team (`team.js`, 6 organizers and 8 volunteers with Brazilian names; the Time page has no photo gallery), sponsors (`sponsors.js`, 5 tiers, 12 fictional companies with generated logos), partner communities (4), testimonials (3, with optional `role`). Person photos come from `mockPhoto()` (external stock service, hand-picked numbers; do not add numbers without looking at the image), logos from `mockLogo()`. Replacing mock with real = same shapes, real `photo`/`imageUrl`/`link`.
+
+## Usage analytics
+
+- Screens never call analytics. They tag elements with `data-track-event` (plus optional `data-track-place`, `data-track-target`, `data-track-kind`) and one delegated click listener in `features/analytics.js` turns each click into an event. Current events: `cta_click`, `talk_open`, `favorite_toggle`, `track_filter`, `my_agenda_view`, `calendar_add`, `agenda_export`, `agenda_share`, `shared_agenda_save`, `speaker_profile`, `sponsor_click`, `footer_link`, `pwa_install`. New event = add the attribute in the markup.
+- The provider is an injected adapter (`ANALYTICS_ADAPTERS`, today only GoatCounter: cookieless, free, no personal data). `data/analytics.js` has `endpoint: ""`, so nothing loads until it is filled with `https://<code>.goatcounter.com/count` (account creation is up to the organizers). Moving to Google Analytics later = one new adapter + `provider`.
+- Debug: open any page with `?analytics=debug` to log every event in the console.
 
 ## Offline (PWA)
 

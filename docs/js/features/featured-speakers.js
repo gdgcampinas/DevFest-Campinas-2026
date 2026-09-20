@@ -15,7 +15,7 @@ function featuredSpeakerCardMarkup(person) {
   const meta = speakerMetaLine(person);
   const profile = speakerProfileHref(person);
   const tag = profile ? "a" : "div";
-  const href = profile ? ` href="${profile}"` : "";
+  const href = profile ? ` href="${profile}" data-track-event="speaker_profile" data-track-target="featured"` : "";
   return `
     <${tag} class="featured-speaker"${href}>
       ${avatarMarkup(person.name, person.photo, "featured-avatar")}
