@@ -5,6 +5,8 @@
     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --hide-scrollbars \
       --window-size=512,512 --screenshot=docs/assets/icons/icon-512.png file://$PWD/DevFestIA/design/app-icon.html
     sips -z 192 192 docs/assets/icons/icon-512.png --out docs/assets/icons/icon-192.png
+    sips -z 180 180 docs/assets/icons/icon-512.png --out docs/assets/icons/apple-touch-icon.png   (iOS home screen)
+    sips -z 32 32 docs/assets/icons/gdg-icon.png --out docs/assets/icons/favicon-32.png
 -->
 <style>
   *{margin:0}html,body{width:512px;height:512px;overflow:hidden}
