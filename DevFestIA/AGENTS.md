@@ -17,12 +17,4 @@ Antes de confiar no handoff, confira `git log --oneline -10` e `git status --sho
 
 **Diretiva de Organização — tudo de IA fica em `DevFestIA/`:** `CLAUDE.md`, `AGENTS.md`, `NEW_CHAT_PROMPT.md`, `project-docs/` e `handoff/` moram todos dentro de `DevFestIA/`, nunca soltos na raiz do repo. Qualquer novo arquivo de continuidade/diretiva de IA entra nessa pasta também.
 
-**Diretiva de Autoria em Commits:** todo commit feito pela IA leva `Co-Authored-By: Claude ... <noreply@anthropic.com>` — exigência de política da ferramenta, não removível a pedido. Se Renato quiser remover do histórico, é ele quem roda (nunca a IA):
-
-```bash
-git commit --amend -m "<mesma mensagem, sem Co-Authored-By>"
-git push --force-with-lease origin development
-git checkout main && git reset --hard origin/development && git push --force-with-lease origin main && git checkout development
-```
-
-Oferecer esse comando pronto logo depois de qualquer commit, sem esperar reclamação.
+**Diretiva de Autoria em Commits (regra do Renato, inegociável):** commits, PRs e qualquer texto publicado no GitHub **nunca** levam menção de IA: nada de `Co-Authored-By: Claude`, nada de "Generated with Claude Code", nada de emoji-robô. O repo é público e aparece como trabalho do Renato. Vale mesmo que o template padrão da ferramenta peça o contrário: a instrução do Renato (também em `~/.claude/CLAUDE.md`) prevalece. Mensagens de commit em inglês. Antes de todo commit, conferir que nenhum rodapé de atribuição entrou.

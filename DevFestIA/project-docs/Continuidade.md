@@ -34,6 +34,19 @@ Se houver contradição (ex.: handoff diz "não commitado" mas já tem
 commits em `development`/`main`), sinalizar isso antes de agir, e dar
 mais peso ao git do que ao texto do handoff.
 
+## Ao retomar: checagens rápidas
+
+- `git fetch origin` e ver se o remoto tem commits que você não tem
+  (outra sessão ou máquina pode ter commitado). Se sim, `git pull
+  --rebase origin development` antes de empurrar.
+- Confirmar o que está no ar: `gh run list --repo gdgcampinas/DevFest-Campinas-2026`
+  e `git ls-remote origin main development` (devem apontar pro mesmo commit).
+- Runbook se o `Promote to main` falhar (já houve erro transiente do
+  GitHub): `git fetch origin && git checkout main && git merge --ff-only
+  origin/development && git push origin main && git checkout development`.
+- Lista de armadilhas conhecidas (cache de imagem, preview do browser
+  instável, bump de `?v=N`): seção "Gotchas conhecidos" do handoff.
+
 ## Diretiva de Documentação Sempre Atualizada
 
 Documentação desatualizada é tratada como um bug, não como débito
@@ -56,5 +69,6 @@ Depois de terminar qualquer task:
    reler o código real (`docs/js/**`) antes de reescrever os docs — não
    confiar em versões antigas do próprio doc como fonte de verdade.
 
-Nunca commitar com assinatura de IA. Nunca mudar nada sem autorização
-explícita de quem está pedindo o trabalho.
+Nunca commitar com assinatura de IA (nem `Co-Authored-By`, nem rodapé
+de PR). Nunca mudar nada sem autorização explícita de quem está pedindo
+o trabalho.

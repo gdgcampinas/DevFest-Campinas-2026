@@ -1,81 +1,125 @@
 # Handoff — Current State
 
-**Last updated:** 2026-09-13
+**Last updated:** 2026-09-20
 
 ## Status
 
-Site publicado e em evolução ativa no branch `development` (sincronizado
-com `origin/development`, working tree limpo, `main` idêntico). Não é
-mais o scaffold de página única descrito em versões antigas deste
-arquivo — hoje é um site de 6 páginas com dado real parcial. HEAD atual:
-`1a73386` ("Move project-docs and handoff into DevFestIA folder, review
-and refresh all documentation, add standing directives").
+Site publicado (`main` = `development`, CI verde na última verificação)
+e em evolução ativa no branch `development`. Site de 6 páginas com dado
+real parcial e o resto mock. Último commit de código: `0683580` ("Show
+the ticker banner on every page, not only the home"); a sessão fecha com
+um commit de documentação em cima dele. Sempre conferir `git log` antes
+de confiar neste texto.
 
-## Done
+## Done (sessão 2026-09-13 a 2026-09-20)
 
-- Site multi-página: `index.html` (home), `grade.html`, `palestrantes.html`,
-  `patrocinio.html`, `time.html`, `codigo-de-conduta.html`.
-- Arquitetura modular mantida: `docs/js/data/` (dado), `components/`
-  (templates), `features/` (dado+template+comportamento), `pages/` (um
-  bootstrap por página), `app.js` (`initShell()` compartilhado: header,
-  nav, footer, SEO, overrides de URL).
-- Camada `docs/js/data/repository.js` (`createRepository()`) — padrão
-  de acesso a dado tipo DI-lite, usada pelos data files mais recentes
-  (stats, sponsors, patrocínio). Documentada em `PROJECT_CONTEXT.md`.
-- Zero CSS por trilha mantido: cor/ícone/nível vêm de `TRACKS` em
-  `schedule.js`, aplicados via `--track-color` inline.
-- Seções que dependem de dado ainda não confirmado somem sozinhas
-  (sponsors, stats, testimonials, featured-speakers) — sem HTML/CSS
-  morto esperando conteúdo.
-- Dado real já preenchido: números do DevFest 2025 (700 participantes,
-  36+ horas, 37 palestrantes, 4 trilhas simultâneas), 16 fotos de
-  highlights, depoimentos, ticker, seção "Destaques" (palestrantes
-  rotativos), stack de páginas "Time" e "Patrocínio" com conteúdo real.
-- `EVENT.date` fixado: `2026-11-28`.
-- Todos os `.js` passam em `node --check` (verificado 2026-09-13).
-- CI ativo: `.github/workflows/validate.yml` (`node --check` em todo
-  push/PR) + `promote.yml` (auto-merge `development` → `main` quando
-  o Validate passa).
-- Estrutura de continuidade entre sessões alinhada ao padrão usado no
-  Tá de Graça, isolada em `DevFestIA/`: `CLAUDE.md`, `AGENTS.md`,
-  `NEW_CHAT_PROMPT.md`, `project-docs/` e `handoff/` (este arquivo)
-  moveram todos pra lá. `Continuidade.md` tem a regra de cruzar handoff
-  com git log antes de confiar nele.
-- `PROJECT_CONTEXT.md` revisado e reescrito (2026-09-13) pra refletir
-  a arquitetura real: 6 páginas, `pages/`, `site-nav.js`, `repository.js`,
-  lista completa de `data/`/`features/`. Seção "Diretiva de Código —
-  Clean Code + Clean Architecture" adicionada (zero duplicação, modular
-  por feature, data-driven/injetável via parâmetro, repository pattern
-  pra qualquer fonte de dado).
-- Diretivas formalizadas em `CLAUDE.md`/`AGENTS.md`: Documentação
-  Sempre Atualizada, Autorização (frase-gatilho "entendi, autorizado
-  todos, pode implementar" = sim pro plano inteiro apresentado, sem
-  pular a etapa de mostrar o plano), Organização (tudo de IA sempre em
-  `DevFestIA/`), Autoria em Commits (a IA sempre leva `Co-Authored-By`
-  por política da ferramenta, não removível a pedido — runbook de
-  amend + force-push documentado pro Renato rodar quando quiser tirar
-  do histórico público).
-- Histórico do repo (público) limpo de qualquer menção a
-  Claude/Anthropic — confirmado com `git log --all` em todos os
-  branches/commits (2026-09-13). Contributors do GitHub pode continuar
-  mostrando por um tempo — é cache assíncrono, não reflete git em
-  tempo real; se não sumir sozinho depois de alguns dias, só suporte
-  do GitHub resolve.
+**Grade e trilhas**
+- 4 trilhas: IA, Front-end/Back-end/Data, Mobile/Agile (nova, token
+  `--mobile` em `styles.css`), Carreiras & Mentorias (renomeada de
+  "Carreira em Tecnologia"). Cada trilha tem `description` opcional.
+- Grade do dia (evento 28/11, 08h às 18h), gerada por parâmetro:
+  08:00 Credenciamento, 08:30 Abertura, 4 slots de manhã
+  (09:00, 09:45, 10:30, 11:15), 12:00 até 13:20 Almoço (1h20),
+  13:20 até 13:30 Retorno para a sala, 5 slots à tarde (13:30, 14:15,
+  15:00, 15:45, 16:30), 17:15 até 18:00 Encerramento. Regra: palestra
+  40 min (com perguntas) + 5 min de troca = 45 min por slot.
+- `docs/js/data/schedule-builder.js` (novo): `talkWindows()` calcula os
+  horários, `buildSchedule()` monta `SCHEDULE` a partir do `DAY_PLAN`
+  declarativo em `schedule.js`, `mockTalks()` rotaciona o pool
+  `MOCK_SPEAKERS`. Os 36 talks mock escritos à mão saíram. Mudar
+  horário ou número de slots = editar o `DAY_PLAN`.
+- `live-status.js`: texto sticky "Agora: ..." usava `speaker.name` do
+  formato antigo e mostrava `undefined`; corrigido com `speakerList()`.
+- `.faq-grid` passou a usar `repeat(auto-fit, minmax(240px, 1fr))`
+  (colunas pelo nº de cards, não pelo nº de trilhas): "Antes de vir"
+  segue com 3 cards, "Trilhas" mostra 4.
+
+**Conteúdo novo (inspirado no Campinas Innovation Week)**
+- Patrocinadores com `description` opcional e logo em caixa branca
+  (`sponsor-card.js`, mesma função serve as comunidades parceiras).
+- Seção "Trilhas" na home (`tracks-overview.js`, reusa `info-card.js`).
+- Depoimentos (`testimonials.js`), ticker/faixa animada, página
+  **Patrocínio** (6ª página, nav atualizado em `site-nav.js`).
+- Ticker agora aparece nas 6 páginas: `renderTicker()` roda dentro de
+  `initShell()` (guardado por `#ticker` existir na página).
+- `eventDateLabel()` em `agenda.js` (formato de data em 1 lugar só).
+- Home: Números reais do DevFest 2025 (700 / 36+ / 37 / 4), Destaques
+  (4 palestrantes aleatórios, troca a cada reload e a cada 15 s), vídeo
+  recap (youtubeId `qXGQG-G3Jw8`, é do DevFest 2017, trocar pelo de
+  2025), 16 fotos reais escolhidas por contagem de rostos (Vision
+  framework do macOS).
+- Páginas: Time (Quem somos / Organizadores / Fotos / Voluntários),
+  Palestrantes (galeria extraída do schedule), Código de Conduta.
+
+**Arquitetura**
+- Repository pattern (`repository.js`, `createRepository()`) cobre toda
+  coleção standalone (sponsors, team, testimonials, stats, video,
+  highlights, about, cod, footer, patrocínio, mock-speakers,
+  partner-communities). Páginas consomem via `xRepository.getAll()`.
+  **Fora:** `EVENT`, `TRACKS`, `SCHEDULE` continuam globals diretos (usados
+  em dezenas de lugares; envolver exige passada própria).
+- Bug corrigido: seção `.tracks-overview` não tinha CSS de container e
+  estourava a largura toda; agora tem `max-width`/`padding` como as demais.
+- Bug corrigido: ícone de LinkedIn na galeria de palestrantes usava
+  classe errada e agora reusa `socialIconMarkup()`.
+- Cache: URL de imagem com `?v=` via `HIGHLIGHTS_VERSION`, porque trocar
+  bytes sem trocar nome não invalida o CDN do GitHub Pages.
+
+## Decisão pendente do Renato (plenárias)
+
+Renato quer avaliar "plenárias": um palestrante de destaque ocupando a
+faixa inteira (todas as trilhas juntas), como o "Pokemão Standup" da
+planilha original. Foi mostrado um mockup (só visual, **nada implementado**).
+Proposta em análise, 3 plenárias: 09:00 (abertura), 13:30 (pós-almoço),
+17:15 (encerramento), com o Encerramento encolhendo pra 17:55 até 18:00.
+Custo: 7 slots × 4 trilhas = 28 talks (hoje 9 × 4 = 36). Alternativa de
+custo zero: destaque só dentro de Abertura/Encerramento. Se aprovar,
+implementar: item `{ plenary: {...} }` no `DAY_PLAN`, ramo no
+`buildSchedule()`, `plenaryMarkup()` reusando `avatarMarkup`/`speakerList`,
+card largo na Grade e no "ao vivo agora" da home. Esperar o "pode fazer".
 
 ## Not done yet / TBD
 
-- `EVENT.venue` / endereço — ainda `"Local a definir"`.
-- `EVENT.lineupRevealed` — `false`; `docs/js/data/schedule.dev.js`
-  (gitignored) ainda não existe localmente, line-up real não carregado.
-- `sponsors.js` — mock, 1 item por tier, `link` aponta pra
-  `example.com`; falta dado real de patrocinadores confirmados.
-- `PARKING_IMAGES` / `FOOD_IMAGES` (em `app.js`) — vazios, comentados;
-  falta imagem/copy de estacionamento e comida.
-- Background/og-image — ainda gradiente puro, sem asset de foto.
+- `EVENT.venue` / endereço: ainda `"Local a definir"`.
+- Salas e MCs das 4 trilhas: `"Sala a definir"` / `"MC a definir"`.
+- `EVENT.lineupRevealed` é `false`. `schedule.dev.js` existe local
+  (gitignored) espelhando o `schedule.js` mock; line-up real não carregado.
+  Sempre editar os dois juntos.
+- `sponsors.js` e `partner-communities.js`: mock (`example.com`).
+- Fotos dos palestrantes (Destaques e agenda) são stock do pravatar.cc
+  (não há ferramenta de imagem/IA na sessão). Trocar pelas reais.
+- Time, testimonials, team-photos: mock.
+- `PARKING_IMAGES` / `FOOD_IMAGES` (em `app.js`): vazios.
+- Background/og-image: ainda gradiente puro.
+- Descrição do repo no GitHub: a conta `renatoramos-7` não tem admin,
+  então tem que ser pela interface (Settings do repo → About).
+  Texto sugerido: "O DevFest Campinas é um evento realizado pelo GDG
+  Campinas, criado para conectar pessoas, compartilhar conhecimento e
+  fortalecer a comunidade de tecnologia da região."
+
+## Gotchas conhecidos
+
+- Push rejeitado com "non-fast-forward": outra sessão/máquina pode ter
+  commitado (aconteceu com os docs em `DevFestIA/`). `git pull --rebase
+  origin development` e push de novo.
+- CI `Promote to main` já falhou uma vez com "fatal error in commit_refs"
+  (erro transiente do GitHub). Runbook: `git fetch origin && git checkout
+  main && git merge --ff-only origin/development && git push origin main
+  && git checkout development`.
+- O Validate às vezes demora ~2 min (normalmente ~10 s); é lentidão, não
+  falha. Pages leva de 40 s a 2 min.
+- Preview do browser da ferramenta é instável (screenshot em branco,
+  aba some): verificar via `javascript_tool` (DOM/estilos computados).
+- Todo script/CSS alterado precisa de bump de `?v=N` nas 6 páginas. Ao
+  incluir arquivo novo que só uma página usa, basta incluir nela.
 
 ## Next steps
 
-1. Preencher dado real conforme for confirmado: patrocinadores,
-   local/endereço, imagens de estacionamento/comida.
-2. Quando o line-up for revelado: copiar `schedule.dev.js` →
+1. Decidir as plenárias (ver acima) e, se aprovado, implementar.
+2. Preencher dado real conforme confirmado: local, salas/MCs,
+   patrocinadores, comunidades, fotos de palestrantes, imagens de
+   estacionamento/comida.
+3. Quando o line-up for revelado: copiar `schedule.dev.js` →
    `schedule.js`, commit, push (ver `PROJECT_CONTEXT.md`).
+4. Opcional: estender o repository pattern a `EVENT`/`TRACKS`/`SCHEDULE`.
+5. Trocar o vídeo de recap (2017) pelo de 2025 em `data/video.js`.

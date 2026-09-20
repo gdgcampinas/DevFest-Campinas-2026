@@ -58,9 +58,13 @@ DevFestIA/                   ← tudo relacionado a continuidade de IA
 Nenhuma regra de CSS depende do id de uma trilha (`ia`, `webdata`...).
 Cor, ícone e nível são sempre dado (`TRACKS` em `schedule.js`),
 aplicados via `--track-color` inline pelo JS. Adicionar, renomear ou
-recolorir uma trilha é 1 linha em `schedule.js` — nada pra tocar em
-`styles.css`. O mesmo vale pra quantidade de trilhas: os grids usam
-`repeat(var(--track-count), 1fr)`.
+recolorir uma trilha é 1 linha em `schedule.js` (só a cor nova entra como
+token em `:root` do `styles.css`, nunca uma regra por trilha). O mesmo vale
+pra quantidade de trilhas: a grade usa `repeat(var(--track-count), 1fr)`.
+
+A grade do dia é declarada em `DAY_PLAN` (`schedule.js`) e os horários
+calculados por `talkWindows()` em `schedule-builder.js` (palestra de 40 min
++ 5 de troca).
 
 Seções que dependem de dado que ainda não existe (patrocinadores,
 organizadores, palestrantes antes da revelação) somem sozinhas até o
@@ -100,5 +104,5 @@ Overrides de URL:
 2. `node --check` em todo `.js` alterado
 3. Bumpar `?v=N` nos `<link>`/`<script>` de toda página `.html` cujo arquivo referenciado mudou
 4. Testar local (`?demo=` nos pontos de transição, console sem erro)
-5. Commit (PT-BR, sem menção de IA) → push em `development`
+5. Commit (em inglês, sem nenhuma menção de IA) → push em `development`
 6. CI cuida do resto

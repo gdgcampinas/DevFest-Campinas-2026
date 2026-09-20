@@ -45,7 +45,8 @@ docs/
     data/                    static data — nothing here touches the DOM
       repository.js            createRepository() factory — see below
       mock-speakers.js          mock speaker data (loads before schedule)
-      schedule.js               PROD schedule (mock until line-up reveal)
+      schedule-builder.js        talkWindows/buildSchedule/mockTalks (loads before schedule)
+      schedule.js               PROD: EVENT, TRACKS, DAY_PLAN → SCHEDULE (mock until reveal)
       schedule.dev.js            DEV schedule (real, gitignored, local only)
       placeholder.js             placeholder image generator (mock logos)
       sponsors.js                sponsors/partners by tier
@@ -64,7 +65,7 @@ docs/
       site-nav.js                nav links shared by every page
       track-card.js               talk card (agenda + hero) + detail modal
       info-card.js                 generic "before you come" card
-      sponsor-card.js               sponsor logo by tier
+      sponsor-card.js               sponsor/community item (logo box + name + optional description)
       person-card.js                 person card (team/speakers)
     features/                data + template + behavior, one section each
       agenda.js, live-status.js, talk-modal.js, speakers.js,
@@ -74,7 +75,7 @@ docs/
       tracks-overview.js, testimonials.js, ticker.js, patrocinio.js
     pages/                   one bootstrap per page (see table above)
       home.js, grade.js, palestrantes.js, time.js, patrocinio.js, cod.js
-    app.js                   initShell(): header, nav, footer, SEO,
+    app.js                   initShell(): header, ticker, nav, footer, SEO,
                               ?demo=/?lineup= overrides — shared by every page
 
 DevFestIA/                  ← AI continuity, not part of the site
@@ -91,12 +92,33 @@ DevFestIA/                  ← AI continuity, not part of the site
 
 `docs/js/data/repository.js` exports `createRepository(data, extraMethods)`,
 a thin factory (`{ getAll: () => data, ...extraMethods }`) that every
-newer `data/*.js` file wraps its export in (e.g. `statsRepository`,
-`sponsorsRepository`, `patrocinioIntroRepository`). It exists purely to
+`data/*.js` collection file wraps its export in (`statsRepository`,
+`sponsorsRepository`, `teamRepository`, `testimonialsRepository`, ...);
+page bootstraps read through `getAll()`. **Not wrapped yet:** `EVENT`,
+`TRACKS`, `SCHEDULE` (read directly in dozens of places; needs its own pass). It exists purely to
 standardize *access* (`repository.getAll()` instead of referencing the
 global `const` directly) — this site has no backend or API, so there is
 no real fetch to hide. Must load before any `data/*.js` that calls
 `createRepository()` (see script order in every page's `<head>`).
+
+## Schedule: day plan and builder
+
+`schedule.js` only *declares* the day (`DAY_PLAN`); the time math and mock
+talks live once in `data/schedule-builder.js`:
+
+- `talkWindows("09:00", 4)` → 4 consecutive windows, each `talkMin` (40,
+  Q&A included) + `gapMin` (5 changeover) = 45 min pitch.
+- `buildSchedule(plan, { eventTime, tracks, speakerPool })` turns the plan
+  into `SCHEDULE`. Plan items: `{ banner, room?, start, end }` (combined
+  session) or `{ talks: [{start,end},...] }` (one slot per window, one
+  mock talk per track, rotating `MOCK_SPEAKERS`).
+- Current plan: 08:00 Credenciamento, 08:30 Abertura, 4 slots from 09:00,
+  12:00 to 13:20 Almoço, 13:20 to 13:30 Retorno, 5 slots from 13:30,
+  17:15 to 18:00 Encerramento (9 slots × 4 tracks).
+- Changing hours or slot count = editing `DAY_PLAN`. `schedule.dev.js`
+  must mirror it (edit both).
+- Load order in every page: `repository.js`, `mock-speakers.js`,
+  `schedule-builder.js`, then `schedule.dev.js`/`schedule.js`.
 
 ## Key design decision: zero per-track CSS
 
@@ -105,11 +127,17 @@ Every track-colored element (talk card, tab, legend item, modal detail,
 `schedule.js` and sets `--track-color` inline via JS. **No CSS rule
 targets a track id** (no `.talk[data-track="ia"]{...}` style blocks).
 Adding, renaming, or recoloring a track is a one-line change in
-`TRACKS`, nothing to touch in `styles.css`.
+`TRACKS`; the only CSS involved is the color token itself
+(`--ia`, `--webdata`, `--mobile`, `--mentoring` in `:root` of
+`styles.css`), never a per-track rule. 4 tracks today: IA,
+Front-end/Back-end/Data, Mobile/Agile, Carreiras & Mentorias.
 
-Same principle applies to track count: grids use
+Same principle applies to track count: the agenda grid and legend use
 `repeat(var(--track-count), 1fr)`, set once from `TRACKS.length` in
-`initShell()` (`app.js`).
+`initShell()` (`app.js`). Generic card grids (`.faq-grid`, used by
+"Antes de vir", "Trilhas", Patrocínio benefits) use
+`repeat(auto-fit, minmax(240px, 1fr))` instead, so column count follows
+the number of cards, not the number of tracks.
 
 ## Dev/prod pattern for sensitive data (line-up)
 
@@ -143,8 +171,16 @@ one-line change there — never edit nav HTML per page.
 `docs/js/data/sponsors.js` exports `SPONSORS`, a list of
 `{ tier, elements: [{name, link, imageUrl, description?}] }`. The
 section (`js/features/sponsors.js`) hides itself entirely while empty.
-Currently mock data (1 placeholder item per tier). Fill in tiers when
-sponsors are confirmed.
+`description` is optional; `sponsor-card.js` renders logo (white box) +
+name + description when present. Partner communities reuse the same
+function without a description. Currently mock data (1 placeholder item
+per tier). Fill in tiers when sponsors are confirmed.
+
+## Ticker
+
+`features/ticker.js` builds the scrolling banner from `EVENT`/`SCHEDULE`
+(no separate copy of name/date). `initShell()` calls it on every page
+that has a `#ticker` element (all six do, right after `<body>`).
 
 ## URL overrides (testing)
 
@@ -161,7 +197,7 @@ sponsors are confirmed.
    referenced file content changed.
 4. Test locally (`cd docs && python3 -m http.server 8080`), walk
    through `?demo=` transition points, check console for errors.
-5. `git commit` (English, no AI co-author line, no AI mention).
+5. `git commit` (English, no AI co-author line, no AI mention, ever).
 6. `git push origin development`.
 7. CI runs `node --check`, then auto-promotes to `main`. Confirm live
    via `curl`/browser before considering it done.
@@ -170,7 +206,8 @@ sponsors are confirmed.
 
 - Event venue, address (`EVENT.venue`/`EVENT.address` in
   schedule.js/.dev.js — date `2026-11-28` already set).
-- Track names/rooms/MCs (`TRACKS`).
+- Track rooms/MCs (`TRACKS`, still "Sala a definir" / "MC a definir"); names are set.
+- Plenárias (full-width featured-speaker slot): mockup shown, decision pending, see handoff.
 - Real sponsors/partners (`sponsors.js` — still 1 mock item per tier).
 - Real line-up (`schedule.dev.js`, gitignored — not created yet locally).
 - Parking/food images (`PARKING_IMAGES`/`FOOD_IMAGES` in `app.js` —
