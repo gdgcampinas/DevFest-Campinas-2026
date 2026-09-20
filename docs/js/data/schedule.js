@@ -36,26 +36,27 @@ const EVENT = {
  * SCHEDULE[].talks. `color` é a única coisa que o CSS/JS de trilha
  * precisa pra pintar qualquer componente (card, tab, legenda, modal):
  * nenhuma regra de estilo por id de trilha existe em styles.css.
- * `room` é o nome da sala (roomFor + bairro). `icon` é o nome de um ícone de data/icons.js (usado na seção "Trilhas" da home;
+ * `room` é o nome da sala (roomFor + lugar histórico). `icon` é o nome de um ícone de data/icons.js (usado na seção "Trilhas" da home;
  * sem ele cai no ícone padrão). `description` é opcional — usada na seção "Trilhas" da home
  * (features/tracks-overview.js), reaproveitando o card genérico de
  * info-card.js. Sem ela, a trilha só não aparece lá.
  */
 /**
- * Nome da sala de uma trilha a partir de um bairro de Campinas — o padrão
- * ("Sala <bairro>") fica só aqui. Trocar o bairro de uma trilha, ou o
- * padrão do nome, é editar este helper ou o argumento em TRACKS.
+ * Nome de uma sala a partir de um lugar histórico de Campinas — o padrão
+ * ("Sala <lugar>") fica só aqui. Trocar o lugar de uma trilha (ou de um
+ * banner do DAY_PLAN), ou o padrão do nome, é editar este helper ou o
+ * argumento onde ele é usado.
  */
-const roomFor = neighborhood => `Sala ${neighborhood}`;
+const roomFor = place => `Sala ${place}`;
 
 const TRACKS = [
-  { id: "ia", label: "IA", shortLabel: "IA", room: roomFor("Barão Geraldo"), mc: "MC a definir", color: "var(--ia)", icon: "sparkles",
+  { id: "ia", label: "IA", shortLabel: "IA", room: roomFor("Observatório"), mc: "MC a definir", color: "var(--ia)", icon: "sparkles",
     description: "Modelos, agentes e aplicações de inteligência artificial na prática — do fundamento ao que já roda em produção." },
-  { id: "webdata", label: "Front-end / Back-end / Data", shortLabel: "Front/Back/Data", room: roomFor("Centro"), mc: "MC a definir", color: "var(--webdata)", icon: "code",
+  { id: "webdata", label: "Front-end / Back-end / Data", shortLabel: "Front/Back/Data", room: roomFor("Estação"), mc: "MC a definir", color: "var(--webdata)", icon: "code",
     description: "Arquitetura, engenharia de dados e desenvolvimento web — as bases que sustentam qualquer produto digital." },
-  { id: "mobile", label: "Mobile / Agile", shortLabel: "Mobile/Agile", room: roomFor("Taquaral"), mc: "MC a definir", color: "var(--mobile)", icon: "phone",
+  { id: "mobile", label: "Mobile / Agile", shortLabel: "Mobile/Agile", room: roomFor("Lagoa do Taquaral"), mc: "MC a definir", color: "var(--mobile)", icon: "phone",
     description: "Apps nativos e multiplataforma, e os métodos ágeis que fazem times entregarem rápido e com qualidade." },
-  { id: "mentoring", label: "Carreiras & Mentorias", shortLabel: "Carreiras", room: roomFor("Guanabara"), mc: "MC a definir", color: "var(--mentoring)", icon: "rocket",
+  { id: "mentoring", label: "Carreiras & Mentorias", shortLabel: "Carreiras", room: roomFor("Mercadão Central"), mc: "MC a definir", color: "var(--mentoring)", icon: "rocket",
     description: "Trajetórias, mentoria e como crescer na área — de quem já passou pelos mesmos desafios." },
 ];
 
@@ -71,12 +72,12 @@ function eventTime(hhmm) {
  */
 const DAY_PLAN = [
   { banner: "Credenciamento", room: "Recepção", start: "08:00", end: "08:30" },
-  { banner: "Abertura — GDG Campinas", room: "Auditório principal", start: "08:30", end: "08:55" },
+  { banner: "Abertura — GDG Campinas", room: roomFor("Calçadão Central"), start: "08:30", end: "08:55" },
   { talks: talkWindows("09:00", 4) },
   { banner: "Almoço", start: "12:00", end: "13:20" },
   { banner: "Retorno para a sala", start: "13:20", end: "13:30" },
   { talks: talkWindows("13:30", 5) },
-  { banner: "Encerramento", room: "Auditório principal", start: "17:15", end: "18:00" },
+  { banner: "Encerramento", room: roomFor("Calçadão Central"), start: "17:15", end: "18:00" },
 ];
 
 const SCHEDULE = buildSchedule(DAY_PLAN, { eventTime, tracks: TRACKS, speakerPool: mockSpeakersRepository.getAll(), talkCatalog: mockTalksRepository });

@@ -123,6 +123,11 @@ de confiar neste texto.
 - Salas das trilhas agora são bairros de Campinas via `roomFor()`: IA Barão Geraldo, Front/Back/Data Centro, Mobile/Agile Taquaral, Carreiras & Mentorias Guanabara (escolha minha, fácil de trocar em `TRACKS`). Só dado, mais o ajuste do rodapé do card (`.talk-foot` quebra em 2 linhas quando a sala é longa; "40 min" e a sala não quebram no meio).
 - Em aberto da conversa de bairros: nomes reais das salas do local (ainda "Local a definir"), incluir cidades da RMC (crítica do PDF do logo), votação da comunidade.
 
+## Sessão 2k (2026-09-20): salas com nomes de lugares históricos
+
+- Renato trocou bairros por lugares da cidade ("cadê meu bairro?"): IA Sala Observatório, Front/Back/Data Sala Estação, Mobile/Agile Sala Lagoa do Taquaral, Carreiras Sala Mercadão Central, Abertura e Encerramento Sala Calçadão Central (substitui "Auditório principal"). Tudo via `roomFor(place)`; só dado (schedule.js/.dev.js).
+- Não verifiquei online grafia/existência de cada lugar (Observatório e Estação foram sugestões minhas); confirmar com a organização. Salas reais do local ainda a definir.
+
 ## Decisão pendente do Renato (plenárias)
 
 Mockups v2 (desenho aprovado visualmente, pelo Renato: faixa larga, avatar 104 px com anel multi-cor, selo "Plenária") ficaram só no scratchpad. Variantes: A 3 plenárias (28 talks), B só 17:15 (36 talks, custo zero, recomendada), C só 13:30 (32 talks). Renato disse que segue com a plenária depois da agenda.
@@ -141,7 +146,7 @@ card largo na Grade e no "ao vivo agora" da home. Esperar o "pode fazer".
 ## Not done yet / TBD
 
 - `EVENT.venue` / endereço: ainda `"Local a definir"`.
-- MCs das 4 trilhas: `"MC a definir"`. Salas: bairros mock (ver Sessão 2j).
+- MCs das 4 trilhas: `"MC a definir"`. Salas: lugares históricos mock (ver Sessão 2k).
 - `EVENT.lineupRevealed` é `false`. `schedule.dev.js` existe local
   (gitignored) espelhando o `schedule.js` mock; line-up real não carregado.
   Sempre editar os dois juntos.
