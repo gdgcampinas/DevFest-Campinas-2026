@@ -13,6 +13,11 @@ function hourLabel(date, timezone) {
   return `${hour}h`;
 }
 
+/** "40 min" — duração do slot, calculada do próprio horário (nada hardcoded). */
+function durationLabel(slot) {
+  return `${Math.round((slot.end - slot.start) / 60000)} min`;
+}
+
 function timeRangeLabel(slot, timezone) {
   return `${formatEventTime(slot.start, timezone)} — ${formatEventTime(slot.end, timezone)}`;
 }
@@ -20,6 +25,25 @@ function timeRangeLabel(slot, timezone) {
 /** "28 de novembro de 2026" — usado no header e no ticker (app.js/ticker.js), 1 lugar só. */
 function eventDateLabel(schedule, timezone) {
   return schedule[0].start.toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric", timeZone: timezone });
+}
+
+/**
+ * Opções de card de palestra derivadas do slot — 1 lugar só, usado pela
+ * agenda completa e pelo "ao vivo agora" (live-status.js).
+ * `favorites` é opcional: sem ele o card não mostra a estrela.
+ */
+function talkCardOptions(slot, index, track, timezone, { reveal = true, favorites = null, live = false, progress = 0 } = {}) {
+  const key = talkKey(slot, track.id);
+  return {
+    reveal,
+    live,
+    progress,
+    slotIndex: index,
+    startLabel: formatEventTime(slot.start, timezone),
+    duration: durationLabel(slot),
+    talkKey: favorites ? key : "",
+    favorite: favorites ? favorites.has(key) : false,
+  };
 }
 
 function renderLegend(tracks, mountEl) {
@@ -45,13 +69,13 @@ function renderTabs(tracks, mountEl) {
   mountEl.innerHTML = allTab + trackTabs;
 }
 
-function renderAgenda(schedule, tracks, timezone, mountEl, { reveal = true } = {}) {
+function renderAgenda(schedule, tracks, timezone, mountEl, { reveal = true, favorites = null } = {}) {
   mountEl.innerHTML = schedule
     .map((slot, index) => {
       const time = formatEventTime(slot.start, timezone);
       const body = slot.banner
         ? bannerMarkup(slot)
-        : `<div class="talks" data-view="all">${tracks.map(track => trackCardMarkup(track, slot.talks[track.id], { reveal, timeRange: timeRangeLabel(slot, timezone), slotIndex: index })).join("")}</div>`;
+        : `<div class="talks" data-view="all">${tracks.map(track => trackCardMarkup(track, slot.talks[track.id], talkCardOptions(slot, index, track, timezone, { reveal, favorites }))).join("")}</div>`;
       return `<div class="slot" data-index="${index}"><div class="slot-time">${time}</div>${body}</div>`;
     })
     .join("");
@@ -74,5 +98,6 @@ function initTrackFilter(tabsEl, scopeEl) {
     scopeEl.querySelectorAll(".talk").forEach(card => {
       card.classList.toggle("shown", track === "all" || card.dataset.track === track);
     });
+    scopeEl.dispatchEvent(new CustomEvent("trackfilterchange"));
   });
 }

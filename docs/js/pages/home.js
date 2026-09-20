@@ -9,7 +9,8 @@ function initHome() {
   initStickyStatus(document.getElementById("hero"), document.getElementById("stickyStatus"));
 
   const modal = createTalkModal(document.getElementById("talkModal"), document.getElementById("talkModalContent"));
-  initTalkDetails(document.body, { schedule: SCHEDULE, tracks: TRACKS, timezone: EVENT.timezone, reveal, modal });
+  initTalkDetails(document.body, { schedule: SCHEDULE, tracks: TRACKS, timezone: EVENT.timezone, reveal, modal, favorites: favoritesRepository });
+  initFavorites(document.body, favoritesRepository);
 
   renderStats(statsRepository.getAll(), document.getElementById("statsSection"), document.querySelector(".stats-grid"));
   renderVideo(videoRepository.getAll(), document.getElementById("videoSection"), document.querySelector(".video-embed"));
@@ -38,6 +39,7 @@ function initHome() {
     tracks: TRACKS,
     event: EVENT,
     reveal,
+    favorites: favoritesRepository,
     elements: {
       statusPill: document.getElementById("statusPill"),
       hero: document.getElementById("hero"),

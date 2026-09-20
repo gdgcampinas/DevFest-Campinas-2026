@@ -35,6 +35,7 @@ function mockTalks(tracks, speakerPool, talkIndex) {
     {
       speakers: [speakerPool[(talkIndex * tracks.length + i) % speakerPool.length]],
       title: "Título a confirmar",
+      format: "palestra",
       description: "",
     },
   ]));

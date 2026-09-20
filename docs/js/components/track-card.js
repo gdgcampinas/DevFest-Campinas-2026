@@ -1,15 +1,20 @@
 /**
  * Único template de "card de trilha" — usado na agenda completa e no
  * painel "acontecendo agora". Tudo por parâmetro, nada duplicado:
- *   reveal    → false esconde palestrante/título (mock "Em breve")
- *   live      → adiciona a tag "AGORA" pulsante
- *   timeRange → texto "HH:MM — HH:MM" pro rodapé do card (opcional)
+ *   reveal     → false esconde palestrante/título (mock "Em breve")
+ *   live       → troca o chip de horário pela tag "AGORA" + barra de progresso
+ *   startLabel → "HH:MM" do chip de horário (opcional)
+ *   duration   → "40 min" no rodapé (opcional)
+ *   talkKey    → chave de favorito; sem ela o card não mostra a estrela
+ *   favorite   → estado inicial da estrela  |  progress → 0..1 da barra (só live)
+ * Formato, tags, LinkedIn e "cargo · empresa" só aparecem se o dado tiver.
  *
  * Cor de trilha vem 100% de track.color (definido em schedule.js) e é
  * aplicada via --track-color inline — nenhum CSS aqui depende do id
  * da trilha, então funciona pra qualquer quantidade/nome de trilha.
  */
 const HIDDEN_SPEAKER_LABEL = "Em breve";
+const HIDDEN_TITLE_LABEL = "Título a confirmar";
 
 /**
  * Normaliza speaker único ou `speakers: [{name, linkedin}]` (palestra
@@ -23,40 +28,51 @@ function speakerList(data) {
   return [{ name: data.speaker, linkedin: data.linkedin }];
 }
 
-function trackCardMarkup(track, data, { reveal = true, live = false, timeRange = "", slotIndex = null } = {}) {
+function trackCardMarkup(track, data, {
+  reveal = true, live = false, slotIndex = null,
+  startLabel = "", duration = "", talkKey = "", favorite = false, progress = 0,
+} = {}) {
   const speakers = reveal ? speakerList(data) : [];
   const speaker = reveal ? speakers.map((s) => s.name).join(" & ") || data.speaker : HIDDEN_SPEAKER_LABEL;
-  const title = reveal ? data.title : "";
+  const title = reveal && data.title ? data.title : "";
   const room = reveal ? track.room : "";
-  const level = reveal ? data.level : "";
+  const meta = reveal && speakers.length === 1 ? speakerMetaLine(speakers[0]) : "";
 
-  const nowTag = live
+  // AGORA substitui o chip de horário; fora do ao-vivo o chip guarda o
+  // rótulo original em data-label pra live-status trocar por "Em N min".
+  const statusTag = live
     ? `<span class="now-tag"><span class="dot"></span>AGORA</span>`
-    : "";
+    : startLabel ? `<span class="time-chip" data-label="${startLabel}">${startLabel}</span>` : "";
 
-  const footItems = [timeRange, room].filter(Boolean);
-  const foot = footItems.length
-    ? `<div class="foot">${footItems.map((item, i) => i === footItems.length - 1 && room
-        ? `<span class="room-tag">${item}</span>`
-        : `<span class="time">${item}</span>`).join("")}</div>`
-    : "";
+  const foot = [
+    duration && `<span class="talk-duration">${iconMarkup("clock")}${duration}</span>`,
+    talkKey && favoriteButtonMarkup({ key: talkKey, active: favorite }),
+    room && `<span class="room-tag">${room}</span>`,
+  ].filter(Boolean).join("");
 
-  const clickable = slotIndex !== null ? ` data-slot-index="${slotIndex}" tabindex="0" role="button"` : "";
-
-  // avatar só aparece com speaker real revelado e foto cadastrada —
-  // sem foto, cai pra iniciais (avatarMarkup já resolve isso sozinho).
-  const avatar = speakers[0] ? avatarMarkup(speakers[0].name, speakers[0].photo, "talk-avatar") : "";
+  const attrs = [
+    slotIndex !== null && `data-slot-index="${slotIndex}" tabindex="0" role="button"`,
+    talkKey && `data-talk-key="${talkKey}"`,
+  ].filter(Boolean).join(" ");
 
   return `
-    <div class="talk" data-track="${track.id}" style="--track-color:${track.color}"${clickable}>
-      <div class="track-row">
-        <span class="track-label"><span class="dot" style="background:${track.color}"></span>${track.label}</span>
-        ${nowTag}
+    <div class="talk${favorite ? " is-fav" : ""}" data-track="${track.id}" style="--track-color:${track.color}" ${attrs}>
+      <div class="talk-top">
+        <span class="track-label"><span class="dot" style="background:${track.color}"></span>${track.shortLabel ?? track.label}</span>
+        ${statusTag}
       </div>
-      ${level ? `<span class="level-tag">${level}</span>` : ""}
-      ${title ? `<div class="title">${title}</div>` : ""}
-      <div class="speaker-row">${avatar}<div class="speaker">${speaker}</div></div>
-      ${foot}
+      <div class="title${title ? "" : " title--pending"}">${title || HIDDEN_TITLE_LABEL}</div>
+      ${reveal ? talkTagsMarkup(data) : ""}
+      <div class="talk-who">
+        ${talkAvatarsMarkup(speakers)}
+        <div class="talk-who-text">
+          <div class="talk-name">${speaker}</div>
+          ${meta ? `<div class="talk-meta">${meta}</div>` : ""}
+        </div>
+        ${reveal ? talkLinksMarkup(speakers) : ""}
+      </div>
+      ${foot ? `<div class="talk-foot">${foot}</div>` : ""}
+      ${live ? `<div class="talk-progress"><b style="width:${Math.round(progress * 100)}%"></b></div>` : ""}
     </div>`;
 }
 
@@ -69,7 +85,7 @@ function speakerMetaLine(speaker) {
   return [speaker.title, speaker.company].filter(Boolean).join(" · ");
 }
 
-function talkDetailMarkup(track, data, { reveal = true, timeRange = "", room = "" } = {}) {
+function talkDetailMarkup(track, data, { reveal = true, timeRange = "", room = "", talkKey = "", favorite = false } = {}) {
   const speakers = reveal ? speakerList(data) : [];
   const title = reveal ? data.title : "Palestra a confirmar";
   const description = reveal && data.description ? data.description : "";
@@ -78,7 +94,6 @@ function talkDetailMarkup(track, data, { reveal = true, timeRange = "", room = "
   const metaItems = [
     timeRange && `<span>${timeRange}</span>`,
     roomLabel && `<span class="room-tag">${roomLabel}</span>`,
-    reveal && data.level && `<span>${data.level}</span>`,
   ].filter(Boolean).join("");
 
   // avatar/company/title são opcionais no dado do speaker — palestra
@@ -96,8 +111,12 @@ function talkDetailMarkup(track, data, { reveal = true, timeRange = "", room = "
 
   return `
     <div class="detail" data-track="${track.id}" style="--track-color:${track.color}">
-      <span class="track-label"><span class="dot" style="background:${track.color}"></span>${track.label}</span>
+      <div class="detail-top">
+        <span class="track-label"><span class="dot" style="background:${track.color}"></span>${track.label}</span>
+        ${talkKey ? favoriteButtonMarkup({ key: talkKey, active: favorite }) : ""}
+      </div>
       <h3 class="detail-title">${title}</h3>
+      ${reveal ? talkTagsMarkup(data) : ""}
       ${description ? `<p class="detail-desc">${description}</p>` : ""}
       ${metaItems ? `<div class="detail-meta">${metaItems}</div>` : ""}
       ${speakerLine}

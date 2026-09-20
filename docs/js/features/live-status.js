@@ -42,6 +42,11 @@ function initStickyStatus(sectionEl, stickyEl) {
   ).observe(sectionEl);
 }
 
+/** Fração 0..1 do slot já transcorrida. */
+function slotProgress(slot, currentTime) {
+  return Math.min(1, Math.max(0, (currentTime - slot.start) / (slot.end - slot.start)));
+}
+
 /** Só calcula o estado — nenhum acesso ao DOM aqui. */
 function resolveEventState(now, schedule) {
   const first = schedule[0].start;
@@ -63,7 +68,7 @@ function resolveEventState(now, schedule) {
  * que só tem a agenda) passam só o que têm; o resto vira no-op sem
  * precisar de outra função duplicada só pra isso.
  */
-function createLiveStatus({ schedule, tracks, event, elements = {}, now = () => new Date(), reveal = true }) {
+function createLiveStatus({ schedule, tracks, event, elements = {}, now = () => new Date(), reveal = true, favorites = null, soonMinutes = 15 }) {
   const { statusPill, hero, stickyTxt, stickyPulse } = elements;
 
   // dot fica num nó fixo, criado uma vez só — só o texto é trocado a
@@ -135,7 +140,8 @@ function createLiveStatus({ schedule, tracks, event, elements = {}, now = () => 
         </div>`;
       stickyTxt.textContent = slot.banner;
     } else {
-      const cards = tracks.map(track => trackCardMarkup(track, slot.talks[track.id], { reveal, live: true, slotIndex: state.activeIndex })).join("");
+      const progress = slotProgress(slot, now());
+      const cards = tracks.map(track => trackCardMarkup(track, slot.talks[track.id], talkCardOptions(slot, state.activeIndex, track, event.timezone, { reveal, favorites, live: true, progress }))).join("");
       hero.innerHTML = `
         <div class="hero-card live">
           <div class="hero-live-top">
@@ -167,15 +173,28 @@ function createLiveStatus({ schedule, tracks, event, elements = {}, now = () => 
     } else if (state.phase === "live" && state.activeSlot) {
       const el = document.getElementById("nextChangeText");
       if (el) el.textContent = `próxima troca em ${formatMS(state.activeSlot.end - now())}`;
+      const width = `${Math.round(slotProgress(state.activeSlot, now()) * 100)}%`;
+      document.querySelectorAll(".talk-progress b").forEach(bar => (bar.style.width = width));
     }
   }
 
+  /**
+   * Marca ativo/passado e, no próximo slot de palestras a menos de
+   * `soonMinutes` de começar, troca o chip de horário por "Em N min".
+   */
   function markAgendaSlots(state) {
     const currentTime = now();
+    const next = schedule.find(s => s.start > currentTime);
+    const soonSlot = next && next.talks && next.start - currentTime <= soonMinutes * 60000 ? next : null;
     document.querySelectorAll(".slot").forEach((el, index) => {
       const slot = schedule[index];
+      const isSoon = slot === soonSlot;
       el.classList.toggle("active", state.phase === "live" && index === state.activeIndex);
       el.classList.toggle("past", slot.end <= currentTime);
+      el.classList.toggle("soon", isSoon);
+      el.querySelectorAll(".time-chip").forEach(chip => {
+        chip.textContent = isSoon ? `Em ${Math.ceil((slot.start - currentTime) / 60000)} min` : chip.dataset.label;
+      });
     });
   }
 

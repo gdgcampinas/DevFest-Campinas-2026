@@ -10,13 +10,18 @@ function initGrade() {
   const agendaEl = document.getElementById("agenda");
   renderLegend(TRACKS, document.querySelector(".tracks-legend"));
   renderTabs(TRACKS, tabsEl);
-  renderAgenda(SCHEDULE, TRACKS, EVENT.timezone, agendaEl, { reveal });
+  renderAgenda(SCHEDULE, TRACKS, EVENT.timezone, agendaEl, { reveal, favorites: favoritesRepository });
   initTrackFilter(tabsEl, agendaEl);
 
-  const modal = createTalkModal(document.getElementById("talkModal"), document.getElementById("talkModalContent"));
-  initTalkDetails(document.body, { schedule: SCHEDULE, tracks: TRACKS, timezone: EVENT.timezone, reveal, modal });
+  initFavorites(document.body, favoritesRepository);
+  const favToggleEl = document.getElementById("favToggle");
+  renderFavoritesToggle(favToggleEl, "Minha agenda");
+  initFavoritesFilter({ toggleEl: favToggleEl, scopeEl: agendaEl, emptyEl: document.getElementById("favoritesEmpty"), repository: favoritesRepository });
 
-  const liveStatus = createLiveStatus({ schedule: SCHEDULE, tracks: TRACKS, event: EVENT, reveal, now: resolveNow() });
+  const modal = createTalkModal(document.getElementById("talkModal"), document.getElementById("talkModalContent"));
+  initTalkDetails(document.body, { schedule: SCHEDULE, tracks: TRACKS, timezone: EVENT.timezone, reveal, modal, favorites: favoritesRepository });
+
+  const liveStatus = createLiveStatus({ schedule: SCHEDULE, tracks: TRACKS, event: EVENT, reveal, favorites: favoritesRepository, now: resolveNow() });
   liveStatus.tick();
   setInterval(liveStatus.tick, 1000);
 }

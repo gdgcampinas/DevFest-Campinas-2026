@@ -44,6 +44,10 @@ docs/
   js/
     data/                    static data — nothing here touches the DOM
       repository.js            createRepository() factory — see below
+      persisted-set-repository.js  createPersistedSetRepository(): set of keys in an injected storage (localStorage)
+      favorites.js              favoritesRepository + talkKey(slot, trackId)
+      icons.js                  ICONS (svg paths by name) + iconsRepository.get()
+      talk-formats.js           TALK_FORMATS (palestra/workshop/painel/bate-papo) + getById()
       mock-speakers.js          mock speaker data (loads before schedule)
       schedule-builder.js        talkWindows/buildSchedule/mockTalks (loads before schedule)
       schedule.js               PROD: EVENT, TRACKS, DAY_PLAN → SCHEDULE (mock until reveal)
@@ -62,13 +66,16 @@ docs/
       patrocinio.js                Patrocínio page copy/benefits
     components/              reusable templates, one responsibility each
       avatar.js                 photo or initials — automatic fallback
+      icon.js                    iconMarkup(name) — only svg template
+      favorite-button.js         favoriteButtonMarkup() — star, used in card/hero/modal
+      talk-meta.js               talkTagsMarkup/talkAvatarsMarkup/talkLinksMarkup (format+tags, avatars, LinkedIn)
       site-nav.js                nav links shared by every page
-      track-card.js               talk card (agenda + hero) + detail modal
+      track-card.js               talk card (agenda + hero) + detail modal; options come from talkCardOptions() (agenda.js)
       info-card.js                 generic "before you come" card
       sponsor-card.js               sponsor/community item (logo box + name + optional description)
       person-card.js                 person card (team/speakers)
     features/                data + template + behavior, one section each
-      agenda.js, live-status.js, talk-modal.js, speakers.js,
+      agenda.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
       featured-speakers.js, sponsors.js, partner-communities.js,
       team.js, cod.js, seo.js, stats.js, about.js, highlights.js,
       video.js, realizacao.js, tickets.js, footer.js,
@@ -158,6 +165,13 @@ identical — always edit both together.
 header renders 1..N logos with an auto-generated "+" separator
 (`renderBrand()` in `app.js`). Add entries there when partners are
 confirmed; no HTML/CSS change needed.
+
+## Talk card and "Minha agenda" (favorites)
+
+- Card (`trackCardMarkup`): track label + time chip (turns into "Em N min" for the next slot, "AGORA" + progress bar when live), title, optional format chip + up to 2 `#tags`, ringed avatar(s) with name, "cargo · empresa" and LinkedIn, footer with duration, star and room. Everything optional appears only if the talk data has it: `format` (id of `TALK_FORMATS`), `tags: []`, `speakers[].photo/title/company/linkedin`. The old `level` field is gone. Card options for agenda and "ao vivo agora" come from one place: `talkCardOptions()` in `agenda.js`.
+- Favorites: `favoritesRepository` (localStorage key `devfest-campinas-2026:favorites`, no backend, per browser). Key = `talkKey(slot, trackId)` = slot start ISO + track id. `initFavorites(rootEl, repo)` is one delegated listener that syncs every star sharing a key (grade card, home hero, modal). Grade also has the "Minha agenda" toggle (`favorites-filter.js`), which respects the active track tab. Home hero shows the star too.
+- Swap storage (or the whole repository for an API) by changing only the `createPersistedSetRepository` call in `data/favorites.js`.
+- Formats and icons are data (`talk-formats.js`, `icons.js`): a new format is one line, no CSS.
 
 ## Site nav
 

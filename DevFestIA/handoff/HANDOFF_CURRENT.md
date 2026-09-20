@@ -1,6 +1,6 @@
 # Handoff — Current State
 
-**Last updated:** 2026-09-20
+**Last updated:** 2026-09-20 (sessão 2: cards + favoritos)
 
 ## Status
 
@@ -65,7 +65,18 @@ de confiar neste texto.
 - Cache: URL de imagem com `?v=` via `HIGHLIGHTS_VERSION`, porque trocar
   bytes sem trocar nome não invalida o CDN do GitHub Pages.
 
+## Sessão 2 (2026-09-20): agenda com cards novos e favoritos
+
+- Cards de palestra redesenhados (glow na cor da trilha, avatar com anel, horário em chip, formato + tags, LinkedIn, duração, sala, AGORA com barra de progresso, "Em N min" no próximo slot). O campo `level` foi removido (Renato pediu trocar): entrou `format` + `tags`.
+- "Minha agenda": estrela por palestra, salva em localStorage (cada pessoa monta a sua, sem backend). Filtro na Grade, estrela também no hero da home e no modal. Detalhes em `PROJECT_CONTEXT.md` (seção "Talk card and Minha agenda").
+- Arquivos novos: `data/{persisted-set-repository,favorites,icons,talk-formats}.js`, `components/{icon,favorite-button,talk-meta}.js`, `features/{favorites,favorites-filter}.js`.
+- Dado novo a preencher no line-up real: `format` e `tags` por palestra (opcionais; sem eles a linha some). Mock usa `format: "palestra"`.
+- Limitações conhecidas: favorito não sincroniza entre abas abertas ao mesmo tempo; chave usa horário do slot, então mudar horário de uma palestra perde o favorito dela.
+- Ideias não feitas: painel/dupla com meta por pessoa, exportar Minha agenda (calendário/compartilhar), alerta de conflito.
+
 ## Decisão pendente do Renato (plenárias)
+
+Mockups v2 (desenho aprovado visualmente, pelo Renato: faixa larga, avatar 104 px com anel multi-cor, selo "Plenária") ficaram só no scratchpad. Variantes: A 3 plenárias (28 talks), B só 17:15 (36 talks, custo zero, recomendada), C só 13:30 (32 talks). Renato disse que segue com a plenária depois da agenda.
 
 Renato quer avaliar "plenárias": um palestrante de destaque ocupando a
 faixa inteira (todas as trilhas juntas), como o "Pokemão Standup" da
@@ -115,7 +126,7 @@ card largo na Grade e no "ao vivo agora" da home. Esperar o "pode fazer".
 
 ## Next steps
 
-1. Decidir as plenárias (ver acima) e, se aprovado, implementar.
+1. Decidir a variante das plenárias (A/B/C) e implementar (o card de plenária deve reusar `favoriteButtonMarkup`, `talkAvatarsMarkup`, `iconMarkup`).
 2. Preencher dado real conforme confirmado: local, salas/MCs,
    patrocinadores, comunidades, fotos de palestrantes, imagens de
    estacionamento/comida.

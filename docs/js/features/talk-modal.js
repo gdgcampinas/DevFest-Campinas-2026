@@ -36,14 +36,19 @@ function createTalkModal(modalEl, contentEl) {
  * (agenda completa ou hero "ao vivo") e abre o modal com os dados reais
  * daquele slot/trilha — funciona pros dois sem duplicar handler.
  */
-function initTalkDetails(rootEl, { schedule, tracks, timezone, reveal, modal }) {
+/** Controles dentro do card (estrela, LinkedIn) têm ação própria e não abrem o modal. */
+const CARD_INNER_CONTROLS = ".fav-btn, a";
+
+function initTalkDetails(rootEl, { schedule, tracks, timezone, reveal, modal, favorites = null }) {
   rootEl.addEventListener("click", event => {
+    if (event.target.closest(CARD_INNER_CONTROLS)) return;
     const card = event.target.closest(".talk[data-slot-index]");
     if (!card) return;
     openFromCard(card);
   });
   rootEl.addEventListener("keydown", event => {
     if (event.key !== "Enter" && event.key !== " ") return;
+    if (event.target.closest(CARD_INNER_CONTROLS)) return;
     const card = event.target.closest(".talk[data-slot-index]");
     if (!card) return;
     event.preventDefault();
@@ -54,10 +59,13 @@ function initTalkDetails(rootEl, { schedule, tracks, timezone, reveal, modal }) 
     const slot = schedule[Number(card.dataset.slotIndex)];
     const track = tracks.find(t => t.id === card.dataset.track);
     if (!slot || !track || !slot.talks) return;
+    const key = talkKey(slot, track.id);
     modal.open(track, slot.talks[track.id], {
       reveal,
       timeRange: timeRangeLabel(slot, timezone),
       room: track.room,
+      talkKey: favorites ? key : "",
+      favorite: favorites ? favorites.has(key) : false,
     });
   }
 }
