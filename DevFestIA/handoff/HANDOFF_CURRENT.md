@@ -28,7 +28,7 @@ progresso, "Em N min"), filtro por trilha com contadores, "Minha agenda"
 (favoritos em localStorage) com exportar .ics, WhatsApp, copiar link e banner para
 quem abre `?agenda=`.
 
-**Line-up ligado:** 36 palestras (`mock-talks.js`) e 38 palestrantes
+**Line-up ligado:** 36 palestras (`mock-talks.js`) e 40 palestrantes (10 por trilha, só a Renata Cardoso fala duas vezes)
 (`mock-speakers.js`) ligados só por `speakerIds`; galeria de Palestrantes lista as
 palestras de cada pessoa (abre o mesmo modal), o modal leva ao perfil
 (`palestrantes.html#speaker-<id>`), Destaques da home também.

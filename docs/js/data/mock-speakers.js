@@ -49,6 +49,8 @@ const MOCK_SPEAKER_ROWS = [
   ["beatriz-costa", "Beatriz Costa", "Product Designer", 44],
   ["grace-coleman", "Grace Coleman", "Head de Engenharia", 31],
   ["aline-teixeira", "Aline Teixeira", "Psicóloga e Mentora", 41],
+  ["rodrigo-menezes", "Rodrigo Menezes", "Engenheiro e Entrevistador Técnico", 68],
+  ["tatiane-gomes", "Tatiane Gomes", "Engenheira de Software e Mentora", 49],
 ];
 
 const MOCK_SPEAKERS = MOCK_SPEAKER_ROWS.map(([id, name, title, photoId]) => ({

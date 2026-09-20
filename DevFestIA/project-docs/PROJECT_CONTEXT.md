@@ -56,7 +56,7 @@ docs/
       mock-links.js             MOCK_LINKEDIN_URL / MOCK_FACEBOOK_URL / MOCK_SPONSOR_URL (one place for all mock links)
       mock-photo.js             mockPhoto(id): hand-picked stock portraits (pravatar.cc) by number
       mock-logo.js              mockLogo({name, shape, color}): fictional company logo as inline SVG
-      mock-speakers.js          38 mock speakers (id, name, cargo, photo, LinkedIn) + getById (loads before schedule)
+      mock-speakers.js          40 mock speakers (id, name, cargo, photo, LinkedIn) + getById (loads before schedule)
       mock-talks.js             36 mock talks (9 per track, by position) linked to speakers by speakerIds
       schedule-builder.js        talkWindows/buildSchedule/catalogTalks (loads before schedule)
       schedule.js               PROD: EVENT, TRACKS, DAY_PLAN → SCHEDULE (mock until reveal)

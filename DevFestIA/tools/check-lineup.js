@@ -1,6 +1,6 @@
 /**
  * Confere a integridade do line-up MOCK (não roda no CI porque as regras
- * são do mock: 36 palestras, 38 palestrantes). Verifica: toda palestra
+ * são do mock: 36 palestras, 40 palestrantes). Verifica: toda palestra
  * tem título, formato válido, descrição, tags e palestrantes; ninguém
  * fala em duas trilhas no mesmo horário; nenhum palestrante órfão; ids e
  * avatares únicos; markup sem "undefined". Ao trocar pelo line-up real,
