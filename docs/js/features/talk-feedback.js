@@ -76,13 +76,17 @@ function initTalkFeedback(rootEl, { index, reveal = true, now = () => new Date()
     else handleCheckinParam();
   }
 
-  // check-in manual pelo botão (honra)
+  // check-in manual pelo botão (honra) — confirma antes, pra reduzir clique
+  // errado (ex.: check-in na palestra da sala ao lado por engano). O
+  // check-in por QR/link (?checkin=) não confirma: escanear já é a ação
+  // deliberada.
   rootEl.addEventListener("click", async event => {
     const btn = event.target.closest("[data-feedback-checkin]");
     if (!btn) return;
     const container = btn.closest("[data-feedback-container]");
     const entry = index.getAll().find(e => e.key === btn.dataset.entryKey);
     if (!entry || !container) return;
+    if (!confirm(`Confirma o check-in em "${entry.data.title}"?`)) return;
     btn.disabled = true;
     await doCheckin(entry);
     render(container, entry);

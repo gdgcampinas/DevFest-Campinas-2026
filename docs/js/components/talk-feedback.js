@@ -17,8 +17,9 @@ function talkFeedbackMarkup({ phase, entryKey, checkinUrl = "" }) {
 
   if (phase === "checkin") {
     return `<div class="talk-feedback">
+      <p class="talk-feedback-title">${iconMarkup("mic")}Check-in dessa palestra</p>
       <p class="talk-feedback-hint">Escaneie o QR code da sala pra fazer check-in e liberar a avaliação no fim da palestra.</p>
-      <button type="button" class="chip-btn" data-feedback-checkin data-entry-key="${entryKey}" data-track-event="checkin" data-track-target="${entryKey}">${iconMarkup("check")}Já estou na sala, fazer check-in</button>
+      <button type="button" class="chip-btn chip-btn--primary" data-feedback-checkin data-entry-key="${entryKey}" data-track-event="checkin" data-track-target="${entryKey}">${iconMarkup("check")}Já estou na sala, fazer check-in</button>
     </div>`;
   }
 
@@ -31,6 +32,7 @@ function talkFeedbackMarkup({ phase, entryKey, checkinUrl = "" }) {
       .map(n => `<label class="feedback-star"><input type="radio" name="rating-${entryKey}" value="${n}" required><span>★</span></label>`)
       .join("");
     return `<form class="talk-feedback feedback-form" data-feedback-form data-entry-key="${entryKey}">
+      <p class="talk-feedback-title">${iconMarkup("mic")}Avaliar essa palestra</p>
       <p class="talk-feedback-hint">Você esteve aqui — conta pra gente o que achou:</p>
       <div class="feedback-stars" role="radiogroup" aria-label="Nota de 1 a 5">${stars}</div>
       <input type="text" class="feedback-input" name="name" placeholder="Seu nome (opcional)" maxlength="79">

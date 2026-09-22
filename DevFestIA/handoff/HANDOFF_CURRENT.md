@@ -91,6 +91,12 @@ metadata and SEO", "Offline (PWA)", "Usage analytics", "Accessibility rules",
    estado "checkin" → clicar → estado "rate" (form) → enviar → estado
    "done" → reabrir a mesma palestra mostra "done" direto (persistiu).
    Zero erro de console em todo o fluxo.
+   Ajuste rápido pedido pelo Renato: bloco de check-in/avaliar ganhou
+   destaque visual (cartão com fundo/borda na cor de destaque, título com
+   ícone, botão sólido — antes era discreto, sumia no resto do modal), e
+   um `confirm()` nativo antes do check-in manual ("Confirma o check-in
+   em <título>?"), pra reduzir clique errado (ex.: sala ao lado). Testado:
+   diálogo aparece com o título certo, cancelar não grava nada.
    **Falta:** tela/página que mostra o QR da palestra ao vivo daquela
    sala/trilha (próximo passo, sem precisar imprimir nada — atualiza
    sozinha quando a palestra muda). Feedback de fim de evento (fase 5.3)
