@@ -396,6 +396,23 @@ per tier). Fill in tiers when sponsors are confirmed.
 (no separate copy of name/date). `initShell()` calls it on every page
 that has a `#ticker` element (all six do, right after `<body>`).
 
+## PROD x DEV (mesmo site, um parâmetro)
+
+Não existe deploy/config separado pra PROD e DEV — os dois são a mesma
+URL publicada, só muda `?lineup=1`. `EVENT.lineupRevealed = false` (PROD,
+padrão): `resolveReveal()` (app.js) devolve `false`, o que já aciona a
+infraestrutura de pré-revelação que existia desde a sessão 2 (título
+"Título a confirmar", palestrante "Em breve" em `track-card.js`) — então
+o line-up mock nunca aparece com nomes/títulos específicos pro público.
+Além disso, `warnIfMockContent()` (chamado de `initShell()`) prende uma
+faixa fixa no topo ("Site em construção…") sempre que `reveal` é falso,
+cobrindo também patrocinadores/time/ingressos (que não têm gate próprio,
+mas são visivelmente mock e a faixa avisa). `?lineup=1` (DEV) faz
+`resolveReveal()` devolver `true`: mostra o line-up mock completo e some
+com a faixa — é assim que o time interno continua vendo o site em
+desenvolvimento sem expor isso pro público. Motivo: pessoas de fora
+chegaram a achar que o line-up mock era a programação oficial.
+
 ## URL overrides (testing)
 
 - `?demo=2026-11-28T09:15` (seconds optional) — simulates event time,

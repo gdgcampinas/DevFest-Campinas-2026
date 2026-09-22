@@ -9,8 +9,12 @@
  * Overrides de URL pra testar em DEV sem tocar em schedule.js (PROD real):
  *   ?demo=2026-11-14T09:50     → simula a hora do evento (ativa "ao vivo agora")
  *   ?demo=2026-11-14T09:50:30  → segundos são opcionais
- *   ?lineup=1                   → força mostrar palestrante/título mesmo com
- *                                 EVENT.lineupRevealed=false
+ *   ?lineup=1                   → "modo DEV": força mostrar o line-up mock
+ *                                 (palestrante/título) mesmo com
+ *                                 EVENT.lineupRevealed=false, e tira o aviso
+ *                                 de "dados de exemplo" (warnIfMockContent).
+ *                                 PROD e DEV são a mesma URL/config, só esse
+ *                                 parâmetro muda — nenhum ambiente separado.
  */
 function getParam(name) {
   return new URLSearchParams(location.search).get(name);
@@ -49,6 +53,22 @@ function warnIfDemoMode() {
     ? "⚠️ MODO TESTE — data simulada, não é o horário real do evento"
     : `⚠️ ?demo="${demo}" inválido — mostrando horário real. Formato: AAAA-MM-DDTHH:MM`;
   banner.style.cssText = "background:var(--google-red);color:#fff;text-align:center;font-size:.75rem;font-weight:700;padding:6px;position:sticky;top:0;z-index:100";
+  document.body.prepend(banner);
+}
+
+/**
+ * PROD (padrão, `reveal` falso): line-up, patrocinadores, time e ingressos
+ * ainda são só exemplo, então mostra um aviso fixo pra ninguém confundir
+ * com a programação oficial. DEV (`?lineup=1`) não mostra — quem está
+ * testando já sabe que é mock. Mesmo site, mesma URL, só o parâmetro muda;
+ * não existe deploy/config separado pra PROD x DEV.
+ */
+function warnIfMockContent(reveal) {
+  if (reveal) return;
+  const banner = document.createElement("div");
+  banner.className = "mock-content-bar";
+  banner.setAttribute("role", "status");
+  banner.textContent = "Site em construção — line-up, patrocinadores, time e ingressos são apenas exemplos até a confirmação oficial.";
   document.body.prepend(banner);
 }
 
@@ -186,6 +206,7 @@ function initShell(activePageId) {
   initSkipLink();
   initStarfield(document.body, { layers: starfieldRepository.getAll(), circuitSrc: BG_CIRCUIT_SRC });
   const reveal = resolveReveal();
+  warnIfMockContent(reveal);
 
   renderBrand(EVENT.hosts, document.getElementById("brand"));
   renderWordmark(EVENT, document.getElementById("wordmark"));

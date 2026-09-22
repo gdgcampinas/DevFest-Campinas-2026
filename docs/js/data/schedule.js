@@ -1,8 +1,13 @@
 /**
- * Dados PROD do DevFest Campinas 2026 — line-up MOCK liberado pra todos
- * (EVENT.lineupRevealed true). Quando o line-up real for confirmado:
- * trocar o catálogo mock pelos dados reais (mesmo formato) e manter
- * schedule.dev.js idêntico a este arquivo.
+ * Dados PROD do DevFest Campinas 2026 — line-up ainda é MOCK
+ * (EVENT.lineupRevealed false), escondido do público por padrão pra
+ * ninguém confundir com a programação oficial (gente já achou que era
+ * real). Quem precisa ver o mock (time interno) abre com `?lineup=1` —
+ * "modo DEV" por URL, mesmo site/config, nada separado (ver
+ * warnIfMockContent/resolveReveal em app.js). Quando o line-up real for
+ * confirmado: trocar o catálogo mock pelos dados reais (mesmo formato),
+ * voltar `lineupRevealed` pra `true`, e manter schedule.dev.js idêntico
+ * a este arquivo.
  *
  * TBD: data, horário, local e trilhas ainda não confirmados — ajustar
  * abaixo assim que o time fechar.
@@ -18,7 +23,7 @@ const EVENT = {
   venue: "Local a definir",
   venueConfirmed: false, // false = calendário/agenda usam só o endereço (cidade) em vez do nome do local
   address: "Campinas, SP",
-  lineupRevealed: true,
+  lineupRevealed: false, // PROD: mock escondido por padrão; "?lineup=1" (modo DEV) força mostrar
   // 1..N coanfitriões/patrocinadores exibidos no header, nessa ordem.
   // Adicionar entradas aqui quando parceiros forem confirmados — o
   // separador "+" entre logos é gerado automaticamente (ver app.js renderBrand).

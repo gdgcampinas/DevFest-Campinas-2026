@@ -504,6 +504,12 @@ a.featured-speaker:focus-visible{outline:2px solid var(--text);outline-offset:4p
   font:700 13px var(--font-body);color:oklch(14% 0.01 260);background:var(--amber);
 }
 
+/* aviso de "conteúdo de exemplo" em PROD (app.js, warnIfMockContent) — some no modo DEV (?lineup=1) */
+.mock-content-bar{
+  position:sticky;top:0;z-index:210;padding:8px 14px;text-align:center;
+  font:700 13px var(--font-body);color:oklch(14% 0.01 260);background:var(--amber);
+}
+
 /* guia "como instalar" (components/install-guide.js) */
 .install-guide-title{display:flex;align-items:center;gap:8px;margin:0 0 14px;padding-right:calc(var(--modal-close-size) + var(--modal-close-inset));font:700 19px var(--font-display);color:oklch(97% 0.005 260)}
 .install-guide-title .icon{width:20px;height:20px;color:var(--accent)}
