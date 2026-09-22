@@ -510,6 +510,9 @@ a.featured-speaker:focus-visible{outline:2px solid var(--text);outline-offset:4p
 .cta--block{width:100%}
 .cta--soon{background:transparent;color:var(--amber);border:1px solid color-mix(in oklch, var(--amber) 40%, transparent);cursor:default}
 .cta--soon:hover{transform:none;box-shadow:none}
+/* dentro do card de ingresso o botão normal usa --ticket-color de fundo (.ticket .cta);
+   "em breve" precisa vencer essa regra também, senão o texto some no fundo da própria cor */
+.ticket .cta--soon{background:transparent;color:var(--ticket-color);border:1px solid color-mix(in oklch, var(--ticket-color) 45%, transparent)}
 .header-actions{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
 .cta-bar{display:none}
 @media(max-width:719px){
