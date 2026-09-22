@@ -189,6 +189,15 @@ metadata and SEO", "Offline (PWA)", "Usage analytics", "Accessibility rules",
 - **Cartão de compartilhamento pessoal** "Vou ao DevFest Campinas": imagem gerada no
   navegador (canvas) com nome, foto opcional e a Minha agenda, para baixar/compartilhar.
 
+**Internacionalização (task nova, pedida pelo Renato):** site em
+português, inglês, espanhol e francês. Não desenhado ainda — precisa
+decidir: seletor de idioma (URL `/en/`, `?lang=`, ou por navegador),
+onde vive o texto traduzível (hoje é tudo hardcoded em `data/*.js` e no
+HTML de cada página, precisa virar dicionário por chave), e se schedule/
+line-up real também traduz (título/descrição de palestra) ou só a casca
+do site. Escopo grande, mexe em quase todo arquivo do repo — planejar
+como task própria antes de tocar em código.
+
 **Outras ideias da análise:** quiz "Monte sua trilha" (preenche a Minha agenda),
 feedback por palestra (formulário do Google pré-preenchido por palestra),
 certificado de participação gerado no navegador (horas complementares),
