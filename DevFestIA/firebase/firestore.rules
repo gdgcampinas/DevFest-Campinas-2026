@@ -41,14 +41,16 @@ service cloud.firestore {
 
     // Check-in numa palestra: sem campo próprio além da base.
     match /checkins/{docId} {
-      allow read: if false; // agregado só via console/admin, nunca leitura crua pelo client
+      allow get: if isOwnDoc(docId); // só a própria pessoa lê o próprio check-in (ex.: já fiz check-in nessa palestra?)
+      allow list: if false; // ninguém lê a coleção inteira nem os registros de outra pessoa
       allow create: if isOwnDoc(docId) && hasValidBaseFields();
       allow update, delete: if false;
     }
 
     // Feedback de palestra: nota 1-5 + nome/comentário opcionais, com limite de tamanho.
     match /talk-feedback/{docId} {
-      allow read: if false;
+      allow get: if isOwnDoc(docId); // só a própria pessoa lê o próprio feedback (ex.: já avaliei essa palestra?)
+      allow list: if false; // ninguém lê a coleção inteira nem os registros de outra pessoa
       allow create: if isOwnDoc(docId) && hasValidBaseFields()
         && request.resource.data.rating is int
         && request.resource.data.rating >= 1 && request.resource.data.rating <= 5
@@ -59,7 +61,8 @@ service cloud.firestore {
 
     // Feedback do evento (fim de dia): mesma forma do feedback de palestra.
     match /event-feedback/{docId} {
-      allow read: if false;
+      allow get: if isOwnDoc(docId); // só a própria pessoa lê o próprio feedback (ex.: já avaliei essa palestra?)
+      allow list: if false; // ninguém lê a coleção inteira nem os registros de outra pessoa
       allow create: if isOwnDoc(docId) && hasValidBaseFields()
         && request.resource.data.rating is int
         && request.resource.data.rating >= 1 && request.resource.data.rating <= 5
