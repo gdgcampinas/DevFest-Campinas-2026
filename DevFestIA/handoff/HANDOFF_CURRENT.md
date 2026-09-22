@@ -1,6 +1,6 @@
 # Handoff — Current State
 
-**Last updated:** 2026-09-22, sessão 5 (Firebase: check-in + avaliação funcionando ponta a ponta). Antes de confiar neste texto, rode
+**Last updated:** 2026-09-22, sessão 5 (check-in ao vivo com QR + PROD/DEV do mock). Antes de confiar neste texto, rode
 `git status --short --branch` e `git log --oneline --decorate -10` (o git não mente).
 
 ## Status em uma olhada
@@ -119,10 +119,18 @@ metadata and SEO", "Offline (PWA)", "Usage analytics", "Accessibility rules",
    com o título da palestra e dois botões, no visual do site. Testado:
    clique mostra a confirmação, cancelar volta ao botão original sem gravar,
    confirmar grava de verdade.
-   **Falta:** tela/página que mostra o QR da palestra ao vivo daquela
-   sala/trilha (próximo passo, sem precisar imprimir nada — atualiza
-   sozinha quando a palestra muda). Feedback de fim de evento (fase 5.3)
-   ainda não começou.
+0. **NOVO (sessão 5): tela de check-in ao vivo (`checkin-display.html?trilha=<id>`).**
+   Pra deixar num tablet/monitor/TV da sala o dia inteiro: mostra sozinha
+   o QR da palestra que está rolando agora naquela trilha, atualiza quando
+   a palestra muda, sem precisar imprimir nada. Ferramenta interna — fora
+   do menu, sitemap e `check-meta.js`. Sem `?trilha=` mostra a lista de
+   trilhas pra escolher (links prontos). Testado: 4 cenários (sem trilha,
+   palestra ao vivo com QR, intervalo/almoço sem palestra na trilha, tela
+   estreita tipo tablet vertical), zero erro de console.
+   **Falta:** decidir com o Renato onde/como exibir fisicamente (tablet,
+   notebook, TV com Chromecast — logística dele) e testar com internet
+   fraca de verdade no dia. Feedback de fim de evento (fase 5.3) ainda não
+   começou.
 0. **NOVO (sessão 5): fundação do Firebase (check-in/feedback, fase 5.1).**
    Projeto `DevFest-Campinas` (Spark, gratuito) criado pelo Renato: Firestore
    (modo produção, Standard) + Authentication (Anônimo) ativos. Código:

@@ -1,0 +1,39 @@
+/**
+ * Tela de check-in ao vivo (checkin-display.html) — "modo apresentação"
+ * pra ficar num tablet/monitor de sala: tela cheia, fonte grande,
+ * legível de longe. Não usa styles.css (site normal): página isolada,
+ * sem header/nav/footer, só os tokens de cor/fonte são reaproveitados.
+ */
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{
+  background:var(--bg);color:var(--text);font-family:var(--font-body);
+  display:flex;align-items:center;justify-content:center;
+  -webkit-tap-highlight-color:transparent;
+}
+.cd-screen{
+  width:100%;min-height:100vh;padding:48px 32px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;
+  text-align:center;
+}
+.cd-brand{font:700 18px var(--font-body);letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
+.cd-body{display:flex;flex-direction:column;align-items:center;gap:20px;max-width:720px}
+.cd-track{
+  font:700 20px var(--font-body);text-transform:uppercase;letter-spacing:.6px;
+  color:var(--track-color);padding:6px 18px;border:2px solid var(--track-color);border-radius:100px;
+}
+.cd-title{margin:0;font:800 44px/1.2 var(--font-display);color:oklch(97% 0.005 260)}
+.cd-qr{background:#fff;padding:20px;border-radius:20px;line-height:0}
+.cd-hint{margin:0;font:600 20px/1.5 var(--font-body);color:var(--muted)}
+.cd-empty{font:700 28px/1.5 var(--font-display);color:var(--muted)}
+.cd-track-list{list-style:none;margin:24px 0 0;padding:0;display:flex;flex-direction:column;gap:14px}
+.cd-track-list a{
+  display:inline-block;padding:10px 24px;border-radius:100px;border:2px solid var(--track-color);
+  color:var(--track-color);text-decoration:none;font:700 18px var(--font-body);
+}
+
+@media(max-width:640px){
+  .cd-title{font-size:30px}
+  .cd-qr img,.cd-qr canvas,.cd-qr table{width:260px !important;height:260px !important}
+  .cd-hint{font-size:16px}
+}

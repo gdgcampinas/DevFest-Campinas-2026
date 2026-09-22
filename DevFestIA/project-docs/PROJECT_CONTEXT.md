@@ -142,7 +142,19 @@ desenha 5 fases — `loading`, `checkin`, `waiting`, `rate`, `done` —
   em `?agenda=` da Grade). Um QR na sala aponta pra
   `grade.html?checkin=<código>`; ao carregar, o check-in é gravado
   sozinho. Sem câmera à mão, o botão dentro do modal faz o mesmo (honra).
-  Geração da imagem do QR pra exibir na sala: pendente (próximo passo).
+  Geração do QR pra exibir na sala: `checkin-display.html?trilha=<id>`
+  (ferramenta interna — fora de `SITE_PAGES`, sitemap e `check-meta.js`
+  via `INTERNAL_PAGES`, `noindex` na meta tag, não linkada de lugar
+  nenhum). `features/checkin-display.js` (`initCheckinDisplay`) reusa
+  `resolveEventState()` (live-status.js, mesmo cálculo do "AO VIVO") pra
+  achar a palestra ao vivo daquela trilha, gera o QR com a lib
+  `qrcodejs` (CDN, `window.QRCode`, script clássico, sem módulo) e
+  atualiza sozinho a cada 5 s, sem piscar quando a palestra não mudou
+  (guarda o último código gerado). CSS isolado (`css/checkin-display.css`,
+  "modo apresentação": tela cheia, fonte grande, cor da trilha), sem
+  header/nav/footer — página própria, não usa `initShell()`. Sem
+  `?trilha=` (ou id inválido) mostra a lista de trilhas em vez de
+  quebrar.
 - **Confirmação antes do check-in é inline, não `confirm()` nativo:** o
   navegador mostra o próprio diálogo do sistema (feio, sem estilo, com o
   domínio do site escrito nele) — trocado por uma fase própria

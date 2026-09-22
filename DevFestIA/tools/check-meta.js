@@ -10,7 +10,11 @@ const fs = require("fs");
 const path = require("path");
 
 const docs = path.join(__dirname, "..", "..", "docs");
-const pages = fs.readdirSync(docs).filter(name => name.endsWith(".html"));
+// Páginas de ferramenta interna (não indexadas, sem link em lugar nenhum,
+// só quem tem a URL direta acessa) ficam fora de sitemap/OG/PWA — não são
+// conteúdo do site, são utilitário pra organização durante o evento.
+const INTERNAL_PAGES = ["checkin-display.html"];
+const pages = fs.readdirSync(docs).filter(name => name.endsWith(".html") && !INTERNAL_PAGES.includes(name));
 const errors = [];
 const fail = message => errors.push(message);
 
