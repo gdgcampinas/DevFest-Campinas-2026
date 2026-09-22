@@ -2,15 +2,16 @@
  * Bloco de check-in + avaliação dentro do modal de palestra. Puro
  * template — recebe o estado já resolvido (features/talk-feedback.js
  * decide o estado, isso aqui só desenha). Uma função, um `phase`:
- *   "loading"  → aguardando resposta do Firestore
- *   "checkin"  → ainda não fez check-in nessa palestra
- *   "waiting"  → check-in feito, palestra ainda não terminou
- *   "rate"     → pode avaliar (check-in feito + palestra terminada)
- *   "done"     → já avaliou
+ *   "loading"         → aguardando resposta do Firestore
+ *   "checkin"         → ainda não fez check-in nessa palestra
+ *   "checkin-confirm" → confirmação inline antes de gravar (sem diálogo nativo do navegador, sem estilo)
+ *   "waiting"         → check-in feito, palestra ainda não terminou
+ *   "rate"            → pode avaliar (check-in feito + palestra terminada)
+ *   "done"            → já avaliou
  * `entryKey` vai em todo elemento interativo via data-attribute, pra
  * o handler delegado (features/talk-feedback.js) saber qual palestra.
  */
-function talkFeedbackMarkup({ phase, entryKey, checkinUrl = "" }) {
+function talkFeedbackMarkup({ phase, entryKey, title = "" }) {
   if (phase === "loading") {
     return `<div class="talk-feedback talk-feedback--loading">Carregando…</div>`;
   }
@@ -20,6 +21,17 @@ function talkFeedbackMarkup({ phase, entryKey, checkinUrl = "" }) {
       <p class="talk-feedback-title">${iconMarkup("mic")}Check-in dessa palestra</p>
       <p class="talk-feedback-hint">Escaneie o QR code da sala pra fazer check-in e liberar a avaliação no fim da palestra.</p>
       <button type="button" class="chip-btn chip-btn--primary" data-feedback-checkin data-entry-key="${entryKey}" data-track-event="checkin" data-track-target="${entryKey}">${iconMarkup("check")}Já estou na sala, fazer check-in</button>
+    </div>`;
+  }
+
+  if (phase === "checkin-confirm") {
+    return `<div class="talk-feedback">
+      <p class="talk-feedback-title">${iconMarkup("mic")}Confirmar check-in</p>
+      <p class="talk-feedback-hint">Confirma o check-in em <strong>“${title}”</strong>?</p>
+      <div class="talk-feedback-actions">
+        <button type="button" class="chip-btn chip-btn--primary" data-feedback-checkin-confirm data-entry-key="${entryKey}">${iconMarkup("check")}Confirmar check-in</button>
+        <button type="button" class="chip-btn" data-feedback-checkin-cancel data-entry-key="${entryKey}">Cancelar</button>
+      </div>
     </div>`;
   }
 

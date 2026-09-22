@@ -143,10 +143,13 @@ desenha 5 fases — `loading`, `checkin`, `waiting`, `rate`, `done` —
   `grade.html?checkin=<código>`; ao carregar, o check-in é gravado
   sozinho. Sem câmera à mão, o botão dentro do modal faz o mesmo (honra).
   Geração da imagem do QR pra exibir na sala: pendente (próximo passo).
-- **Confirmação antes do check-in:** `confirm()` nativo do navegador com o
-  título da palestra, pra reduzir clique errado (ex.: check-in na sala ao
-  lado por engano). Só no botão manual — o check-in por `?checkin=` (QR)
-  não confirma, escanear já é a ação deliberada. O bloco de check-in/avaliar
+- **Confirmação antes do check-in é inline, não `confirm()` nativo:** o
+  navegador mostra o próprio diálogo do sistema (feio, sem estilo, com o
+  domínio do site escrito nele) — trocado por uma fase própria
+  (`"checkin-confirm"` em `talkFeedbackMarkup`) dentro do mesmo cartão,
+  com o título da palestra e os botões "Confirmar"/"Cancelar" no visual
+  do site. Só no botão manual — o check-in por `?checkin=` (QR) não
+  confirma, escanear já é a ação deliberada. O bloco de check-in/avaliar
   tem destaque visual próprio (cartão com borda e fundo na cor de destaque),
   não é mais um detalhe discreto no rodapé do modal.
 - **Avaliar só libera depois que a palestra terminou** (`slot.end` já

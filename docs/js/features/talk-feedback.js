@@ -76,20 +76,37 @@ function initTalkFeedback(rootEl, { index, reveal = true, now = () => new Date()
     else handleCheckinParam();
   }
 
-  // check-in manual pelo botão (honra) — confirma antes, pra reduzir clique
-  // errado (ex.: check-in na palestra da sala ao lado por engano). O
-  // check-in por QR/link (?checkin=) não confirma: escanear já é a ação
-  // deliberada.
+  // check-in manual pelo botão (honra) — pede confirmação inline antes de
+  // gravar (pra reduzir clique errado, ex.: sala ao lado), com o mesmo
+  // visual do resto do site, não o confirm() nativo do navegador (feio,
+  // fora do nosso controle de estilo). O check-in por QR/link (?checkin=)
+  // pula essa etapa: escanear já é a ação deliberada.
   rootEl.addEventListener("click", async event => {
-    const btn = event.target.closest("[data-feedback-checkin]");
-    if (!btn) return;
-    const container = btn.closest("[data-feedback-container]");
-    const entry = index.getAll().find(e => e.key === btn.dataset.entryKey);
-    if (!entry || !container) return;
-    if (!confirm(`Confirma o check-in em "${entry.data.title}"?`)) return;
-    btn.disabled = true;
-    await doCheckin(entry);
-    render(container, entry);
+    const askBtn = event.target.closest("[data-feedback-checkin]");
+    if (askBtn) {
+      const container = askBtn.closest("[data-feedback-container]");
+      const entry = index.getAll().find(e => e.key === askBtn.dataset.entryKey);
+      if (entry && container) container.innerHTML = talkFeedbackMarkup({ phase: "checkin-confirm", entryKey: entry.key, title: entry.data.title });
+      return;
+    }
+
+    const cancelBtn = event.target.closest("[data-feedback-checkin-cancel]");
+    if (cancelBtn) {
+      const container = cancelBtn.closest("[data-feedback-container]");
+      const entry = index.getAll().find(e => e.key === cancelBtn.dataset.entryKey);
+      if (entry && container) container.innerHTML = talkFeedbackMarkup({ phase: "checkin", entryKey: entry.key });
+      return;
+    }
+
+    const confirmBtn = event.target.closest("[data-feedback-checkin-confirm]");
+    if (confirmBtn) {
+      const container = confirmBtn.closest("[data-feedback-container]");
+      const entry = index.getAll().find(e => e.key === confirmBtn.dataset.entryKey);
+      if (!entry || !container) return;
+      confirmBtn.disabled = true;
+      await doCheckin(entry);
+      render(container, entry);
+    }
   });
 
   // envio do formulário de avaliação

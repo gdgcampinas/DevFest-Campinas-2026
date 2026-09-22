@@ -831,6 +831,7 @@ a.detail-speaker .li-icon{
 .talk-feedback-title{display:flex;align-items:center;gap:8px;margin:0 0 8px;font:700 13px var(--font-body);text-transform:uppercase;letter-spacing:.4px;color:var(--accent)}
 .talk-feedback-title .icon{width:16px;height:16px}
 .talk-feedback-hint{margin:0 0 12px;font:500 13.5px/1.5 var(--font-body);color:var(--text)}
+.talk-feedback-actions{display:flex;gap:10px;flex-wrap:wrap}
 .talk-feedback--loading{color:var(--muted-dim);font:500 13px var(--font-body);background:transparent;border-color:var(--card-border)}
 .talk-feedback--waiting,.talk-feedback--done{display:flex;align-items:center;gap:8px;font:700 13.5px var(--font-body);color:var(--text)}
 .talk-feedback--waiting .icon,.talk-feedback--done .icon{width:18px;height:18px;color:var(--accent)}

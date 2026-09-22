@@ -94,9 +94,12 @@ metadata and SEO", "Offline (PWA)", "Usage analytics", "Accessibility rules",
    Ajuste rápido pedido pelo Renato: bloco de check-in/avaliar ganhou
    destaque visual (cartão com fundo/borda na cor de destaque, título com
    ícone, botão sólido — antes era discreto, sumia no resto do modal), e
-   um `confirm()` nativo antes do check-in manual ("Confirma o check-in
-   em <título>?"), pra reduzir clique errado (ex.: sala ao lado). Testado:
-   diálogo aparece com o título certo, cancelar não grava nada.
+   confirmação antes do check-in manual, agora **inline** (não o `confirm()`
+   nativo do navegador, que o Renato achou feio — mostra o domínio do site,
+   sem estilo nenhum): o clique no botão vira um card "Confirmar check-in"
+   com o título da palestra e dois botões, no visual do site. Testado:
+   clique mostra a confirmação, cancelar volta ao botão original sem gravar,
+   confirmar grava de verdade.
    **Falta:** tela/página que mostra o QR da palestra ao vivo daquela
    sala/trilha (próximo passo, sem precisar imprimir nada — atualiza
    sozinha quando a palestra muda). Feedback de fim de evento (fase 5.3)
