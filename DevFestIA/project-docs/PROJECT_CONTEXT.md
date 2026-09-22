@@ -61,6 +61,12 @@ docs/
       favorites.js              favoritesRepository + talkKey(slot, trackId)
       icons.js                  ICONS (svg paths by name) + iconsRepository.get(); also the per-track icons (`TRACKS[].icon`)
       install-guides.js         INSTALL_GUIDES (passo a passo por plataforma) + installGuidesRepository.getByPlatform()
+      firebase-config.js         FIREBASE_CONFIG (chave pública) + CURRENT_EDITION/KNOWN_EDITIONS
+      firebase-client.js         type="module": inicializa o app, expõe window.firebaseClient (db, auth, ensureAnonymousUid)
+      firestore-repository.js    type="module": createFirestoreRepository() genérica, expõe window.createFirestoreRepository
+      checkin-repository.js      checkinRepository sobre createFirestoreRepository (coleção "checkins")
+      feedback-repository.js     feedbackRepository sobre createFirestoreRepository (coleção "talk-feedback")
+      event-feedback-repository.js  eventFeedbackRepository sobre createFirestoreRepository (coleção "event-feedback")
       starfield.js               STAR_LAYERS (posições geradas, box-shadow) + BG_CIRCUIT_SRC + starfieldRepository
       analytics.js              ANALYTICS config (provider, endpoint, notice); empty endpoint = off
       tickets.js                TICKET_TYPES (Grátis / com camiseta / VIP, mock values) + TICKETS_NOTE
@@ -122,6 +128,47 @@ DevFestIA/                  ← AI continuity and dev tooling, not part of the s
   validate.yml               CI: node --check on every .js, every push/PR
   promote.yml                CI: auto fast-forward development → main
 ```
+
+## Firebase (Firestore) — check-in e feedback
+
+Único pedaço do site com escrita compartilhada entre visitantes; todo o
+resto continua estático/sem backend (decisão mantida). Um projeto
+Firebase só (`DevFest-Campinas`, console.firebase.google.com), nunca um
+por edição — o ano é dado (`CURRENT_EDITION`/`KNOWN_EDITIONS` em
+`data/firebase-config.js`), não projeto nem coleção separada, pra
+permitir comparar edições depois sem UNION manual entre bancos.
+
+- **SDK via CDN, `type="module"`** (o Firebase 9+ só existe como ES
+  module; o resto do site é script clássico, então só os arquivos que
+  tocam o SDK viram módulo — `firebase-client.js`, `firestore-repository.js`
+  e os 3 repositories finos). Um módulo não expõe nada por `export` pro
+  resto do site: cada um termina com `window.algumaCoisa = algumaCoisa`,
+  então quem consome (`checkinRepository`, `feedbackRepository`) usa como
+  qualquer outro repository do repo, sem saber que por baixo é módulo.
+- **Ordem de execução importa:** scripts clássicos rodam sincronamente,
+  na ordem do HTML, sempre antes de qualquer `type="module"` (que é
+  sempre adiado pro fim do parsing, como `defer`). Então nada no
+  bootstrap síncrono de uma página (`initShell()`, `initXxx()` chamado
+  direto no `<script>` da página) pode depender de `window.checkinRepository`
+  existir ainda — só dentro de um handler de clique, depois que a página
+  carregou de verdade, é seguro.
+- **1 documento por pessoa por chave:** id do documento é
+  `"<uid>_<entryKey>"` (uid anônimo do Firebase Authentication, sem
+  senha/e-mail). `createFirestoreRepository().add()` sempre faz
+  `setDoc` "criar"; a regra de segurança recusa a segunda tentativa como
+  "update", travando "1 registro por pessoa" sem checagem no cliente
+  (que dá pra burlar).
+- **Regra de segurança é a única defesa de verdade** — o site é estático
+  e público (GitHub Pages), a `apiKey` do Firebase não é segredo. Texto
+  da regra vive em `DevFestIA/firebase/firestore.rules` (sem deploy
+  automático: colar manualmente em Firebase Console → Firestore →
+  Regras a cada mudança). Valida `edition` contra `KNOWN_EDITIONS`, só
+  permite `create` (nunca `update`/`delete` do client), tipo/tamanho de
+  campo, e que o prefixo do id do documento bata com o uid de quem
+  escreve.
+- Coleções hoje: `checkins`, `talk-feedback`, `event-feedback`. Nenhuma
+  tem leitura pública pelo client (`allow read: if false`); exibir
+  agregado (nota média etc.) é trabalho futuro (ver handoff, fase 5.4).
 
 ## Repository pattern for static data
 

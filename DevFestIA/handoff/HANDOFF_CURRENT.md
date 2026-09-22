@@ -1,6 +1,6 @@
 # Handoff — Current State
 
-**Last updated:** 2026-09-20, sessão 4 (botão Instalar app corrigido). Antes de confiar neste texto, rode
+**Last updated:** 2026-09-22, sessão 5 (Firebase: fundação de check-in/feedback). Antes de confiar neste texto, rode
 `git status --short --branch` e `git log --oneline --decorate -10` (o git não mente).
 
 ## Status em uma olhada
@@ -77,6 +77,23 @@ metadata and SEO", "Offline (PWA)", "Usage analytics", "Accessibility rules",
    que dá `max-width`/`margin:auto` — texto desalinhado do resto do site.
    Verificado no Chrome real, sem erro de console, nav destacando "Ingressos",
    `check-meta`/`check-install`/`check-lineup` passando.
+0. **NOVO (sessão 5): fundação do Firebase (check-in/feedback, fase 5.1).**
+   Projeto `DevFest-Campinas` (Spark, gratuito) criado pelo Renato: Firestore
+   (modo produção, Standard) + Authentication (Anônimo) ativos. Código:
+   `data/firebase-config.js` (config pública + `CURRENT_EDITION`),
+   `data/firebase-client.js` (inicializa o SDK via CDN, `type="module"`,
+   login anônimo silencioso), `data/firestore-repository.js` (fábrica
+   genérica sobre `createRepository`), 3 repositories finos
+   (`checkinRepository`, `feedbackRepository`, `eventFeedbackRepository`).
+   Detalhe de arquitetura (módulo vs script clássico, ordem de execução)
+   documentado no PROJECT_CONTEXT. Testado no Chrome real: login anônimo ok,
+   escrita bloqueada pela regra padrão do Firestore ("negar tudo"), como
+   esperado — confirma que o encanamento está certo.
+   **Falta o Renato:** colar `DevFestIA/firebase/firestore.rules` em
+   Firebase Console → Firestore Database → Regras → Publicar. Sem isso
+   nenhum check-in/feedback funciona (tudo continua bloqueado de propósito).
+   Depois disso sigo com 5.2 (check-in + avaliar por palestra) e 5.3
+   (feedback de fim de evento) sem parar, já autorizado.
 0. **NOVO (sessão 5): fundo estrelado + acento de circuito em todas as páginas.**
    `features/starfield.js` injeta a camada uma vez por página via `initShell()`
    (`.site-bg`, atrás de tudo, `pointer-events:none`): estrelas geradas por CSS

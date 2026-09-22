@@ -1,0 +1,76 @@
+// Regras de segurança do Firestore — projeto "DevFest-Campinas".
+// Não tem deploy automático (sem Firebase CLI no CI): colar manualmente em
+// Firebase Console → Firestore Database → Regras → Publicar, toda vez que
+// este arquivo mudar. É a ÚNICA linha de defesa real: o site é estático e
+// público (GitHub Pages), a apiKey do Firebase não é segredo, então sem
+// regra certa qualquer pessoa com o DevTools aberto escreve, sobrescreve
+// ou lê o que quiser direto pelo client.
+//
+// Coleções: checkins, talk-feedback, event-feedback — mesmo formato pras
+// três (ver firestore-repository.js): id do documento = "<uid>_<entryKey>",
+// sempre CRIADO (nunca editado) pelo client, sempre com `edition` e
+// `createdAt` (server timestamp, não confia no relógio do navegador).
+//
+// KNOWN_EDITIONS precisa espelhar `KNOWN_EDITIONS` em
+// docs/js/data/firebase-config.js — atualizar as duas juntas a cada
+// edição nova do evento.
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isKnownEdition(edition) {
+      return edition in ["2026"];
+    }
+
+    function isOwnDoc(docId) {
+      // id do documento começa com "<uid>_" — só o dono do uid pode criar o seu.
+      return request.auth != null
+        && docId.size() > request.auth.uid.size()
+        && docId[0:request.auth.uid.size()] == request.auth.uid
+        && docId[request.auth.uid.size():request.auth.uid.size() + 1] == "_";
+    }
+
+    function hasValidBaseFields() {
+      let data = request.resource.data;
+      return data.edition is string && isKnownEdition(data.edition)
+        && data.entryKey is string && data.entryKey.size() > 0 && data.entryKey.size() < 100
+        && data.createdAt == request.time;
+    }
+
+    // Check-in numa palestra: sem campo próprio além da base.
+    match /checkins/{docId} {
+      allow read: if false; // agregado só via console/admin, nunca leitura crua pelo client
+      allow create: if isOwnDoc(docId) && hasValidBaseFields();
+      allow update, delete: if false;
+    }
+
+    // Feedback de palestra: nota 1-5 + nome/comentário opcionais, com limite de tamanho.
+    match /talk-feedback/{docId} {
+      allow read: if false;
+      allow create: if isOwnDoc(docId) && hasValidBaseFields()
+        && request.resource.data.rating is int
+        && request.resource.data.rating >= 1 && request.resource.data.rating <= 5
+        && (!("name" in request.resource.data) || (request.resource.data.name is string && request.resource.data.name.size() < 80))
+        && (!("highlight" in request.resource.data) || (request.resource.data.highlight is string && request.resource.data.highlight.size() < 400));
+      allow update, delete: if false;
+    }
+
+    // Feedback do evento (fim de dia): mesma forma do feedback de palestra.
+    match /event-feedback/{docId} {
+      allow read: if false;
+      allow create: if isOwnDoc(docId) && hasValidBaseFields()
+        && request.resource.data.rating is int
+        && request.resource.data.rating >= 1 && request.resource.data.rating <= 5
+        && (!("name" in request.resource.data) || (request.resource.data.name is string && request.resource.data.name.size() < 80))
+        && (!("highlight" in request.resource.data) || (request.resource.data.highlight is string && request.resource.data.highlight.size() < 400));
+      allow update, delete: if false;
+    }
+
+    // Qualquer outra coleção: nada de leitura nem escrita pelo client.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
