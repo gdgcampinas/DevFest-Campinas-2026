@@ -50,6 +50,7 @@ docs/
       favorites.js              favoritesRepository + talkKey(slot, trackId)
       icons.js                  ICONS (svg paths by name) + iconsRepository.get(); also the per-track icons (`TRACKS[].icon`)
       install-guides.js         INSTALL_GUIDES (passo a passo por plataforma) + installGuidesRepository.getByPlatform()
+      starfield.js               STAR_LAYERS (posições geradas, box-shadow) + BG_CIRCUIT_SRC + starfieldRepository
       analytics.js              ANALYTICS config (provider, endpoint, notice); empty endpoint = off
       tickets.js                TICKET_TYPES (Grátis / com camiseta / VIP, mock values) + TICKETS_NOTE
       talk-formats.js           TALK_FORMATS (palestra/workshop/painel/bate-papo) + getById()
@@ -89,7 +90,7 @@ docs/
       sponsor-card.js               sponsor/community item (logo box + name + optional description)
       person-card.js                 person card (team/speakers)
     features/                data + template + behavior, one section each
-      agenda.js, track-filter.js, a11y.js, pwa.js, install-platform.js, analytics.js, calendar.js, talk-index.js, calendar-actions.js, agenda-share.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
+      agenda.js, track-filter.js, a11y.js, pwa.js, install-platform.js, starfield.js, analytics.js, calendar.js, talk-index.js, calendar-actions.js, agenda-share.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
       featured-speakers.js, sponsors.js, partner-communities.js,
       team.js, cod.js, seo.js, stats.js, about.js, highlights.js,
       video.js, realizacao.js, tickets.js, footer.js,
@@ -181,6 +182,19 @@ either, since the mock schedule references `MOCK_SPEAKERS` directly.
 To reveal the real line-up: copy `schedule.dev.js` content into
 `schedule.js`, commit, push. From reveal onward, keep both files
 identical — always edit both together.
+
+## Fundo estrelado
+
+`initStarfield()` (features/starfield.js) injeta, uma vez por página via
+`initShell()`, uma camada fixa atrás de todo o conteúdo (`.site-bg`,
+`z-index:-1`, `pointer-events:none`): o acento de circuito colorido
+(`assets/img/bg-circuit.webp`, `object-fit:contain`, sem esticar/cortar) e
+duas camadas de estrelas geradas por CSS puro (`box-shadow` por ponto,
+coordenadas fixas em `data/starfield.js`, não geradas em runtime). Tremeluzir
+via `@keyframes`; a regra global de `prefers-reduced-motion` (topo do
+styles.css) já zera a duração da animação para quem pede menos movimento,
+sem código extra aqui. Nenhuma página tem esse HTML no próprio arquivo —
+mesmo padrão do rodapé e do nav, uma função, seis páginas.
 
 ## Header hosts (co-hosts/sponsors)
 

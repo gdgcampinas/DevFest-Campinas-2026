@@ -184,6 +184,7 @@ function buildBeforeYouComeItems(tracks) {
 function initShell(activePageId) {
   warnIfDemoMode();
   initSkipLink();
+  initStarfield(document.body, { layers: starfieldRepository.getAll(), circuitSrc: BG_CIRCUIT_SRC });
   const reveal = resolveReveal();
 
   renderBrand(EVENT.hosts, document.getElementById("brand"));

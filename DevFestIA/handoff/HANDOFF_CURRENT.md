@@ -64,6 +64,13 @@ metadata and SEO", "Offline (PWA)", "Usage analytics", "Accessibility rules",
 
 ## Pendências (com quem depende)
 
+0. **NOVO (sessão 5): fundo estrelado + acento de circuito em todas as páginas.**
+   `features/starfield.js` injeta a camada uma vez por página via `initShell()`
+   (`.site-bg`, atrás de tudo, `pointer-events:none`): `assets/img/bg-circuit.webp`
+   (contain, sem esticar) + estrelas geradas por CSS (`data/starfield.js`, coordenadas
+   fixas). Aprovado pelo Renato após preview (imagem de referência dele). Verificado no
+   Chrome real, home e patrocinadores, contraste ok, `prefers-reduced-motion` já zera o
+   tremeluzir (regra global existente).
 0. **CORRIGIDO (sessão 4, falta conferir no aparelho): botão "Instalar app".**
    Causa confirmada pelo Renato: no iPhone (Safari e Chrome do iOS, ambos WebKit) não
    existe `beforeinstallprompt`, então o botão não nascia. Em Chrome real via CDP a

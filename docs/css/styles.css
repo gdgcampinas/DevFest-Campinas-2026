@@ -27,6 +27,14 @@ body{
 h1,h2,h3,.numeric{font-family:var(--font-display)}
 a{color:inherit}
 
+/* fundo estrelado + circuito (features/starfield.js): uma camada fixa atrás de tudo,
+   nunca rola com a página. Sem imagem para as estrelas, só pontos de luz por CSS. */
+.site-bg{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.bg-circuit{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:.85}
+.bg-stars{position:absolute;top:0;left:0;border-radius:50%;background:transparent;animation:starTwinkle 5s ease-in-out infinite alternate}
+.bg-stars--big{animation-duration:4s}
+@keyframes starTwinkle{from{opacity:.55}to{opacity:1}}
+
 #stickyStatus{
   position:sticky;top:0;z-index:50;
   display:none;
