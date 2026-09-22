@@ -441,6 +441,22 @@ navegação — nunca quebra a página.
 A antiga faixa amarela fixa no topo (`warnIfMockContent`) foi removida —
 virou redundante depois que cada seção já mostra o próprio aviso.
 
+`docs/DEV/` e `docs/PROD/` são páginas de atalho pra ativar/desativar o
+modo DEV sem repetir `?lineup=1`/`?lineup=0` — pedido do Renato depois
+de reclamar que o parâmetro se perdia a cada clique no menu.
+`DEV/dev-loader.js` é o único arquivo com lógica (grava a chave,
+busca a página real via `fetch()`, reescreve o documento com
+`<base href="../">` pra resolver os caminhos relativos); cada
+`DEV/<página>.html` (index, grade, palestrantes, time, patrocinio,
+ingressos, codigo-de-conduta) é só um wrapper de uma linha com
+`data-target="<página>.html"` — zero lógica duplicada entre eles. A URL
+fica em `/DEV/<página>` (nunca pula pra fora, era o que o Renato queria);
+sem `fetch` (offline/CORS) cai pro redirect simples. `PROD/index.html`
+só limpa a chave e redireciona pra `index.html` (sair do DEV não precisa
+manter URL própria). Ambos ficam fora do sitemap/OG (`check-meta.js` só
+varre `docs/*.html` no nível raiz, não entra em subpasta) e com
+`noindex`.
+
 
 ## URL overrides (testing)
 

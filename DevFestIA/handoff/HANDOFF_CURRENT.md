@@ -64,6 +64,15 @@ metadata and SEO", "Offline (PWA)", "Usage analytics", "Accessibility rules",
 
 ## Pendências (com quem depende)
 
+0. **NOVO (sessão 5): `/DEV/<página>` pra todas as páginas, não só a home.**
+   Pedido do Renato ("dev para todos de ambiente de dev"). Um loader só
+   (`DEV/dev-loader.js`) reusado por 7 wrappers de uma linha
+   (`DEV/index.html`, `grade.html`, `palestrantes.html`, `time.html`,
+   `patrocinio.html`, `ingressos.html`, `codigo-de-conduta.html`) — cada
+   um só passa `data-target`. URL fica em `/DEV/<página>` (não pula pra
+   fora, era outro pedido do Renato: a primeira versão redirecionava pra
+   `index.html` e ele não gostou). Testado nas 5 páginas com seção mock:
+   badge presente, sem aviso de "em breve", zero erro de console.
 0. **RESOLVIDO (sessão 5): PROD (público) x DEV, gente confundindo o mock
    com o line-up oficial — e depois expandido pra tirar TODO mock do PROD.**
    Sem ambiente/deploy separado: mesmo site, `EVENT.lineupRevealed = false`,
