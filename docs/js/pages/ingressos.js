@@ -1,8 +1,10 @@
 /** Página: Ingressos. Reusa renderTickets, o mesmo que alimenta a seção da home. */
 function initIngressos() {
-  initShell("ingressos");
+  const reveal = initShell("ingressos");
 
-  renderTickets(EVENT.tickets, ticketsRepository.getAll(), document.getElementById("ticketsSection"), { note: TICKETS_NOTE });
+  renderOrConstruction(reveal, document.getElementById("ticketsSection"),
+    () => renderTickets(EVENT.tickets, ticketsRepository.getAll(), document.getElementById("ticketsSection"), { note: TICKETS_NOTE }),
+    "Os tipos e valores de ingresso serão revelados em breve.");
 }
 
 initIngressos();

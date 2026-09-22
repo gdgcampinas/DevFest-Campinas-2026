@@ -1,6 +1,6 @@
 # Handoff — Current State
 
-**Last updated:** 2026-09-22, sessão 5 (check-in ao vivo com QR + PROD/DEV do mock). Antes de confiar neste texto, rode
+**Last updated:** 2026-09-22, sessão 5 (PROD/DEV persistente + todo mock escondido, check-in ao vivo com QR). Antes de confiar neste texto, rode
 `git status --short --branch` e `git log --oneline --decorate -10` (o git não mente).
 
 ## Status em uma olhada
@@ -64,24 +64,30 @@ metadata and SEO", "Offline (PWA)", "Usage analytics", "Accessibility rules",
 
 ## Pendências (com quem depende)
 
-0. **RESOLVIDO (sessão 5): PROD (público) x DEV (por URL), gente confundindo
-   o mock com o line-up oficial.** Muito acesso, gente achando que a grade
-   mock era a programação real. Sem ambiente/deploy separado: mesmo site,
-   só `EVENT.lineupRevealed` virou `false` (era `true`) e um parâmetro:
-   - **PROD (padrão, sem parâmetro):** line-up mostra "Título a confirmar"/
-     "Em breve" (infra que já existia desde a sessão 2, só reativada) —
-     nenhum título/nome específico de palestra fica visível. Faixa fixa no
-     topo ("Site em construção — line-up, patrocinadores, time e ingressos
-     são apenas exemplos…") cobre o resto do mock que não tem gate próprio.
-   - **DEV (`?lineup=1`, já existia, reaproveitado):** mostra o mock
-     completo, sem a faixa — time interno usa esse link pra continuar
-     vendo/testando.
-   Testado no Chrome real: PROD sem parâmetro mostra "Título a confirmar" +
-   faixa; `?lineup=1` mostra os títulos/palestrantes reais do mock, sem
-   faixa. Quando o line-up real for confirmado: mesma flag volta pra `true`.
-   **Segue em aberto (fora de escopo desta correção):** patrocinadores,
-   time e ingressos ainda não têm gate próprio (só a faixa avisa) — se
-   quiser esconder esses também no PROD, é uma extensão futura.
+0. **RESOLVIDO (sessão 5): PROD (público) x DEV, gente confundindo o mock
+   com o line-up oficial — e depois expandido pra tirar TODO mock do PROD.**
+   Sem ambiente/deploy separado: mesmo site, `EVENT.lineupRevealed = false`,
+   e um parâmetro guardado no navegador:
+   - **PROD (padrão):** Grade inteira vira um aviso único ("A programação
+     completa será revelada em breve"); patrocinadores, comunidades
+     parceiras, time (organizadores e voluntários) e ingressos — cada um
+     com aviso próprio no lugar do mock (`renderOrConstruction()`,
+     `features/reveal-gate.js` + `components/construction-notice.js`,
+     genérico, reusado pelas 5 seções, zero duplicação).
+   - **DEV (`?lineup=1`):** mostra tudo mock normalmente. **Correção
+     pedida pelo Renato:** antes o parâmetro se perdia a cada clique no
+     menu ("ficou horrível, não ajudou em nada"). Agora `?lineup=1` grava
+     em `localStorage` — navegar pelo site inteiro continua em DEV sem
+     repetir o parâmetro. Selo fixo "DEV — sair" no canto (só aparece
+     nesse modo) linka pra `?lineup=0`, que limpa e volta pro PROD.
+   - Faixa amarela fixa que existia antes foi removida (virou redundante,
+     cada seção já avisa sozinha).
+   Testado no Chrome real: PROD mostra aviso nas 5 áreas + Grade inteira;
+   ativar DEV numa página e navegar por 3 outras sem parâmetro continua
+   em DEV (selo presente, dado real aparecendo); clicar "sair" volta pro
+   PROD e persiste ao navegar de novo. Zero erro de console.
+   Quando o line-up real for confirmado: `EVENT.lineupRevealed` volta pra
+   `true`, sem precisar mexer em nenhuma seção — todas leem o mesmo `reveal`.
 
 0. **NOVO (sessão 5): página "Ingressos" própria, fora da home.**
    `ingressos.html` no padrão das outras páginas, reusa `renderTickets`/

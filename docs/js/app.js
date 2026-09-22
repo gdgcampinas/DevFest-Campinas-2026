@@ -9,15 +9,44 @@
  * Overrides de URL pra testar em DEV sem tocar em schedule.js (PROD real):
  *   ?demo=2026-11-14T09:50     → simula a hora do evento (ativa "ao vivo agora")
  *   ?demo=2026-11-14T09:50:30  → segundos são opcionais
- *   ?lineup=1                   → "modo DEV": força mostrar o line-up mock
- *                                 (palestrante/título) mesmo com
- *                                 EVENT.lineupRevealed=false, e tira o aviso
- *                                 de "dados de exemplo" (warnIfMockContent).
- *                                 PROD e DEV são a mesma URL/config, só esse
- *                                 parâmetro muda — nenhum ambiente separado.
+ *   ?lineup=1                   → entra no "modo DEV": força mostrar o
+ *                                 line-up e todo mock (palestrante/título/
+ *                                 patrocinador/time/ingresso) mesmo com
+ *                                 EVENT.lineupRevealed=false — sem isso,
+ *                                 cada seção mock mostra um aviso de "em
+ *                                 construção" no lugar do dado fictício
+ *                                 (features/reveal-gate.js). Fica salvo no
+ *                                 navegador (localStorage), então clicar
+ *                                 no menu continua em DEV sem repetir o
+ *                                 parâmetro em cada link — um selo "DEV"
+ *                                 fixo lembra que está nesse modo.
+ *   ?lineup=0                   → sai do modo DEV (limpa o localStorage).
+ *                                 PROD e DEV são a mesma URL/config, só
+ *                                 esse estado muda — nenhum ambiente/deploy
+ *                                 separado.
  */
 function getParam(name) {
   return new URLSearchParams(location.search).get(name);
+}
+
+const DEV_MODE_KEY = "devfest-campinas-2026:dev-mode";
+
+/** Guarda em localStorage sem quebrar em modo privado/bloqueado — DEV só não persiste nesse caso, não trava a página. */
+function setDevModeStorage(value) {
+  try {
+    if (value) localStorage.setItem(DEV_MODE_KEY, "1");
+    else localStorage.removeItem(DEV_MODE_KEY);
+  } catch {
+    /* sem persistência: ?lineup=1 ainda funciona nesta página, só não sobrevive à navegação */
+  }
+}
+
+function isDevModeStored() {
+  try {
+    return localStorage.getItem(DEV_MODE_KEY) === "1";
+  } catch {
+    return false;
+  }
 }
 
 /** null se `demo` não veio na URL ou não é uma data válida. */
@@ -41,7 +70,26 @@ function resolveNow() {
 }
 
 function resolveReveal() {
-  return getParam("lineup") === "1" ? true : EVENT.lineupRevealed;
+  const param = getParam("lineup");
+  if (param === "1") {
+    setDevModeStorage(true);
+    return true;
+  }
+  if (param === "0") {
+    setDevModeStorage(false);
+    return EVENT.lineupRevealed;
+  }
+  return isDevModeStored() ? true : EVENT.lineupRevealed;
+}
+
+/** Selo fixo "DEV" com link pra sair — só aparece quando o modo veio do localStorage (não some sozinho ao trocar de página). */
+function warnIfDevMode() {
+  if (!isDevModeStored()) return;
+  const badge = document.createElement("a");
+  badge.href = "?lineup=0";
+  badge.className = "dev-mode-badge";
+  badge.textContent = "DEV — sair";
+  document.body.appendChild(badge);
 }
 
 function warnIfDemoMode() {
@@ -53,22 +101,6 @@ function warnIfDemoMode() {
     ? "⚠️ MODO TESTE — data simulada, não é o horário real do evento"
     : `⚠️ ?demo="${demo}" inválido — mostrando horário real. Formato: AAAA-MM-DDTHH:MM`;
   banner.style.cssText = "background:var(--google-red);color:#fff;text-align:center;font-size:.75rem;font-weight:700;padding:6px;position:sticky;top:0;z-index:100";
-  document.body.prepend(banner);
-}
-
-/**
- * PROD (padrão, `reveal` falso): line-up, patrocinadores, time e ingressos
- * ainda são só exemplo, então mostra um aviso fixo pra ninguém confundir
- * com a programação oficial. DEV (`?lineup=1`) não mostra — quem está
- * testando já sabe que é mock. Mesmo site, mesma URL, só o parâmetro muda;
- * não existe deploy/config separado pra PROD x DEV.
- */
-function warnIfMockContent(reveal) {
-  if (reveal) return;
-  const banner = document.createElement("div");
-  banner.className = "mock-content-bar";
-  banner.setAttribute("role", "status");
-  banner.textContent = "Site em construção — line-up, patrocinadores, time e ingressos são apenas exemplos até a confirmação oficial.";
   document.body.prepend(banner);
 }
 
@@ -206,7 +238,7 @@ function initShell(activePageId) {
   initSkipLink();
   initStarfield(document.body, { layers: starfieldRepository.getAll(), circuitSrc: BG_CIRCUIT_SRC });
   const reveal = resolveReveal();
-  warnIfMockContent(reveal);
+  warnIfDevMode(); // depois de resolveReveal(): pega o localStorage já atualizado por ?lineup=1/0 nesta mesma carga de página
 
   renderBrand(EVENT.hosts, document.getElementById("brand"));
   renderWordmark(EVENT, document.getElementById("wordmark"));

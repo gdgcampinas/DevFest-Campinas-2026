@@ -6,6 +6,14 @@
 function initGrade() {
   const reveal = initShell("grade");
 
+  // Grade inteira é um bloco só de conteúdo mock interligado (horário,
+  // trilha, formato, palestrante) — em vez de esconder campo por campo
+  // (como o modal de palestra faz), troca a página toda por um aviso.
+  if (!reveal) {
+    document.querySelector("main").innerHTML = `<div class="faq"><div class="faq-head">${constructionNoticeMarkup("A programação completa será revelada em breve. Volte para conferir!")}</div></div>`;
+    return;
+  }
+
   const tabsEl = document.querySelector(".tabs");
   const agendaEl = document.getElementById("agenda");
   renderLegend(TRACKS, document.querySelector(".tracks-legend"));
