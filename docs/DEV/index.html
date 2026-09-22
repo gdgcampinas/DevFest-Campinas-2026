@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<title>Entrando no modo DEV…</title>
+</head>
+<body style="background:#05060a;color:#fff;font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0">
+<p>Entrando no modo DEV…</p>
+<script>
+/**
+ * Atalho pra ativar o modo DEV: /DEV (esta pasta) grava a mesma chave que
+ * ?lineup=1 grava (app.js, resolveReveal/warnIfDevMode) e manda pra home
+ * já no modo DEV. Ver DEV_MODE_KEY em app.js — as duas precisam
+ * continuar com o mesmo valor.
+ */
+try { localStorage.setItem("devfest-campinas-2026:dev-mode", "1"); } catch {}
+location.replace("../index.html");
+</script>
+</body>
+</html>

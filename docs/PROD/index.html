@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<title>Saindo do modo DEV…</title>
+</head>
+<body style="background:#05060a;color:#fff;font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0">
+<p>Saindo do modo DEV…</p>
+<script>
+/** Atalho pra sair do modo DEV: /PROD limpa a mesma chave que /DEV grava. */
+try { localStorage.removeItem("devfest-campinas-2026:dev-mode"); } catch {}
+location.replace("../index.html");
+</script>
+</body>
+</html>
