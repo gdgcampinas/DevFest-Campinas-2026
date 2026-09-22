@@ -20,18 +20,29 @@ Regra permanente pra qualquer código escrito neste repo, não só sugestão de 
 
 ## Pages
 
-Six pages, all zero-build HTML that share the same `<script>` block
-(see `initShell()` below) and only differ in their last `<script>`
-(`js/pages/*.js`):
+Seven pages, all zero-build HTML that share most of the same `<script>`
+block (see `initShell()` below) and only differ in their last `<script>`
+(`js/pages/*.js`) — a page with a lighter feature set (e.g. Ingressos)
+also trims the shared block to what it actually uses, see the note below:
 
 | Page | File | Bootstrap |
 |---|---|---|
 | Principal (home) | `index.html` | `js/pages/home.js` |
 | Grade completa | `grade.html` | `js/pages/grade.js` |
 | Palestrantes | `palestrantes.html` | `js/pages/palestrantes.js` |
+| Ingressos | `ingressos.html` | `js/pages/ingressos.js` |
 | Time | `time.html` | `js/pages/time.js` |
 | Patrocínio | `patrocinio.html` | `js/pages/patrocinio.js` |
 | Código de conduta | `codigo-de-conduta.html` | `js/pages/cod.js` |
+
+**Nota sobre o `<script>` block de uma página nova e enxuta:** `initShell()`
+sempre chama `renderHeaderMeta()`, que usa `hourLabel`/`eventDateLabel` de
+`features/agenda.js` — esse arquivo precisa carregar em toda página mesmo
+que ela não renderize a agenda (Ingressos é o primeiro caso; só define
+funções, não executa nada sozinho, então incluir sem `favorites.js`/
+`track-card.js` é seguro contanto que a página não chame `talkCardOptions`).
+`data/tickets.js` também é obrigatório em toda página: `injectEventSchema()`
+(em `initShell()`) lê `ticketsRepository.getAll()` para o schema.org.
 
 ## File architecture (one responsibility per file, zero duplication)
 

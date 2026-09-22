@@ -64,6 +64,17 @@ metadata and SEO", "Offline (PWA)", "Usage analytics", "Accessibility rules",
 
 ## Pendências (com quem depende)
 
+0. **NOVO (sessão 5): página "Ingressos" própria, fora da home.**
+   `ingressos.html` no padrão das outras páginas, reusa `renderTickets`/
+   `ticketCtaState` sem duplicar nada. Entrou em `SITE_PAGES`
+   (`site-nav.js`) entre Palestrantes e Time. A home perdeu a seção cheia
+   de ingressos, ganhou um teaser curto (`.page-teaser`, mesmo padrão de
+   Grade/Palestrantes) linkando pra lá. Achado no caminho: toda página
+   precisa de `features/agenda.js` (usa `hourLabel`/`eventDateLabel` no
+   header) e `data/tickets.js` (schema.org), mesmo sem mostrar agenda ou
+   ingressos — documentado no PROJECT_CONTEXT. Verificado no Chrome real,
+   sem erro de console, nav destacando "Ingressos", `check-meta`/
+   `check-install`/`check-lineup` passando.
 0. **NOVO (sessão 5): fundo estrelado + acento de circuito em todas as páginas.**
    `features/starfield.js` injeta a camada uma vez por página via `initShell()`
    (`.site-bg`, atrás de tudo, `pointer-events:none`): `assets/img/bg-circuit.webp`

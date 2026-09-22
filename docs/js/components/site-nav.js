@@ -8,6 +8,7 @@ const SITE_PAGES = [
   { id: "principal", label: "Principal", href: "index.html" },
   { id: "grade", label: "Grade", href: "grade.html" },
   { id: "palestrantes", label: "Palestrantes", href: "palestrantes.html" },
+  { id: "ingressos", label: "Ingressos", href: "ingressos.html" },
   { id: "time", label: "Time", href: "time.html" },
   { id: "patrocinio", label: "Patrocínio", href: "patrocinio.html" },
   { id: "cod", label: "Código de Conduta", href: "codigo-de-conduta.html" },
