@@ -462,6 +462,13 @@ manter URL própria). Ambos ficam fora do sitemap/OG (`check-meta.js` só
 varre `docs/*.html` no nível raiz, não entra em subpasta) e com
 `noindex`.
 
+`/DEV/*` e `/PROD/*` também pulam o service worker inteiro
+(`isUtilityRoute()` em `sw.js`) — nunca respondem do cache, sempre rede
+direto; sem isso, uma rede instável podia cair pro fallback offline e
+servir uma página velha ali (aconteceu: o Renato viu mock numa `/PROD/`
+que já devia estar limpa). `dev-loader.js` também busca a página real com
+`{cache: "reload"}`, ignorando o cache HTTP normal do navegador.
+
 
 ## URL overrides (testing)
 

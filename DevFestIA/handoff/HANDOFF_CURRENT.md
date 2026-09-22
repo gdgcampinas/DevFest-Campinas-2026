@@ -73,6 +73,16 @@ metadata and SEO", "Offline (PWA)", "Usage analytics", "Accessibility rules",
    fora, era outro pedido do Renato: a primeira versão redirecionava pra
    `index.html` e ele não gostou). Testado nas 5 páginas com seção mock:
    badge presente, sem aviso de "em breve", zero erro de console.
+0. **CORRIGIDO (sessão 5): service worker podia servir `/PROD/`/`/DEV/`
+   cacheados/velhos.** `sw.js` tinha o padrão "rede primeiro, cache se
+   offline" pra qualquer navegação — mas se a rede desse qualquer soluço
+   (comum no navegador embutido que o Renato usa), caía pro cache, que
+   podia ter uma versão de PROD anterior a hoje (antes do mock ser
+   escondido). `isUtilityRoute()` faz `/DEV/*` e `/PROD/*` pularem o
+   service worker inteiro — sempre direto na rede, nunca cache.
+   `dev-loader.js` também busca com `{cache: "reload"}` (ignora o cache
+   HTTP do navegador, não só o do service worker). `SW_VERSION` subiu
+   pra `2`, descartando qualquer cache antigo de todo mundo.
 0. **CORRIGIDO (sessão 5): modo DEV ficava preso pra sempre no navegador
    do Renato (`localStorage`), fazendo PROD mostrar mock indefinidamente.**
    Trocado por `sessionStorage` em `app.js`/`DEV/dev-loader.js`/`PROD/index.html`

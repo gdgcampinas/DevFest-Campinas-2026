@@ -38,7 +38,7 @@
     root.querySelectorAll("a[href]").forEach(patchLink);
   }
 
-  fetch("../" + target)
+  fetch("../" + target, { cache: "reload" }) // ignora cache HTTP do navegador — sempre pega a página real mais nova
     .then(function (response) { return response.text(); })
     .then(function (html) {
       document.open();

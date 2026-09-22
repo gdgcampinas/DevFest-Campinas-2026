@@ -13,12 +13,17 @@
  */
 importScripts("js/components/site-nav.js"); // define SITE_PAGES (única lista de páginas)
 
-const SW_VERSION = "1";
+const SW_VERSION = "2";
 const CACHE_NAME = `devfest-shell-v${SW_VERSION}`;
 const EXTRA_FILES = ["manifest.webmanifest"];
 
 const isSameOrigin = url => url.origin === self.location.origin;
 const isVersionedAsset = url => url.searchParams.has("v") || url.pathname.includes("/assets/");
+/** /DEV/ e /PROD/ nunca passam pelo cache — são rota de controle (ligar/desligar
+    o modo DEV), precisam sempre da resposta mais nova da rede, nunca uma versão
+    guardada (uma pessoa presa vendo mock achando que o botão de sair não funciona
+    foi exatamente esse bug). */
+const isUtilityRoute = url => ["DEV/", "PROD/"].some(prefix => url.pathname.startsWith(new URL(prefix, self.registration.scope).pathname));
 
 /** Chave de cache de uma página: só o caminho ("/" vira index.html), pra ?demo= e ?agenda= reaproveitarem a mesma cópia. */
 function pageKey(url) {
@@ -133,6 +138,7 @@ self.addEventListener("fetch", event => {
   const { request } = event;
   const url = new URL(request.url);
   if (request.method !== "GET" || !isSameOrigin(url)) return;
+  if (isUtilityRoute(url)) return; // deixa o navegador buscar direto, sem cache nenhum
 
   if (request.mode === "navigate") {
     event.respondWith(networkFirst(request, pageKey(url)).catch(() => pageOffline(request)));
