@@ -72,16 +72,22 @@ metadata and SEO", "Offline (PWA)", "Usage analytics", "Accessibility rules",
    Grade/Palestrantes) linkando pra lá. Achado no caminho: toda página
    precisa de `features/agenda.js` (usa `hourLabel`/`eventDateLabel` no
    header) e `data/tickets.js` (schema.org), mesmo sem mostrar agenda ou
-   ingressos — documentado no PROJECT_CONTEXT. Verificado no Chrome real,
-   sem erro de console, nav destacando "Ingressos", `check-meta`/
-   `check-install`/`check-lineup` passando.
+   ingressos — documentado no PROJECT_CONTEXT. Bug pós-deploy corrigido: o
+   título usava a classe `.faq-head` direto na section, sem o wrapper `.faq`
+   que dá `max-width`/`margin:auto` — texto desalinhado do resto do site.
+   Verificado no Chrome real, sem erro de console, nav destacando "Ingressos",
+   `check-meta`/`check-install`/`check-lineup` passando.
 0. **NOVO (sessão 5): fundo estrelado + acento de circuito em todas as páginas.**
    `features/starfield.js` injeta a camada uma vez por página via `initShell()`
-   (`.site-bg`, atrás de tudo, `pointer-events:none`): `assets/img/bg-circuit.webp`
-   (contain, sem esticar) + estrelas geradas por CSS (`data/starfield.js`, coordenadas
-   fixas). Aprovado pelo Renato após preview (imagem de referência dele). Verificado no
-   Chrome real, home e patrocinadores, contraste ok, `prefers-reduced-motion` já zera o
-   tremeluzir (regra global existente).
+   (`.site-bg`, atrás de tudo, `pointer-events:none`): estrelas geradas por CSS
+   (`data/starfield.js`, coordenadas fixas) + `assets/img/bg-circuit.webp` em
+   duas janelas (`background-position` topo/rodapé, `background-size:100% auto`)
+   ancoradas nas bordas da tela, sem esticar, sem pilarbox lateral. Correção
+   pós-deploy pedida pelo Renato: a primeira versão centralizava a imagem
+   inteira (`object-fit:contain`), deixando o desenho flutuando no meio com
+   barras pretas — agora topo e rodapé ficam sempre encostados na borda,
+   independente da altura da tela. Verificado no Chrome real, home e
+   Ingressos, `prefers-reduced-motion` já zera o tremeluzir (regra global).
 0. **CORRIGIDO (sessão 4, falta conferir no aparelho): botão "Instalar app".**
    Causa confirmada pelo Renato: no iPhone (Safari e Chrome do iOS, ambos WebKit) não
    existe `beforeinstallprompt`, então o botão não nascia. Em Chrome real via CDP a

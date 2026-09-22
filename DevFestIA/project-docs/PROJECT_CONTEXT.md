@@ -201,7 +201,11 @@ identical — always edit both together.
 `z-index:-1`, `pointer-events:none`): o acento de circuito colorido
 (`assets/img/bg-circuit.webp`, `object-fit:contain`, sem esticar/cortar) e
 duas camadas de estrelas geradas por CSS puro (`box-shadow` por ponto,
-coordenadas fixas em `data/starfield.js`, não geradas em runtime). Tremeluzir
+coordenadas fixas em `data/starfield.js`, não geradas em runtime). O circuito
+entra em duas janelas (`.bg-circuit--top`/`--bottom`, `background-position`
+topo/rodapé, `background-size:100% auto`): a mesma imagem ancorada nas duas
+bordas da tela sem esticar e sem cortar os cantos — uma imagem centralizada
+só deixaria o desenho flutuando no meio. Tremeluzir
 via `@keyframes`; a regra global de `prefers-reduced-motion` (topo do
 styles.css) já zera a duração da animação para quem pede menos movimento,
 sem código extra aqui. Nenhuma página tem esse HTML no próprio arquivo —

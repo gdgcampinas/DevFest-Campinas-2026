@@ -10,7 +10,15 @@ function initStarfield(rootEl, { layers, circuitSrc }) {
   bgEl.className = "site-bg";
   bgEl.setAttribute("aria-hidden", "true");
 
-  bgEl.insertAdjacentHTML("beforeend", `<img class="bg-circuit" src="${circuitSrc}" alt="">`);
+  // a mesma imagem em duas camadas (topo e rodapé): cada uma ancora numa borda
+  // da tela sem esticar, então o desenho de cima e a linha de baixo ficam
+  // sempre encostados, não flutuando no meio como uma imagem centralizada única.
+  ["top", "bottom"].forEach(edge => {
+    const layerEl = document.createElement("div");
+    layerEl.className = `bg-circuit bg-circuit--${edge}`;
+    layerEl.style.backgroundImage = `url(${circuitSrc})`;
+    bgEl.appendChild(layerEl);
+  });
   layers.forEach(layer => {
     const starsEl = document.createElement("div");
     starsEl.className = `bg-stars ${layer.className}`;
