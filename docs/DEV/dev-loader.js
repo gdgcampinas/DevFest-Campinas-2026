@@ -20,9 +20,9 @@
 (function () {
   var target = document.currentScript.dataset.target;
   try {
-    localStorage.setItem("devfest-campinas-2026:dev-mode", "1");
+    sessionStorage.setItem("devfest-campinas-2026:dev-mode", "1");
   } catch {
-    /* sem localStorage: segue mesmo assim, só não persiste entre páginas */
+    /* sem sessionStorage: segue mesmo assim, só não persiste entre páginas */
   }
 
   function patchLink(a) {

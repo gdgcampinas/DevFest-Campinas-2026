@@ -16,11 +16,11 @@
  *                                 cada seção mock mostra um aviso de "em
  *                                 construção" no lugar do dado fictício
  *                                 (features/reveal-gate.js). Fica salvo no
- *                                 navegador (localStorage), então clicar
+ *                                 navegador (sessionStorage), então clicar
  *                                 no menu continua em DEV sem repetir o
  *                                 parâmetro em cada link — um selo "DEV"
  *                                 fixo lembra que está nesse modo.
- *   ?lineup=0                   → sai do modo DEV (limpa o localStorage).
+ *   ?lineup=0                   → sai do modo DEV (limpa o sessionStorage).
  *                                 PROD e DEV são a mesma URL/config, só
  *                                 esse estado muda — nenhum ambiente/deploy
  *                                 separado.
@@ -31,11 +31,11 @@ function getParam(name) {
 
 const DEV_MODE_KEY = "devfest-campinas-2026:dev-mode";
 
-/** Guarda em localStorage sem quebrar em modo privado/bloqueado — DEV só não persiste nesse caso, não trava a página. */
+/** Guarda em sessionStorage sem quebrar em modo privado/bloqueado — DEV só não persiste nesse caso, não trava a página. */
 function setDevModeStorage(value) {
   try {
-    if (value) localStorage.setItem(DEV_MODE_KEY, "1");
-    else localStorage.removeItem(DEV_MODE_KEY);
+    if (value) sessionStorage.setItem(DEV_MODE_KEY, "1");
+    else sessionStorage.removeItem(DEV_MODE_KEY);
   } catch {
     /* sem persistência: ?lineup=1 ainda funciona nesta página, só não sobrevive à navegação */
   }
@@ -43,7 +43,7 @@ function setDevModeStorage(value) {
 
 function isDevModeStored() {
   try {
-    return localStorage.getItem(DEV_MODE_KEY) === "1";
+    return sessionStorage.getItem(DEV_MODE_KEY) === "1";
   } catch {
     return false;
   }
@@ -82,7 +82,7 @@ function resolveReveal() {
   return isDevModeStored() ? true : EVENT.lineupRevealed;
 }
 
-/** Selo fixo "DEV" com link pra sair — só aparece quando o modo veio do localStorage (não some sozinho ao trocar de página). */
+/** Selo fixo "DEV" com link pra sair — só aparece quando o modo veio do sessionStorage (não some sozinho ao trocar de página). */
 function warnIfDevMode() {
   if (!isDevModeStored()) return;
   const badge = document.createElement("a");
@@ -238,7 +238,7 @@ function initShell(activePageId) {
   initSkipLink();
   initStarfield(document.body, { layers: starfieldRepository.getAll(), circuitSrc: BG_CIRCUIT_SRC });
   const reveal = resolveReveal();
-  warnIfDevMode(); // depois de resolveReveal(): pega o localStorage já atualizado por ?lineup=1/0 nesta mesma carga de página
+  warnIfDevMode(); // depois de resolveReveal(): pega o sessionStorage já atualizado por ?lineup=1/0 nesta mesma carga de página
 
   renderBrand(EVENT.hosts, document.getElementById("brand"));
   renderWordmark(EVENT, document.getElementById("wordmark"));

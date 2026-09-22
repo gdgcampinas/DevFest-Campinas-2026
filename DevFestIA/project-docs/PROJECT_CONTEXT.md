@@ -413,15 +413,20 @@ that has a `#ticker` element (all six do, right after `<body>`).
 Não existe deploy/config separado pra PROD e DEV — os dois são a mesma
 URL publicada, só muda o estado de `reveal`. `EVENT.lineupRevealed = false`
 (PROD, padrão). `?lineup=1` entra no modo DEV **e grava em
-`localStorage`** (`devfest-campinas-2026:dev-mode`, `resolveReveal()` em
+`sessionStorage`** (`devfest-campinas-2026:dev-mode`, `resolveReveal()` em
 app.js): assim, clicar no menu pra outra página continua em DEV mesmo
 sem o link carregar o parâmetro de novo — antes disso, `?lineup=1` se
 perdia a cada navegação, o que o Renato relatou como "horrível". Um selo
 fixo "DEV — sair" (`warnIfDevMode()`, canto inferior direito, só aparece
-quando o modo veio do localStorage) linka pra `?lineup=0`, que limpa o
-armazenamento e volta pro PROD de vez. Sem `localStorage` (modo privado
-bloqueado): `?lineup=1` ainda funciona nessa página, só não sobrevive à
-navegação — nunca quebra a página.
+quando o modo veio do sessionStorage) linka pra `?lineup=0`, que limpa o
+armazenamento e volta pro PROD de vez. **`sessionStorage`, não
+`localStorage`, de propósito:** reseta sozinho quando a aba/navegador
+fecha — depois de o Renato ficar preso em modo DEV por dias num
+navegador de teste (achando que era bug do site), trocamos pra isso:
+persiste enquanto navega dentro da mesma sessão, mas nunca fica "grudado"
+pra sempre. Sem `sessionStorage` (modo privado bloqueado): `?lineup=1`
+ainda funciona nessa página, só não sobrevive à navegação — nunca quebra
+a página.
 
 `resolveReveal()` controla, em cada página, TUDO que ainda é mock:
 - **Grade:** `reveal` falso troca a página inteira (`<main>`) por um

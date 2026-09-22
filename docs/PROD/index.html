@@ -9,7 +9,7 @@
 <p>Saindo do modo DEV…</p>
 <script>
 /** Atalho pra sair do modo DEV: /PROD limpa a mesma chave que /DEV grava. */
-try { localStorage.removeItem("devfest-campinas-2026:dev-mode"); } catch {}
+try { sessionStorage.removeItem("devfest-campinas-2026:dev-mode"); } catch {}
 location.replace("../index.html");
 </script>
 </body>

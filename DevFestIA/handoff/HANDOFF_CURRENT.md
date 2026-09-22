@@ -73,6 +73,15 @@ metadata and SEO", "Offline (PWA)", "Usage analytics", "Accessibility rules",
    fora, era outro pedido do Renato: a primeira versão redirecionava pra
    `index.html` e ele não gostou). Testado nas 5 páginas com seção mock:
    badge presente, sem aviso de "em breve", zero erro de console.
+0. **CORRIGIDO (sessão 5): modo DEV ficava preso pra sempre no navegador
+   do Renato (`localStorage`), fazendo PROD mostrar mock indefinidamente.**
+   Trocado por `sessionStorage` em `app.js`/`DEV/dev-loader.js`/`PROD/index.html`
+   — persiste navegando dentro da mesma sessão (não perde ao clicar no
+   menu, continua funcionando), mas reseta sozinho ao fechar a
+   aba/navegador. Testado: ativar DEV, navegar pra outra página (continua
+   DEV), fechar e reabrir o Chrome com o mesmo perfil (volta pro PROD
+   sozinho, sessionStorage vazio). Resolve a causa raiz do Renato ver mock
+   em `index.html`/`grade.html`/etc. mesmo sem `?lineup=1` na URL.
 0. **RESOLVIDO (sessão 5): PROD (público) x DEV, gente confundindo o mock
    com o line-up oficial — e depois expandido pra tirar TODO mock do PROD.**
    Sem ambiente/deploy separado: mesmo site, `EVENT.lineupRevealed = false`,
