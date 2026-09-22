@@ -1,21 +1,26 @@
 <!doctype html>
 <html lang="pt-br">
-<head>
-<meta charset="utf-8">
-<meta name="robots" content="noindex, nofollow">
-<title>Entrando no modo DEV…</title>
-</head>
-<body style="background:#05060a;color:#fff;font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0">
-<p>Entrando no modo DEV…</p>
+<head><meta charset="utf-8"><meta name="robots" content="noindex, nofollow"><title>DevFest Campinas 2026 — DEV</title></head>
+<body>
 <script>
 /**
- * Atalho pra ativar o modo DEV: /DEV (esta pasta) grava a mesma chave que
- * ?lineup=1 grava (app.js, resolveReveal/warnIfDevMode) e manda pra home
- * já no modo DEV. Ver DEV_MODE_KEY em app.js — as duas precisam
- * continuar com o mesmo valor.
+ * /DEV fica na URL de propósito (pedido do Renato: não quer ser
+ * redirecionado pra /index.html) — grava a mesma chave que ?lineup=1
+ * grava (ver DEV_MODE_KEY em ../js/app.js) e então busca o index.html
+ * de verdade e reescreve o documento com ele, com <base href="../">
+ * pra todo caminho relativo (css/js/assets) apontar pro lugar certo.
+ * Zero duplicação: o conteúdo vem sempre do index.html real, nunca uma
+ * cópia — se a home mudar, esta página muda junto, sem tocar aqui.
  */
 try { localStorage.setItem("devfest-campinas-2026:dev-mode", "1"); } catch {}
-location.replace("../index.html");
+fetch("../index.html")
+  .then(response => response.text())
+  .then(html => {
+    document.open();
+    document.write(html.replace("<head>", '<head><base href="../">'));
+    document.close();
+  })
+  .catch(() => { location.replace("../index.html"); }); // sem fetch (offline/CORS): cai pro redirect simples
 </script>
 </body>
 </html>
