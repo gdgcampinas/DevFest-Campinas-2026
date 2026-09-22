@@ -93,6 +93,7 @@ docs/
       patrocinio.js                Patrocínio page copy/benefits
     components/              reusable templates, one responsibility each
       modal.js                   createModal(id): the only modal markup and close behavior (X, backdrop, Esc)
+      talk-feedback.js          talkFeedbackMarkup(state): check-in/avaliação (fases checkin/waiting/rate/done)
       install-guide.js           installGuideMarkup(guide): body of the "how to install" modal
       avatar.js                 photo or initials — automatic fallback
       icon.js                    iconMarkup(name) — only svg template
@@ -107,7 +108,7 @@ docs/
       sponsor-card.js               sponsor/community item (logo box + name + optional description)
       person-card.js                 person card (team/speakers)
     features/                data + template + behavior, one section each
-      agenda.js, track-filter.js, a11y.js, pwa.js, install-platform.js, starfield.js, analytics.js, calendar.js, talk-index.js, calendar-actions.js, agenda-share.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
+      agenda.js, track-filter.js, a11y.js, pwa.js, install-platform.js, starfield.js, talk-feedback.js, analytics.js, calendar.js, talk-index.js, calendar-actions.js, agenda-share.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
       featured-speakers.js, sponsors.js, partner-communities.js,
       team.js, cod.js, seo.js, stats.js, about.js, highlights.js,
       video.js, realizacao.js, tickets.js, footer.js,
@@ -128,6 +129,37 @@ DevFestIA/                  ← AI continuity and dev tooling, not part of the s
   validate.yml               CI: node --check on every .js, every push/PR
   promote.yml                CI: auto fast-forward development → main
 ```
+
+## Check-in e avaliação de palestra (fase 5.2)
+
+Dentro do modal de detalhe (mesmo em Home/Grade/Palestrantes), abaixo do
+resto do conteúdo: `components/talk-feedback.js` (`talkFeedbackMarkup`)
+desenha 5 fases — `loading`, `checkin`, `waiting`, `rate`, `done` —
+`features/talk-feedback.js` (`initTalkFeedback`) decide qual mostrar.
+
+- **Check-in por QR (ou link manual de honra):** cada palestra já tem um
+  código curto (`talkShareCode`, `features/talk-index.js`, o mesmo usado
+  em `?agenda=` da Grade). Um QR na sala aponta pra
+  `grade.html?checkin=<código>`; ao carregar, o check-in é gravado
+  sozinho. Sem câmera à mão, o botão dentro do modal faz o mesmo (honra).
+  Geração da imagem do QR pra exibir na sala: pendente (próximo passo).
+- **Avaliar só libera depois que a palestra terminou** (`slot.end` já
+  passou, mesmo relógio simulado de `?demo=` que o resto do site usa) **e**
+  a pessoa fez check-in nela — as duas condições, não uma OU outra.
+- **Por que anônimo continua sendo a decisão certa:** um nome digitado à
+  mão não impede sabotagem (é só texto, qualquer um inventa um). Quem
+  impede é o check-in (prova de presença). Nome no formulário é só
+  decoração opcional, nunca verificado.
+- **Cuidado de ordem de execução (crítico):** `window.firebaseClient`/
+  `checkinRepository`/`feedbackRepository` só existem depois que os
+  módulos do SDK rodam — sempre DEPOIS de qualquer script clássico,
+  mesmo que apareça antes no HTML (ver "Firebase (Firestore)" acima).
+  `initTalkFeedback()` nunca toca nesses globais no próprio corpo (que
+  roda no bootstrap síncrono da página); só dentro de handlers de
+  clique/submit e do handler de `?checkin=` (agendado pra depois de
+  `DOMContentLoaded`). Testado ponta a ponta contra o projeto real:
+  abrir palestra → check-in → formulário libera após o horário →
+  enviar → estado "avaliado" persiste ao reabrir.
 
 ## Firebase (Firestore) — check-in e feedback
 

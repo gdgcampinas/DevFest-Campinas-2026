@@ -1,6 +1,6 @@
 # Handoff — Current State
 
-**Last updated:** 2026-09-22, sessão 5 (Firebase: fundação de check-in/feedback). Antes de confiar neste texto, rode
+**Last updated:** 2026-09-22, sessão 5 (Firebase: check-in + avaliação funcionando ponta a ponta). Antes de confiar neste texto, rode
 `git status --short --branch` e `git log --oneline --decorate -10` (o git não mente).
 
 ## Status em uma olhada
@@ -77,6 +77,24 @@ metadata and SEO", "Offline (PWA)", "Usage analytics", "Accessibility rules",
    que dá `max-width`/`margin:auto` — texto desalinhado do resto do site.
    Verificado no Chrome real, sem erro de console, nav destacando "Ingressos",
    `check-meta`/`check-install`/`check-lineup` passando.
+0. **NOVO (sessão 5, fase 5.2): check-in + avaliação de palestra, funcionando.**
+   Dentro do modal (Home/Grade/Palestrantes): botão de check-in (honra, ou
+   automático via `?checkin=<código>` — pronto pra QR, geração da imagem
+   pra imprimir/exibir na sala ainda falta), formulário de avaliação
+   (estrelas 1-5, nome opcional, "o que mais gostou") liberado só depois
+   que a palestra terminou **e** teve check-in. Anônimo por decisão (uid
+   do Firebase, sem login): discutimos trocar por nome real com medo de
+   sabotagem, mas nome digitado não resolve isso — quem resolve é o
+   check-in (prova de presença), então mantivemos anônimo e recomendei
+   evoluir o check-in pra QR físico na sala.
+   Testado ponta a ponta contra o projeto Firebase real: abrir palestra →
+   estado "checkin" → clicar → estado "rate" (form) → enviar → estado
+   "done" → reabrir a mesma palestra mostra "done" direto (persistiu).
+   Zero erro de console em todo o fluxo.
+   **Falta:** tela/página que mostra o QR da palestra ao vivo daquela
+   sala/trilha (próximo passo, sem precisar imprimir nada — atualiza
+   sozinha quando a palestra muda). Feedback de fim de evento (fase 5.3)
+   ainda não começou.
 0. **NOVO (sessão 5): fundação do Firebase (check-in/feedback, fase 5.1).**
    Projeto `DevFest-Campinas` (Spark, gratuito) criado pelo Renato: Firestore
    (modo produção, Standard) + Authentication (Anônimo) ativos. Código:
