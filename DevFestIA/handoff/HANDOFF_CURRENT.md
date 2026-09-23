@@ -113,7 +113,9 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
 6. Conferir o resumo do 🎫 Sincronizar Sympla: formato do `custom_form` (camiseta) e paginação da
    v1.5.1 (parâmetro `page`), ainda não vistos com dado real (2026 tinha 0).
 7. Testar o gate com o e-mail de uma inscrição real e então virar `EVENT.tickets.registrationGate: true`
-   em `schedule.js` e `schedule.dev.js` (senão o cartão trava pra todos).
+   em `schedule.js` (senão o cartão trava pra todos). Só o `schedule.js` importa no ar: o `/DEV/` e o
+   `/PROD/` publicados leem ele. O `schedule.dev.js` é gitignored e existe só na máquina do Renato
+   (line-up real); mantenha-o igual só pros testes locais não divergirem, esquecer dele NÃO quebra o site.
 
 **C. Antes do evento (checklist do dia anterior)**
 8. 🧹 Limpar dados de teste: rodar em modo teste, conferir, rodar de verdade com `APAGAR` (só antes de
@@ -122,11 +124,16 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
 
 **D. Tasks anotadas (não iniciadas), detalhes em `project-docs/IDEAS_BACKLOG.md`**
 10. **Certificado de participação PROFISSIONAL:** A4 PDF vetorial, identidade completa, assinaturas,
-    código único e QR de validação. Decidir: quem recebe, carga horária, nome, validação, texto.
-    Reusa o SVG `gdg-logo-light.svg` (fundo claro).
+    código único e QR de validação. Não depende de dado real, mas de decisões do Renato, então
+    PERGUNTE ANTES de desenhar: quem recebe (presença na porta pelo Sympla, check-ins em palestras,
+    ou as duas), carga horária, nome (o digitado ou o do Sympla), se precisa de validação por QR, texto
+    e assinaturas. Com isso o mockup sai; aprová-lo com o Renato antes de codar. Reusa o SVG
+    `gdg-logo-light.svg` (fundo claro).
 11. **Mural eletrônico do telão de LED:** página interna em tela cheia com cenas em rodízio (agora/próximas,
-    álbum, fênix, patrocinadores, QR, números ao vivo, dicas, avisos, a galáxia). Faltam: tamanho do painel,
-    entrada de vídeo, origem das fotos, arquivo da fênix (mascote em criação), quem opera.
+    álbum, fênix, patrocinadores, QR, números ao vivo, dicas, avisos, a galáxia). PERGUNTE ao Renato antes
+    de desenhar: tamanho e proporção do painel, entrada (HDMI de notebook ou navegador), origem das fotos
+    ao vivo, arquivo da fênix (mascote em criação: vídeo, sprites ou animação, com som?), quem opera.
+    Já dá pra começar pelas cenas que não dependem disso (agora/próximas, QR, números, galáxia).
 12. **Internacionalização (PT/EN/ES/FR):** grande, precisa ser desenhada.
 13. Ideias em `IDEAS_BACKLOG.md`: quiz "Monte sua trilha", enquetes/perguntas ao vivo, passaporte com
     QR nos estandes, mural da hashtag, mapa do local, credencial digital, mentorias, votação das salas,

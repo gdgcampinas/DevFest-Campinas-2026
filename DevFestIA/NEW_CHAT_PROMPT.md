@@ -103,11 +103,13 @@ links `.../ingressos.html?cartao=1` e `.../index.html?avaliar=1` + QR no
 encerramento; quem monta os tablets das salas.
 Quando houver inscrições: conferir o resumo do "🎫 Sincronizar Sympla" (formato do
 formulário de camiseta e paginação), testar o gate com e-mail real e ligar
-`registrationGate`.
+`registrationGate` (só no `schedule.js`: o `schedule.dev.js` é gitignored e local,
+esquecer dele não quebra o site).
 Antes do evento: rodar "🧹 Limpar dados de teste" (simulação, depois de verdade com
 APAGAR, só antes de 28/11 08:00) e `reset-teste.html` nos aparelhos de teste.
-Tasks anotadas, não iniciadas: certificado de participação PROFISSIONAL (A4 PDF
-vetorial, código único e QR de validação; decidir quem recebe e carga horária);
+Tasks anotadas, não iniciadas (as duas dependem de DECISÕES do Renato: pergunte antes de
+desenhar): certificado de participação PROFISSIONAL (A4 PDF vetorial, código único e QR
+de validação; decidir quem recebe e carga horária);
 mural do telão de LED (cenas em rodízio, fênix, galáxia; decidir tamanho do painel
 e origem das fotos); internacionalização; demais ideias em `project-docs/IDEAS_BACKLOG.md`.
 
