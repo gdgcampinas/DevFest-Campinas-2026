@@ -71,27 +71,45 @@ verificado, o que depende dele. Armadilhas e como testar: seção "Como
 trabalhar e testar aqui" do handoff (bump de ?v=N, cache do
 schedule.dev.js, painel do app sem service worker, etc.).
 
-ESTADO EM 2026-09-20, fim da sessão 3 (detalhes no handoff)
-Site de 6 páginas no ar (main = development, CI verde), com line-up,
-time, patrocinadores, comunidades e depoimentos em MOCK público de
-propósito (dados reais virão no mesmo formato). Já feito: grade com 4
-trilhas e salas com nomes de lugares históricos, cards e "acontecendo
-agora", Minha agenda com calendário e link compartilhável, ingressos e
-CTA (Sympla é a home do Sympla por enquanto), acessibilidade, SEO e
-imagem de compartilhamento, fontes locais (Google Sans), PWA offline e
-analytics (GoatCounter, conta gdgcampinas).
-BUG CONFIRMADO (fazer primeiro): o botão "Instalar app" não aparece no iPhone
-(Safari e Chrome do iOS): o iOS (WebKit) não dispara beforeinstallprompt. Plano em
-HANDOFF_CURRENT.md, pendência 0: detectar iOS e mostrar um guia "Compartilhar >
-Adicionar à Tela de Início" no modal existente, com textos como dado. Mostre o plano
-ao Renato antes de implementar.
-Pendências: escolher a variante das plenárias (A, B ou C; recomendo B) e
-implementar; logo novo (Renato envia os arquivos) para trocar header,
-favicons, ícones do app e imagem de compartilhamento; dados reais (local,
-salas/MCs, line-up, patrocinadores, valores e link real do Sympla).
-Backlog de "uau": redemoinho do logo animado/ícone girando como fundo do
-hero e cartão de compartilhamento pessoal ("Vou ao DevFest Campinas");
-demais ideias no handoff.
+ESTADO EM 2026-09-23, fim da sessão 5 (detalhes completos no handoff)
+Site de 7 páginas no ar (main = development, CI verde): Principal, Grade,
+Palestrantes, Ingressos, Time, Patrocínio, Código de Conduta. Um pedaço do
+site agora tem backend: Firebase (Firestore + Authentication anônimo) só
+para check-in e avaliação de palestra (o único dado compartilhado entre
+visitantes) — resto do site continua 100% estático, sem build.
+
+MUDANÇA MAIS IMPORTANTE DA SESSÃO 5: PROD (público) esconde todo mock por
+padrão — line-up (Grade vira um aviso único, "Título a confirmar"/"Em
+breve" no resto), patrocinadores, comunidades parceiras, time e ingressos
+mostram "será revelado em breve" em vez de dado fictício. DEV (mostra tudo
+mock, pra time interno) é `/DEV/<página>` (persiste em sessionStorage
+navegando pela mesma aba, some sozinho ao fechar) ou `?lineup=1`; `/PROD/`
+ou `?lineup=0` volta pro público. Detalhes técnicos e todo o histórico de
+bugs corrigidos (parâmetro se perdendo na navegação, storage que não
+expirava, service worker servindo cache velho): PROJECT_CONTEXT.md, seção
+"PROD x DEV", e handoff, "Histórico resumido".
+
+Check-in + avaliação de palestra (Firebase, fases 5.1-5.2 prontas): botão
+de check-in (QR via `?checkin=<código>` ou honra com confirmação inline no
+visual do site) e formulário de avaliação (estrelas + nome opcional +
+comentário) liberado só após check-in + palestra terminada. Anônimo por
+decisão (uid do Firebase, sem login — quem impede sabotagem é o check-in,
+não a identidade). Tela de QR ao vivo por sala: `checkin-display.html`.
+Falta: feedback de fim de evento (fase 5.3, não começou) e logística física
+de onde exibir o QR no dia.
+
+Também da sessão 5: fundo estrelado + acento de circuito em toda página,
+página Ingressos própria (saiu da home), 10 palestrantes distintos por
+trilha no mock, botão "Instalar app" e ícone PWA corrigidos (sessão 4).
+
+PENDÊNCIAS (Renato): escolher a variante das plenárias (A, B ou C; recomendo
+B); logo novo (SVG/PNG do símbolo colorido, ele envia os arquivos); dados
+reais (local, salas/MCs, line-up, patrocinadores, valores, link real do
+Sympla); logística física do QR ao vivo. Backlog "uau": redemoinho do logo
+animado (depende do logo novo), cartão de compartilhamento pessoal "Vou ao
+DevFest Campinas" (não depende de nada, pode ser feito já). Internacionalização
+(PT/EN/ES/FR) anotada como task futura, escopo grande, não desenhada ainda.
+Demais ideias no handoff.
 
 DIRETIVA DE ENGAJAMENTO
 Você é parceiro técnico do projeto, não executor passivo.

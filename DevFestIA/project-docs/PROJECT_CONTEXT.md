@@ -48,11 +48,15 @@ funções, não executa nada sozinho, então incluir sem `favorites.js`/
 
 ```
 docs/
-  index.html, grade.html, palestrantes.html, time.html,
-  patrocinio.html, codigo-de-conduta.html   structure only, no logic
+  index.html, grade.html, palestrantes.html, ingressos.html, time.html,
+  patrocinio.html, codigo-de-conduta.html   structure only, no logic (the 7 public pages)
+  checkin-display.html                      internal tool (live QR), not a public page — see "Check-in e avaliação"
+  DEV/index.html, DEV/grade.html, ... , DEV/dev-loader.js   DEV shortcut, see "PROD x DEV"
+  PROD/index.html                           DEV-exit shortcut, see "PROD x DEV"
   css/fonts.css                              @font-face for the self-hosted Google Sans (loads first)
   css/tokens.css                             design tokens ONLY: brand palette, per-track colors, accent, fonts (loads first)
   css/styles.css                             all visual rules; consumes tokens, no literal brand color or font name
+  css/checkin-display.css                    standalone "presentation mode" styles for checkin-display.html only
   assets/icons/, assets/img/highlights/       favicons, event photos
   js/
     data/                    static data — nothing here touches the DOM
@@ -94,6 +98,7 @@ docs/
     components/              reusable templates, one responsibility each
       modal.js                   createModal(id): the only modal markup and close behavior (X, backdrop, Esc)
       talk-feedback.js          talkFeedbackMarkup(state): check-in/avaliação (fases checkin/waiting/rate/done)
+      construction-notice.js     constructionNoticeMarkup(message): "será revelado em breve" card, reused by every mock section
       install-guide.js           installGuideMarkup(guide): body of the "how to install" modal
       avatar.js                 photo or initials — automatic fallback
       icon.js                    iconMarkup(name) — only svg template
@@ -108,13 +113,13 @@ docs/
       sponsor-card.js               sponsor/community item (logo box + name + optional description)
       person-card.js                 person card (team/speakers)
     features/                data + template + behavior, one section each
-      agenda.js, track-filter.js, a11y.js, pwa.js, install-platform.js, starfield.js, talk-feedback.js, analytics.js, calendar.js, talk-index.js, calendar-actions.js, agenda-share.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
+      agenda.js, track-filter.js, a11y.js, pwa.js, install-platform.js, starfield.js, talk-feedback.js, reveal-gate.js, checkin-display.js, analytics.js, calendar.js, talk-index.js, calendar-actions.js, agenda-share.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
       featured-speakers.js, sponsors.js, partner-communities.js,
       team.js, cod.js, seo.js, stats.js, about.js, highlights.js,
       video.js, realizacao.js, tickets.js, footer.js,
       tracks-overview.js, testimonials.js, ticker.js, patrocinio.js
     pages/                   one bootstrap per page (see table above)
-      home.js, grade.js, palestrantes.js, time.js, patrocinio.js, cod.js
+      home.js, grade.js, palestrantes.js, ingressos.js, time.js, patrocinio.js, cod.js, checkin-display.js
     app.js                   initShell(): header, ticker, nav, footer, SEO,
                               ?demo=/?lineup= overrides — shared by every page
 
@@ -122,6 +127,7 @@ DevFestIA/                  ← AI continuity and dev tooling, not part of the s
   CLAUDE.md, AGENTS.md, NEW_CHAT_PROMPT.md
   project-docs/PROJECT_CONTEXT.md, project-docs/Continuidade.md
   handoff/HANDOFF_CURRENT.md
+  firebase/firestore.rules  security rules, paste manually into the Firebase console — see "Firebase (Firestore)"
   tools/                     check-meta.js (CI), check-install.js (CI), check-lineup.js, check-calendar.js, e2e-offline.js, e2e-kill-switch.js
   design/                    og-image.html, app-icon.html (sources of generated images)
 
@@ -261,7 +267,7 @@ All in `docs/css/tokens.css`, in three layers (only the first holds literals):
 1. Brand palette `--google-blue/red/yellow/green` (same 4 colors as the new GDG Campinas logo; hex fallback then oklch).
 2. Semantic: track colors `--ia`, `--webdata`, `--mobile`, `--mentoring` point at palette items; `--accent` (green, was `--neon`), `--live`, `--amber`.
 3. Typography: `--font-display` and `--font-body`, both Google Sans (variable, weight 400-700, latin subset, self-hosted). Google Sans Text is NOT bundled: it is not in the open-source `google/fonts` repo, so its license for self-hosting is unconfirmed. `styles.css` never names a font.
-Changing a color = edit `tokens.css`; changing the font = `fonts.css` + `tokens.css` + the `<link rel=preload>` in the 6 pages. Google Sans tops out at weight 700 on Google Fonts, so `800` declarations render as 700.
+Changing a color = edit `tokens.css`; changing the font = `fonts.css` + `tokens.css` + the `<link rel=preload>` in the 7 pages. Google Sans tops out at weight 700 on Google Fonts, so `800` declarations render as 700.
 
 ## Key design decision: zero per-track CSS
 
@@ -309,7 +315,7 @@ só deixaria o desenho flutuando no meio. Tremeluzir
 via `@keyframes`; a regra global de `prefers-reduced-motion` (topo do
 styles.css) já zera a duração da animação para quem pede menos movimento,
 sem código extra aqui. Nenhuma página tem esse HTML no próprio arquivo —
-mesmo padrão do rodapé e do nav, uma função, seis páginas.
+mesmo padrão do rodapé e do nav, uma função, sete páginas.
 
 ## Header hosts (co-hosts/sponsors)
 
@@ -370,7 +376,7 @@ All mock people, companies and links are fictional and live in `data/`: speakers
 
 ## Share metadata and SEO
 
-- Every page has static `og:*`, `twitter:*`, `canonical` and a per-page `description` in its `<head>` (social crawlers do not run JavaScript, so this repetition across the 6 pages is unavoidable in a zero-build site). `DevFestIA/tools/check-meta.js` (also a CI step) fails if any page is missing tags or has a wrong `og:url`, `og:image`, sitemap entry or robots line.
+- Every page has static `og:*`, `twitter:*`, `canonical` and a per-page `description` in its `<head>` (social crawlers do not run JavaScript, so this repetition across the 7 pages is unavoidable in a zero-build site). `DevFestIA/tools/check-meta.js` (also a CI step) fails if any page is missing tags or has a wrong `og:url`, `og:image`, sitemap entry or robots line.
 - `EVENT.url`, `EVENT.description`, `EVENT.image` in schedule.js/.dev.js are the source; `docs/assets/img/og-image.png` (1200x630) is rendered from `DevFestIA/design/og-image.html` (headless Chrome command in the file). Re-render it when the new logo arrives.
 - `features/seo.js` builds the schema.org `Event` JSON-LD from EVENT, SCHEDULE and the ticket types (one `Offer` per type, `PreOrder` until `EVENT.tickets.salesOpen` is true; the venue name only when `EVENT.venueConfirmed`).
 - `docs/sitemap.xml` and `docs/robots.txt` are static; add a page there and in `SITE_PAGES`.
@@ -406,7 +412,7 @@ per tier). Fill in tiers when sponsors are confirmed.
 
 `features/ticker.js` builds the scrolling banner from `EVENT`/`SCHEDULE`
 (no separate copy of name/date). `initShell()` calls it on every page
-that has a `#ticker` element (all six do, right after `<body>`).
+that has a `#ticker` element (all seven do, right after `<body>`).
 
 ## PROD x DEV (mesmo site, um parâmetro, salvo no navegador)
 
@@ -498,6 +504,8 @@ que já devia estar limpa). `dev-loader.js` também busca a página real com
 - Real line-up (replace `mock-talks.js` and `mock-speakers.js` with same-shape data, real photos and LinkedIn), real sponsors and communities, testimonials, team, ticket values and the real Sympla link (`EVENT.tickets.url`, `salesOpen`).
 - New logo files (header, favicons, app icons, share image) and the recap video of 2025 (`data/video.js` still has the 2017 one).
 - Parking/food images (`PARKING_IMAGES`/`FOOD_IMAGES` in `app.js`, still empty).
+- Feedback de fim de evento (fase 5.3, ver handoff): mesmo padrão do feedback por palestra, sem começar ainda.
+- Logística física do QR ao vivo (`checkin-display.html`): qual tela/tablet por sala, quem monta no dia.
 
 ## Documentation upkeep (standing directive)
 

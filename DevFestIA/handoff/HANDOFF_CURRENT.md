@@ -1,319 +1,197 @@
 # Handoff — Current State
 
-**Last updated:** 2026-09-22, sessão 5 (PROD/DEV persistente + todo mock escondido, check-in ao vivo com QR). Antes de confiar neste texto, rode
+**Last updated:** 2026-09-23, fim da sessão 5. Antes de confiar neste texto, rode
 `git status --short --branch` e `git log --oneline --decorate -10` (o git não mente).
 
 ## Status em uma olhada
 
-- Site estático de 6 páginas (Principal, Grade, Palestrantes, Time, Patrocínio,
-  Código de Conduta), sem build, sem backend. Publicado por GitHub Pages a partir
-  de `docs/` no `main`; trabalho no `development`, o CI valida e promove sozinho.
-- Último commit de código da sessão 3: `5f01f5b` (GoatCounter ligado). Sequência
-  da sessão: `1580d1d` ingressos/CTA, `bbac628` acessibilidade, `94400b6` calendário
-  e compartilhar, `6e78d11` SEO/imagem, `fac34c9` fontes locais, `88b7e82` PWA
-  offline, `9ce13c7` analytics, `5f01f5b` endpoint do GoatCounter.
-- Todo o conteúdo de pessoas, empresas e ingressos é **MOCK de propósito** (Renato
-  pediu para deixar; os dados reais vêm depois no mesmo formato). O line-up mock
-  está público (`EVENT.lineupRevealed = true`).
+- Site estático de **7 páginas** (Principal, Grade, Palestrantes, Ingressos,
+  Time, Patrocínio, Código de Conduta), sem build, sem backend pra conteúdo.
+  Publicado por GitHub Pages a partir de `docs/` no `main`; trabalho no
+  `development`, o CI valida e promove sozinho.
+- **Um pedaço tem backend agora:** Firebase (Firestore + Authentication
+  anônimo) só para check-in e avaliação de palestra — o único dado
+  compartilhado entre visitantes. Resto do site continua 100% estático.
+- **PROD (público) esconde todo mock por padrão** — line-up, patrocinadores,
+  comunidades, time e ingressos mostram "será revelado em breve" em vez de
+  dado fictício. **DEV** (`/DEV/` ou `?lineup=1`) mostra tudo. Ver seção
+  própria abaixo, é a mudança mais importante desta sessão.
+- Último commit da sessão: `9a3ba39`.
 
 ## O que o site tem hoje
 
 **Grade e agenda:** 4 trilhas (IA, Front/Back/Data, Mobile/Agile, Carreiras &
-Mentorias), 9 slots x 4 = 36 palestras, gerados por `schedule-builder.js` a partir
-do `DAY_PLAN`. Salas com nomes de lugares históricos via `roomFor(lugar)`:
-Observatório, Estação, Lagoa do Taquaral, Mercadão Central; Abertura e
-Encerramento na Sala Calçadão Central. Cards novos (formato, tags, LinkedIn,
-duração, sala), "acontecendo agora" (hero da home, pílula AO VIVO, barra fixa,
-progresso, "Em N min"), filtro por trilha com contadores, "Minha agenda"
-(favoritos em localStorage) com exportar .ics, WhatsApp, copiar link e banner para
-quem abre `?agenda=`.
+Mentorias), 9 slots × 4 = 36 palestras, geradas por `schedule-builder.js` a
+partir do `DAY_PLAN`. Salas com nomes de lugares históricos via
+`roomFor(lugar)`. Cards (formato, tags, LinkedIn, duração, sala),
+"acontecendo agora" (hero da home, pílula AO VIVO, barra fixa, progresso,
+"Em N min"), filtro por trilha com contadores, "Minha agenda" (favoritos em
+localStorage) com exportar .ics, WhatsApp, copiar link e banner para quem
+abre `?agenda=`. **Em PROD, a Grade inteira mostra um aviso único** em vez
+da grade mock (ver "PROD x DEV").
 
-**Line-up ligado:** 36 palestras (`mock-talks.js`) e 40 palestrantes (10 por trilha, só a Renata Cardoso fala duas vezes)
-(`mock-speakers.js`) ligados só por `speakerIds`; galeria de Palestrantes lista as
-palestras de cada pessoa (abre o mesmo modal), o modal leva ao perfil
-(`palestrantes.html#speaker-<id>`), Destaques da home também.
+**Line-up ligado:** 36 palestras (`mock-talks.js`) e 40 palestrantes, 10 por
+trilha (`mock-speakers.js`), ligados só por `speakerIds`. Galeria de
+Palestrantes lista as palestras de cada pessoa, o modal leva ao perfil,
+Destaques da home também.
 
-**Conversão e alcance:** 3 tipos de ingresso (Grátis, Ingresso com camiseta, VIP;
-valores de exemplo) e um CTA único (`ticketCtaState`) no cabeçalho, barra fixa
-mobile, hero e cards; sem link do Sympla ainda: todos os botões mostram "Em breve" e os preços pagos mostram "Valor a definir" (só o Grátis tem R$ 0). Tags
-OG/Twitter/canonical nas 6 páginas, imagem 1200x630, sitemap, robots, JSON-LD do
-evento com ingressos.
+**Check-in + avaliação de palestra (Firebase, fase 5.1-5.2 prontas):**
+dentro do modal de qualquer palestra — botão de check-in (QR via
+`?checkin=<código>` ou botão manual de honra com confirmação inline),
+formulário de avaliação (estrelas 1-5, nome opcional, "o que mais gostou")
+liberado só depois que a palestra terminou **e** teve check-in. Anônimo por
+decisão (uid do Firebase, sem login — ver PROJECT_CONTEXT). Tela de QR ao
+vivo pra sala: `checkin-display.html?trilha=<id>`.
+**Falta:** feedback de fim de evento (fase 5.3, não começou) e decidir a
+logística física de onde exibir o QR (tablet/monitor por sala).
 
-**Qualidade:** contraste AA no texto secundário, fonte mínima 12 px, foco global,
-link "Pular para o conteúdo", `prefers-reduced-motion`. Fontes locais (Google Sans,
-OFL). PWA: instalável e funcionando sem internet. Analytics: GoatCounter (conta
-`gdgcampinas`, painel em https://gdgcampinas.goatcounter.com), sem cookies, 13
-eventos por `data-track-event`.
+**Conversão e alcance:** 3 tipos de ingresso (Grátis, com camiseta, VIP) numa
+página própria (`ingressos.html`); preços pagos mostram "Valor a definir"
+(só Grátis tem R$ 0); todo CTA mostra "Ingressos em breve" (sem link do
+Sympla ainda). Tags OG/Twitter/canonical, imagem 1200×630, sitemap, robots,
+JSON-LD do evento. Em PROD a seção de ingressos também vira aviso.
 
-Arquitetura, padrões e decisões: `project-docs/PROJECT_CONTEXT.md` (seções "Line-up
-model", "Tickets and the registration CTA", "Calendar and sharing", "Share
-metadata and SEO", "Offline (PWA)", "Usage analytics", "Accessibility rules",
-"Design tokens", "Track rooms").
+**Qualidade:** contraste AA, fonte mínima 12px, foco global, skip link,
+`prefers-reduced-motion`. Fontes locais (Google Sans). PWA instalável e
+funcionando sem internet — botão "Instalar app" sempre visível, com guia por
+plataforma quando não há prompt nativo (iPhone/Firefox/apps embutidos).
+Analytics: GoatCounter (conta `gdgcampinas`), sem cookies.
+Fundo estrelado + acento de circuito em toda página.
+
+Arquitetura, padrões e decisões completas: `project-docs/PROJECT_CONTEXT.md`
+(seções "Firebase (Firestore)", "Check-in e avaliação de palestra", "PROD x
+DEV", "Fundo estrelado", "Offline (PWA)", "Line-up model", "Tickets and the
+registration CTA", "Calendar and sharing", "Share metadata and SEO", "Usage
+analytics", "Accessibility rules", "Design tokens", "Track rooms").
 
 ## Decisões que o Renato já tomou (não reabrir sem motivo)
 
-- Nada de backend; persistência opcional só atrás de repository (sem banco hoje).
-- Cores/marca: paleta do Google (azul, amarelo, verde, vermelho), tokens em
-  `css/tokens.css`. Fonte: Google Sans (o Google Sans Text não entra: licença de
-  hospedagem não confirmada).
-- Fotos: pessoas (pravatar.cc por número, escolhidas à mão) em vez de avatares
-  ilustrados. Nomes mistos, brasileiros e internacionais.
-- Salas: lugares históricos, não bairros ("cadê meu bairro?"). Time sem galeria de
-  fotos. Mock público.
-- Ingressos: Grátis, Ingresso com camiseta, VIP; Sympla (link real ainda não existe).
+- Nada de backend pra conteúdo; Firebase só pra check-in/feedback
+  (compartilhado entre visitantes), sempre atrás de repository.
+- Cores/marca: paleta do Google, tokens em `css/tokens.css`. Fonte: Google
+  Sans (Google Sans Text não entra: licença de hospedagem não confirmada).
+- Fotos: pessoas (pravatar.cc por número, escolhidas à mão), não avatares
+  ilustrados. Salas: lugares históricos, não bairros. Time sem galeria de
+  fotos.
+- Ingressos: Grátis, Ingresso com camiseta, VIP; Sympla (link real ainda não
+  existe, `EVENT.tickets.url` vazio de propósito).
+- Check-in/feedback: **anônimo** (uid do Firebase, sem login/nome
+  verificado) — quem impede sabotagem é o check-in (prova de presença), não
+  a identidade. Firebase: **um projeto só** (`DevFest-Campinas`), edição
+  (ano) como dado (`CURRENT_EDITION`), nunca projeto/coleção por ano.
+- Confirmação de check-in é **inline** no visual do site, nunca o
+  `confirm()` nativo do navegador (achado feio).
+- Modo DEV usa `sessionStorage`, não `localStorage` — precisa persistir
+  navegando, mas nunca pode ficar "grudado" pra sempre.
 
 ## Pendências (com quem depende)
 
-0. **NOVO (sessão 5): `/DEV/<página>` pra todas as páginas, não só a home.**
-   Pedido do Renato ("dev para todos de ambiente de dev"). Um loader só
-   (`DEV/dev-loader.js`) reusado por 7 wrappers de uma linha
-   (`DEV/index.html`, `grade.html`, `palestrantes.html`, `time.html`,
-   `patrocinio.html`, `ingressos.html`, `codigo-de-conduta.html`) — cada
-   um só passa `data-target`. URL fica em `/DEV/<página>` (não pula pra
-   fora, era outro pedido do Renato: a primeira versão redirecionava pra
-   `index.html` e ele não gostou). Testado nas 5 páginas com seção mock:
-   badge presente, sem aviso de "em breve", zero erro de console.
-0. **CORRIGIDO (sessão 5): service worker podia servir `/PROD/`/`/DEV/`
-   cacheados/velhos.** `sw.js` tinha o padrão "rede primeiro, cache se
-   offline" pra qualquer navegação — mas se a rede desse qualquer soluço
-   (comum no navegador embutido que o Renato usa), caía pro cache, que
-   podia ter uma versão de PROD anterior a hoje (antes do mock ser
-   escondido). `isUtilityRoute()` faz `/DEV/*` e `/PROD/*` pularem o
-   service worker inteiro — sempre direto na rede, nunca cache.
-   `dev-loader.js` também busca com `{cache: "reload"}` (ignora o cache
-   HTTP do navegador, não só o do service worker). `SW_VERSION` subiu
-   pra `2`, descartando qualquer cache antigo de todo mundo.
-0. **CORRIGIDO (sessão 5): modo DEV ficava preso pra sempre no navegador
-   do Renato (`localStorage`), fazendo PROD mostrar mock indefinidamente.**
-   Trocado por `sessionStorage` em `app.js`/`DEV/dev-loader.js`/`PROD/index.html`
-   — persiste navegando dentro da mesma sessão (não perde ao clicar no
-   menu, continua funcionando), mas reseta sozinho ao fechar a
-   aba/navegador. Testado: ativar DEV, navegar pra outra página (continua
-   DEV), fechar e reabrir o Chrome com o mesmo perfil (volta pro PROD
-   sozinho, sessionStorage vazio). Resolve a causa raiz do Renato ver mock
-   em `index.html`/`grade.html`/etc. mesmo sem `?lineup=1` na URL.
-0. **RESOLVIDO (sessão 5): PROD (público) x DEV, gente confundindo o mock
-   com o line-up oficial — e depois expandido pra tirar TODO mock do PROD.**
-   Sem ambiente/deploy separado: mesmo site, `EVENT.lineupRevealed = false`,
-   e um parâmetro guardado no navegador:
-   - **PROD (padrão):** Grade inteira vira um aviso único ("A programação
-     completa será revelada em breve"); patrocinadores, comunidades
-     parceiras, time (organizadores e voluntários) e ingressos — cada um
-     com aviso próprio no lugar do mock (`renderOrConstruction()`,
-     `features/reveal-gate.js` + `components/construction-notice.js`,
-     genérico, reusado pelas 5 seções, zero duplicação).
-   - **DEV (`?lineup=1`):** mostra tudo mock normalmente. **Correção
-     pedida pelo Renato:** antes o parâmetro se perdia a cada clique no
-     menu ("ficou horrível, não ajudou em nada"). Agora `?lineup=1` grava
-     em `localStorage` — navegar pelo site inteiro continua em DEV sem
-     repetir o parâmetro. Selo fixo "DEV — sair" no canto (só aparece
-     nesse modo) linka pra `?lineup=0`, que limpa e volta pro PROD.
-   - Faixa amarela fixa que existia antes foi removida (virou redundante,
-     cada seção já avisa sozinha).
-   Testado no Chrome real: PROD mostra aviso nas 5 áreas + Grade inteira;
-   ativar DEV numa página e navegar por 3 outras sem parâmetro continua
-   em DEV (selo presente, dado real aparecendo); clicar "sair" volta pro
-   PROD e persiste ao navegar de novo. Zero erro de console.
-   Quando o line-up real for confirmado: `EVENT.lineupRevealed` volta pra
-   `true`, sem precisar mexer em nenhuma seção — todas leem o mesmo `reveal`.
-
-0. **NOVO (sessão 5): página "Ingressos" própria, fora da home.**
-   `ingressos.html` no padrão das outras páginas, reusa `renderTickets`/
-   `ticketCtaState` sem duplicar nada. Entrou em `SITE_PAGES`
-   (`site-nav.js`) entre Palestrantes e Time. A home perdeu a seção cheia
-   de ingressos, ganhou um teaser curto (`.page-teaser`, mesmo padrão de
-   Grade/Palestrantes) linkando pra lá. Achado no caminho: toda página
-   precisa de `features/agenda.js` (usa `hourLabel`/`eventDateLabel` no
-   header) e `data/tickets.js` (schema.org), mesmo sem mostrar agenda ou
-   ingressos — documentado no PROJECT_CONTEXT. Bug pós-deploy corrigido: o
-   título usava a classe `.faq-head` direto na section, sem o wrapper `.faq`
-   que dá `max-width`/`margin:auto` — texto desalinhado do resto do site.
-   Verificado no Chrome real, sem erro de console, nav destacando "Ingressos",
-   `check-meta`/`check-install`/`check-lineup` passando.
-0. **NOVO (sessão 5, fase 5.2): check-in + avaliação de palestra, funcionando.**
-   Dentro do modal (Home/Grade/Palestrantes): botão de check-in (honra, ou
-   automático via `?checkin=<código>` — pronto pra QR, geração da imagem
-   pra imprimir/exibir na sala ainda falta), formulário de avaliação
-   (estrelas 1-5, nome opcional, "o que mais gostou") liberado só depois
-   que a palestra terminou **e** teve check-in. Anônimo por decisão (uid
-   do Firebase, sem login): discutimos trocar por nome real com medo de
-   sabotagem, mas nome digitado não resolve isso — quem resolve é o
-   check-in (prova de presença), então mantivemos anônimo e recomendei
-   evoluir o check-in pra QR físico na sala.
-   Testado ponta a ponta contra o projeto Firebase real: abrir palestra →
-   estado "checkin" → clicar → estado "rate" (form) → enviar → estado
-   "done" → reabrir a mesma palestra mostra "done" direto (persistiu).
-   Zero erro de console em todo o fluxo.
-   Ajuste rápido pedido pelo Renato: bloco de check-in/avaliar ganhou
-   destaque visual (cartão com fundo/borda na cor de destaque, título com
-   ícone, botão sólido — antes era discreto, sumia no resto do modal), e
-   confirmação antes do check-in manual, agora **inline** (não o `confirm()`
-   nativo do navegador, que o Renato achou feio — mostra o domínio do site,
-   sem estilo nenhum): o clique no botão vira um card "Confirmar check-in"
-   com o título da palestra e dois botões, no visual do site. Testado:
-   clique mostra a confirmação, cancelar volta ao botão original sem gravar,
-   confirmar grava de verdade.
-0. **NOVO (sessão 5): tela de check-in ao vivo (`checkin-display.html?trilha=<id>`).**
-   Pra deixar num tablet/monitor/TV da sala o dia inteiro: mostra sozinha
-   o QR da palestra que está rolando agora naquela trilha, atualiza quando
-   a palestra muda, sem precisar imprimir nada. Ferramenta interna — fora
-   do menu, sitemap e `check-meta.js`. Sem `?trilha=` mostra a lista de
-   trilhas pra escolher (links prontos). Testado: 4 cenários (sem trilha,
-   palestra ao vivo com QR, intervalo/almoço sem palestra na trilha, tela
-   estreita tipo tablet vertical), zero erro de console.
-   **Falta:** decidir com o Renato onde/como exibir fisicamente (tablet,
-   notebook, TV com Chromecast — logística dele) e testar com internet
-   fraca de verdade no dia. Feedback de fim de evento (fase 5.3) ainda não
-   começou.
-0. **NOVO (sessão 5): fundação do Firebase (check-in/feedback, fase 5.1).**
-   Projeto `DevFest-Campinas` (Spark, gratuito) criado pelo Renato: Firestore
-   (modo produção, Standard) + Authentication (Anônimo) ativos. Código:
-   `data/firebase-config.js` (config pública + `CURRENT_EDITION`),
-   `data/firebase-client.js` (inicializa o SDK via CDN, `type="module"`,
-   login anônimo silencioso), `data/firestore-repository.js` (fábrica
-   genérica sobre `createRepository`), 3 repositories finos
-   (`checkinRepository`, `feedbackRepository`, `eventFeedbackRepository`).
-   Detalhe de arquitetura (módulo vs script clássico, ordem de execução)
-   documentado no PROJECT_CONTEXT. Testado no Chrome real: login anônimo ok,
-   escrita bloqueada pela regra padrão do Firestore ("negar tudo"), como
-   esperado — confirma que o encanamento está certo.
-   **Falta o Renato:** colar `DevFestIA/firebase/firestore.rules` em
-   Firebase Console → Firestore Database → Regras → Publicar. Sem isso
-   nenhum check-in/feedback funciona (tudo continua bloqueado de propósito).
-   Depois disso sigo com 5.2 (check-in + avaliar por palestra) e 5.3
-   (feedback de fim de evento) sem parar, já autorizado.
-0. **NOVO (sessão 5): fundo estrelado + acento de circuito em todas as páginas.**
-   `features/starfield.js` injeta a camada uma vez por página via `initShell()`
-   (`.site-bg`, atrás de tudo, `pointer-events:none`): estrelas geradas por CSS
-   (`data/starfield.js`, coordenadas fixas) + `assets/img/bg-circuit.webp` em
-   duas janelas (`background-position` topo/rodapé, `background-size:100% auto`)
-   ancoradas nas bordas da tela, sem esticar, sem pilarbox lateral. Correção
-   pós-deploy pedida pelo Renato: a primeira versão centralizava a imagem
-   inteira (`object-fit:contain`), deixando o desenho flutuando no meio com
-   barras pretas — agora topo e rodapé ficam sempre encostados na borda,
-   independente da altura da tela. Verificado no Chrome real, home e
-   Ingressos, `prefers-reduced-motion` já zera o tremeluzir (regra global).
-0. **CORRIGIDO (sessão 4, falta conferir no aparelho): botão "Instalar app".**
-   Causa confirmada pelo Renato: no iPhone (Safari e Chrome do iOS, ambos WebKit) não
-   existe `beforeinstallprompt`, então o botão não nascia. Em Chrome real via CDP a
-   instalabilidade não tinha erro e o evento disparava, ou seja, servidor e manifesto
-   estavam certos. Correção: botão sempre visível até instalar, nativo quando há
-   evento, senão modal com o guia da plataforma (ver "Offline (PWA)" no
-   PROJECT_CONTEXT). Extras: Patrocínio não carregava `icons.js`/`icon.js` (o botão
-   lançaria erro lá); manifesto com `any` e `maskable` separados e `id`; modal
-   genérico (`components/modal.js`, o modal de palestra agora é criado por ele e some
-   do HTML das páginas); `tools/check-install.js` no CI (detecção, guias, dependências
-   de script por página, ícones). O guia do Chrome iOS assume Compartilhar > Adicionar
-   à Tela de Início (iOS 16.4+) com o Safari como plano B.
-   Instalou no iPhone; o Renato viu que o ícone era o do EloTech (GDG + Agibank): o
-   `apple-touch-icon.png` e o `favicon-32.png` eram sobra do scaffold. Regerados a
-   partir do ícone do app (comandos no `design/app-icon.html`) e linkados com `?v=2`
-   (o iOS e o service worker guardam ícone pela URL).
-   **Falta o Renato:** conferir o ícone novo no iPhone (remover o app antigo e
-   reinstalar; o iOS guarda o ícone) e testar o Android (Chrome).
-1. **Plenárias (decisão do Renato):** faixa larga com o palestrante de destaque
-   ocupando todas as trilhas. Desenho aprovado no mockup (avatar 104 px com anel
-   multi-cor, selo "Plenária", barra com as 4 cores). Variantes: A 3 plenárias
-   (09:00, 13:30, 17:15; 28 talks), **B só 17:15 (36 talks, custo zero,
-   recomendada)**, C só 13:30 (32 talks). Falta escolher A, B ou C. Implementação:
-   item `{ plenary: { start, end, room, speakers, title } }` no `DAY_PLAN`
-   (schedule.js e .dev.js), ramo em `buildSchedule()`, `plenaryMarkup()` reusando
-   `avatarMarkup`/`speakerList`/`speakerMetaLine`/`favoriteButtonMarkup`/
-   `iconMarkup`, card largo na Grade e no "ao vivo agora" (`live-status.js`),
-   CSS com tokens (sem regra por trilha), `talkKey` para favoritar.
-2. **Logo novo (Renato envia):** SVG/PNG do símbolo colorido, branco e completo
-   ("GDG Campinas"). Trocar: `EVENT.hosts[].icon` (header), favicons
-   (`assets/icons/favicon-32.png`, `apple-touch-icon.png`), ícones do app
-   (`assets/icons/icon-192.png` e `icon-512.png`, fonte
-   `DevFestIA/design/app-icon.html`), imagem de compartilhamento
-   (`assets/img/og-image.png`, fonte `DevFestIA/design/og-image.html`),
-   `theme-color`. O PDF `apresentacao.pdf` chama de "Nova proposta": confirmar
-   aprovação e regras de marca do programa GDG.
-3. **Dados reais (Renato/organização):** local (`EVENT.venue`, `venueConfirmed`),
-   salas reais e MCs (`TRACKS[].room/mc`), line-up real (mesmo formato de
-   `mock-talks.js`/`mock-speakers.js`, com `format`, `tags`, foto e LinkedIn reais),
-   patrocinadores e comunidades reais, depoimentos, time, estacionamento e comida
-   (`PARKING_IMAGES`/`FOOD_IMAGES` em `app.js`), vídeo de recap 2025 em
-   `data/video.js` (hoje é o de 2017), valores e benefícios reais dos ingressos,
-   link real do Sympla (`EVENT.tickets.url`, `salesOpen: true` quando abrir).
-   Descrição do repo no GitHub só pela interface (conta sem admin); texto sugerido:
-   "O DevFest Campinas é um evento realizado pelo GDG Campinas, criado para conectar
-   pessoas, compartilhar conhecimento e fortalecer a comunidade de tecnologia da
-   região."
-4. Confirmar grafia/existência dos lugares das salas (não verifiquei online).
-5. Opcional: estender o repository pattern a `EVENT`/`TRACKS`/`SCHEDULE`.
+1. **Logo novo (Renato envia):** SVG/PNG do símbolo colorido (a espiral
+   azul/vermelho/amarelo/verde, slide 9 do PDF de identidade). Trocar:
+   `EVENT.hosts[].icon` (header), favicons, ícones do app (fonte
+   `DevFestIA/design/app-icon.html`), imagem de compartilhamento (fonte
+   `DevFestIA/design/og-image.html`), `theme-color`.
+2. **Plenárias (decisão do Renato):** faixa larga com palestrante de
+   destaque ocupando todas as trilhas. Mockup aprovado (avatar 104px, anel
+   multi-cor, selo "Plenária", barra com as 4 cores). Variantes: A — 3
+   plenárias (28 talks); **B — só 17:15 (36 talks, custo zero, recomendada)**;
+   C — só 13:30 (32 talks). Falta escolher A, B ou C. Implementação: item
+   `{ plenary: {...} }` no `DAY_PLAN` (schedule.js e .dev.js), ramo em
+   `buildSchedule()`, `plenaryMarkup()` reusando componentes existentes, CSS
+   com tokens (sem regra por trilha).
+3. **Feedback de fim de evento (fase 5.3):** mesmo padrão do feedback por
+   palestra (estrelas + nome opcional + comentário), sem gate de check-in
+   específico — não começado.
+4. **QR ao vivo — logística física:** `checkin-display.html?trilha=<id>`
+   está pronto e testado; falta decidir onde exibir (tablet, notebook, TV
+   com Chromecast por sala) e testar com internet fraca de verdade no dia.
+5. **Dados reais (Renato/organização):** local (`EVENT.venue`,
+   `venueConfirmed`), salas/MCs reais, line-up real (mesmo formato de
+   `mock-talks.js`/`mock-speakers.js`), patrocinadores/comunidades reais,
+   depoimentos, time, valores reais dos ingressos, link real do Sympla
+   (`EVENT.tickets.url`, `salesOpen: true` quando abrir), vídeo de recap
+   2025 (`data/video.js` ainda tem o de 2017). Quando o line-up real
+   chegar: `EVENT.lineupRevealed` volta pra `true` (não precisa mexer em
+   mais nada — todas as seções leem o mesmo `reveal`).
+6. Confirmar grafia/existência dos lugares das salas (não verificado online).
+7. Opcional: estender o repository pattern a `EVENT`/`TRACKS`/`SCHEDULE`.
+8. **Internacionalização (backlog, não desenhado):** PT/EN/ES/FR. Precisa
+   decidir seletor de idioma, onde vive o texto traduzível (hoje hardcoded
+   em `data/*.js` e HTML), e se o line-up real também traduz. Escopo grande,
+   task própria antes de tocar em código.
 
 ## Backlog de ideias (aprovadas em espírito, nada implementado)
 
-**Identidade e "uau" (o Renato citou de novo no fim da sessão 3):**
-- **Redemoinho do logo animado / ícone girando**: o símbolo em espiral do logo
-  novo girando (CSS/SVG) como fundo do hero, sob o tema "Do Local ao Infinito", com
-  estrelas sutis (respeitar `prefers-reduced-motion`, já há infraestrutura).
-  Depende do logo novo em SVG.
-- **Cartão de compartilhamento pessoal** "Vou ao DevFest Campinas": imagem gerada no
-  navegador (canvas) com nome, foto opcional e a Minha agenda, para baixar/compartilhar.
+**Identidade e "uau":**
+- Redemoinho do logo animado como fundo do hero (depende do logo novo em SVG).
+- Cartão de compartilhamento pessoal "Vou ao DevFest Campinas" (canvas, não
+  depende do logo, pode ser feito antes).
 
-**Internacionalização (task nova, pedida pelo Renato):** site em
-português, inglês, espanhol e francês. Não desenhado ainda — precisa
-decidir: seletor de idioma (URL `/en/`, `?lang=`, ou por navegador),
-onde vive o texto traduzível (hoje é tudo hardcoded em `data/*.js` e no
-HTML de cada página, precisa virar dicionário por chave), e se schedule/
-line-up real também traduz (título/descrição de palestra) ou só a casca
-do site. Escopo grande, mexe em quase todo arquivo do repo — planejar
-como task própria antes de tocar em código.
-
-**Outras ideias da análise:** quiz "Monte sua trilha" (preenche a Minha agenda),
-feedback por palestra (formulário do Google pré-preenchido por palestra),
-certificado de participação gerado no navegador (horas complementares),
-mentorias com agendamento (trilha Carreiras & Mentorias), vagas dos patrocinadores,
-mapa do local com as salas, credencial digital com QR, perguntas ao vivo/enquetes,
-passaporte DevFest com QR nos estandes, mural da hashtag; card de painel mostrando
-os dois cargos; incluir cidades da RMC nas salas ou votação da comunidade.
+**Outras ideias:** quiz "Monte sua trilha", certificado de participação
+gerado no navegador, mentorias com agendamento, vagas dos patrocinadores,
+mapa do local, credencial digital com QR, perguntas ao vivo/enquetes,
+mural da hashtag, votação da comunidade pras salas.
 
 ## Como trabalhar e testar aqui
 
-- Servidor local: `cd docs && python3 -m http.server 8080`. Parâmetros úteis:
-  `?lineup=1` (força o line-up), `?demo=2026-11-28T09:20` (simula o horário; teste
-  09:20, 10:27 "Em N min", 12:30 almoço, 17:30, 18:30 encerrado), `?analytics=debug`
-  (loga eventos), `?nosw=1` (remove service worker e caches).
-- Toda mudança em `.js`/`.css` exige `node --check` e bump de `?v=N` em todas as
-  páginas que o referenciam (arquivo novo: tag em todas as páginas do bloco
-  compartilhado). `?v=` esquecido = navegador serve versão velha.
-- `docs/js/data/schedule.dev.js` (gitignored, espelho local) é carregado SEM `?v=`:
-  o navegador pode servir cache depois de editar; força com
-  `fetch('/js/data/schedule.dev.js',{cache:'reload'})` e recarrega. Edite sempre
-  `schedule.js` e `schedule.dev.js` juntos. Nunca commitar o dev.
-- Ferramentas em `DevFestIA/tools/`: `check-meta.js` (roda no CI: OG, sitemap,
-  robots, manifesto, ícones, sw.js), `check-lineup.js` e `check-calendar.js`
-  (Node, sem navegador; o de line-up tem contagens do mock), `e2e-offline.js` e
-  `e2e-kill-switch.js` (Chrome real via DevTools; o painel do app NÃO roda service
-  worker). Fontes das imagens geradas em `DevFestIA/design/` (comando de regerar
-  dentro de cada arquivo).
-- O painel de navegador do app é instável (screenshot preto, aba some): tire uma
-  segunda captura ou confira via `javascript_tool`. O scroll suave não anima lá.
-  Clicar em link real navega de verdade (o CTA do Sympla abre o Sympla): em testes,
-  intercepte cliques em `a[href]`.
-- Fluxo de entrega que o Renato aprovou: implementar, testar (navegador, mobile,
-  node), atualizar `PROJECT_CONTEXT.md` e este arquivo, **um commit por melhoria**
-  em inglês e sem menção de IA, push no `development`, conferir CI e promoção.
-  Frase "ENTENDI.. AUTORIZADO TODOS E PODE SIM IMPLEMENTAR" vale sim para o plano
-  mostrado. Chamar de "Renatão"; sem travessão nos textos; resposta objetiva.
+- Servidor local: `cd docs && python3 -m http.server 8080`.
+- **PROD x DEV** (ver PROJECT_CONTEXT para os detalhes técnicos):
+  - `/DEV/` (ou `?lineup=1`) mostra todo mock; `/PROD/` (ou `?lineup=0`)
+    limpa. Persiste em `sessionStorage` navegando pela mesma aba, some
+    sozinho ao fechar a aba/navegador — nunca fica preso pra sempre.
+  - Selo vermelho "DEV — sair" no canto quando em DEV.
+  - `/DEV/*` e `/PROD/*` nunca passam por cache (nem HTTP nem service
+    worker) — sempre a versão mais nova, de propósito.
+- Outros parâmetros: `?demo=2026-11-28T09:20` (simula o horário; testar
+  09:20, 10:27 "Em N min", 12:30 almoço, 17:30, 18:30 encerrado),
+  `?analytics=debug` (loga eventos), `?nosw=1` (remove service worker e
+  caches), `?checkin=<código>` (grava check-in — é o que o QR codifica).
+- Toda mudança em `.js`/`.css` exige `node --check` e bump de `?v=N` em
+  todas as páginas que o referenciam. `?v=` esquecido = navegador serve
+  versão velha. `docs/js/data/schedule.dev.js` é gitignored e carregado
+  sem `?v=` — edite sempre junto com `schedule.js`, nunca commite o dev.
+- Ferramentas em `DevFestIA/tools/`: `check-meta.js` e `check-install.js`
+  rodam no CI; `check-lineup.js`, `check-calendar.js` são manuais (Node,
+  sem navegador); `e2e-offline.js`/`e2e-kill-switch.js` usam Chrome real via
+  DevTools (o painel do app não roda service worker).
+- Firebase: console em console.firebase.google.com, projeto
+  `DevFest-Campinas`. Regra de segurança em
+  `DevFestIA/firebase/firestore.rules` — **sem deploy automático**, colar
+  manualmente em Firestore Database → Regras → Publicar a cada mudança.
+- Fluxo de entrega aprovado: implementar → testar de verdade (Chrome real,
+  mobile, node) → atualizar `PROJECT_CONTEXT.md`/handoff → **um commit por
+  melhoria**, inglês, sem menção de IA → push no `development` → conferir
+  CI e promoção. "ENTENDI.. AUTORIZADO TODOS E PODE SIM IMPLEMENTAR" vale
+  sim pro plano mostrado. Chamar de "Renatão"; sem travessão; objetivo.
 - Push rejeitado (non-fast-forward): `git pull --rebase origin development`.
-  `Promote to main` já falhou por erro transiente do GitHub; runbook:
-  `git fetch origin && git checkout main && git merge --ff-only origin/development
-  && git push origin main && git checkout development`. Validate costuma levar
-  ~10 s, Pages 40 s a 2 min.
-- `[hidden]` é forçado a `display:none !important` (regra global); não use `display`
-  em componente esperando que `hidden` seja ignorado.
-- Mock que precisa de cuidado: fotos do pravatar são de terceiros (se cair, cai
-  para iniciais); só use números de foto que você conferiu visualmente.
+  Runbook se `Promote to main` falhar: `git fetch origin && git checkout
+  main && git merge --ff-only origin/development && git push origin main
+  && git checkout development`.
+- `[hidden]` é `display:none !important` global — não conflitar com
+  `display` de componente.
+- Fotos do pravatar são de terceiros (se cair, cai para iniciais); só usar
+  números conferidos visualmente.
 
 ## Histórico resumido (para arqueologia; detalhes no git)
 
-Sessão 1: 4 trilhas, `schedule-builder.js`, repository pattern, páginas Time,
-Palestrantes, Código de Conduta, Patrocínio, ticker. Sessão 2: cards e favoritos,
-tokens (`tokens.css`), ícones de trilha, line-up mock ligado, mock brasileiro de
-time/patrocínio/depoimentos, filtro por trilha em Palestrantes, salas com lugares
-históricos. Sessão 3: os 7 itens da lista de melhorias (ingressos/CTA,
-acessibilidade, calendário/compartilhar, SEO/imagem, fontes locais, PWA offline,
-analytics).
+**Sessão 1:** 4 trilhas, `schedule-builder.js`, repository pattern, páginas
+Time/Palestrantes/Código de Conduta/Patrocínio, ticker.
+**Sessão 2:** cards e favoritos, tokens, ícones de trilha, line-up mock
+ligado, mock brasileiro, filtro por trilha, salas com lugares históricos.
+**Sessão 3:** ingressos/CTA, acessibilidade, calendário/compartilhar,
+SEO/imagem, fontes locais, PWA offline, analytics (GoatCounter).
+**Sessão 4:** botão "Instalar app" corrigido (guia por plataforma pro iOS,
+que não dispara `beforeinstallprompt`); ícone PWA/favicon trocado (era
+sobra do scaffold EloTech).
+**Sessão 5 (2026-09-22/23):** fundo estrelado + circuito em toda página;
+página Ingressos própria (saiu da home); linha do tempo de melhorias no
+line-up (10 palestrantes por trilha); Firebase: fundação (5.1) + check-in
+e avaliação de palestra funcionando ponta a ponta (5.2), confirmação
+inline, destaque visual; tela de QR ao vivo por sala
+(`checkin-display.html`); **PROD esconde todo mock** (line-up, Grade
+inteira, patrocinadores, comunidades, time, ingressos) com aviso "será
+revelado em breve", DEV acessível por `/DEV/` (persistente via
+`sessionStorage`, nunca `localStorage`) com `/PROD/` como reset — depois
+de vários rounds de bug real (parâmetro se perdendo na navegação, storage
+que não expirava, service worker servindo cache velho pras rotas de
+utilidade) até ficar robusto. Internacionalização anotada como backlog.
