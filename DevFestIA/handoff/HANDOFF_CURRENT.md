@@ -164,6 +164,14 @@ analytics", "Accessibility rules", "Design tokens", "Track rooms").
     mensagem final do Sympla e o QR no encerramento; (c) definir quem monta o tablet de cada
     sala (`checkin-display.html?trilha=<ia|webdata|mobile|mentoring>`). Não feito: nota média
     pública nos cards (decisão: só interno).
+12. **Certificado de participação (task anotada, não iniciada):** decisões em aberto (quem tem
+    direito, carga horária, nome, validação, textos e assinaturas) em
+    `project-docs/IDEAS_BACKLOG.md`. Depende também do logo novo em SVG.
+13. **Script de limpeza dos dados de teste (proposto, aguardando aprovação do Renato):** workflow
+    "Limpar dados de teste" (só `checkins`, `talk-feedback` e `event-feedback`; simulação por
+    padrão; exige digitar `APAGAR`; recusa depois do início do evento) e página interna
+    `reset-teste.html` pra limpar o navegador de teste. Enquanto isso, apagar as coleções pelo
+    console do Firebase.
 
 ## Backlog de ideias (aprovadas em espírito, nada implementado)
 

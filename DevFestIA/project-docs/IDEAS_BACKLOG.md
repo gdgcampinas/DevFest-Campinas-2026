@@ -96,11 +96,31 @@ sênior?") que no fim sugerem quais palestras favoritar — preenche a Minha
 agenda automaticamente via `favoritesRepository.addAll()` (já existe,
 reusado do fluxo de agenda compartilhada).
 
-### Certificado de participação
-Gerado no navegador (canvas/PDF), com nome da pessoa e horas
-complementares, baseado em quantas palestras ela fez check-in
-(`checkinRepository`, já existe desde a fase 5.1/5.2). Depende de decidir
-regra de horas por palestra assistida.
+### Certificado de participação do evento — TASK ANOTADA, não iniciada
+Pedido do Renato (2026-09-23): emitir certificado de participação do DevFest Campinas 2026.
+**Não fazer agora**, só registrado. Reusa peças que já existem (cartão "Eu vou!" em
+canvas, check-ins por palestra, gate por inscrição do Sympla, feedback com nome).
+
+**Decisões pra tomar antes de desenhar (com a organização):**
+1. **Quem tem direito?** (a) presença na porta, pelo check-in do Sympla (o job passaria a
+   marcar `attended` em `registrations`, sem guardar nome), (b) check-ins nas palestras
+   (mínimo de N palestras), ou (c) as duas. Gancho possível: liberar o certificado só depois
+   de enviar a avaliação do evento (aumenta a taxa de resposta).
+2. **Carga horária:** somar a duração das palestras com check-in (`durationLabel`, 40 min cada)
+   ou usar uma carga fixa do evento (ex.: 8 h). Precisa da regra oficial.
+3. **Nome no certificado:** o digitado no feedback (`myNameRepository`, não verificado) ou
+   o do Sympla (verificado, exige e-mail). Sempre editável antes de gerar.
+4. **Validação:** código único no certificado + página `?validar=<código>`. Sem servidor, um
+   código só é confiável se for gravado no Firestore (coleção nova, regra própria) ou
+   assinado pelo job do Sympla (que já tem segredo). Decidir se validação é necessária.
+5. **Texto, assinaturas e logos:** texto aprovado pela organização, quem assina, e os logos
+   novos (chegaram, ver handoff item 1; ainda sem SVG).
+
+**Forma sugerida:** um único template data-driven (`data/certificate.js` via repository:
+textos, assinaturas, logos, regra de horas), desenhado em `<canvas>` client-side pra baixar
+PNG, e/ou página `certificado.html` com CSS de impressão pra salvar em PDF (sem biblioteca
+nova). Entrada: botão em "Minhas palestras" depois do evento e link `?certificado=1` pro
+e-mail final do Sympla. Zero dado pessoal novo guardado se o nome for só digitado.
 
 ### Perguntas ao vivo / enquetes
 Durante a palestra, plateia manda pergunta ou vota em enquete pelo celular,
