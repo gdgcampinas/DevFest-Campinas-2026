@@ -18,12 +18,15 @@ girando por cima. **Bloqueado:** depende do logo novo em SVG (arquivo que o
 Renato ainda vai mandar). Precisa respeitar `prefers-reduced-motion` (infra
 já existe, `features/a11y.js`).
 
-### Cartão de compartilhamento pessoal "Vou ao DevFest Campinas"
-Imagem gerada no navegador (`<canvas>`), com nome da pessoa, foto opcional
-e a Minha agenda dela (palestras favoritadas), pra baixar/compartilhar nas
-redes. **Não depende do logo novo**, pode ser feito antes. Reusaria
-`favoritesRepository` (já existe) pra montar a lista de palestras
-escolhidas.
+### Cartão de compartilhamento pessoal "Eu vou!" — IMPLEMENTADO (sessão 6)
+Versão básica feita: nome opcional + nome/data/cidade do evento + trilhas,
+gerado em `<canvas>` (`features/share-card.js` + `components/share-card.js`),
+botão "Já vou! Gerar meu cartão" em `ingressos.html`. Baixa PNG ou usa Web
+Share API. Ver PROJECT_CONTEXT.md, seção "Cartão pessoal".
+**Ainda não feito** (evolução possível, não bloqueante): incluir a Minha
+agenda da pessoa (palestras favoritadas) no cartão, via
+`favoritesRepository` (já existe) — ideia original tinha isso, ficou pra
+depois.
 
 ---
 

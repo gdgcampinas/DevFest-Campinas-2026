@@ -5,6 +5,8 @@ function initIngressos() {
   renderOrConstruction(reveal, document.getElementById("ticketsSection"),
     () => renderTickets(EVENT.tickets, ticketsRepository.getAll(), document.getElementById("ticketsSection"), { note: TICKETS_NOTE }),
     "Os tipos e valores de ingresso serão revelados em breve.");
+
+  initShareCard(document.body, { event: EVENT, schedule: SCHEDULE, createModal });
 }
 
 initIngressos();
