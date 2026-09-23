@@ -152,17 +152,18 @@ analytics", "Accessibility rules", "Design tokens", "Track rooms").
     tela cheia com cenas em rodízio (agora/próximas, álbum, fênix, patrocinadores,
     QR codes, números ao vivo, dicas, avisos). Detalhes e perguntas em aberto
     (tamanho do painel, origem das fotos) em `project-docs/IDEAS_BACKLOG.md`.
-11. **Feedback v2 (implementado; falta publicar as regras NOVAS e limpar os testes):**
-    Minhas palestras (`?avaliar=1`), aviso "avalie", avaliação do evento com aspectos e
-    0-10, relatório v2 (ver PROJECT_CONTEXT, "Feedback v2"). Falta: (a) colar
-    `DevFestIA/firebase/firestore.rules` no console e Publicar de novo (a versão nova exige
-    nome, aspectos e 0-10 no evento; a publicada em 2026-09-23 ainda é a anterior, com
-    check-in obrigatório mas nome opcional); (b) testar no Chrome real: check-in
-    numa palestra, avaliar, conferir o documento em `talk-feedback`, avaliar o evento
-    (`/DEV/index.html?demo=2026-11-28T18:10`); (c) apagar os documentos de teste
-    de `checkins`, `talk-feedback` e `event-feedback` antes do evento; (d) colocar o
-    link `.../index.html?avaliar=1` na mensagem final do Sympla e um QR dele no
-    encerramento. Não feito: nota média pública nos cards (decisão: só interno).
+11. **Feedback v2 (no ar, regras publicadas e testadas; falta só limpar os testes):**
+    Minhas palestras (`?avaliar=1`), QR de avaliação na sala (`?avaliar=<código>`), aviso
+    "avalie", estrelas cheias, nome obrigatório, avaliação do evento com aspectos e 0-10,
+    relatório v2 (ver PROJECT_CONTEXT, "Feedback v2"). As regras de 2026-09-23 foram testadas
+    contra o Firestore real com um usuário novo: 8 casos inválidos recusados (sem check-in, sem
+    nome, nome vazio, evento sem aspectos, sem 0-10, sem nome, faltando 1 aspecto, 0-10 = 11) e
+    os válidos aceitos, e a 2ª avaliação recusada. Falta: (a) apagar as coleções de teste
+    `checkins`, `talk-feedback` e `event-feedback` no console (e os dados locais dos
+    navegadores de teste) antes do evento; (b) colocar o link `.../index.html?avaliar=1` na
+    mensagem final do Sympla e o QR no encerramento; (c) definir quem monta o tablet de cada
+    sala (`checkin-display.html?trilha=<ia|webdata|mobile|mentoring>`). Não feito: nota média
+    pública nos cards (decisão: só interno).
 
 ## Backlog de ideias (aprovadas em espírito, nada implementado)
 
