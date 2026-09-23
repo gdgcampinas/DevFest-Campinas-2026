@@ -1,6 +1,8 @@
 /** Camada decorativa (só template): imagem girando, sem função pra leitor de tela. Os valores viram variáveis CSS. */
-function heroGalaxyMarkup({ src, rotationSeconds, opacity, size, x, y }) {
-  return `<div class="hero-galaxy" aria-hidden="true" style="--galaxy-duration:${rotationSeconds}s;--galaxy-opacity:${opacity};--galaxy-size:${size};--galaxy-x:${x};--galaxy-y:${y}">
+function heroGalaxyMarkup({ src, rotationSeconds, reducedMotionSeconds = null, opacity, size, maxWidth, x, y }) {
+  const still = reducedMotionSeconds === null ? " hero-galaxy--still" : "";
+  const reduced = reducedMotionSeconds === null ? "" : `--galaxy-duration-reduced:${reducedMotionSeconds}s;`;
+  return `<div class="hero-galaxy${still}" aria-hidden="true" style="--galaxy-duration:${rotationSeconds}s;${reduced}--galaxy-opacity:${opacity};--galaxy-size:${size};--galaxy-max:${maxWidth};--galaxy-x:${x};--galaxy-y:${y}">
     <img src="${src}" alt="" decoding="async">
   </div>`;
 }

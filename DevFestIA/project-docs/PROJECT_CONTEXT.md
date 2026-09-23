@@ -513,10 +513,12 @@ identical — always edit both together.
 - **Galáxia do hero** (`features/hero-galaxy.js`, dados em `data/hero-galaxy.js`): o próprio ícone
   girando muito devagar atrás do hero da home (tema "Do Local ao Infinito"), dentro do palco
   `#heroStage`; o card do hero fica 72% opaco pra ela aparecer. Tudo é dado (imagem, volta em
-  segundos, opacidade, tamanho relativo à ALTURA do hero, posição; centralizada, igual em qualquer
-  monitor). `prefers-reduced-motion` do sistema deixa o logo parado (regra global de acessibilidade),
-  então quem tem "Reduzir movimento" ligado (macOS: Ajustes > Acessibilidade > Monitor) não vê girar;
-  `?movimento=1` na URL força a rotação mesmo assim (demonstração e telão do evento).
+  segundos, opacidade, tamanho relativo à ALTURA do hero com teto `maxWidth` em `vw` (no celular a
+  espiral não passa da tela), posição; centralizada, igual em qualquer aparelho). Com "Reduzir
+  movimento" ligado no aparelho (macOS/iOS: Acessibilidade > Movimento) ela gira MAIS DEVAGAR
+  (`reducedMotionSeconds`, 240 s por volta contra 80 s), sem parar; `null` = parada nesse caso.
+  Decisão do Renato: o logo precisa girar, então não fica parada por padrão. `?movimento=1`
+  força a velocidade normal mesmo com "Reduzir movimento" (telão do evento).
 
 ## Fundo estrelado
 
