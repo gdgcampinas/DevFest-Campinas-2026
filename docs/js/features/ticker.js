@@ -6,7 +6,8 @@
  */
 function renderTicker(event, schedule, mountEl) {
   const dateLabel = eventDateLabel(schedule, event.timezone);
-  const status = event.tickets?.status || "Em breve";
+  const tickets = event.tickets ?? {};
+  const status = (tickets.salesOpen && tickets.openStatus) || tickets.status || "Em breve";
   const text = `${event.name} ${event.date.slice(0, 4)} · ${dateLabel} · Ingressos: ${status}`;
   const repeated = Array(6).fill(`<span>${text}</span>`).join("");
   mountEl.innerHTML = `<div class="ticker-track">${repeated}</div>`;

@@ -38,6 +38,7 @@ const EVENT = {
     url: "https://www.sympla.com.br/evento/devfest-campinas-2026/3591517", // link do evento no Sympla; vazio = todos os botões viram o status ("Ingressos em breve") (sem link morto)
     label: "Garanta sua vaga",
     status: "Ingressos em breve",
+    openStatus: "abertos", // texto do ticker quando salesOpen for true
     salesOpen: true, // true quando as vendas abrirem de verdade (dados estruturados: PreOrder vira InStock)
     counterMin: 30, // só mostra o contador "N pessoas já garantiram a vaga" a partir desse total de inscritos
     registrationGate: false, // true SÓ depois que o sync do Sympla estiver rodando (secrets + regras publicadas); false = o cartão "Eu vou!" continua livre

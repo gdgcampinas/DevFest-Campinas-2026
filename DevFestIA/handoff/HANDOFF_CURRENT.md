@@ -19,12 +19,13 @@
 - **Sessão 6 (commitado e no ar; Sympla -> site pronto, aguardando secrets):** feedback de fim de
   evento (fase 5.3) implementado — hero "Encerrado" da home agora mostra
   o formulário de avaliação do evento; e cartão pessoal "Eu vou!"
-  (`ingressos.html`, canvas client-side, baixar/compartilhar). Testado
-  localmente (`http.server`); a escrita real no Firestore do feedback de
-  evento **não foi confirmada nesta sessão** — o Browser pane não alcança
-  o CDN do Firebase (mesma limitação já documentada pro service worker),
-  precisa confirmar em Chrome real antes de considerar 5.3 pronta de
-  verdade. O cartão pessoal não depende de Firebase, testado e funcionando.
+  (`ingressos.html`, canvas client-side, baixar/compartilhar). Bug
+  achado e corrigido na sessão 6: o hero "Encerrado" é desenhado no bootstrap
+  síncrono, antes dos módulos do Firebase, então o formulário travava em
+  "Carregando…" (agora `render()` espera `runAfterModules()`). A escrita
+  real do feedback de evento no Firestore ainda precisa ser confirmada (o
+  Browser pane carrega o Firebase normalmente; o erro antigo era esse bug,
+  não limitação do painel).
 - Último commit da sessão anterior: `9a3ba39` / `973a0e2` (refresh de docs).
 
 ## O que o site tem hoje
@@ -110,8 +111,8 @@ analytics", "Accessibility rules", "Design tokens", "Track rooms").
 3. **Feedback de fim de evento (fase 5.3):** implementado nesta sessão
    (`components/event-feedback.js` + `features/event-feedback.js`, no
    hero "Encerrado" da home) — falta só **confirmar a escrita no
-   Firestore em Chrome real** (não testável no Browser pane do app, sem
-   acesso ao CDN do Firebase).
+   Firestore** (abrir `/DEV/index.html?demo=2026-11-28T18:10`, enviar, conferir
+   a coleção `event-feedback` e apagar o documento de teste).
 4. **QR ao vivo — logística física:** `checkin-display.html?trilha=<id>`
    está pronto e testado; falta decidir onde exibir (tablet, notebook, TV
    com Chromecast por sala) e testar com internet fraca de verdade no dia.

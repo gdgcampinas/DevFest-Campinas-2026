@@ -9,7 +9,9 @@
  * Mesmo cuidado de ordem de execução de talk-feedback.js:
  * `window.firebaseClient`/`window.eventFeedbackRepository` só existem
  * depois que os módulos do SDK rodam, então nunca são lidos no corpo
- * síncrono de initEventFeedback() — só dentro do handler de submit.
+ * síncrono de initEventFeedback() nem em render() antes de
+ * runAfterModules(); no handler de submit já é seguro. Falha ao
+ * consultar o estado esconde o bloco em vez de deixar "Carregando…".
  */
 const EVENT_FEEDBACK_KEY = "event-end";
 
@@ -24,8 +26,13 @@ function initEventFeedback(rootEl) {
   async function render(containerEl) {
     if (!containerEl) return;
     containerEl.innerHTML = eventFeedbackMarkup({ phase: "loading" });
-    const state = await resolveState();
-    containerEl.innerHTML = eventFeedbackMarkup(state);
+    // o hero "Encerrado" é desenhado no bootstrap síncrono da página, antes dos módulos do Firebase
+    await new Promise(resolve => runAfterModules(resolve));
+    try {
+      containerEl.innerHTML = eventFeedbackMarkup(await resolveState());
+    } catch {
+      containerEl.innerHTML = "";
+    }
   }
 
   rootEl.addEventListener("submit", async event => {
