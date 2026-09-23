@@ -441,7 +441,7 @@ All mock people, companies and links are fictional and live in `data/`: speakers
 
 ## Tickets and the registration CTA
 
-`features/tickets.js` has one source of CTA state, `ticketCtaState(EVENT.tickets)`: `url` set = buy button (Sympla), no url but `waitlistUrl` = "Avise-me quando abrir", neither = status pill ("Em breve"). It feeds every place the button shows: header (all pages, via `initShell`), fixed bottom bar on mobile (hides while the tickets section is on screen), hero countdown card, and the ticket cards on the home. Ticket types are data (`data/tickets.js`): name, price, benefits, color, `featured`/`badge`, optional per-type `url`. A type without `price` shows `TICKET_PRICE_TBD` ("Valor a definir") and no schema.org Offer; today only Grátis has a price (0). `EVENT.tickets.url` is empty until the event is published on Sympla, so every CTA (header, bar, hero, cards) shows the "Em breve" pill instead of a link; fill it and set `salesOpen: true` when sales open.
+`features/tickets.js` has one source of CTA state, `ticketCtaState(EVENT.tickets)`: `url` set = buy button (Sympla), no url but `waitlistUrl` = "Avise-me quando abrir", neither = status pill ("Em breve"). It feeds every place the button shows: header (all pages, via `initShell`), fixed bottom bar on mobile (hides while the tickets section is on screen), hero countdown card, and the ticket cards on the home. Ticket types are data (`data/tickets.js`): name, price, benefits, color, `featured`/`badge`, optional per-type `url`. A type without `price` shows `TICKET_PRICE_TBD` ("Valor a definir") and no schema.org Offer; today only Grátis has a price (0). `EVENT.tickets.url` now points to the published Sympla event (`https://www.sympla.com.br/evento/devfest-campinas-2026/3591517`, no tracking params) and `salesOpen` is `true`, so every CTA (header, bar, hero, cards) is a buy button. Empty `url` again brings back the "Em breve" pill.
 
 ## Sponsors section
 
@@ -546,7 +546,7 @@ que já devia estar limpa). `dev-loader.js` também busca a página real com
 - Event venue and address (`EVENT.venue`, `venueConfirmed`; the date is set).
 - Real room names and MCs (`TRACKS[].room/mc`; rooms are landmark mocks, MCs "MC a definir").
 - Plenárias (full-width featured-speaker slot): mockup approved, variant A/B/C pending, see handoff.
-- Real line-up (replace `mock-talks.js` and `mock-speakers.js` with same-shape data, real photos and LinkedIn), real sponsors and communities, testimonials, team, ticket values and the real Sympla link (`EVENT.tickets.url`, `salesOpen`).
+- Real line-up (replace `mock-talks.js` and `mock-speakers.js` with same-shape data, real photos and LinkedIn), real sponsors and communities, testimonials, team, ticket values (the Sympla link is already set).
 - New logo files (header, favicons, app icons, share image) and the recap video of 2025 (`data/video.js` still has the 2017 one).
 - Parking/food images (`PARKING_IMAGES`/`FOOD_IMAGES` in `app.js`, still empty).
 - Feedback de fim de evento (fase 5.3, ver handoff): mesmo padrão do feedback por palestra, sem começar ainda.

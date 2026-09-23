@@ -16,7 +16,7 @@
 - **PROD (público) esconde todo mock por padrão** — line-up, patrocinadores,
   comunidades, time e ingressos mostram "será revelado em breve" em vez de
   dado fictício. **DEV** (`/DEV/` ou `?lineup=1`) mostra tudo.
-- **Sessão 6 (em andamento, ainda não commitado):** feedback de fim de
+- **Sessão 6 (commitado e no ar):** feedback de fim de
   evento (fase 5.3) implementado — hero "Encerrado" da home agora mostra
   o formulário de avaliação do evento; e cartão pessoal "Eu vou!"
   (`ingressos.html`, canvas client-side, baixar/compartilhar). Testado
@@ -51,13 +51,12 @@ formulário de avaliação (estrelas 1-5, nome opcional, "o que mais gostou")
 liberado só depois que a palestra terminou **e** teve check-in. Anônimo por
 decisão (uid do Firebase, sem login — ver PROJECT_CONTEXT). Tela de QR ao
 vivo pra sala: `checkin-display.html?trilha=<id>`.
-**Falta:** feedback de fim de evento (fase 5.3, não começou) e decidir a
+**Falta:** confirmar em Chrome real o feedback de fim de evento (fase 5.3, implementado) e decidir a
 logística física de onde exibir o QR (tablet/monitor por sala).
 
 **Conversão e alcance:** 3 tipos de ingresso (Grátis, com camiseta, VIP) numa
 página própria (`ingressos.html`); preços pagos mostram "Valor a definir"
-(só Grátis tem R$ 0); todo CTA mostra "Ingressos em breve" (sem link do
-Sympla ainda). Tags OG/Twitter/canonical, imagem 1200×630, sitemap, robots,
+(só Grátis tem R$ 0); todo CTA leva ao evento no Sympla (id 3591517, `salesOpen: true`). Tags OG/Twitter/canonical, imagem 1200×630, sitemap, robots,
 JSON-LD do evento. Em PROD a seção de ingressos também vira aviso.
 
 **Qualidade:** contraste AA, fonte mínima 12px, foco global, skip link,
@@ -82,8 +81,8 @@ analytics", "Accessibility rules", "Design tokens", "Track rooms").
 - Fotos: pessoas (pravatar.cc por número, escolhidas à mão), não avatares
   ilustrados. Salas: lugares históricos, não bairros. Time sem galeria de
   fotos.
-- Ingressos: Grátis, Ingresso com camiseta, VIP; Sympla (link real ainda não
-  existe, `EVENT.tickets.url` vazio de propósito).
+- Ingressos: Grátis, Ingresso com camiseta, VIP; Sympla (evento publicado, link em
+  `EVENT.tickets.url`).
 - Check-in/feedback: **anônimo** (uid do Firebase, sem login/nome
   verificado) — quem impede sabotagem é o check-in (prova de presença), não
   a identidade. Firebase: **um projeto só** (`DevFest-Campinas`), edição
@@ -119,8 +118,8 @@ analytics", "Accessibility rules", "Design tokens", "Track rooms").
 5. **Dados reais (Renato/organização):** local (`EVENT.venue`,
    `venueConfirmed`), salas/MCs reais, line-up real (mesmo formato de
    `mock-talks.js`/`mock-speakers.js`), patrocinadores/comunidades reais,
-   depoimentos, time, valores reais dos ingressos, link real do Sympla
-   (`EVENT.tickets.url`, `salesOpen: true` quando abrir), vídeo de recap
+   depoimentos, time, valores reais dos ingressos (link do Sympla já
+   configurado, `salesOpen: true`), vídeo de recap
    2025 (`data/video.js` ainda tem o de 2017). Quando o line-up real
    chegar: `EVENT.lineupRevealed` volta pra `true` (não precisa mexer em
    mais nada — todas as seções leem o mesmo `reveal`).
@@ -130,6 +129,14 @@ analytics", "Accessibility rules", "Design tokens", "Track rooms").
    decidir seletor de idioma, onde vive o texto traduzível (hoje hardcoded
    em `data/*.js` e HTML), e se o line-up real também traduz. Escopo grande,
    task própria antes de tocar em código.
+9. **Gatear cartão "Eu vou!" pela inscrição real do Sympla (backlog,
+   não desenhado):** API confirmada — `GET /v1.6.0/events/{eventIdHash}/participants?participant_email=`
+   (header `s_token`, Renato já pode gerar em Minha Conta →
+   Integrações) devolve status do pedido por e-mail. Site é estático,
+   token não pode ir pro client — precisa de proxy server-side (Cloud
+   Function, nunca usada aqui ainda). Evento já publicado no Sympla (id 3591517);
+   falta o `eventIdHash` (via `GET /v1.6.0/events` com o token) e a Cloud Function. Detalhes em
+   `project-docs/IDEAS_BACKLOG.md`.
 
 ## Backlog de ideias (aprovadas em espírito, nada implementado)
 

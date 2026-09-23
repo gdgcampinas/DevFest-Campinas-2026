@@ -28,6 +28,40 @@ agenda da pessoa (palestras favoritadas) no cartão, via
 `favoritesRepository` (já existe) — ideia original tinha isso, ficou pra
 depois.
 
+### Gatear o cartão "Eu vou!" pra só quem já garantiu inscrição (Sympla)
+Hoje o botão em `ingressos.html` é livre pra qualquer visitante — ideia é
+só liberar o cartão pra quem de fato comprou/garantiu o ingresso no
+Sympla. Renato tem acesso pra gerar uma **chave de API (`s_token`)** na
+conta Sympla (Minha Conta → Integrações → "API e Integrações" → Criar
+chave de acesso).
+
+**API confirmada** (developers.sympla.com.br, Public API v1.6.0, header
+`s_token`, base `https://api.sympla.com.br/public`):
+`GET /v1.6.0/events/{eventIdHash}/participants?participant_email=<email>`
+filtra por e-mail exato (correspondência exata) e devolve, por
+participante: `ticket_status`, `order_status`, `checkin`, `first_name`,
+`ticket_name` etc. Dá pra checar "esse e-mail tem pedido aprovado nesse
+evento?" numa chamada só.
+
+**Ponto técnico que trava a implementação direto:** esse site é 100%
+estático (GitHub Pages, sem servidor próprio) e o `s_token` é uma
+credencial privada — não pode ir pro `data/*.js` público nem ser chamado
+direto do navegador (qualquer um no DevTools rouba o token e lista
+participante de qualquer um). Precisa de proxy server-side: guardar o
+`s_token` como secret e expor só um endpoint fino "esse e-mail tá
+inscrito? sim/não" pro front-end chamar. Como o projeto já tem Firebase
+ativo (projeto "DevFest-Campinas", hoje só Firestore/Auth), o candidato
+natural é uma **Cloud Function** (nunca usada aqui ainda, precisa
+configurar do zero — billing do plano Firebase, deploy próprio).
+Alternativa mais simples sem servidor: redirect de retorno do Sympla
+pós-compra com dado do pedido na URL (menos preciso, só confirma quem
+voltou pelo link).
+
+**Bloqueado:** evento ainda não está publicado no Sympla
+(`EVENT.tickets.url` vazio) — sem `eventIdHash` real não tem o que
+consultar. Retomar quando o link do Sympla existir. Doc oficial:
+https://developers.sympla.com.br/api-doc/
+
 ---
 
 ## Engajamento e gamificação

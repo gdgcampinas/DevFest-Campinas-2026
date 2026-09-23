@@ -35,10 +35,10 @@ const EVENT = {
   // features/tickets.js): url preenchida = compra; vazia + waitlistUrl = "avise-me";
   // os dois vazios = só o status. Tipos de ingresso: data/tickets.js.
   tickets: {
-    url: "", // link do evento no Sympla; vazio = todos os botões viram o status ("Ingressos em breve") (sem link morto)
+    url: "https://www.sympla.com.br/evento/devfest-campinas-2026/3591517", // link do evento no Sympla; vazio = todos os botões viram o status ("Ingressos em breve") (sem link morto)
     label: "Garanta sua vaga",
     status: "Ingressos em breve",
-    salesOpen: false, // true quando as vendas abrirem de verdade (dados estruturados: PreOrder vira InStock)
+    salesOpen: true, // true quando as vendas abrirem de verdade (dados estruturados: PreOrder vira InStock)
     waitlistUrl: "", // opcional: sem url de compra, vira "Avise-me quando abrir" (Instagram/WhatsApp)
   },
 };
