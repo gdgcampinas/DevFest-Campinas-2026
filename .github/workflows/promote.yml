@@ -1,10 +1,10 @@
-name: Promote to main
+name: 🚀 Publicar no main
 
 # Roda depois que o workflow Validate termina em development — reaproveita
 # o resultado dele em vez de rodar o check de novo aqui.
 on:
   workflow_run:
-    workflows: [Validate]
+    workflows: [Validate, "✅ Validar"]
     branches: [development]
     types: [completed]
 

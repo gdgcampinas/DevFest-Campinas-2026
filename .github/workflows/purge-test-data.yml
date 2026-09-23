@@ -1,4 +1,6 @@
-name: Purge test data
+name: 🧹 Limpar dados de teste
+
+run-name: 🧹 Limpar dados de teste${{ inputs.dry_run && ' (simulação, nada apagado)' || ' (APAGANDO)' }}
 
 # Apaga os dados de TESTE do feedback (checkins, talk-feedback, event-feedback) da
 # edição atual, antes do evento. Só sob demanda (Actions > Run workflow).

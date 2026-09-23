@@ -1,4 +1,6 @@
-name: Sync Sympla
+name: 🎫 Sincronizar Sympla
+
+run-name: 🎫 Sincronizar Sympla${{ inputs.dry_run && ' (simulação)' || '' }}
 
 # Sincroniza inscritos do Sympla com o Firestore a cada 10 minutos (o Sympla
 # não tem webhook). Agendamento só roda no branch padrão (main). Sem os
