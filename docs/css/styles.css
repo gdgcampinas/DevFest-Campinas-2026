@@ -949,13 +949,14 @@ textarea.feedback-input{resize:vertical;min-height:44px}
 body:has(.modal:not([hidden])) .feedback-nudge{display:none}
 
 /* galáxia do hero (features/hero-galaxy.js): o logo girando devagar atrás do hero da home */
-.hero-stage{position:relative;overflow:hidden;margin-bottom:24px}
-.hero-stage #hero{position:relative;z-index:1;margin-bottom:0}
+.hero-stage{position:relative;max-width:1180px;margin:0 auto 24px}
+.hero-stage #hero{position:relative;z-index:1;margin:0;max-width:none}
+/* a galáxia fica presa no retângulo do card do hero (mesmas laterais do #hero, mesmos cantos):
+   nada dela aparece fora do quadrado. clip-path além de overflow porque o Safari do iPhone
+   deixa filho animado vazar de um overflow com cantos arredondados */
 .hero-galaxy{
-  position:absolute;inset:0;pointer-events:none;z-index:0;
-  /* esmaece o topo e a base, senão os arcos terminam em linha reta no limite do palco */
-  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 24%,#000 76%,transparent 100%);
-  mask-image:linear-gradient(to bottom,transparent 0,#000 24%,#000 76%,transparent 100%);
+  position:absolute;inset:0 24px;z-index:0;pointer-events:none;isolation:isolate;
+  border-radius:var(--radius);overflow:hidden;clip-path:inset(0 round var(--radius));
 }
 .hero-galaxy img{
   position:absolute;top:var(--galaxy-y);left:var(--galaxy-x);height:min(var(--galaxy-size),var(--galaxy-max));width:auto;translate:-50% -50%;

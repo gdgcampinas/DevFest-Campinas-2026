@@ -512,7 +512,9 @@ identical — always edit both together.
   O service worker cacheia `/assets/` por caminho: ao trocar ícones, subir `SW_VERSION` em `sw.js`.
 - **Galáxia do hero** (`features/hero-galaxy.js`, dados em `data/hero-galaxy.js`): o próprio ícone
   girando muito devagar atrás do hero da home (tema "Do Local ao Infinito"), dentro do palco
-  `#heroStage`; o card do hero fica 72% opaco pra ela aparecer. Tudo é dado (imagem, volta em
+  `#heroStage`, PRESA no retângulo do card (mesmas laterais e cantos arredondados, `clip-path` além de
+  `overflow` por causa do Safari do iPhone); nada dela aparece fora do card. O card do hero fica 72% opaco
+  pra ela aparecer. Tudo é dado (imagem, volta em
   segundos, opacidade, tamanho relativo à ALTURA do hero com teto `maxWidth` em `vw` (no celular a
   espiral não passa da tela), posição; centralizada, igual em qualquer aparelho). Com "Reduzir
   movimento" ligado no aparelho (macOS/iOS: Acessibilidade > Movimento) ela gira MAIS DEVAGAR
