@@ -6,7 +6,18 @@ function initIngressos() {
     () => renderTickets(EVENT.tickets, ticketsRepository.getAll(), document.getElementById("ticketsSection"), { note: TICKETS_NOTE }),
     "Os tipos e valores de ingresso serão revelados em breve.");
 
-  initShareCard(document.body, { event: EVENT, schedule: SCHEDULE, createModal });
+  const gate = createRegistrationGate({
+    getRegistrations: () => window.registrationsRepository,
+    edition: CURRENT_EDITION,
+    verifiedRepository: verifiedRegistrationsRepository,
+  });
+  initShareCard(document.body, {
+    event: EVENT,
+    schedule: SCHEDULE,
+    createModal,
+    gate,
+    ticketButtonHtml: ticketButtonMarkup(ticketCtaState(EVENT.tickets), { className: "chip-btn", place: "share-card-gate" }),
+  });
 }
 
 initIngressos();

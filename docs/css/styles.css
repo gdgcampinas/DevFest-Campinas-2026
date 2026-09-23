@@ -890,3 +890,16 @@ textarea.feedback-input{resize:vertical;min-height:44px}
   .detail-title{font-size:19px}
   .detail-desc{font-size:13.5px}
 }
+
+/* contador de inscritos e gate de inscrição (components/registration-*.js) */
+.registration-counter-slot{max-width:1180px;margin:0 auto;padding:0 24px}
+.registration-counter{display:flex;align-items:center;justify-content:center;gap:8px;margin:12px 0 0;font:500 14px var(--font-body);color:var(--muted)}
+.registration-counter[hidden]{display:none}
+.registration-counter .icon{width:18px;height:18px;color:var(--accent)}
+.registration-counter strong{color:var(--accent);font-weight:700}
+.registration-gate{display:flex;flex-direction:column;gap:10px}
+.registration-gate-title{display:flex;align-items:center;gap:8px;margin:0;font:700 19px var(--font-display);color:oklch(97% 0.005 260);padding-right:calc(var(--modal-close-size) + var(--modal-close-inset))}
+.registration-gate-title .icon{width:20px;height:20px;color:var(--accent)}
+.registration-gate-hint{margin:0;font:500 13.5px/1.5 var(--font-body);color:var(--muted)}
+.registration-gate-error{margin:0;font:500 13.5px/1.5 var(--font-body);color:var(--amber)}
+.registration-gate-actions{display:flex;gap:10px;flex-wrap:wrap}

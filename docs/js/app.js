@@ -29,6 +29,17 @@ function getParam(name) {
   return new URLSearchParams(location.search).get(name);
 }
 
+/**
+ * Roda `task` quando os módulos do Firebase (type="module", sempre adiados
+ * pro fim do parsing) já executaram: depois de DOMContentLoaded. É a forma
+ * única de tocar em window.firebaseClient/repositories a partir do bootstrap
+ * síncrono de uma página (ver "Cuidado de ordem de execução" no PROJECT_CONTEXT).
+ */
+function runAfterModules(task) {
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", task);
+  else task();
+}
+
 const DEV_MODE_KEY = "devfest-campinas-2026:dev-mode";
 
 /** Guarda em sessionStorage sem quebrar em modo privado/bloqueado — DEV só não persiste nesse caso, não trava a página. */
@@ -253,6 +264,13 @@ function initShell(activePageId) {
 
   initPwa();
   initAnalytics(analyticsRepository.getAll(), { rootEl: document });
+  initRegistrationCounter({
+    mountEl: document.getElementById("registrationCounter"),
+    getStatsRepository: () => window.eventStatsRepository,
+    edition: CURRENT_EDITION,
+    minToShow: EVENT.tickets.counterMin,
+    enabled: EVENT.tickets.salesOpen,
+  });
 
   document.documentElement.style.setProperty("--track-count", TRACKS.length);
 

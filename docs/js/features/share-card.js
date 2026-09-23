@@ -109,10 +109,15 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight, font) {
 /**
  * Comportamento do modal: abrir, redesenhar ao digitar, baixar ou
  * compartilhar. `schedule` só serve pra reusar eventDateLabel()
- * (features/agenda.js, mesma função do header e do ticker — "28 de
+ * (features/agenda.js, mesma função do header e do ticker: "28 de
  * novembro de 2026" em 1 lugar só, nunca recalculada aqui).
+ *
+ * `gate` (opcional, ver features/registration-gate.js): se vier e a
+ * inscrição ainda não foi verificada neste navegador, o modal pede o
+ * e-mail do Sympla antes de mostrar o cartão. Sem `gate` o cartão é livre.
+ * `?cartao=1` na URL abre o modal sozinho (link do e-mail de confirmação).
  */
-function initShareCard(rootEl, { event, schedule, createModal }) {
+function initShareCard(rootEl, { event, schedule, createModal, gate = null, ticketButtonHtml = "" }) {
   let modal = null;
   const ensureModal = () => modal ?? (modal = createModal("shareCardModal", { label: "Cartão de compartilhamento" }));
   const dateLabel = eventDateLabel(schedule, event.timezone);
@@ -123,14 +128,21 @@ function initShareCard(rootEl, { event, schedule, createModal }) {
     drawShareCard(canvas, { event, dateLabel, name });
   }
 
+  function showCard({ el, openHTML }) {
+    openHTML(shareCardModalMarkup());
+    el.querySelector("[data-share-card-native]").hidden = typeof navigator.canShare !== "function";
+    redraw(el);
+  }
+
+  function open() {
+    const current = ensureModal();
+    if (!gate || gate.isVerified()) return showCard(current);
+    current.openHTML("");
+    gate.mount(current.el.querySelector(".modal-content"), { onVerified: () => showCard(current), ticketButtonHtml });
+  }
+
   rootEl.addEventListener("click", clickEvent => {
-    if (clickEvent.target.closest("[data-share-card-open]")) {
-      const { el, openHTML } = ensureModal();
-      openHTML(shareCardModalMarkup());
-      el.querySelector("[data-share-card-native]").hidden = typeof navigator.canShare !== "function";
-      redraw(el);
-      return;
-    }
+    if (clickEvent.target.closest("[data-share-card-open]")) return open();
 
     const modalEl = clickEvent.target.closest(".modal");
     if (!modalEl || modalEl.hidden) return;
@@ -159,5 +171,7 @@ function initShareCard(rootEl, { event, schedule, createModal }) {
     if (nameInput) redraw(nameInput.closest(".modal"));
   });
 
-  return {};
+  if (getParam("cartao")) runAfterModules(open);
+
+  return { open };
 }

@@ -39,6 +39,7 @@ const EVENT = {
     label: "Garanta sua vaga",
     status: "Ingressos em breve",
     salesOpen: true, // true quando as vendas abrirem de verdade (dados estruturados: PreOrder vira InStock)
+    counterMin: 30, // só mostra o contador "N pessoas já garantiram a vaga" a partir desse total de inscritos
     waitlistUrl: "", // opcional: sem url de compra, vira "Avise-me quando abrir" (Instagram/WhatsApp)
   },
 };

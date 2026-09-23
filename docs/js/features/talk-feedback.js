@@ -71,10 +71,7 @@ function initTalkFeedback(rootEl, { index, reveal = true, now = () => new Date()
     history.replaceState(null, "", url);
     if (entry) await doCheckin(entry);
   }
-  if (getParam("checkin")) {
-    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", handleCheckinParam);
-    else handleCheckinParam();
-  }
+  if (getParam("checkin")) runAfterModules(handleCheckinParam);
 
   // check-in manual pelo botão (honra) — pede confirmação inline antes de
   // gravar (pra reduzir clique errado, ex.: sala ao lado), com o mesmo
