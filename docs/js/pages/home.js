@@ -11,6 +11,7 @@ function initHome() {
   const modal = createTalkModal();
   const calendar = initCalendarActions(document.body, { schedule: SCHEDULE, tracks: TRACKS, event: EVENT, favorites: favoritesRepository });
   const feedback = initTalkFeedback(document.body, { index: calendar.index, reveal, now: resolveNow() });
+  const eventFeedback = initEventFeedback(document.body);
   initTalkDetails(document.body, { schedule: SCHEDULE, tracks: TRACKS, timezone: EVENT.timezone, reveal, modal, favorites: favoritesRepository, calendar, feedback });
   initFavorites(document.body, favoritesRepository);
 
@@ -52,6 +53,7 @@ function initHome() {
       stickyPulse: document.getElementById("stickyPulse"),
     },
     now: resolveNow(),
+    onEventEnd: containerEl => eventFeedback.render(containerEl),
   });
 
   liveStatus.tick();

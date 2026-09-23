@@ -175,6 +175,7 @@ header{
 .hero-after{text-align:center;padding:8px 0}
 .hero-after .title{font:800 24px var(--font-display);color:oklch(97% 0.005 260);margin-bottom:8px}
 .hero-after .sub{font:500 14px var(--font-body);color:var(--muted)}
+.hero-after .talk-feedback{text-align:left;max-width:420px;margin:20px auto 0}
 
 main{max-width:1180px;margin:36px auto 0;padding:0 24px}
 
@@ -863,6 +864,16 @@ a.detail-speaker .li-icon{
 .feedback-input{width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--card-border);background:rgba(255,255,255,.03);color:var(--text);font:500 13.5px var(--font-body);font-family:inherit}
 .feedback-input:focus-visible{outline:2px solid var(--text);outline-offset:1px}
 textarea.feedback-input{resize:vertical;min-height:44px}
+
+/* botão "Já vou!" (ingressos.html) e cartão pessoal (components/share-card.js) */
+.share-card-cta{max-width:1180px;margin:0 auto;padding:0 24px 40px;text-align:center}
+.share-card{display:flex;flex-direction:column;gap:10px}
+.share-card .feedback-input{margin-bottom:4px}
+.share-card-title{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 0 8px;font:700 19px var(--font-display);color:oklch(97% 0.005 260)}
+.share-card-title .icon{width:20px;height:20px;color:var(--accent)}
+.share-card-hint{margin:0 0 14px;font:500 13.5px/1.5 var(--font-body);color:var(--muted);text-align:center}
+.share-card-canvas{width:100%;max-width:320px;aspect-ratio:1080/1350;border-radius:14px;border:1px solid var(--card-border);display:block;margin:0 auto 14px}
+.share-card-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 
 /* código de conduta */
 .cod{max-width:1180px;margin:36px auto 0;padding:0 24px}

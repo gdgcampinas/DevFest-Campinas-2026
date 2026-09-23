@@ -68,7 +68,7 @@ function resolveEventState(now, schedule) {
  * que só tem a agenda) passam só o que têm; o resto vira no-op sem
  * precisar de outra função duplicada só pra isso.
  */
-function createLiveStatus({ schedule, tracks, event, elements = {}, now = () => new Date(), reveal = true, favorites = null, soonMinutes = 15 }) {
+function createLiveStatus({ schedule, tracks, event, elements = {}, now = () => new Date(), reveal = true, favorites = null, soonMinutes = 15, onEventEnd = null }) {
   const { statusPill, hero, stickyTxt, stickyPulse } = elements;
 
   // dot fica num nó fixo, criado uma vez só — só o texto é trocado a
@@ -106,9 +106,11 @@ function createLiveStatus({ schedule, tracks, event, elements = {}, now = () => 
       <div class="hero-card hero-after">
         <div class="title">Obrigado por participar! 🎉</div>
         <div class="sub">O ${event.name} ${new Date().getFullYear()} foi encerrado. Fotos e conteúdos em breve pelo GDG Campinas.</div>
+        <div data-event-feedback-container></div>
       </div>`;
     stickyPulse.style.display = "none";
     stickyTxt.textContent = "Encerrado";
+    onEventEnd?.(hero.querySelector("[data-event-feedback-container]"));
   }
 
   function renderHeroLive(state) {

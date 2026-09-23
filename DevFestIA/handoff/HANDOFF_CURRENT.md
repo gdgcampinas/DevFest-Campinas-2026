@@ -1,6 +1,6 @@
 # Handoff — Current State
 
-**Last updated:** 2026-09-23, fim da sessão 5. Antes de confiar neste texto, rode
+**Last updated:** 2026-09-23, sessão 6 (em andamento). Antes de confiar neste texto, rode
 `git status --short --branch` e `git log --oneline --decorate -10` (o git não mente).
 
 ## Status em uma olhada
@@ -10,13 +10,22 @@
   Publicado por GitHub Pages a partir de `docs/` no `main`; trabalho no
   `development`, o CI valida e promove sozinho.
 - **Um pedaço tem backend agora:** Firebase (Firestore + Authentication
-  anônimo) só para check-in e avaliação de palestra — o único dado
-  compartilhado entre visitantes. Resto do site continua 100% estático.
+  anônimo) para check-in, avaliação de palestra **e agora avaliação do
+  evento inteiro** (fase 5.3, ver abaixo) — único dado compartilhado
+  entre visitantes. Resto do site continua 100% estático.
 - **PROD (público) esconde todo mock por padrão** — line-up, patrocinadores,
   comunidades, time e ingressos mostram "será revelado em breve" em vez de
-  dado fictício. **DEV** (`/DEV/` ou `?lineup=1`) mostra tudo. Ver seção
-  própria abaixo, é a mudança mais importante desta sessão.
-- Último commit da sessão: `9a3ba39`.
+  dado fictício. **DEV** (`/DEV/` ou `?lineup=1`) mostra tudo.
+- **Sessão 6 (em andamento, ainda não commitado):** feedback de fim de
+  evento (fase 5.3) implementado — hero "Encerrado" da home agora mostra
+  o formulário de avaliação do evento; e cartão pessoal "Eu vou!"
+  (`ingressos.html`, canvas client-side, baixar/compartilhar). Testado
+  localmente (`http.server`); a escrita real no Firestore do feedback de
+  evento **não foi confirmada nesta sessão** — o Browser pane não alcança
+  o CDN do Firebase (mesma limitação já documentada pro service worker),
+  precisa confirmar em Chrome real antes de considerar 5.3 pronta de
+  verdade. O cartão pessoal não depende de Firebase, testado e funcionando.
+- Último commit da sessão anterior: `9a3ba39` / `973a0e2` (refresh de docs).
 
 ## O que o site tem hoje
 
@@ -99,9 +108,11 @@ analytics", "Accessibility rules", "Design tokens", "Track rooms").
    `{ plenary: {...} }` no `DAY_PLAN` (schedule.js e .dev.js), ramo em
    `buildSchedule()`, `plenaryMarkup()` reusando componentes existentes, CSS
    com tokens (sem regra por trilha).
-3. **Feedback de fim de evento (fase 5.3):** mesmo padrão do feedback por
-   palestra (estrelas + nome opcional + comentário), sem gate de check-in
-   específico — não começado.
+3. **Feedback de fim de evento (fase 5.3):** implementado nesta sessão
+   (`components/event-feedback.js` + `features/event-feedback.js`, no
+   hero "Encerrado" da home) — falta só **confirmar a escrita no
+   Firestore em Chrome real** (não testável no Browser pane do app, sem
+   acesso ao CDN do Firebase).
 4. **QR ao vivo — logística física:** `checkin-display.html?trilha=<id>`
    está pronto e testado; falta decidir onde exibir (tablet, notebook, TV
    com Chromecast por sala) e testar com internet fraca de verdade no dia.
@@ -127,8 +138,9 @@ Lista completa, com contexto técnico de cada ideia, em
 novo). Resumo:
 
 **Identidade e "uau":** redemoinho do logo animado (depende do logo novo
-em SVG), cartão de compartilhamento pessoal "Vou ao DevFest Campinas"
-(canvas, não depende do logo).
+em SVG). Cartão de compartilhamento pessoal "Eu vou!" **saiu do backlog,
+implementado nesta sessão** (`ingressos.html`, ver PROJECT_CONTEXT.md
+seção "Cartão pessoal").
 
 **Engajamento:** quiz "Monte sua trilha", certificado de participação,
 perguntas ao vivo/enquetes, passaporte com QR nos estandes, mural da

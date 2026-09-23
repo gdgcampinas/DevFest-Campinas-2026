@@ -98,6 +98,8 @@ docs/
     components/              reusable templates, one responsibility each
       modal.js                   createModal(id): the only modal markup and close behavior (X, backdrop, Esc)
       talk-feedback.js          talkFeedbackMarkup(state): check-in/avaliação (fases checkin/waiting/rate/done)
+      event-feedback.js        eventFeedbackMarkup({phase}): avaliação do evento inteiro (fases loading/rate/done, sem check-in)
+      share-card.js             shareCardModalMarkup(): conteúdo do modal do cartão pessoal "Eu vou!" (nome + canvas + ações)
       construction-notice.js     constructionNoticeMarkup(message): "será revelado em breve" card, reused by every mock section
       install-guide.js           installGuideMarkup(guide): body of the "how to install" modal
       avatar.js                 photo or initials — automatic fallback
@@ -113,7 +115,7 @@ docs/
       sponsor-card.js               sponsor/community item (logo box + name + optional description)
       person-card.js                 person card (team/speakers)
     features/                data + template + behavior, one section each
-      agenda.js, track-filter.js, a11y.js, pwa.js, install-platform.js, starfield.js, talk-feedback.js, reveal-gate.js, checkin-display.js, analytics.js, calendar.js, talk-index.js, calendar-actions.js, agenda-share.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
+      agenda.js, track-filter.js, a11y.js, pwa.js, install-platform.js, starfield.js, talk-feedback.js, event-feedback.js, share-card.js, reveal-gate.js, checkin-display.js, analytics.js, calendar.js, talk-index.js, calendar-actions.js, agenda-share.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
       featured-speakers.js, sponsors.js, partner-communities.js,
       team.js, cod.js, seo.js, stats.js, about.js, highlights.js,
       video.js, realizacao.js, tickets.js, footer.js,
@@ -187,6 +189,49 @@ desenha 5 fases — `loading`, `checkin`, `waiting`, `rate`, `done` —
   `DOMContentLoaded`). Testado ponta a ponta contra o projeto real:
   abrir palestra → check-in → formulário libera após o horário →
   enviar → estado "avaliado" persiste ao reabrir.
+
+## Avaliação do evento (fase 5.3)
+
+Dentro do hero "Encerrado" da home (`renderHeroAfter()` em
+`features/live-status.js`, só aparece depois que o último horário do
+`SCHEDULE` já passou — real ou simulado por `?demo=`): `components/event-feedback.js`
+(`eventFeedbackMarkup`) desenha 3 fases — `loading`, `rate`, `done` —
+`features/event-feedback.js` (`initEventFeedback`) decide qual mostrar.
+Mesmo padrão de `talk-feedback.js` (nota 1-5 + nome/comentário
+opcionais, sobre `window.eventFeedbackRepository`), mas **sem** a fase
+de check-in: aqui não tem gate de presença, é avaliação do evento
+inteiro, uma vez por pessoa por edição (`EVENT_FEEDBACK_KEY`, chave
+fixa, não por palestra). Atributos com prefixo `data-event-feedback-*`
+(nunca `data-feedback-*`) pra o listener delegado nunca disputar
+clique/submit com o de `talk-feedback.js`, mesmo os dois ligados no
+mesmo `document.body` (ver `initHome()` em `pages/home.js`).
+`live-status.js` não sabe nada de Firebase: `createLiveStatus()` recebe
+um `onEventEnd(containerEl)` opcional e só chama, a página (`home.js`)
+é quem injeta `eventFeedback.render`. Regra de segurança e coleção
+(`event-feedback`) e o repository (`data/event-feedback-repository.js`)
+já existiam desde a fundação do Firebase (sessão 5); só faltava a UI.
+
+## Cartão pessoal "Eu vou!" (compartilhamento)
+
+Zero backend, zero dependência do logo novo — `features/share-card.js`
+desenha um cartão 1080×1350 (formato feed/stories) num `<canvas>`
+client-side: nome do evento, data (`eventDateLabel()` de `agenda.js`,
+mesma função do header/ticker, nunca recalculada aqui), cidade, nome da
+pessoa opcional ("Eu vou!"/"‹nome› vai!") e a legenda das 4 trilhas.
+Cores e fontes vêm sempre de `getComputedStyle` sobre os tokens
+(`--google-*`, `--bg`, `--accent`, `--font-display`, `--font-body`) —
+nunca hex/fonte fixa, herda qualquer troca de paleta ou logo sozinho.
+`components/share-card.js` (`shareCardModalMarkup`) é só o HTML do
+modal (nome + preview + botões); `features/share-card.js`
+(`initShareCard`) abre via `createModal` (mesmo componente de
+`install-guide.js`), redesenha a cada tecla no nome, baixa o PNG
+(`canvas.toDataURL`) ou usa a Web Share API com arquivo quando o
+navegador suporta (`navigator.canShare`/`navigator.share`, feature-detect,
+sem fallback quebrado). Ponto de entrada hoje: botão "Já vou! Gerar meu
+cartão" em `ingressos.html` (`data-share-card-open`); a feature é
+genérica (recebe `event`/`schedule`/`createModal` por parâmetro), então
+o mesmo botão funciona em qualquer outra página só chamando
+`initShareCard()` de novo.
 
 ## Firebase (Firestore) — check-in e feedback
 
