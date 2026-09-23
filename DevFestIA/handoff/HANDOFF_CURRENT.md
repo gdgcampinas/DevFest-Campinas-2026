@@ -135,8 +135,9 @@ analytics", "Accessibility rules", "Design tokens", "Track rooms").
    do Firebase (função "Cloud Datastore User") e baixar a chave JSON; (b) `gh secret set`
    de `SYMPLA_TOKEN` e `FIREBASE_SERVICE_ACCOUNT` (por prompt oculto, nunca no chat);
    (c) colar `DevFestIA/firebase/firestore.rules` no console e Publicar; (d) rodar o
-   workflow "Sync Sympla" com `dry_run` uma vez e conferir o resumo; (e) colocar o
-   link `.../ingressos.html?cartao=1` na mensagem de confirmação do Sympla.
+   workflow "Sync Sympla" com `dry_run` uma vez e conferir o resumo; (e) virar
+   `EVENT.tickets.registrationGate: true` em `schedule.js` e `schedule.dev.js` (hoje `false`, cartão livre);
+   (f) colocar o link `.../ingressos.html?cartao=1` na mensagem de confirmação do Sympla.
    Confirmar na primeira execução real: formato do `custom_form` (camiseta) e
    paginação da v1.5.1 (parâmetro `page`).
 

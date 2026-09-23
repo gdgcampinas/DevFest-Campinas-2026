@@ -6,11 +6,13 @@ function initIngressos() {
     () => renderTickets(EVENT.tickets, ticketsRepository.getAll(), document.getElementById("ticketsSection"), { note: TICKETS_NOTE }),
     "Os tipos e valores de ingresso serão revelados em breve.");
 
-  const gate = createRegistrationGate({
-    getRegistrations: () => window.registrationsRepository,
-    edition: CURRENT_EDITION,
-    verifiedRepository: verifiedRegistrationsRepository,
-  });
+  const gate = EVENT.tickets.registrationGate
+    ? createRegistrationGate({
+        getRegistrations: () => window.registrationsRepository,
+        edition: CURRENT_EDITION,
+        verifiedRepository: verifiedRegistrationsRepository,
+      })
+    : null;
   initShareCard(document.body, {
     event: EVENT,
     schedule: SCHEDULE,

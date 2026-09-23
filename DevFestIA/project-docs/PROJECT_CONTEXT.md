@@ -270,7 +270,7 @@ segredo, então a ponte é um job agendado, sem servidor nosso e sem custo:
 - **Chave única** (`docs/js/data/email-hash.js`, dual): o site e o job usam o MESMO
   arquivo pra derivar a chave, então escrita e leitura nunca divergem. Mesma ideia
   em `firebase-config.js` (dual): o job lê projeto e edição de lá.
-- **Gate do cartão** (`features/registration-gate.js`): a pessoa digita o e-mail do
+- **Gate do cartão** (`features/registration-gate.js`, ligado por `EVENT.tickets.registrationGate`, hoje `false`: só virar `true` depois que o sync estiver rodando, senão o cartão trava pra todos): a pessoa digita o e-mail do
   Sympla, o navegador calcula a chave e faz `get`. Achou = libera o cartão e guarda
   a chave em `verified-registrations` (localStorage). E-mail sem inscrição mostra o
   botão de compra. `initShareCard({ gate })` é opcional (sem gate o cartão é livre);
