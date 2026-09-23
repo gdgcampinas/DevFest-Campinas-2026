@@ -959,7 +959,8 @@ body:has(.modal:not([hidden])) .feedback-nudge{display:none}
   border-radius:var(--radius);overflow:hidden;clip-path:inset(0 round var(--radius));
 }
 .hero-galaxy img{
-  position:absolute;top:var(--galaxy-y);left:var(--galaxy-x);height:min(var(--galaxy-size),var(--galaxy-max));width:auto;translate:-50% -50%;
+  position:absolute;top:var(--galaxy-y);left:var(--galaxy-x);height:min(var(--galaxy-size),var(--galaxy-max));width:auto;
+  transform-origin:var(--galaxy-pivot-x) var(--galaxy-pivot-y);translate:calc(-1 * var(--galaxy-pivot-x)) calc(-1 * var(--galaxy-pivot-y));
   opacity:var(--galaxy-opacity);animation:galaxySpin var(--galaxy-duration) linear infinite;will-change:transform;
 }
 @keyframes galaxySpin{to{transform:rotate(360deg)}}

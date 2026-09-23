@@ -514,7 +514,10 @@ identical — always edit both together.
   girando muito devagar atrás do hero da home (tema "Do Local ao Infinito"), dentro do palco
   `#heroStage`, PRESA no retângulo do card (mesmas laterais e cantos arredondados, `clip-path` além de
   `overflow` por causa do Safari do iPhone); nada dela aparece fora do card. O card do hero fica 72% opaco
-  pra ela aparecer. Tudo é dado (imagem, volta em
+  pra ela aparecer.
+  Ela gira em volta de UM centro (`pivotX`/`pivotY` em `data/hero-galaxy.js`, o "olho" azul+vermelho do logo,
+  que tem dois olhos), colocado no meio do card: girar pelo meio do desenho fazia os olhos orbitarem e o
+  quadro parecer descentralizado. Tudo é dado (imagem, volta em
   segundos, opacidade, tamanho relativo à ALTURA do hero com teto `maxWidth` em `vw` (no celular a
   espiral não passa da tela), posição; centralizada, igual em qualquer aparelho). Com "Reduzir
   movimento" ligado no aparelho (macOS/iOS: Acessibilidade > Movimento) ela gira MAIS DEVAGAR
