@@ -1,10 +1,14 @@
 name: Event report
 
-# Relatório pós-evento pro media kit e patrocinadores: inscritos, presença na
-# porta, check-in por palestra e notas. Sob demanda (Actions > Run workflow);
-# o resultado aparece no resumo privado da execução.
+# Relatório pro media kit e patrocinadores: inscritos, presença na porta,
+# check-in e notas por palestra, palestrantes, avaliação do evento e comentários.
+# Sob demanda (Actions > Run workflow) e a cada 30 min no dia do evento
+# (28/11, cron em UTC: 11h às 22h = 08h às 19h de Brasília). O resultado
+# aparece no resumo privado da execução. Sem os secrets, falha avisando.
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "*/30 11-22 28 11 *"
 
 permissions:
   contents: read

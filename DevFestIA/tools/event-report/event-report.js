@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /**
- * Relatório pós-evento (raiz de composição). Rodado sob demanda pelo
- * workflow `.github/workflows/event-report.yml` (Actions > Run workflow),
- * o resultado aparece no resumo privado da execução.
+ * Relatório do evento (raiz de composição). Rodado pelo workflow
+ * `.github/workflows/event-report.yml` (sob demanda em Actions > Run workflow,
+ * e a cada 30 min no dia do evento); o resultado aparece no resumo privado
+ * da execução.
  * Ambiente: SYMPLA_TOKEN, SYMPLA_EVENT_ID_HASH, FIREBASE_SERVICE_ACCOUNT (todos obrigatórios).
  */
 const fs = require("node:fs");
@@ -12,6 +13,7 @@ const { createFirestoreRestRepository } = require("../lib/firestore-rest.js");
 const { createSymplaRepository } = require("../sympla-sync/sympla-repository.js");
 const { buildStats } = require("../sympla-sync/reconcile.js");
 const { buildEventReport, formatEventReport } = require("./build-report.js");
+const { readSiteSchedule } = require("./site-schedule.js");
 
 async function main(env = process.env) {
   for (const name of ["SYMPLA_TOKEN", "SYMPLA_EVENT_ID_HASH", "FIREBASE_SERVICE_ACCOUNT"]) {
@@ -35,6 +37,7 @@ async function main(env = process.env) {
     checkins: ofEdition(checkins),
     talkFeedback: ofEdition(talkFeedback),
     eventFeedback: ofEdition(eventFeedback),
+    ...readSiteSchedule(),
   });
   const text = formatEventReport(report, { edition: CURRENT_EDITION });
   console.log(text);

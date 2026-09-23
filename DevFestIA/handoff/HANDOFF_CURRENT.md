@@ -144,6 +144,16 @@ analytics", "Accessibility rules", "Design tokens", "Track rooms").
     tela cheia com cenas em rodízio (agora/próximas, álbum, fênix, patrocinadores,
     QR codes, números ao vivo, dicas, avisos). Detalhes e perguntas em aberto
     (tamanho do painel, origem das fotos) em `project-docs/IDEAS_BACKLOG.md`.
+11. **Feedback v2 (implementado, falta publicar as regras e testar no Chrome real):**
+    Minhas palestras (`?avaliar=1`), aviso "avalie", avaliação do evento com aspectos e
+    0-10, relatório v2 (ver PROJECT_CONTEXT, "Feedback v2"). Falta: (a) colar
+    `DevFestIA/firebase/firestore.rules` no console e Publicar (a regra nova exige o
+    check-in pra aceitar a avaliação de palestra); (b) testar no Chrome real: check-in
+    numa palestra, avaliar, conferir o documento em `talk-feedback`, avaliar o evento
+    (`/DEV/index.html?demo=2026-11-28T18:10`); (c) apagar os documentos de teste
+    de `checkins`, `talk-feedback` e `event-feedback` antes do evento; (d) colocar o
+    link `.../index.html?avaliar=1` na mensagem final do Sympla e um QR dele no
+    encerramento. Não feito: nota média pública nos cards (decisão: só interno).
 
 ## Backlog de ideias (aprovadas em espírito, nada implementado)
 

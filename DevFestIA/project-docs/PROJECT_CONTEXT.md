@@ -76,6 +76,8 @@ docs/
       event-stats-repository.js     eventStatsRepository sobre ele (coleção "event-stats": total público de inscritos)
       email-hash.js                 DUAL (navegador + Node): normalizeEmail/sha256Hex/registrationKey; única fonte da chave "<edição>_<sha256 do e-mail>"
       verified-registrations.js     verifiedRegistrationsRepository (localStorage, só a chave, nunca o e-mail)
+      my-feedback.js                myCheckinsRepository / myRatingsRepository (localStorage: o que ESTE navegador já fez de check-in e avaliação)
+      event-feedback-form.js        EVENT_FEEDBACK_FORM (aspectos e pergunta 0-10 do feedback do evento) + eventFeedbackFormRepository
       starfield.js               STAR_LAYERS (posições geradas, box-shadow) + BG_CIRCUIT_SRC + starfieldRepository
       analytics.js              ANALYTICS config (provider, endpoint, notice); empty endpoint = off
       tickets.js                TICKET_TYPES (Grátis / com camiseta / VIP, mock values) + TICKETS_NOTE
@@ -103,7 +105,10 @@ docs/
     components/              reusable templates, one responsibility each
       modal.js                   createModal(id): the only modal markup and close behavior (X, backdrop, Esc)
       talk-feedback.js          talkFeedbackMarkup(state): check-in/avaliação (fases checkin/waiting/rate/done)
-      event-feedback.js        eventFeedbackMarkup({phase}): avaliação do evento inteiro (fases loading/rate/done, sem check-in)
+      rating-inputs.js         starRatingMarkup / npsScaleMarkup: estrelas 1-5 e escala 0-10, reusados pelos dois feedbacks
+      event-feedback.js        eventFeedbackMarkup({phase, form}): avaliação do evento (fases closed/rate/done: nota geral, aspectos, 0-10, textos)
+      my-talks.js              myTalksMarkup: tela "Minhas palestras" (lista + progresso + bloco do evento)
+      feedback-nudge.js        feedbackNudgeMarkup: barra fixa "avalie"
       share-card.js             shareCardModalMarkup(): conteúdo do modal do cartão pessoal "Eu vou!" (nome + canvas + ações)
       registration-gate.js      registrationGateMarkup({phase}): "confirme sua inscrição" (e-mail do Sympla)
       registration-counter.js   registrationCounterMarkup({count}): "N pessoas já garantiram a vaga"
@@ -122,7 +127,7 @@ docs/
       sponsor-card.js               sponsor/community item (logo box + name + optional description)
       person-card.js                 person card (team/speakers)
     features/                data + template + behavior, one section each
-      agenda.js, track-filter.js, a11y.js, pwa.js, install-platform.js, starfield.js, talk-feedback.js, event-feedback.js, share-card.js, registration-gate.js, registration-counter.js, reveal-gate.js, checkin-display.js, analytics.js, calendar.js, talk-index.js, calendar-actions.js, agenda-share.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
+      agenda.js, track-filter.js, a11y.js, pwa.js, install-platform.js, starfield.js, talk-feedback.js, event-feedback.js, my-talks.js, feedback-nudge.js, feedback-flow.js, share-card.js, registration-gate.js, registration-counter.js, reveal-gate.js, checkin-display.js, analytics.js, calendar.js, talk-index.js, calendar-actions.js, agenda-share.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
       featured-speakers.js, sponsors.js, partner-communities.js,
       team.js, cod.js, seo.js, stats.js, about.js, highlights.js,
       video.js, realizacao.js, tickets.js, footer.js,
@@ -202,7 +207,46 @@ desenha 5 fases — `loading`, `checkin`, `waiting`, `rate`, `done` —
   abrir palestra → check-in → formulário libera após o horário →
   enviar → estado "avaliado" persiste ao reabrir.
 
-## Avaliação do evento (fase 5.3)
+## Feedback v2 (sessão 6): Minhas palestras, aviso e avaliação do evento
+
+- **Estado local-first:** `data/my-feedback.js` guarda neste navegador os check-ins
+  e as avaliações (chaves de palestra e `event-end`). O uid anônimo do Firebase
+  também é por navegador, então é equivalente ao que existe no Firestore e a tela
+  não gasta leitura (plano grátis: 50 mil leituras por dia). O Firestore só recebe
+  escrita. Check-in que falha por rede NÃO vira "feito" (só `permission-denied` conta
+  como "já existia"); envio que falha mantém o formulário e mostra o aviso.
+- **Minhas palestras** (`features/my-talks.js`): lista as palestras com check-in,
+  cada uma com o mesmo bloco de feedback do modal (`feedback.render`), progresso
+  "N de M avaliadas" e a avaliação do evento no fim. Abre por `?avaliar=1`
+  (link pro e-mail do Sympla e QR do encerramento), pelo botão "Avaliar" do
+  cabeçalho (aparece quando o evento começa) e pelo aviso.
+- **Aviso "avalie"** (`features/feedback-nudge.js`): a cada 20 s, se há palestra
+  terminada com check-in e sem avaliação (ou evento terminado sem avaliação), mostra
+  uma barra fixa; "✕" esconde por 15 min; some com um modal aberto.
+- **Composição** (`features/feedback-flow.js`, `initFeedbackFlow`): liga tudo numa
+  chamada só, em Home, Grade e Palestrantes (antes a fiação se repetia). Em PROD
+  (line-up mock, `reveal` falso) só o feedback do evento fica ativo.
+- **Avaliação do evento v2** (`data/event-feedback-form.js` é a fonte das perguntas):
+  nota geral (obrigatória), 6 aspectos (organização, local e estrutura, alimentação,
+  conteúdo, networking, comunicação, 1-5 cada, opcionais), "recomendaria?" de 0 a 10,
+  nome, "o que mais gostou", "o que melhorar". Aparece no hero "Encerrado" da Home e
+  em Minhas palestras. `render` é síncrono (fase por estado local), então não trava.
+- **Por palestra:** nota 1-5 + nome, "o que mais gostou" e "o que melhorar" (opcionais).
+- **Regras** (`DevFestIA/firebase/firestore.rules`, colar à mão): a avaliação de
+  palestra só é aceita se existir o check-in do mesmo id (`exists()`), todo `create`
+  aceita só os campos conhecidos (`hasOnly`) e o evento valida aspectos (ids
+  espelham `event-feedback-form.js`) e 0-10. Não dá pra exigir "depois do fim da
+  palestra" nas regras (o horário não está no banco), isso segue só na tela.
+- **Relatório** (`DevFestIA/tools/event-report`, workflow `event-report.yml`, sob
+  demanda e a cada 30 min no dia 28/11): lê a grade do próprio site
+  (`site-schedule.js` carrega os arquivos do navegador num contexto isolado, sem copiar
+  a grade nem `talkKey`) e mostra, por palestra, título, trilha, horário,
+  palestrantes, check-ins, nota média, distribuição de estrelas e comentários; por
+  palestrante (nota média); e o evento (nota geral, aspectos, indicação 0-10 em
+  pontos, comentários). É privado (comentários e nomes, quando dados). Nota média
+  pública nos cards NÃO foi feita de propósito (decisão: só interno por ora).
+
+## Avaliação do evento (fase 5.3, primeira versão)
 
 Dentro do hero "Encerrado" da home (`renderHeroAfter()` em
 `features/live-status.js`, só aparece depois que o último horário do
