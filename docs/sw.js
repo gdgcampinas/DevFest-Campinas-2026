@@ -13,7 +13,7 @@
  */
 importScripts("js/components/site-nav.js"); // define SITE_PAGES (única lista de páginas)
 
-const SW_VERSION = "2";
+const SW_VERSION = "3";
 const CACHE_NAME = `devfest-shell-v${SW_VERSION}`;
 const EXTRA_FILES = ["manifest.webmanifest"];
 

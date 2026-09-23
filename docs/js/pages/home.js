@@ -7,6 +7,7 @@ function initHome() {
   const reveal = initShell("principal");
 
   initStickyStatus(document.getElementById("hero"), document.getElementById("stickyStatus"));
+  initHeroGalaxy({ mountEl: document.getElementById("heroStage"), config: heroGalaxyRepository.getAll() });
 
   const modal = createTalkModal();
   const calendar = initCalendarActions(document.body, { schedule: SCHEDULE, tracks: TRACKS, event: EVENT, favorites: favoritesRepository });

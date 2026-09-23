@@ -59,12 +59,14 @@ docs/
   css/tokens.css                             design tokens ONLY: brand palette, per-track colors, accent, fonts (loads first)
   css/styles.css                             all visual rules; consumes tokens, no literal brand color or font name
   css/checkin-display.css                    standalone "presentation mode" styles for checkin-display.html only
-  assets/icons/, assets/img/highlights/       favicons, event photos
+  assets/brand/                               logo oficial em SVG: gdg-icon.svg (4 cores), gdg-logo-dark.svg / gdg-logo-light.svg (horizontal, texto claro/escuro)
+  assets/icons/, assets/img/highlights/       favicons e ícones do app (gerados do SVG), event photos
   js/
     data/                    static data — nothing here touches the DOM
       repository.js            createRepository() factory — see below
       persisted-set-repository.js  createPersistedSetRepository(): set of keys in an injected storage (localStorage)
       favorites.js              favoritesRepository + talkKey(slot, trackId)
+      hero-galaxy.js            HERO_GALAXY (imagem, volta em segundos, opacidade, tamanho, posição) + heroGalaxyRepository
       icons.js                  ICONS (svg paths by name) + iconsRepository.get(); also the per-track icons (`TRACKS[].icon`)
       install-guides.js         INSTALL_GUIDES (passo a passo por plataforma) + installGuidesRepository.getByPlatform()
       firebase-config.js         FIREBASE_CONFIG (chave pública) + CURRENT_EDITION/KNOWN_EDITIONS
@@ -117,6 +119,7 @@ docs/
       construction-notice.js     constructionNoticeMarkup(message): "será revelado em breve" card, reused by every mock section
       install-guide.js           installGuideMarkup(guide): body of the "how to install" modal
       avatar.js                 photo or initials — automatic fallback
+      hero-galaxy.js             heroGalaxyMarkup(config): camada decorativa (logo girando), valores como variáveis CSS
       icon.js                    iconMarkup(name) — only svg template
       calendar-links.js          "Adicionar ao calendário" buttons of the talk modal
       agenda-actions.js          Minha agenda action bar markup (export, WhatsApp, copy link)
@@ -129,7 +132,7 @@ docs/
       sponsor-card.js               sponsor/community item (logo box + name + optional description)
       person-card.js                 person card (team/speakers)
     features/                data + template + behavior, one section each
-      agenda.js, track-filter.js, a11y.js, pwa.js, install-platform.js, starfield.js, talk-feedback.js, event-feedback.js, my-talks.js, feedback-nudge.js, feedback-flow.js, share-card.js, registration-gate.js, registration-counter.js, reveal-gate.js, checkin-display.js, analytics.js, calendar.js, talk-index.js, calendar-actions.js, agenda-share.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
+      agenda.js, track-filter.js, a11y.js, pwa.js, install-platform.js, starfield.js, talk-feedback.js, event-feedback.js, my-talks.js, feedback-nudge.js, feedback-flow.js, hero-galaxy.js, share-card.js, registration-gate.js, registration-counter.js, reveal-gate.js, checkin-display.js, analytics.js, calendar.js, talk-index.js, calendar-actions.js, agenda-share.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
       featured-speakers.js, sponsors.js, partner-communities.js,
       team.js, cod.js, seo.js, stats.js, about.js, highlights.js,
       video.js, realizacao.js, tickets.js, footer.js,
@@ -149,7 +152,7 @@ DevFestIA/                  ← AI continuity and dev tooling, not part of the s
     lib/                       google-auth.js (JWT de conta de serviço), firestore-rest.js (repository do Firestore via REST), zero npm
     sympla-sync/               sync Sympla -> Firestore (repository do Sympla, reconcile puro, caso de uso, raiz de composição) + testes (CI)
     event-report/              relatório pós-evento (inscritos, presença, check-in e notas) + teste (CI)
-  design/                    og-image.html, app-icon.html (sources of generated images)
+  design/                    og-image.html, app-icon.html (sources of generated images) + build-brand-assets.sh (regera favicon, ícones do app e og-image a partir do SVG)
 
 .github/workflows/
   validate.yml               CI: node --check on every .js, every push/PR
@@ -489,6 +492,28 @@ either, since the mock schedule references `MOCK_SPEAKERS` directly.
 To reveal the real line-up: copy `schedule.dev.js` content into
 `schedule.js`, commit, push. From reveal onward, keep both files
 identical — always edit both together.
+
+## Marca e logo (sessão 6)
+
+- **Fonte única:** `docs/assets/brand/gdg-icon.svg` (espiral em 4 cores) e as duas versões
+  horizontais `gdg-logo-dark.svg` (texto claro, pra fundo escuro, a usada no site) e
+  `gdg-logo-light.svg` (texto escuro, pra fundo claro, ex.: certificado). Foram extraídos do vetor
+  do PDF oficial (`gdg-campinas-logo.pdf`, Illustrator): as formas vêm do PDF, as CORES são as do
+  PNG oficial (`#3186FF` azul, `#FC413D` vermelho, `#FFEC00` amarelo, `#00AF57` verde), porque o
+  PDF traz uma conversão de cor mais apagada. Mono (1 cor) existe só como PNG do Renato, não usado.
+- **Paleta do site = cores do logo:** `css/tokens.css` (`--google-blue/red/yellow/green`, hex +
+  oklch) foi alinhada a essas 4 cores; as cores das trilhas seguem a paleta.
+- **Onde aparece:** header (`EVENT.hosts[].logo`, logo horizontal; sem `logo` cai em ícone + nome),
+  favicon SVG + PNG 32, `apple-touch-icon` 180, ícones do app 192/512 (zona segura de 60%),
+  `og-image.png` 1200x630, cartão "Eu vou!" (desenha `event.hosts[0].logo` no canvas; sem logo,
+  cai pro texto) e a galáxia do hero.
+- **Regerar tudo:** `DevFestIA/design/build-brand-assets.sh` (rsvg-convert + Chrome + sips) lê o
+  SVG e os designs em `DevFestIA/design/`. Trocar o logo = trocar o SVG e rodar o script.
+  O service worker cacheia `/assets/` por caminho: ao trocar ícones, subir `SW_VERSION` em `sw.js`.
+- **Galáxia do hero** (`features/hero-galaxy.js`, dados em `data/hero-galaxy.js`): o próprio ícone
+  girando muito devagar atrás do hero da home (tema "Do Local ao Infinito"), dentro do palco
+  `#heroStage`; o card do hero fica 72% opaco pra ela aparecer. Tudo é dado (imagem, volta em
+  segundos, opacidade, tamanho, posição). `prefers-reduced-motion` deixa parada (regra global).
 
 ## Fundo estrelado
 

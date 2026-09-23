@@ -95,19 +95,11 @@ analytics", "Accessibility rules", "Design tokens", "Track rooms").
 
 ## Pendências (com quem depende)
 
-1. **Logo novo (chegou, ainda não aplicado; Renato pediu só pra anotar):** arquivos em
-   `~/Downloads/gdg-campinas-logos/` (a pasta mais nova; `gdg-campinas-logo` e
-   `gdg-campinas-logo 2` são versões anteriores, com o mesmo conteúdo menos 2 arquivos).
-   Conteúdo: ícone em 4 cores e em 1 cor (amarelo, azul, branco, preto, verde,
-   vermelho), logo com texto em 4 cores (fundo branco e fundo preto), em 1 cor
-   (branco, preto) e perfil, todos PNG, mais `gdg-campinas-logo.ai`, `.pdf` e um `.zip`.
-   **Não há SVG**: o redemoinho animado do hero (e a troca nítida em qualquer tamanho)
-   precisa de SVG; dá pra extrair do `.ai`/`.pdf` (vetor) e conferir com o Renato.
-   Trocar: `EVENT.hosts[].icon` (header), favicons, ícones do app (fonte
-   `DevFestIA/design/app-icon.html`), imagem de compartilhamento (fonte
-   `DevFestIA/design/og-image.html`), `theme-color`, e o cartão "Eu vou!"
-   (hoje só texto "GDG Campinas", pode ganhar o logo). Copiar pro repo só o que for
-   usado (`docs/assets/`), não a pasta inteira.
+1. **Logo novo (aplicado):** SVG oficial extraído do PDF em `docs/assets/brand/`, paleta do site
+   alinhada às cores do logo, header, favicon, ícones do app, imagem de compartilhamento, cartão
+   "Eu vou!" e a galáxia girando no hero (ver PROJECT_CONTEXT, "Marca e logo"). Falta o Renato
+   aprovar o visual no ar e, se quiser, ajustar a intensidade da galáxia em `data/hero-galaxy.js`.
+   Os PNGs de perfil e 1 cor ficaram só na pasta de Downloads (não usados no site).
 2. **Plenárias (decisão do Renato):** faixa larga com palestrante de
    destaque ocupando todas as trilhas. Mockup aprovado (avatar 104px, anel
    multi-cor, selo "Plenária", barra com as 4 cores). Variantes: A — 3

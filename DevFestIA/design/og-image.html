@@ -3,26 +3,24 @@
 <!--
   Fonte da imagem de compartilhamento (docs/assets/img/og-image.png, 1200x630).
   Regerar (ex.: quando o logo novo chegar): trocar o conteúdo abaixo e rodar
-    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --hide-scrollbars \
-      --window-size=1200,630 --virtual-time-budget=8000 \
-      --screenshot=docs/assets/img/og-image.png file://$PWD/DevFestIA/design/og-image.html
+    DevFestIA/design/build-brand-assets.sh   (regera este e os ícones do app)
 -->
 <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400..700&family=Google+Sans+Text:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  :root{--blue:#4285f4;--red:#ea4335;--yellow:#fbbc04;--green:#34a853}
+  :root{--blue:#3186ff;--red:#fc413d;--yellow:#ffec00;--green:#00af57}
   *{box-sizing:border-box;margin:0}
   html,body{width:1200px;height:630px;overflow:hidden;background:#05060a}
   body{
     position:relative;font-family:"Google Sans Text",Arial,sans-serif;color:#f4f5f8;
     background:
-      radial-gradient(60% 90% at 105% -10%, rgba(66,133,244,.55), transparent 60%),
-      radial-gradient(45% 70% at -5% 110%, rgba(52,168,83,.28), transparent 60%),
-      radial-gradient(35% 55% at 40% 120%, rgba(251,188,4,.16), transparent 60%),
+      radial-gradient(60% 90% at 105% -10%, rgba(49,134,255,.55), transparent 60%),
+      radial-gradient(45% 70% at -5% 110%, rgba(0,175,87,.28), transparent 60%),
+      radial-gradient(35% 55% at 40% 120%, rgba(255,236,0,.14), transparent 60%),
       #05060a;
   }
   .wrap{position:absolute;inset:0;padding:64px 72px;display:flex;flex-direction:column;justify-content:space-between}
   .brand{display:flex;align-items:center;gap:16px;font:700 30px "Google Sans",Arial,sans-serif;color:#dfe3ea}
-  .brand img{width:56px;height:56px}
+  .brand img{height:64px;width:auto}
   h1{font:700 118px/1.02 "Google Sans",Arial,sans-serif;letter-spacing:-2px}
   .when{margin-top:26px;font:500 40px "Google Sans",Arial,sans-serif;color:#aab2c0}
   .when b{color:var(--green);font-weight:700}
@@ -31,7 +29,7 @@
   .tracks span{display:flex;align-items:center;gap:10px;margin-right:18px}
 </style></head>
 <body><div class="wrap">
-  <div class="brand"><img src="../../docs/assets/icons/gdg-icon.png" alt="">GDG Campinas</div>
+  <div class="brand"><img src="../../docs/assets/brand/gdg-logo-dark.svg" alt="GDG Campinas"></div>
   <div>
     <h1>DevFest<br>Campinas 2026</h1>
     <div class="when"><b>28 de novembro</b> · Campinas, SP</div>

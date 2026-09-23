@@ -139,9 +139,15 @@ function googleCalendarUrl(event, schedule) {
  * (EVENT.hosts), sem "+" fixo em HTML: o separador é gerado entre cada
  * logo automaticamente.
  */
+/** Logo horizontal (já traz o nome) quando o host tem `logo`; senão ícone + nome em texto. */
+function hostMarkup(host) {
+  if (host.logo) return `<img class="brand-logo" src="${host.logo}" alt="${host.name}">`;
+  return `<img class="brand-icon" src="${host.icon}" alt="${host.name}"><span>${host.name}</span>`;
+}
+
 function renderBrand(hosts, mountEl) {
   mountEl.innerHTML = hosts
-    .map((host, i) => `${i > 0 ? `<span class="brand-plus">+</span>` : ""}<img class="brand-icon" src="${host.icon}" alt="${host.name}"><span>${host.name}</span>`)
+    .map((host, i) => `${i > 0 ? `<span class="brand-plus">+</span>` : ""}${hostMarkup(host)}`)
     .join("");
 }
 

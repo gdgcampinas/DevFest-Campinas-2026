@@ -11,13 +11,24 @@
  * nunca hex fixo — herda qualquer troca de paleta em tokens.css sem
  * precisar tocar aqui (mesma regra de "zero por-track CSS").
  */
+/** Carrega uma imagem (null se não houver `src` ou se falhar): o cartão desenha sem logo em vez de quebrar. */
+function loadImage(src) {
+  if (!src) return Promise.resolve(null);
+  return new Promise(resolve => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => resolve(null);
+    image.src = src;
+  });
+}
+
 /** Lê qualquer custom property de tokens.css (cor ou fonte) — nunca hex/fonte fixa aqui. */
 function cssToken(name) {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 
-/** Desenha o cartão 1080x1350 (formato feed/stories) no canvas recebido. */
-function drawShareCard(canvas, { event, dateLabel, name = "" }) {
+/** Desenha o cartão 1080x1350 (formato feed/stories) no canvas recebido. `logo` é uma imagem já carregada (opcional). */
+function drawShareCard(canvas, { event, dateLabel, name = "", logo = null }) {
   const ctx = canvas.getContext("2d");
   const { width, height } = canvas;
   const display = cssToken("--font-display");
@@ -43,9 +54,14 @@ function drawShareCard(canvas, { event, dateLabel, name = "" }) {
   ctx.fillRect(0, 0, width, height);
 
   ctx.textAlign = "left";
-  ctx.fillStyle = "#dfe3ea";
-  ctx.font = `700 34px ${display}`;
-  ctx.fillText("GDG Campinas", 72, 130);
+  if (logo) {
+    const logoHeight = 84;
+    ctx.drawImage(logo, 72, 70, (logo.naturalWidth / logo.naturalHeight) * logoHeight, logoHeight);
+  } else {
+    ctx.fillStyle = "#dfe3ea";
+    ctx.font = `700 34px ${display}`;
+    ctx.fillText("GDG Campinas", 72, 130);
+  }
 
   ctx.fillStyle = cssToken("--accent");
   ctx.font = `700 52px ${display}`;
@@ -119,13 +135,19 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight, font) {
  */
 function initShareCard(rootEl, { event, schedule, createModal, gate = null, ticketButtonHtml = "" }) {
   let modal = null;
+  let logo = null;
+  loadImage(event.hosts?.[0]?.logo).then(image => {
+    logo = image;
+    if (modal && !modal.el.hidden) redraw(modal.el); // o modal abriu antes do logo chegar
+  });
   const ensureModal = () => modal ?? (modal = createModal("shareCardModal", { label: "Cartão de compartilhamento" }));
   const dateLabel = eventDateLabel(schedule, event.timezone);
 
   function redraw(modalEl) {
     const canvas = modalEl.querySelector("[data-share-card-canvas]");
+    if (!canvas) return; // o modal está no passo do e-mail (gate), ainda sem cartão
     const name = modalEl.querySelector("[data-share-card-name]").value.trim();
-    drawShareCard(canvas, { event, dateLabel, name });
+    drawShareCard(canvas, { event, dateLabel, name, logo });
   }
 
   function showCard({ el, openHTML }) {

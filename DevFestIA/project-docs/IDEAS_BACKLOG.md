@@ -9,14 +9,10 @@ trabalhar num chat novo (junto com o prompt padrão de
 
 ## Identidade e "uau"
 
-### Redemoinho do logo animado no hero
-O símbolo em espiral do logo novo (CSS/SVG) girando como fundo do hero da
-home, sob o tema "Do Local ao Infinito" (do PDF de identidade visual), com
-estrelas sutis por trás — o fundo estrelado já implementado
-(`features/starfield.js`) já cobre a parte de estrelas; falta só o logo
-girando por cima. **Parcialmente desbloqueado:** o logo novo chegou (ver handoff, item 1),
-mas só em PNG, `.ai` e `.pdf`; falta extrair um SVG do vetor. Precisa respeitar `prefers-reduced-motion` (infra
-já existe, `features/a11y.js`).
+### Redemoinho do logo animado no hero — IMPLEMENTADO (sessão 6)
+O logo novo (galáxia em espiral) gira devagar atrás do hero da home (`features/hero-galaxy.js`,
+dados em `data/hero-galaxy.js`). Ver PROJECT_CONTEXT, "Marca e logo". Evolução possível: a mesma
+galáxia como cena do mural do LED (ver a task do telão).
 
 ### Cartão de compartilhamento pessoal "Eu vou!" — IMPLEMENTADO (sessão 6)
 Versão básica feita: nome opcional + nome/data/cidade do evento + trilhas,

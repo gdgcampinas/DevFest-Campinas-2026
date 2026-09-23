@@ -24,12 +24,13 @@ const EVENT = {
   venueConfirmed: false, // false = calendário/agenda usam só o endereço (cidade) em vez do nome do local
   address: "Campinas, SP",
   lineupRevealed: false, // PROD: mock escondido por padrão; "?lineup=1" (modo DEV) força mostrar
-  // 1..N coanfitriões/patrocinadores exibidos no header, nessa ordem.
+  // 1..N coanfitriões/patrocinadores exibidos no header, nessa ordem. `logo` (opcional) é o logo
+  // horizontal com o nome, mostrado no lugar de "icon + nome"; o cartão "Eu vou!" usa o do 1º host.
   // Adicionar entradas aqui quando parceiros forem confirmados — o
   // separador "+" entre logos é gerado automaticamente (ver app.js renderBrand).
   // Reaproveitado também na seção "Realização" (features/realizacao.js).
   hosts: [
-    { name: "GDG Campinas", icon: "assets/icons/gdg-icon.png" },
+    { name: "GDG Campinas", icon: "assets/brand/gdg-icon.svg", logo: "assets/brand/gdg-logo-dark.svg" },
   ],
   // CTA de inscrição (cabeçalho, barra mobile, hero e cards de ingresso, ver
   // features/tickets.js): url preenchida = compra; vazia + waitlistUrl = "avise-me";

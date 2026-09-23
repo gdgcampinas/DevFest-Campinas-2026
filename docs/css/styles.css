@@ -72,6 +72,7 @@ header{
    o separador é gerado pelo JS (renderBrand) entre cada logo */
 .brand{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
 .brand-icon{height:32px;width:auto;flex:0 0 auto}
+.brand-logo{height:36px;width:auto;flex:0 0 auto}
 .brand-plus{color:var(--muted-dim);font:700 13px var(--font-body)}
 .brand span{font:700 13px var(--font-body);color:oklch(80% 0.01 260)}
 
@@ -946,3 +947,15 @@ textarea.feedback-input{resize:vertical;min-height:44px}
 .my-talk--focus{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in oklch, var(--accent) 35%, transparent)}
 .my-talks-notice{margin:0;padding:10px 12px;border-radius:10px;font:600 13.5px/1.4 var(--font-body);color:var(--amber);border:1px solid color-mix(in oklch, var(--amber) 45%, transparent)}
 body:has(.modal:not([hidden])) .feedback-nudge{display:none}
+
+/* galáxia do hero (features/hero-galaxy.js): o logo girando devagar atrás do hero da home */
+.hero-stage{position:relative;overflow:hidden;margin-bottom:24px}
+.hero-stage #hero{position:relative;z-index:1;margin-bottom:0}
+.hero-galaxy{position:absolute;inset:0;pointer-events:none;z-index:0}
+.hero-galaxy img{
+  position:absolute;top:var(--galaxy-y);left:var(--galaxy-x);width:var(--galaxy-size);height:auto;translate:-50% -50%;
+  opacity:var(--galaxy-opacity);animation:galaxySpin var(--galaxy-duration) linear infinite;will-change:transform;
+}
+@keyframes galaxySpin{to{transform:rotate(360deg)}}
+/* o card do hero deixa a galáxia aparecer de leve por trás */
+.hero-stage .hero-card{background:linear-gradient(135deg,color-mix(in oklch, var(--card-a) 72%, transparent),color-mix(in oklch, var(--card-b) 72%, transparent))}
