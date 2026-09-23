@@ -129,17 +129,16 @@ analytics", "Accessibility rules", "Design tokens", "Track rooms").
    decidir seletor de idioma, onde vive o texto traduzível (hoje hardcoded
    em `data/*.js` e HTML), e se o line-up real também traduz. Escopo grande,
    task própria antes de tocar em código.
-9. **Sympla -> site (implementado, falta ligar os secrets):** job de sync, gate
-   do cartão, contador e relatório prontos e testados (ver PROJECT_CONTEXT, "Inscritos
-   do Sympla"). Falta a configuração única do Renato: (a) criar a conta de serviço
-   do Firebase (função "Cloud Datastore User") e baixar a chave JSON; (b) `gh secret set`
-   de `SYMPLA_TOKEN` e `FIREBASE_SERVICE_ACCOUNT` (por prompt oculto, nunca no chat);
-   (c) colar `DevFestIA/firebase/firestore.rules` no console e Publicar; (d) rodar o
-   workflow "Sync Sympla" com `dry_run` uma vez e conferir o resumo; (e) virar
-   `EVENT.tickets.registrationGate: true` em `schedule.js` e `schedule.dev.js` (hoje `false`, cartão livre);
-   (f) colocar o link `.../ingressos.html?cartao=1` na mensagem de confirmação do Sympla.
-   Confirmar na primeira execução real: formato do `custom_form` (camiseta) e
-   paginação da v1.5.1 (parâmetro `page`).
+9. **Sympla -> site (no ar e rodando):** conta de serviço `sympla-sync` (função Cloud
+   Datastore User), secrets `SYMPLA_TOKEN` e `FIREBASE_SERVICE_ACCOUNT` no GitHub, regras
+   publicadas, job rodando a cada 10 min (testado em 2026-09-23: dry run e execução real
+   com sucesso, 0 inscritos ainda). Falta: (a) quando entrarem as primeiras inscrições,
+   conferir o resumo da execução (formato do `custom_form`/camiseta e paginação v1.5.1
+   parâmetro `page`); (b) virar `EVENT.tickets.registrationGate: true` em `schedule.js` e
+   `schedule.dev.js` (hoje `false`, cartão livre) só depois de testar o gate com o e-mail de
+   uma inscrição real; (c) colocar o link `.../ingressos.html?cartao=1` na mensagem de
+   confirmação do Sympla; (d) apagar os documentos de teste em `checkins`/`talk-feedback`
+   antes do evento (senão sujam o relatório).
 
 ## Backlog de ideias (aprovadas em espírito, nada implementado)
 
