@@ -52,7 +52,7 @@ function initCheckinDisplay(rootEl, { schedule, track, timezone, siteUrl, now = 
       return;
     }
     bodyEl.innerHTML = `<div class="cd-track" style="--track-color:${track.color}">${track.label}</div>
-      <div class="cd-panels">${panels.map(roomPanelMarkup).join("")}</div>`;
+      <div class="cd-panels${panels.length > 1 ? " cd-panels--multi" : ""}">${panels.map(roomPanelMarkup).join("")}</div>`;
     const size = panels.length > 1 ? 280 : 360;
     panels.forEach(panel => new QRCode(document.getElementById(panel.id), { text: panel.url, width: size, height: size, colorDark: "#05060a", colorLight: "#ffffff" }));
   }

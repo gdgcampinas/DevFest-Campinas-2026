@@ -26,7 +26,10 @@ body{
   font:700 20px var(--font-body);text-transform:uppercase;letter-spacing:.6px;
   color:var(--track-color);padding:6px 18px;border:2px solid var(--track-color);border-radius:100px;
 }
-.cd-title{margin:0;font:800 34px/1.2 var(--font-display);color:oklch(97% 0.005 260)}
+.cd-title{margin:0;font:800 32px/1.2 var(--font-display);color:oklch(97% 0.005 260)}
+/* com dois painéis, o título ocupa sempre 3 linhas (as maiores são cortadas), pra os QR ficarem alinhados */
+.cd-panels--multi .cd-title{min-height:3.6em;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;overflow:hidden}
+.cd-panels--multi .cd-panel{flex:1 1 420px;max-width:460px;align-items:center}
 .cd-qr{background:#fff;padding:20px;border-radius:20px;line-height:0}
 .cd-hint{margin:0;font:600 20px/1.5 var(--font-body);color:var(--muted)}
 .cd-empty{font:700 28px/1.5 var(--font-display);color:var(--muted)}
