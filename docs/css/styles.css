@@ -903,3 +903,38 @@ textarea.feedback-input{resize:vertical;min-height:44px}
 .registration-gate-hint{margin:0;font:500 13.5px/1.5 var(--font-body);color:var(--muted)}
 .registration-gate-error{margin:0;font:500 13.5px/1.5 var(--font-body);color:var(--amber)}
 .registration-gate-actions{display:flex;gap:10px;flex-wrap:wrap}
+
+/* feedback v2: notas por aspecto, escala 0-10, "Minhas palestras" e aviso "avalie" */
+.feedback-question{margin:6px 0 0;font:700 13px var(--font-body);color:var(--text)}
+.aspect-list{display:flex;flex-direction:column;gap:6px}
+.aspect-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.aspect-label{font:500 13.5px var(--font-body);color:var(--muted)}
+.aspect-row .feedback-stars{font-size:22px}
+.nps-scale{display:flex;flex-wrap:wrap;gap:4px}
+.nps-option{cursor:pointer}
+.nps-option input{position:absolute;opacity:0;width:1px;height:1px}
+.nps-option span{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;border-radius:8px;border:1px solid var(--card-border);font:700 13px var(--font-body);color:var(--muted)}
+.nps-option:hover span{border-color:var(--text);color:var(--text)}
+.nps-option:has(input:checked) span{background:var(--accent);border-color:var(--accent);color:oklch(14% 0.01 260)}
+.nps-option:has(input:focus-visible) span{outline:2px solid var(--text);outline-offset:2px}
+.nps-labels{display:flex;justify-content:space-between;font:500 12px var(--font-body);color:var(--muted-dim)}
+.talk-feedback-error{margin:0;font:500 13px/1.5 var(--font-body);color:var(--amber)}
+.header-feedback-btn{margin-left:auto}
+.my-talks{display:flex;flex-direction:column;gap:12px}
+.my-talks-title{display:flex;align-items:center;gap:8px;margin:0;font:700 19px var(--font-display);color:oklch(97% 0.005 260);padding-right:calc(var(--modal-close-size) + var(--modal-close-inset))}
+.my-talks-title .icon{width:20px;height:20px;color:var(--accent)}
+.my-talks-title--event{margin-top:10px;padding-right:0}
+.my-talks-progress{margin:0;font:700 13px var(--font-body);color:var(--accent)}
+.my-talks-empty{margin:0;font:500 14px/1.5 var(--font-body);color:var(--muted)}
+.my-talks-list{display:flex;flex-direction:column;gap:10px}
+.my-talk{border:1px solid var(--card-border);border-left:4px solid var(--track-color);border-radius:12px;padding:12px 14px;background:linear-gradient(135deg,var(--card-a),var(--card-b))}
+.my-talk-head{display:flex;flex-direction:column;gap:2px}
+.my-talk-time{font:700 12px var(--font-body);color:var(--track-color)}
+.my-talk-title{font:700 15px/1.35 var(--font-display);color:oklch(96% 0.006 260)}
+.my-talk .talk-feedback{margin-top:10px}
+.feedback-nudge{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:240;max-width:560px;margin:0 auto;padding:10px 12px;border-radius:14px;background:rgba(5,6,10,.95);border:1px solid color-mix(in oklch, var(--accent) 45%, transparent);box-shadow:0 8px 28px rgba(0,0,0,.5)}
+.feedback-nudge-row{display:flex;align-items:center;gap:10px}
+.feedback-nudge-text{flex:1;min-width:0;display:flex;align-items:center;gap:8px;font:600 13.5px/1.35 var(--font-body);color:var(--text)}
+.feedback-nudge-text .icon{width:18px;height:18px;flex:0 0 auto;color:var(--amber)}
+.feedback-nudge-dismiss{background:none;border:0;color:var(--muted);font:700 16px var(--font-body);cursor:pointer;padding:4px 6px}
+@media(max-width:719px){.feedback-nudge{bottom:calc(84px + env(safe-area-inset-bottom))}}

@@ -1,61 +1,54 @@
 /**
  * Feature: avaliação do evento inteiro (fase 5.3), sobre o Firestore
- * (window.eventFeedbackRepository, mesmo createFirestoreRepository de
- * checkin-repository.js/feedback-repository.js). Uma chave fixa por
- * edição (não por palestra) — `EVENT_FEEDBACK_KEY` — porque só existe
- * um registro possível por pessoa aqui, ao contrário do feedback por
- * palestra (features/talk-feedback.js), que tem uma chave por talk.
- *
- * Mesmo cuidado de ordem de execução de talk-feedback.js:
- * `window.firebaseClient`/`window.eventFeedbackRepository` só existem
- * depois que os módulos do SDK rodam, então nunca são lidos no corpo
- * síncrono de initEventFeedback() nem em render() antes de
- * runAfterModules(); no handler de submit já é seguro. Falha ao
- * consultar o estado esconde o bloco em vez de deixar "Carregando…".
+ * (window.eventFeedbackRepository). Uma chave fixa por edição
+ * (`EVENT_FEEDBACK_KEY`), um registro por pessoa. Como o feedback de
+ * palestra, decide a fase pelo que este navegador já fez (myRatings) e só
+ * toca o Firebase no envio, então `render` é síncrono e nunca trava.
+ * Tudo injetado: `form` (perguntas), `myRatings`, `now`, `endsAt` (fim do evento).
  */
 const EVENT_FEEDBACK_KEY = "event-end";
 
-function initEventFeedback(rootEl) {
-  async function resolveState() {
-    const uid = await window.firebaseClient.ensureAnonymousUid();
-    const rated = await window.eventFeedbackRepository.has(uid, EVENT_FEEDBACK_KEY).catch(() => false);
-    return { phase: rated ? "done" : "rate" };
-  }
+function initEventFeedback(rootEl, { form, myRatings, now = () => new Date(), endsAt }) {
+  const phaseNow = () => {
+    if (now() < endsAt) return "closed";
+    return myRatings.has(EVENT_FEEDBACK_KEY) ? "done" : "rate";
+  };
 
-  /** Preenche containerEl com o bloco de avaliação (chamado pelo live-status ao mostrar o hero "Encerrado"). */
-  async function render(containerEl) {
+  /** Preenche containerEl com o bloco de avaliação (hero "Encerrado" e Minhas palestras). */
+  function render(containerEl) {
     if (!containerEl) return;
-    containerEl.innerHTML = eventFeedbackMarkup({ phase: "loading" });
-    // o hero "Encerrado" é desenhado no bootstrap síncrono da página, antes dos módulos do Firebase
-    await new Promise(resolve => runAfterModules(resolve));
-    try {
-      containerEl.innerHTML = eventFeedbackMarkup(await resolveState());
-    } catch {
-      containerEl.innerHTML = "";
-    }
+    containerEl.dataset.eventFeedbackContainer = "";
+    containerEl.innerHTML = eventFeedbackMarkup({ phase: phaseNow(), form });
   }
 
   rootEl.addEventListener("submit", async event => {
-    const form = event.target.closest("[data-event-feedback-form]");
-    if (!form) return;
+    const formEl = event.target.closest("[data-event-feedback-form]");
+    if (!formEl) return;
     event.preventDefault();
-    const container = form.closest("[data-event-feedback-container]");
-    const submitBtn = form.querySelector("[type=submit]");
+    const container = formEl.closest("[data-event-feedback-container]");
+    const submitBtn = formEl.querySelector("[type=submit]");
     submitBtn.disabled = true;
-    const uid = await window.firebaseClient.ensureAnonymousUid();
-    const rating = Number(new FormData(form).get("event-rating"));
-    const name = form.querySelector("[name=name]").value.trim();
-    const highlight = form.querySelector("[name=highlight]").value.trim();
+    const data = new FormData(formEl);
+    const text = field => formEl.querySelector(`[name=${field}]`).value.trim();
+    const aspects = Object.fromEntries(form.aspects.map(aspect => [aspect.id, Number(data.get(`aspect-${aspect.id}`))]).filter(([, value]) => value));
+    const nps = data.get("event-nps");
+    const optional = { name: text("name"), highlight: text("highlight"), improve: text("improve") };
     try {
+      const uid = await window.firebaseClient.ensureAnonymousUid();
       await window.eventFeedbackRepository.add(uid, EVENT_FEEDBACK_KEY, {
         entryKey: EVENT_FEEDBACK_KEY,
-        rating,
-        ...(name ? { name } : {}),
-        ...(highlight ? { highlight } : {}),
+        rating: Number(data.get("event-rating")),
+        ...(Object.keys(aspects).length ? { aspects } : {}),
+        ...(nps !== null ? { nps: Number(nps) } : {}),
+        ...Object.fromEntries(Object.entries(optional).filter(([, value]) => value)),
       });
-      if (container) container.innerHTML = eventFeedbackMarkup({ phase: "done" });
+      myRatings.addAll([EVENT_FEEDBACK_KEY]);
+      render(container);
+      rootEl.dispatchEvent(new CustomEvent(FEEDBACK_CHANGED_EVENT));
     } catch {
       submitBtn.disabled = false;
+      formEl.querySelector(".talk-feedback-error")?.remove();
+      submitBtn.insertAdjacentHTML("beforebegin", `<p class="talk-feedback-error" role="alert">Não foi possível enviar agora. Confira sua conexão e tente de novo.</p>`);
     }
   });
 

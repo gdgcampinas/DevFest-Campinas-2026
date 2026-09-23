@@ -10,8 +10,7 @@ function initHome() {
 
   const modal = createTalkModal();
   const calendar = initCalendarActions(document.body, { schedule: SCHEDULE, tracks: TRACKS, event: EVENT, favorites: favoritesRepository });
-  const feedback = initTalkFeedback(document.body, { index: calendar.index, reveal, now: resolveNow() });
-  const eventFeedback = initEventFeedback(document.body);
+  const { feedback, eventFeedback } = initFeedbackFlow({ calendar, reveal, createModal });
   initTalkDetails(document.body, { schedule: SCHEDULE, tracks: TRACKS, timezone: EVENT.timezone, reveal, modal, favorites: favoritesRepository, calendar, feedback });
   initFavorites(document.body, favoritesRepository);
 
