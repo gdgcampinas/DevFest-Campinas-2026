@@ -14,8 +14,8 @@ O símbolo em espiral do logo novo (CSS/SVG) girando como fundo do hero da
 home, sob o tema "Do Local ao Infinito" (do PDF de identidade visual), com
 estrelas sutis por trás — o fundo estrelado já implementado
 (`features/starfield.js`) já cobre a parte de estrelas; falta só o logo
-girando por cima. **Bloqueado:** depende do logo novo em SVG (arquivo que o
-Renato ainda vai mandar). Precisa respeitar `prefers-reduced-motion` (infra
+girando por cima. **Parcialmente desbloqueado:** o logo novo chegou (ver handoff, item 1),
+mas só em PNG, `.ai` e `.pdf`; falta extrair um SVG do vetor. Precisa respeitar `prefers-reduced-motion` (infra
 já existe, `features/a11y.js`).
 
 ### Cartão de compartilhamento pessoal "Eu vou!" — IMPLEMENTADO (sessão 6)
