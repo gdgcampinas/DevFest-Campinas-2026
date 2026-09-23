@@ -24,3 +24,6 @@ const FIREBASE_CONFIG = {
  */
 const CURRENT_EDITION = "2026";
 const KNOWN_EDITIONS = ["2026"];
+
+// Dual: o job do Sympla (DevFestIA/tools/sympla-sync, Node) lê o mesmo projeto e edição do site.
+if (typeof module !== "undefined") module.exports = { FIREBASE_CONFIG, CURRENT_EDITION, KNOWN_EDITIONS };

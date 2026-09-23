@@ -1,0 +1,42 @@
+name: Sync Sympla
+
+# Sincroniza inscritos do Sympla com o Firestore a cada 10 minutos (o Sympla
+# não tem webhook). Agendamento só roda no branch padrão (main). Sem os
+# secrets configurados o job só avisa e termina com sucesso, sem gravar nada.
+# Configuração (uma vez): secrets SYMPLA_TOKEN e FIREBASE_SERVICE_ACCOUNT no
+# repositório. O hash do evento não é segredo e fica aqui.
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Modo teste (lê o Sympla, não grava no Firestore)"
+        type: boolean
+        default: false
+
+concurrency:
+  group: sync-sympla
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Sync registrations
+        run: node DevFestIA/tools/sympla-sync/sync.js
+        env:
+          SYMPLA_TOKEN: ${{ secrets.SYMPLA_TOKEN }}
+          SYMPLA_EVENT_ID_HASH: s36cd5d
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          DRY_RUN: ${{ inputs.dry_run && '1' || '' }}

@@ -6,7 +6,7 @@
 // regra certa qualquer pessoa com o DevTools aberto escreve, sobrescreve
 // ou lê o que quiser direto pelo client.
 //
-// Coleções: checkins, talk-feedback, event-feedback — mesmo formato pras
+// Coleções do visitante: checkins, talk-feedback, event-feedback — mesmo formato pras
 // três (ver firestore-repository.js): id do documento = "<uid>_<entryKey>",
 // sempre CRIADO (nunca editado) pelo client, sempre com `edition` e
 // `createdAt` (server timestamp, não confia no relógio do navegador).
@@ -69,6 +69,26 @@ service cloud.firestore {
         && (!("name" in request.resource.data) || (request.resource.data.name is string && request.resource.data.name.size() < 80))
         && (!("highlight" in request.resource.data) || (request.resource.data.highlight is string && request.resource.data.highlight.size() < 400));
       allow update, delete: if false;
+    }
+
+    // Inscritos do Sympla e total público: escritos SÓ pelo job (DevFestIA/tools/sympla-sync)
+    // com conta de serviço, que ignora estas regras. O site só consulta por id conhecido
+    // (registrations: "<edição>_<sha256 do e-mail>"; event-stats: a edição). Ninguém lista, ninguém grava.
+    match /registrations/{docId} {
+      allow get: if true;
+      allow list: if false;
+      allow write: if false;
+    }
+
+    match /event-stats/{docId} {
+      allow get: if true;
+      allow list: if false;
+      allow write: if false;
+    }
+
+    // Estado interno do job (mapa completo de inscritos): nunca acessível pelo client.
+    match /sync-state/{docId} {
+      allow read, write: if false;
     }
 
     // Qualquer outra coleção: nada de leitura nem escrita pelo client.
