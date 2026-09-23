@@ -140,6 +140,10 @@ analytics", "Accessibility rules", "Design tokens", "Track rooms").
    uma inscrição real; (c) colocar o link `.../ingressos.html?cartao=1` na mensagem de
    confirmação do Sympla; (d) apagar os documentos de teste em `checkins`/`talk-feedback`
    antes do evento (senão sujam o relatório).
+10. **Mural eletrônico / telão de LED (task anotada, não iniciada):** página interna em
+    tela cheia com cenas em rodízio (agora/próximas, álbum, fênix, patrocinadores,
+    QR codes, números ao vivo, dicas, avisos). Detalhes e perguntas em aberto
+    (tamanho do painel, origem das fotos) em `project-docs/IDEAS_BACKLOG.md`.
 
 ## Backlog de ideias (aprovadas em espírito, nada implementado)
 

@@ -36,6 +36,58 @@ por servidor), deploy automático das regras do Firestore.
 
 ---
 
+## Telão / painel de LED no dia do evento
+
+### Mural eletrônico (aba do site em tela cheia) — TASK ANOTADA, não iniciada
+Pedido do Renato (2026-09-23): o evento vai ter um painel de LED; queremos uma
+"aba" do site pra rodar nele, passando álbum do evento, o mascote e conteúdo
+ao vivo. **Não fazer agora**, só registrado.
+
+**Mascote:** uma **fênix** está sendo feita (inspirada na capivara dançando que
+o Google fez). Ela entra como cena animada do mural. Depende do arquivo
+(vídeo em loop, sprites ou Lottie/SVG animado) que o Renato vai enviar.
+
+**Forma sugerida (mesmo padrão do `checkin-display.html`):** página interna
+`mural.html`, fora de `SITE_PAGES`, sitemap e `check-meta.js` (`INTERNAL_PAGES`),
+`noindex`, sem header/nav/footer, tela cheia, fonte grande. Um carrossel de
+"cenas" data-driven (`data/mural-scenes.js` via repository, uma função de
+render por tipo de cena em `components/`, ordem e duração por dado, sem HTML por
+cena). `?cenas=agora,album,patrocinadores` filtra/ordena por URL; `?aspect=`
+ajusta a proporção. Modo quiosque: cursor escondido, `wakeLock`, recarrega
+sozinho se travar, funciona offline (service worker já cacheia as páginas).
+
+**Ideias de cenas (do mais ao menos essencial):**
+1. **Acontecendo agora + próximas** por trilha e sala, com contagem regressiva
+   (reusa `resolveEventState()`/`live-status.js`, mesma fonte do "AO VIVO").
+2. **Álbum do evento**: fotos do 2025 antes/durante e fotos do dia ao vivo.
+3. **Fênix** (mascote animado), como respiro entre as cenas.
+4. **Patrocinadores** em rodízio, com tempo de tela por cota (é entrega
+   contratual, dá pra medir e mostrar no relatório).
+5. **QR codes gigantes:** avaliar o evento (`?avaliar=1`), gerar cartão
+   "Eu vou!" (`?cartao=1`), check-in da sala, Instagram/hashtag.
+6. **Números ao vivo:** inscritos, pessoas presentes, avaliações recebidas,
+   nota média do evento (só agregados, sem dado pessoal; vem do job do Sympla
+   e do Firestore).
+7. **Palestrante em destaque** (foto, cargo, tema, próximo horário).
+8. **Dicas práticas:** Wi-Fi, food truck, estacionamento, mapa do local,
+   onde é o credenciamento, código de conduta em 1 frase.
+9. **Avisos da organização** (sorteio, mudança de sala, atraso): editável sem
+   deploy, precisa de uma fonte (documento no Firestore escrito pela
+   organização ou arquivo no repo).
+10. **Mural da hashtag** `#DevFestCampinas2026` (depende de fonte, ver
+    "Mural da hashtag" abaixo), **enquete/pergunta ao vivo** e
+    **passaporte com carimbos** (já estão neste backlog).
+11. **Contagem regressiva** antes de abrir e **"obrigado"** com os números finais
+    do evento no encerramento.
+
+**Perguntas em aberto (responder antes de desenhar):** tamanho e resolução do
+painel de LED (proporção, pode ser bem larga, tipo 3:1); o que ele aceita como
+entrada (notebook via HDMI? navegador?); origem das fotos ao vivo (Drive
+compartilhado, upload manual no repo, outro); quem opera no dia; se o áudio é
+usado (fênix com som?).
+
+---
+
 ## Engajamento e gamificação
 
 ### Quiz "Monte sua trilha"
