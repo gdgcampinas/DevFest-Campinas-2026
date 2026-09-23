@@ -26,3 +26,6 @@ jobs:
 
       - name: Check install flow and script dependencies
         run: node DevFestIA/tools/check-install.js
+
+      - name: Test Sympla sync and event report
+        run: node --test DevFestIA/tools/sympla-sync/sync.test.js DevFestIA/tools/event-report/build-report.test.js

@@ -1,0 +1,28 @@
+name: Event report
+
+# Relatório pós-evento pro media kit e patrocinadores: inscritos, presença na
+# porta, check-in por palestra e notas. Sob demanda (Actions > Run workflow);
+# o resultado aparece no resumo privado da execução.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build report
+        run: node DevFestIA/tools/event-report/event-report.js
+        env:
+          SYMPLA_TOKEN: ${{ secrets.SYMPLA_TOKEN }}
+          SYMPLA_EVENT_ID_HASH: s36cd5d
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
