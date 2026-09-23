@@ -11,6 +11,7 @@ PASSO 1 — Leia o contexto (nesta ordem)
 1. DevFestIA/project-docs/PROJECT_CONTEXT.md  ← arquitetura permanente, decisões de design
 2. DevFestIA/handoff/HANDOFF_CURRENT.md       ← estado atual, pendências, próximos passos
 3. DevFestIA/CLAUDE.md                        ← diretivas de comportamento
+4. DevFestIA/project-docs/Continuidade.md     ← como o processo de continuidade funciona (opcional)
 
 PASSO 2 — Valide o estado Git (o handoff pode estar desatualizado — o git não mente)
 git status --short --branch
@@ -71,45 +72,52 @@ verificado, o que depende dele. Armadilhas e como testar: seção "Como
 trabalhar e testar aqui" do handoff (bump de ?v=N, cache do
 schedule.dev.js, painel do app sem service worker, etc.).
 
-ESTADO EM 2026-09-23, fim da sessão 5 (detalhes completos no handoff)
-Site de 7 páginas no ar (main = development, CI verde): Principal, Grade,
-Palestrantes, Ingressos, Time, Patrocínio, Código de Conduta. Um pedaço do
-site agora tem backend: Firebase (Firestore + Authentication anônimo) só
-para check-in e avaliação de palestra (o único dado compartilhado entre
-visitantes) — resto do site continua 100% estático, sem build.
+ESTADO EM 2026-09-23, fim da sessão 6 (detalhes completos no handoff)
+Site de 7 páginas no ar (main = development, CI verde), mais 2 ferramentas
+internas (`checkin-display.html` por sala e `reset-teste.html`). Tudo grátis, sem
+servidor nosso: Firebase (Firestore + Auth anônimo, plano Spark) guarda check-ins,
+avaliações e o total de inscritos; um job do GitHub Actions lê o Sympla a cada 10 min
+e grava no Firestore. Inscrição é só no Sympla (evento s36cd5d, vendas abertas, 0
+inscritos até agora). Resto do site 100% estático, sem build.
 
-MUDANÇA MAIS IMPORTANTE DA SESSÃO 5: PROD (público) esconde todo mock por
-padrão — line-up (Grade vira um aviso único, "Título a confirmar"/"Em
-breve" no resto), patrocinadores, comunidades parceiras, time e ingressos
-mostram "será revelado em breve" em vez de dado fictício. DEV (mostra tudo
-mock, pra time interno) é `/DEV/<página>` (persiste em sessionStorage
-navegando pela mesma aba, some sozinho ao fechar) ou `?lineup=1`; `/PROD/`
-ou `?lineup=0` volta pro público. Detalhes técnicos e todo o histórico de
-bugs corrigidos (parâmetro se perdendo na navegação, storage que não
-expirava, service worker servindo cache velho): PROJECT_CONTEXT.md, seção
-"PROD x DEV", e handoff, "Histórico resumido".
+PROD x DEV (da sessão 5, continua valendo): PROD (público) esconde todo mock
+("será revelado em breve"); DEV é `/DEV/<página>` ou `?lineup=1`; `/PROD/` volta
+ao público. A identidade visual vale nos dois. `?demo=2026-11-28T09:20` simula o horário.
 
-Check-in + avaliação de palestra (Firebase, fases 5.1-5.2 prontas): botão
-de check-in (QR via `?checkin=<código>` ou honra com confirmação inline no
-visual do site) e formulário de avaliação (estrelas + nome opcional +
-comentário) liberado só após check-in + palestra terminada. Anônimo por
-decisão (uid do Firebase, sem login — quem impede sabotagem é o check-in,
-não a identidade). Tela de QR ao vivo por sala: `checkin-display.html`.
-Falta: feedback de fim de evento (fase 5.3, não começou) e logística física
-de onde exibir o QR no dia.
+O que a sessão 6 entregou: feedback do evento; cartão "Eu vou!" (canvas, com gate
+opcional por inscrição, hoje DESLIGADO em `EVENT.tickets.registrationGate: false`);
+link real do Sympla; job Sympla -> Firestore com contador de inscritos; feedback v2
+("Minhas palestras" em `?avaliar=1`, aviso "avalie", QR de avaliação na tela da sala,
+estrelas que começam cheias, NOME OBRIGATÓRIO, evento com 6 aspectos e nota 0-10;
+regras do Firestore exigem o check-in e foram testadas no banco real); relatório
+do evento v2; limpeza dos dados de teste (workflow com travas + `reset-teste.html`);
+workflows com ícone; logo novo aplicado (SVG em `docs/assets/brand`, paleta do site
+igual às cores do logo, script `DevFestIA/design/build-brand-assets.sh`); galáxia
+girando no hero da home (presa no card, centrada no "olho" azul+vermelho, gira
+mais devagar com "Reduzir movimento", `?movimento=1` força).
 
-Também da sessão 5: fundo estrelado + acento de circuito em toda página,
-página Ingressos própria (saiu da home), 10 palestrantes distintos por
-trilha no mock, botão "Instalar app" e ícone PWA corrigidos (sessão 4).
+PENDÊNCIAS
+Do Renato/organização: dados reais (local, salas/MCs, line-up, patrocinadores,
+time, valores); plenárias (A, B ou C, recomendo B); mensagens do Sympla com os
+links `.../ingressos.html?cartao=1` e `.../index.html?avaliar=1` + QR no
+encerramento; quem monta os tablets das salas.
+Quando houver inscrições: conferir o resumo do "🎫 Sincronizar Sympla" (formato do
+formulário de camiseta e paginação), testar o gate com e-mail real e ligar
+`registrationGate`.
+Antes do evento: rodar "🧹 Limpar dados de teste" (simulação, depois de verdade com
+APAGAR, só antes de 28/11 08:00) e `reset-teste.html` nos aparelhos de teste.
+Tasks anotadas, não iniciadas: certificado de participação PROFISSIONAL (A4 PDF
+vetorial, código único e QR de validação; decidir quem recebe e carga horária);
+mural do telão de LED (cenas em rodízio, fênix, galáxia; decidir tamanho do painel
+e origem das fotos); internacionalização; demais ideias em `project-docs/IDEAS_BACKLOG.md`.
 
-PENDÊNCIAS (Renato): escolher a variante das plenárias (A, B ou C; recomendo
-B); logo novo (SVG/PNG do símbolo colorido, ele envia os arquivos); dados
-reais (local, salas/MCs, line-up, patrocinadores, valores, link real do
-Sympla); logística física do QR ao vivo. Backlog "uau": redemoinho do logo
-animado (depende do logo novo), cartão de compartilhamento pessoal "Vou ao
-DevFest Campinas" (não depende de nada, pode ser feito já). Internacionalização
-(PT/EN/ES/FR) anotada como task futura, escopo grande, não desenhada ainda.
-Demais ideias no handoff.
+ARMADILHAS (leia "Como trabalhar e testar aqui" no handoff antes de agir)
+O HTML no GitHub Pages fica 10 min em cache e o navegador do WhatsApp guarda mais:
+antes de "corrigir" um print, confira com curl o que está publicado. Subir `?v=N`
+em toda página que referencia um arquivo que mudou (e `SW_VERSION` ao trocar
+`/assets/`). Nunca renomear o workflow Validar sem antes o Promote ouvir o nome
+novo. Secrets do Sympla/Firebase nunca no chat. Regras do Firestore são coladas
+à mão no console (`pbcopy < DevFestIA/firebase/firestore.rules`).
 
 DIRETIVA DE ENGAJAMENTO
 Você é parceiro técnico do projeto, não executor passivo.

@@ -15,10 +15,17 @@ trabalho sem depender do histórico de uma conversa específica.
 - **[handoff/HANDOFF_CURRENT.md](../handoff/HANDOFF_CURRENT.md)** —
   estado atual do projeto, diário de bordo. Atualizar a cada task
   concluída: o que foi feito, o que falta, próximos passos.
-- **[../tools/](../tools/)** — scripts de verificação (`check-meta.js` roda no
-  CI; `check-lineup.js`, `check-calendar.js` e os `e2e-*.js` são manuais) e
-  **[../design/](../design/)** — fontes HTML das imagens geradas (share image e
-  ícones do app). Como usar: seção "Como trabalhar e testar aqui" do handoff.
+- **[../tools/](../tools/)** — scripts em Node, sem npm: verificação (`check-meta.js` e
+  `check-install.js` rodam no CI; `check-lineup.js`, `check-calendar.js` e os `e2e-*.js` são manuais),
+  `sympla-sync/` (job Sympla -> Firestore), `event-report/` (relatório do evento), `purge-test-data/`
+  (limpeza dos dados de teste) e `lib/` (auth Google e cliente REST do Firestore); os três com
+  testes que rodam no CI. **[../design/](../design/)** — fontes HTML das imagens geradas e o
+  `build-brand-assets.sh` que regera favicon, ícones do app e imagem de compartilhamento a partir do
+  SVG do logo. **[../firebase/](../firebase/)** — `firestore.rules` (colar à mão no console).
+  Como usar cada um: seção "Como trabalhar e testar aqui" do handoff.
+- **[`.github/workflows/`](../../.github/workflows/)** — ✅ Validar, 🚀 Publicar no main, 🎫 Sincronizar
+  Sympla, 📊 Relatório do evento, 🧹 Limpar dados de teste. Ver PROJECT_CONTEXT ("Inscritos do
+  Sympla", "Limpeza dos dados de teste") e o aviso sobre renomear o Validar no handoff.
 - **Este arquivo** — explica como os itens acima se relacionam.
 
 ## Regra de trabalho
@@ -45,11 +52,15 @@ mais peso ao git do que ao texto do handoff.
   --rebase origin development` antes de empurrar.
 - Confirmar o que está no ar: `gh run list --repo gdgcampinas/DevFest-Campinas-2026`
   e `git ls-remote origin main development` (devem apontar pro mesmo commit).
-- Runbook se o `Promote to main` falhar (já houve erro transiente do
+- Runbook se o `🚀 Publicar no main` (antes `Promote to main`) falhar (já houve erro transiente do
   GitHub): `git fetch origin && git checkout main && git merge --ff-only
   origin/development && git push origin main && git checkout development`.
-- Lista de armadilhas conhecidas (cache de imagem, preview do browser
-  instável, bump de `?v=N`): seção "Gotchas conhecidos" do handoff.
+- Armadilhas conhecidas (cache de 10 min do HTML no GitHub Pages e navegador do WhatsApp, bump de
+  `?v=N`, `SW_VERSION`, testes com Firebase e estado em memória, `prefers-reduced-motion`, secrets):
+  seção "Como trabalhar e testar aqui" do handoff. Antes de mexer porque "o print está errado",
+  confira com `curl` o que está publicado: muitas vezes era versão antiga em cache.
+- Secrets do repositório (`SYMPLA_TOKEN`, `FIREBASE_SERVICE_ACCOUNT`) existem e funcionam; nunca peça
+  nem imprima o valor. Sem eles os workflows só avisam.
 
 ## Diretiva de Documentação Sempre Atualizada
 

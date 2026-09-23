@@ -1,7 +1,7 @@
 # Backlog de ideias — DevFest Campinas 2026
 
-Nada aqui foi implementado. Aprovado em espírito pelo Renato ao longo das
-sessões, nunca desenhado tecnicamente a fundo. Cole a seção que quiser
+Itens marcados como IMPLEMENTADO já estão no site (ver PROJECT_CONTEXT); o resto é aprovado em espírito
+pelo Renato ao longo das sessões, nunca desenhado tecnicamente a fundo. Cole a seção que quiser
 trabalhar num chat novo (junto com o prompt padrão de
 `DevFestIA/NEW_CHAT_PROMPT.md`) pra retomar com contexto.
 

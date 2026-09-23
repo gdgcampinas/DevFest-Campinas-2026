@@ -1,10 +1,10 @@
 # DevFest Campinas 2026 — Project Context
 
-Multi-page site for DevFest Campinas 2026 (GDG Campinas), built the same way as [EloTech 2026](https://github.com/gdgcampinas/EloTech-Agibank): static HTML/CSS/JS, no build step, no framework, no backend, deployed via GitHub Pages from `docs/`.
+Multi-page site for DevFest Campinas 2026 (GDG Campinas), built the same way as [EloTech 2026](https://github.com/gdgcampinas/EloTech-Agibank): static HTML/CSS/JS, no build step, no framework, deployed via GitHub Pages from `docs/`. The only shared data (check-in, ratings, registrations total) lives in Firebase (Spark plan, free) and is fed by a scheduled GitHub Actions job that reads Sympla; there is no server of ours.
 
 ## Stack (non-negotiable)
 
-- Plain HTML/CSS/JS. Zero build, zero npm dependency. Fonts are self-hosted (Google Sans, OFL, `assets/fonts/`, `css/fonts.css`); no runtime calls to Google Fonts.
+- Plain HTML/CSS/JS. Zero build, zero npm dependency (the Node tools in `DevFestIA/tools/` are dependency-free too: only `node:` built-ins). Fonts are self-hosted (Google Sans, OFL, `assets/fonts/`, `css/fonts.css`); no runtime calls to Google Fonts.
 - GitHub Pages source: `docs/` folder on `main`.
 - Nomes dos workflows no GitHub Actions (campo `name:`, com ícone pra achar rápido): ✅ Validar, 🚀 Publicar no main, 🎫 Sincronizar Sympla, 📊 Relatório do evento, 🧹 Limpar dados de teste. **Atenção:** o Promote escuta o nome exato do Validate (`workflow_run`), e roda com o arquivo do `main`; renomear o Validate exige, antes, ensinar o Promote o nome novo e promover, senão a publicação automática para.
 - Working branch: `development`. CI (`.github/workflows/validate.yml`) runs `node --check` on every push/PR to `development`; if it passes, `.github/workflows/promote.yml` fast-forward-merges `development` into `main` automatically. Never commit directly to `main`.
@@ -162,7 +162,7 @@ DevFestIA/                  ← AI continuity and dev tooling, not part of the s
   purge-test-data.yml        sob demanda: apaga os dados de teste do feedback (simulação por padrão)
 ```
 
-## Check-in e avaliação de palestra (fase 5.2)
+## Check-in e avaliação de palestra (fase 5.2; o formulário evoluiu na sessão 6, ver "Feedback v2")
 
 Dentro do modal de detalhe (mesmo em Home/Grade/Palestrantes), abaixo do
 resto do conteúdo: `components/talk-feedback.js` (`talkFeedbackMarkup`)
@@ -199,10 +199,10 @@ desenha 5 fases — `loading`, `checkin`, `waiting`, `rate`, `done` —
 - **Avaliar só libera depois que a palestra terminou** (`slot.end` já
   passou, mesmo relógio simulado de `?demo=` que o resto do site usa) **e**
   a pessoa fez check-in nela — as duas condições, não uma OU outra.
-- **Por que anônimo continua sendo a decisão certa:** um nome digitado à
-  mão não impede sabotagem (é só texto, qualquer um inventa um). Quem
-  impede é o check-in (prova de presença). Nome no formulário é só
-  decoração opcional, nunca verificado.
+- **Anônimo x nome (atualizado na sessão 6):** o uid do Firebase segue anônimo, e um nome digitado à
+  mão não impede sabotagem (qualquer um inventa um): quem impede é o check-in (prova de presença), e
+  desde a sessão 6 as regras do Firestore também o exigem. O nome, porém, agora é **obrigatório**
+  no formulário (decisão do Renato), mesmo sem ser verificado.
 - **Cuidado de ordem de execução (crítico):** `window.firebaseClient`/
   `checkinRepository`/`feedbackRepository` só existem depois que os
   módulos do SDK rodam — sempre DEPOIS de qualquer script clássico,
@@ -285,7 +285,7 @@ Duas ferramentas, uma pra cada lado, sem tocar no que é dado real:
   pontos, comentários). É privado (comentários e nomes, quando dados). Nota média
   pública nos cards NÃO foi feita de propósito (decisão: só interno por ora).
 
-## Avaliação do evento (fase 5.3, primeira versão)
+## Avaliação do evento (fase 5.3; formulário atual na seção "Feedback v2")
 
 Dentro do hero "Encerrado" da home (`renderHeroAfter()` em
 `features/live-status.js`, só aparece depois que o último horário do
@@ -308,7 +308,7 @@ já existiam desde a fundação do Firebase (sessão 5); só faltava a UI.
 
 ## Cartão pessoal "Eu vou!" (compartilhamento)
 
-Zero backend, zero dependência do logo novo — `features/share-card.js`
+Zero backend — `features/share-card.js`
 desenha um cartão 1080×1350 (formato feed/stories) num `<canvas>`
 client-side: nome do evento, data (`eventDateLabel()` de `agenda.js`,
 mesma função do header/ticker, nunca recalculada aqui), cidade, nome da
@@ -727,9 +727,9 @@ que já devia estar limpa). `dev-loader.js` também busca a página real com
 - Real room names and MCs (`TRACKS[].room/mc`; rooms are landmark mocks, MCs "MC a definir").
 - Plenárias (full-width featured-speaker slot): mockup approved, variant A/B/C pending, see handoff.
 - Real line-up (replace `mock-talks.js` and `mock-speakers.js` with same-shape data, real photos and LinkedIn), real sponsors and communities, testimonials, team, ticket values (the Sympla link is already set).
-- New logo files (header, favicons, app icons, share image) and the recap video of 2025 (`data/video.js` still has the 2017 one).
+- The recap video of 2025 (`data/video.js` still has the 2017 one). (New logo: done, see "Marca e logo".)
 - Parking/food images (`PARKING_IMAGES`/`FOOD_IMAGES` in `app.js`, still empty).
-- Feedback de fim de evento (fase 5.3, ver handoff): mesmo padrão do feedback por palestra, sem começar ainda.
+- Before the event: run "🧹 Limpar dados de teste" (dry run, then for real) and `reset-teste.html` on the test devices; switch `EVENT.tickets.registrationGate` on after a real registration test; see handoff "Pendências".
 - Logística física do QR ao vivo (`checkin-display.html`): qual tela/tablet por sala, quem monta no dia.
 
 ## Documentation upkeep (standing directive)
