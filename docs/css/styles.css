@@ -951,7 +951,12 @@ body:has(.modal:not([hidden])) .feedback-nudge{display:none}
 /* galáxia do hero (features/hero-galaxy.js): o logo girando devagar atrás do hero da home */
 .hero-stage{position:relative;overflow:hidden;margin-bottom:24px}
 .hero-stage #hero{position:relative;z-index:1;margin-bottom:0}
-.hero-galaxy{position:absolute;inset:0;pointer-events:none;z-index:0}
+.hero-galaxy{
+  position:absolute;inset:0;pointer-events:none;z-index:0;
+  /* esmaece o topo e a base, senão os arcos terminam em linha reta no limite do palco */
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 24%,#000 76%,transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0,#000 24%,#000 76%,transparent 100%);
+}
 .hero-galaxy img{
   position:absolute;top:var(--galaxy-y);left:var(--galaxy-x);height:var(--galaxy-size);width:auto;translate:-50% -50%;
   opacity:var(--galaxy-opacity);animation:galaxySpin var(--galaxy-duration) linear infinite;will-change:transform;
@@ -961,3 +966,6 @@ body:has(.modal:not([hidden])) .feedback-nudge{display:none}
 .hero-stage .hero-card{background:linear-gradient(135deg,color-mix(in oklch, var(--card-a) 72%, transparent),color-mix(in oklch, var(--card-b) 72%, transparent))}
 /* ?movimento=1: gira mesmo com "reduzir movimento" ligado (vence a regra global, que usa !important sem especificidade) */
 .hero-stage--motion .hero-galaxy img{animation-duration:var(--galaxy-duration) !important;animation-iteration-count:infinite !important}
+
+/* celular: o selo DEV sobe pra não cobrir a barra fixa de ingressos */
+@media(max-width:719px){.dev-mode-badge{bottom:calc(84px + env(safe-area-inset-bottom))}}
