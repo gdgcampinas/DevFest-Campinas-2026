@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Limpar dados de teste • DevFest Campinas 2026</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preload" href="assets/fonts/google-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/fonts.css?v=1">
+<link rel="stylesheet" href="css/tokens.css?v=3">
+<link rel="stylesheet" href="css/reset-teste.css?v=1">
+</head>
+<body>
+
+<main class="rt-screen" id="rtScreen">
+  <div class="rt-brand">DevFest Campinas 2026 · ferramenta interna</div>
+  <h1 class="rt-title">Limpar dados de teste deste navegador</h1>
+  <p class="rt-text">Use antes do evento, nos aparelhos em que você testou o site. Só apaga os dados <strong>deste navegador</strong>, nunca os de outras pessoas nem os do banco.</p>
+  <ul class="rt-what">
+    <li>Check-ins, avaliações, nome e favoritos guardados aqui</li>
+    <li>O usuário anônimo do Firebase (o navegador vira uma pessoa nova)</li>
+    <li>Caches e service worker do site</li>
+  </ul>
+  <p class="rt-warn">Não apaga os documentos do Firestore. Para isso use o workflow "Purge test data" no GitHub.</p>
+  <button type="button" class="rt-button" data-reset-run>Limpar este navegador</button>
+  <div data-reset-result></div>
+</main>
+
+<script src="js/features/local-reset.js?v=1"></script>
+<script src="js/components/local-reset.js?v=1"></script>
+<script src="js/pages/reset-teste.js?v=1"></script>
+</body>
+</html>

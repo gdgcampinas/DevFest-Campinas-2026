@@ -1,0 +1,17 @@
+/* Página interna reset-teste.html: só tokens de cor/fonte do site, sem styles.css. */
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);display:flex;justify-content:center;padding:32px 20px}
+.rt-screen{width:100%;max-width:560px;display:flex;flex-direction:column;gap:18px}
+.rt-brand{font:700 14px var(--font-body);letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
+.rt-title{margin:0;font:800 28px/1.2 var(--font-display);color:oklch(97% 0.005 260)}
+.rt-text{margin:0;font:500 15px/1.6 var(--font-body);color:var(--muted)}
+.rt-what{margin:0;padding-left:20px;font:500 15px/1.7 var(--font-body);color:var(--text)}
+.rt-warn{margin:0;padding:12px 14px;border-radius:12px;border:1px solid color-mix(in oklch, var(--amber) 45%, transparent);font:600 14px/1.5 var(--font-body);color:var(--amber)}
+.rt-button{align-self:flex-start;padding:12px 22px;border-radius:100px;border:0;background:var(--accent);color:oklch(14% 0.01 260);font:700 15px var(--font-body);cursor:pointer}
+.rt-button:disabled{opacity:.6;cursor:default}
+.rt-done{margin:0;font:700 17px var(--font-display);color:var(--accent)}
+.rt-list{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.rt-list li{display:flex;justify-content:space-between;gap:12px;padding:10px 14px;border:1px solid var(--card-border);border-radius:10px;font:500 14px var(--font-body)}
+.rt-list strong{color:var(--accent)}
+.rt-link{display:inline-block;margin-top:10px;color:var(--amber);font:700 14px var(--font-body)}

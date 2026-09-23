@@ -1,0 +1,43 @@
+name: Purge test data
+
+# Apaga os dados de TESTE do feedback (checkins, talk-feedback, event-feedback) da
+# edição atual, antes do evento. Só sob demanda (Actions > Run workflow).
+# Travas (ver DevFestIA/tools/purge-test-data/purge-plan.js): modo teste ligado por
+# padrão (só conta); para apagar de verdade desligue o modo teste E digite APAGAR;
+# recusa a partir do início do evento; nunca toca em registrations/event-stats/sync-state.
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Modo teste (só conta os documentos, não apaga). Desmarque para apagar."
+        type: boolean
+        default: true
+      confirm:
+        description: "Para apagar de verdade, digite APAGAR (e desmarque o modo teste)"
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: purge-test-data
+  cancel-in-progress: false
+
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Purge test data
+        run: node DevFestIA/tools/purge-test-data/purge.js
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          DRY_RUN: ${{ inputs.dry_run && '1' || '' }}
+          CONFIRM: ${{ inputs.confirm }}

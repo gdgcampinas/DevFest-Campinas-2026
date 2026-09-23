@@ -51,6 +51,7 @@ docs/
   index.html, grade.html, palestrantes.html, ingressos.html, time.html,
   patrocinio.html, codigo-de-conduta.html   structure only, no logic (the 7 public pages)
   checkin-display.html                      internal tool (live QR), not a public page — see "Check-in e avaliação"
+  reset-teste.html                          internal tool (clears THIS browser's local test data), not a public page — see "Limpeza dos dados de teste"
   DEV/index.html, DEV/grade.html, ... , DEV/dev-loader.js   DEV shortcut, see "PROD x DEV"
   PROD/index.html                           DEV-exit shortcut, see "PROD x DEV"
   css/fonts.css                              @font-face for the self-hosted Google Sans (loads first)
@@ -143,6 +144,7 @@ DevFestIA/                  ← AI continuity and dev tooling, not part of the s
   handoff/HANDOFF_CURRENT.md
   firebase/firestore.rules  security rules, paste manually into the Firebase console — see "Firebase (Firestore)"
   tools/                     check-meta.js (CI), check-install.js (CI), check-lineup.js, check-calendar.js, e2e-offline.js, e2e-kill-switch.js
+    purge-test-data/           limpeza dos dados de teste no Firestore (plano com as travas, caso de uso, raiz de composição) + testes (CI)
     lib/                       google-auth.js (JWT de conta de serviço), firestore-rest.js (repository do Firestore via REST), zero npm
     sympla-sync/               sync Sympla -> Firestore (repository do Sympla, reconcile puro, caso de uso, raiz de composição) + testes (CI)
     event-report/              relatório pós-evento (inscritos, presença, check-in e notas) + teste (CI)
@@ -153,6 +155,7 @@ DevFestIA/                  ← AI continuity and dev tooling, not part of the s
   promote.yml                CI: auto fast-forward development → main
   sync-sympla.yml            a cada 10 min: Sympla -> Firestore (só roda no main; sem secrets só avisa)
   event-report.yml           sob demanda: relatório pós-evento no resumo da execução
+  purge-test-data.yml        sob demanda: apaga os dados de teste do feedback (simulação por padrão)
 ```
 
 ## Check-in e avaliação de palestra (fase 5.2)
@@ -206,6 +209,25 @@ desenha 5 fases — `loading`, `checkin`, `waiting`, `rate`, `done` —
   `DOMContentLoaded`). Testado ponta a ponta contra o projeto real:
   abrir palestra → check-in → formulário libera após o horário →
   enviar → estado "avaliado" persiste ao reabrir.
+
+## Limpeza dos dados de teste (antes do evento)
+
+Duas ferramentas, uma pra cada lado, sem tocar no que é dado real:
+- **Banco** (`.github/workflows/purge-test-data.yml`, Actions > Run workflow): apaga os
+  documentos da edição atual em `checkins`, `talk-feedback` e `event-feedback`. As travas
+  vivem num lugar só, `DevFestIA/tools/purge-test-data/purge-plan.js` (puro, com testes no
+  CI): (1) lista FIXA de coleções, nunca `registrations`/`event-stats`/`sync-state`, sem
+  parâmetro pra outra; (2) recusa a partir do início do evento (28/11 08:00 de Brasília,
+  lido da própria grade do site, sem forçar); (3) modo teste ligado por padrão (só conta),
+  e pra apagar precisa desligar o modo teste E digitar `APAGAR`. O resumo da execução mostra
+  encontrados e apagados por coleção. Documentos de outra edição nunca são tocados.
+- **Navegador** (`docs/reset-teste.html`, ferramenta interna, noindex, fora do nav/sitemap
+  e de `check-meta.js` via `INTERNAL_PAGES`): botão que limpa NESTE navegador as chaves
+  `devfest-campinas-2026:*` (check-ins, avaliações, nome, favoritos), o usuário anônimo do
+  Firebase (IndexedDB), caches e service worker. `resetLocalData` recebe todas as APIs por
+  parâmetro (`features/local-reset.js`). Só mexe em quem abre a página.
+- Ordem no dia anterior: workflow em modo teste, conferir os números, rodar de verdade com
+  `APAGAR`, depois abrir `reset-teste.html` nos aparelhos usados nos testes.
 
 ## Feedback v2 (sessão 6): Minhas palestras, aviso e avaliação do evento
 

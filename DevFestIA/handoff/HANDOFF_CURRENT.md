@@ -167,11 +167,12 @@ analytics", "Accessibility rules", "Design tokens", "Track rooms").
 12. **Certificado de participação PROFISSIONAL (task anotada, não iniciada):** documento A4 em PDF vetorial, identidade visual completa, assinaturas, código único e QR de validação; decisões em aberto (quem tem
     direito, carga horária, nome, validação, textos e assinaturas) em
     `project-docs/IDEAS_BACKLOG.md`. Depende também do logo novo em SVG.
-13. **Script de limpeza dos dados de teste (proposto, aguardando aprovação do Renato):** workflow
-    "Limpar dados de teste" (só `checkins`, `talk-feedback` e `event-feedback`; simulação por
-    padrão; exige digitar `APAGAR`; recusa depois do início do evento) e página interna
-    `reset-teste.html` pra limpar o navegador de teste. Enquanto isso, apagar as coleções pelo
-    console do Firebase.
+13. **Limpeza dos dados de teste (implementada, falta rodar de verdade perto do evento):**
+    workflow "Purge test data" (simulação por padrão, exige `APAGAR`, recusa depois do início do
+    evento, só `checkins`/`talk-feedback`/`event-feedback`) e `reset-teste.html` pro navegador de
+    teste (ver PROJECT_CONTEXT, "Limpeza dos dados de teste"). Falta o Renato rodar: no dia
+    anterior, workflow em modo teste, depois de verdade, e abrir `reset-teste.html` nos aparelhos
+    de teste.
 
 ## Backlog de ideias (aprovadas em espírito, nada implementado)
 

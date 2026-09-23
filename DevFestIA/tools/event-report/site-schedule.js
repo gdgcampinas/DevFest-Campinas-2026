@@ -25,7 +25,7 @@ function loadSiteContext({ siteDir = SITE_DIR } = {}) {
   return context;
 }
 
-/** Map chave-da-palestra -> { title, track, time, speakers }, na ordem da grade, mais o formulário de feedback do evento. */
+/** Map chave-da-palestra -> { title, track, time, speakers }, na ordem da grade, o formulário de feedback do evento e o início do evento. */
 function readSiteSchedule(options) {
   const site = vm.runInContext("({ SCHEDULE, TRACKS, EVENT, EVENT_FEEDBACK_FORM, talkKey, formatEventTime, speakerList })", loadSiteContext(options));
   const talks = new Map();
@@ -42,7 +42,7 @@ function readSiteSchedule(options) {
       });
     });
   });
-  return { talks, form: site.EVENT_FEEDBACK_FORM };
+  return { talks, form: site.EVENT_FEEDBACK_FORM, startsAt: site.SCHEDULE[0].start };
 }
 
 module.exports = { readSiteSchedule };
