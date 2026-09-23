@@ -953,9 +953,11 @@ body:has(.modal:not([hidden])) .feedback-nudge{display:none}
 .hero-stage #hero{position:relative;z-index:1;margin-bottom:0}
 .hero-galaxy{position:absolute;inset:0;pointer-events:none;z-index:0}
 .hero-galaxy img{
-  position:absolute;top:var(--galaxy-y);left:var(--galaxy-x);width:var(--galaxy-size);height:auto;translate:-50% -50%;
+  position:absolute;top:var(--galaxy-y);left:var(--galaxy-x);height:var(--galaxy-size);width:auto;translate:-50% -50%;
   opacity:var(--galaxy-opacity);animation:galaxySpin var(--galaxy-duration) linear infinite;will-change:transform;
 }
 @keyframes galaxySpin{to{transform:rotate(360deg)}}
 /* o card do hero deixa a galáxia aparecer de leve por trás */
 .hero-stage .hero-card{background:linear-gradient(135deg,color-mix(in oklch, var(--card-a) 72%, transparent),color-mix(in oklch, var(--card-b) 72%, transparent))}
+/* ?movimento=1: gira mesmo com "reduzir movimento" ligado (vence a regra global, que usa !important sem especificidade) */
+.hero-stage--motion .hero-galaxy img{animation-duration:var(--galaxy-duration) !important;animation-iteration-count:infinite !important}

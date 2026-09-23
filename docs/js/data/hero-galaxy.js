@@ -7,11 +7,11 @@
  */
 const HERO_GALAXY = {
   src: "assets/brand/gdg-icon.svg",
-  rotationSeconds: 140, // uma volta completa
-  opacity: 0.42,
-  size: "1500px", // maior que o palco de propósito: só os arcos do centro aparecem por trás do hero
-  x: "80%", // centro da espiral em relação ao palco
-  y: "30%",
+  rotationSeconds: 80, // uma volta completa
+  opacity: 0.4,
+  size: "230%", // relativo à ALTURA do hero (não à largura da tela), então é igual em qualquer monitor
+  x: "50%", // centro da espiral em relação ao palco
+  y: "50%",
 };
 
 const heroGalaxyRepository = createRepository(HERO_GALAXY);
