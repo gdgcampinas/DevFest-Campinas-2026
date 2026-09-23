@@ -231,7 +231,20 @@ desenha 5 fases — `loading`, `checkin`, `waiting`, `rate`, `done` —
   conteúdo, networking, comunicação, 1-5 cada, opcionais), "recomendaria?" de 0 a 10,
   nome, "o que mais gostou", "o que melhorar". Aparece no hero "Encerrado" da Home e
   em Minhas palestras. `render` é síncrono (fase por estado local), então não trava.
-- **Por palestra:** nota 1-5 + nome, "o que mais gostou" e "o que melhorar" (opcionais).
+- **Por palestra:** nota 1-5 e **nome (obrigatórios)**; "o que mais gostou" e "o que melhorar"
+  opcionais. **Evento:** nota geral, **os 6 aspectos, a nota 0-10 e o nome obrigatórios**; textos
+  opcionais. O nome é digitado (não verificado), lembrado em `myNameRepository` e preenche os
+  outros formulários abertos (`rememberName`). Isso substitui a decisão antiga de feedback
+  "totalmente anônimo": o uid segue anônimo, mas cada avaliação leva um nome.
+- **Estrelas** (`components/rating-inputs.js` + `.feedback-star` em styles.css): já vêm com 5
+  cheias (`defaultValue`), clicar numa anterior esvazia as seguintes (preenchimento até a
+  marcada por CSS `:has()`), com prévia no hover.
+- **QR de avaliação na sala** (`features/checkin-display.js`, `resolveRoomPanels` pura): a tela
+  da sala mostra "Check-in nesta palestra" (palestra atual), "Avalie esta palestra" (a última
+  terminada, fica até a próxima terminar; vira "Avalie a palestra anterior" com outra em
+  andamento) e, depois do fim, "Avalie o evento". O QR de avaliação abre
+  `grade.html?avaliar=<código>`: registra a presença (escanear na sala vale como check-in) e
+  abre o formulário daquela palestra destacado (`?avaliar=1` abre a lista inteira).
 - **Regras** (`DevFestIA/firebase/firestore.rules`, colar à mão): a avaliação de
   palestra só é aceita se existir o check-in do mesmo id (`exists()`), todo `create`
   aceita só os campos conhecidos (`hasOnly`) e o evento valida aspectos (ids

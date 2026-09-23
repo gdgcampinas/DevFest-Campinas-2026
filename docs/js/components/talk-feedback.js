@@ -8,9 +8,10 @@
  *   "rate"            → pode avaliar (check-in feito + palestra terminada)
  *   "done"            → já avaliou
  * `entryKey` vai em todo elemento interativo via data-attribute, pra o
- * handler delegado saber qual palestra. `message` é um aviso de erro opcional.
+ * handler delegado saber qual palestra. `message` é um aviso de erro opcional;
+ * `name` pré-preenche o nome (obrigatório) com o da última avaliação.
  */
-function talkFeedbackMarkup({ phase, entryKey, title = "", message = "" }) {
+function talkFeedbackMarkup({ phase, entryKey, title = "", message = "", name = "" }) {
   const note = message ? `<p class="talk-feedback-error" role="alert">${message}</p>` : "";
 
   if (phase === "checkin") {
@@ -42,7 +43,7 @@ function talkFeedbackMarkup({ phase, entryKey, title = "", message = "" }) {
       <p class="talk-feedback-title">${iconMarkup("mic")}Avaliar essa palestra</p>
       <p class="talk-feedback-hint">Você esteve aqui, conta pra gente o que achou:</p>
       ${starRatingMarkup({ name: `rating-${entryKey}`, label: "Nota de 1 a 5", required: true })}
-      <input type="text" class="feedback-input" name="name" placeholder="Seu nome (opcional)" maxlength="79">
+      <input type="text" class="feedback-input" name="name" value="${escapeHtml(name)}" placeholder="Seu nome" maxlength="79" autocomplete="name" required>
       <textarea class="feedback-input" name="highlight" placeholder="O que mais gostou? (opcional)" maxlength="399" rows="2"></textarea>
       <textarea class="feedback-input" name="improve" placeholder="O que poderia melhorar? (opcional)" maxlength="399" rows="2"></textarea>
       ${note}

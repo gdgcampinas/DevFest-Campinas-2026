@@ -21,7 +21,21 @@
  */
 const FEEDBACK_CHANGED_EVENT = "devfest:feedback-changed";
 
-function initTalkFeedback(rootEl, { index, reveal = true, now = () => new Date(), myCheckins, myRatings }) {
+/** Guarda o nome e já preenche os outros campos de nome abertos e vazios (não pedir o nome 10 vezes). */
+function rememberName(repository, name) {
+  repository.set(name);
+  document.querySelectorAll('input[name="name"]').forEach(input => {
+    if (!input.value.trim()) input.value = name;
+  });
+}
+
+/** Aviso de erro logo acima do botão de envio (troca o anterior). Reusado pelos formulários de palestra e do evento. */
+function showFormError(formEl, submitBtn, message) {
+  formEl.querySelector(".talk-feedback-error")?.remove();
+  submitBtn.insertAdjacentHTML("beforebegin", `<p class="talk-feedback-error" role="alert">${message}</p>`);
+}
+
+function initTalkFeedback(rootEl, { index, reveal = true, now = () => new Date(), myCheckins, myRatings, myName }) {
   const announceChange = () => rootEl.dispatchEvent(new CustomEvent(FEEDBACK_CHANGED_EVENT));
 
   /** Grava o check-in. "permission-denied" = já existia (a regra recusa o segundo); outro erro sobe pra quem chamou avisar. */
@@ -46,7 +60,7 @@ function initTalkFeedback(rootEl, { index, reveal = true, now = () => new Date()
   function render(containerEl, entry) {
     if (!reveal || !containerEl) return;
     containerEl.dataset.feedbackContainer = entry.key;
-    containerEl.innerHTML = talkFeedbackMarkup(stateFor(entry));
+    containerEl.innerHTML = talkFeedbackMarkup({ ...stateFor(entry), name: myName.get() });
   }
 
   /** `?checkin=<code>` na URL: faz o check-in e limpa o parâmetro. Agendado por runAfterModules. */
@@ -104,25 +118,28 @@ function initTalkFeedback(rootEl, { index, reveal = true, now = () => new Date()
     const container = containerOf(form);
     if (!entry || !container) return;
     const submitBtn = form.querySelector("[type=submit]");
-    submitBtn.disabled = true;
     const text = field => form.querySelector(`[name=${field}]`).value.trim();
-    const optional = { name: text("name"), highlight: text("highlight"), improve: text("improve") };
+    const name = text("name");
+    if (!name) return showFormError(form, submitBtn, "Informe seu nome pra enviar a avaliação.");
+    submitBtn.disabled = true;
+    const optional = { highlight: text("highlight"), improve: text("improve") };
     try {
       const uid = await window.firebaseClient.ensureAnonymousUid();
       await window.feedbackRepository.add(uid, entry.key, {
         entryKey: entry.key,
         rating: Number(new FormData(form).get(`rating-${entry.key}`)),
+        name,
         ...Object.fromEntries(Object.entries(optional).filter(([, value]) => value)),
       });
+      rememberName(myName, name);
       myRatings.addAll([entry.key]);
       render(container, entry);
       announceChange();
     } catch {
       submitBtn.disabled = false;
-      form.querySelector(".talk-feedback-error")?.remove();
-      submitBtn.insertAdjacentHTML("beforebegin", `<p class="talk-feedback-error" role="alert">Não foi possível enviar agora. Confira sua conexão e o check-in e tente de novo.</p>`);
+      showFormError(form, submitBtn, "Não foi possível enviar agora. Confira sua conexão e o check-in e tente de novo.");
     }
   });
 
-  return { render, handleCheckinParam };
+  return { render, handleCheckinParam, checkin: doCheckin };
 }

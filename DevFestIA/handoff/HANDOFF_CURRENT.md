@@ -152,11 +152,12 @@ analytics", "Accessibility rules", "Design tokens", "Track rooms").
     tela cheia com cenas em rodízio (agora/próximas, álbum, fênix, patrocinadores,
     QR codes, números ao vivo, dicas, avisos). Detalhes e perguntas em aberto
     (tamanho do painel, origem das fotos) em `project-docs/IDEAS_BACKLOG.md`.
-11. **Feedback v2 (implementado, falta publicar as regras e testar no Chrome real):**
+11. **Feedback v2 (implementado; falta publicar as regras NOVAS e limpar os testes):**
     Minhas palestras (`?avaliar=1`), aviso "avalie", avaliação do evento com aspectos e
     0-10, relatório v2 (ver PROJECT_CONTEXT, "Feedback v2"). Falta: (a) colar
-    `DevFestIA/firebase/firestore.rules` no console e Publicar (a regra nova exige o
-    check-in pra aceitar a avaliação de palestra); (b) testar no Chrome real: check-in
+    `DevFestIA/firebase/firestore.rules` no console e Publicar de novo (a versão nova exige
+    nome, aspectos e 0-10 no evento; a publicada em 2026-09-23 ainda é a anterior, com
+    check-in obrigatório mas nome opcional); (b) testar no Chrome real: check-in
     numa palestra, avaliar, conferir o documento em `talk-feedback`, avaliar o evento
     (`/DEV/index.html?demo=2026-11-28T18:10`); (c) apagar os documentos de teste
     de `checkins`, `talk-feedback` e `event-feedback` antes do evento; (d) colocar o

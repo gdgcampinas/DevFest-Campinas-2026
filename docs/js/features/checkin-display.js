@@ -1,55 +1,63 @@
 /**
- * Feature: tela de check-in ao vivo pra deixar num tablet/monitor da
- * sala. Mostra o QR da palestra que está rolando agora naquela trilha
- * e atualiza sozinha quando a palestra muda — nenhuma imagem pra
- * imprimir, roda o dia inteiro na mesma aba.
+ * Feature: tela ao vivo pra deixar num tablet/monitor da sala. Mostra, por
+ * trilha, os QR codes do momento e atualiza sozinha (nenhuma imagem pra
+ * imprimir, roda o dia inteiro na mesma aba):
+ *   - "Check-in nesta palestra": a palestra que está rolando agora;
+ *   - "Avalie esta palestra": a última palestra terminada, e continua na tela
+ *     até a próxima terminar (quem escaneia já faz o check-in junto);
+ *   - "Avalie o evento": depois do fim do evento.
  *
- * Reusa resolveEventState() (live-status.js, mesmo cálculo do "AO VIVO"
- * do resto do site) e talkShareCode() (talk-index.js, o mesmo código
- * curto usado em `?agenda=`) — zero lógica de data/hora ou de código
- * duplicada aqui, só o desenho da tela.
+ * Reusa resolveEventState() (live-status.js, mesmo cálculo do "AO VIVO" do
+ * resto do site) e talkShareCode() (talk-index.js, o mesmo código curto do
+ * `?agenda=`): nenhuma lógica de data/hora ou de código duplicada aqui.
+ * `resolveRoomPanels` é pura (só decide o que mostrar), o resto só desenha.
  */
-function checkinUrlFor(entry, siteUrl) {
-  return `${siteUrl}grade.html?checkin=${entry.code}`;
+const checkinUrlFor = (code, siteUrl) => `${siteUrl}grade.html?checkin=${code}`;
+const rateUrlFor = (code, siteUrl) => `${siteUrl}grade.html?avaliar=${code}`;
+const rateEventUrl = siteUrl => `${siteUrl}index.html?avaliar=1`;
+
+function resolveRoomPanels({ schedule, track, timezone, siteUrl, now }) {
+  const state = resolveEventState(now, schedule);
+  if (state.phase === "before") return { message: "O evento ainda não começou." };
+
+  const talkSlots = schedule.filter(slot => slot.talks?.[track.id]);
+  const finished = talkSlots.filter(slot => slot.end <= now).pop();
+  const active = state.phase === "live" ? state.activeSlot : null;
+  const panels = [];
+
+  if (finished) {
+    const code = talkShareCode(finished, track.id, timezone);
+    panels.push({ id: "cdRate", kind: "rate", heading: active ? "Avalie a palestra anterior" : "Avalie esta palestra", title: finished.talks[track.id].title, hint: "Escaneie pra avaliar (seu check-in é registrado junto)", url: rateUrlFor(code, siteUrl) });
+  }
+  if (active?.talks?.[track.id]) {
+    const code = talkShareCode(active, track.id, timezone);
+    panels.push({ id: "cdCheckin", kind: "checkin", heading: "Check-in nesta palestra", title: active.talks[track.id].title, hint: "Aponte a câmera do celular pro QR code pra fazer check-in", url: checkinUrlFor(code, siteUrl) });
+  }
+  if (state.phase === "after") {
+    panels.push({ id: "cdEvent", kind: "rate", heading: "Avalie o evento", title: "DevFest Campinas", hint: "Obrigado por participar! Conte como foi", url: rateEventUrl(siteUrl) });
+  }
+  return panels.length ? { panels } : { message: "Nenhuma palestra agora nesta sala." };
 }
 
 function initCheckinDisplay(rootEl, { schedule, track, timezone, siteUrl, now = () => new Date() }) {
   const bodyEl = rootEl.querySelector(".cd-body");
-  let qr = null;
-  let lastCode = null;
+  let lastSignature = null;
 
-  function renderNoTalk(message) {
-    lastCode = null;
-    if (qr) { bodyEl.innerHTML = ""; qr = null; }
-    bodyEl.innerHTML = `<div class="cd-empty">${message}</div>`;
+  function draw({ panels, message }) {
+    const signature = panels ? panels.map(panel => panel.url).join("|") : message;
+    if (signature === lastSignature) return; // nada mudou desde o último tick: não redesenha (evita piscar o QR)
+    lastSignature = signature;
+    if (!panels) {
+      bodyEl.innerHTML = `<div class="cd-empty">${message}</div>`;
+      return;
+    }
+    bodyEl.innerHTML = `<div class="cd-track" style="--track-color:${track.color}">${track.label}</div>
+      <div class="cd-panels">${panels.map(roomPanelMarkup).join("")}</div>`;
+    const size = panels.length > 1 ? 280 : 360;
+    panels.forEach(panel => new QRCode(document.getElementById(panel.id), { text: panel.url, width: size, height: size, colorDark: "#05060a", colorLight: "#ffffff" }));
   }
 
-  function renderTalk(slot) {
-    const data = slot.talks[track.id];
-    const code = talkShareCode(slot, track.id, timezone);
-    const url = checkinUrlFor({ code }, siteUrl);
-
-    if (code === lastCode) return; // mesma palestra do último tick, não redesenha (evita piscar o QR)
-    lastCode = code;
-
-    bodyEl.innerHTML = `
-      <div class="cd-track" style="--track-color:${track.color}">${track.label}</div>
-      <h1 class="cd-title">${data.title}</h1>
-      <div class="cd-qr" id="cdQr"></div>
-      <p class="cd-hint">Aponte a câmera do celular pro QR code<br>pra fazer check-in nesta palestra</p>
-    `;
-    qr = new QRCode(document.getElementById("cdQr"), { text: url, width: 360, height: 360, colorDark: "#05060a", colorLight: "#ffffff" });
-  }
-
-  function tick() {
-    const state = resolveEventState(now(), schedule);
-    if (state.phase === "before") return renderNoTalk("O evento ainda não começou.");
-    if (state.phase === "after") return renderNoTalk("Obrigado por participar! Até a próxima edição.");
-    const slot = state.activeSlot;
-    if (!slot || !slot.talks || !slot.talks[track.id]) return renderNoTalk("Nenhuma palestra agora nesta sala.");
-    renderTalk(slot);
-  }
-
+  const tick = () => draw(resolveRoomPanels({ schedule, track, timezone, siteUrl, now: now() }));
   tick();
   setInterval(tick, 5000);
 }

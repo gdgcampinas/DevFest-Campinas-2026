@@ -856,11 +856,15 @@ a.detail-speaker .li-icon{
 .talk-feedback--waiting,.talk-feedback--done{display:flex;align-items:center;gap:8px;font:700 13.5px var(--font-body);color:var(--text)}
 .talk-feedback--waiting .icon,.talk-feedback--done .icon{width:18px;height:18px;color:var(--accent)}
 .feedback-form{display:flex;flex-direction:column;gap:10px}
-.feedback-stars{display:flex;gap:6px;font-size:26px}
-.feedback-star{cursor:pointer;color:var(--card-border);transition:color .1s ease}
+/* estrelas: preenchem da 1ª até a marcada (a marcada e todas as anteriores); ao passar o mouse mostram a prévia */
+.feedback-stars{display:flex;gap:6px;font-size:30px;line-height:1}
+.feedback-star{cursor:pointer;color:var(--card-border);transition:color .1s ease,transform .1s ease}
 .feedback-star input{position:absolute;opacity:0;width:1px;height:1px}
-.feedback-star:hover{color:var(--amber)}
-.feedback-star:has(input:checked){color:var(--amber)}
+.feedback-star:has(input:checked),.feedback-star:has(~ .feedback-star input:checked){color:var(--amber)}
+.feedback-stars:hover .feedback-star{color:var(--card-border)}
+.feedback-stars .feedback-star:hover,.feedback-stars .feedback-star:has(~ .feedback-star:hover){color:var(--amber)}
+.feedback-stars .feedback-star:hover{transform:scale(1.15)}
+.feedback-star:has(input:focus-visible){outline:2px solid var(--text);outline-offset:2px;border-radius:6px}
 .feedback-input{width:100%;padding:9px 12px;border-radius:10px;border:1px solid var(--card-border);background:rgba(255,255,255,.03);color:var(--text);font:500 13.5px var(--font-body);font-family:inherit}
 .feedback-input:focus-visible{outline:2px solid var(--text);outline-offset:1px}
 textarea.feedback-input{resize:vertical;min-height:44px}
@@ -909,7 +913,7 @@ textarea.feedback-input{resize:vertical;min-height:44px}
 .aspect-list{display:flex;flex-direction:column;gap:6px}
 .aspect-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .aspect-label{font:500 13.5px var(--font-body);color:var(--muted)}
-.aspect-row .feedback-stars{font-size:22px}
+.aspect-row .feedback-stars{font-size:24px}
 .nps-scale{display:flex;flex-wrap:wrap;gap:4px}
 .nps-option{cursor:pointer}
 .nps-option input{position:absolute;opacity:0;width:1px;height:1px}
@@ -938,3 +942,7 @@ textarea.feedback-input{resize:vertical;min-height:44px}
 .feedback-nudge-text .icon{width:18px;height:18px;flex:0 0 auto;color:var(--amber)}
 .feedback-nudge-dismiss{background:none;border:0;color:var(--muted);font:700 16px var(--font-body);cursor:pointer;padding:4px 6px}
 @media(max-width:719px){.feedback-nudge{bottom:calc(84px + env(safe-area-inset-bottom))}}
+
+.my-talk--focus{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in oklch, var(--accent) 35%, transparent)}
+.my-talks-notice{margin:0;padding:10px 12px;border-radius:10px;font:600 13.5px/1.4 var(--font-body);color:var(--amber);border:1px solid color-mix(in oklch, var(--amber) 45%, transparent)}
+body:has(.modal:not([hidden])) .feedback-nudge{display:none}

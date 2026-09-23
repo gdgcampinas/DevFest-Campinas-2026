@@ -43,8 +43,8 @@ service cloud.firestore {
       return value is int && value >= 1 && value <= 5;
     }
 
-    function optionalRating(data, field) {
-      return !(field in data) || validRating(data[field]);
+    function requiredText(data, field, max) {
+      return field in data && data[field] is string && data[field].size() > 0 && data[field].size() < max;
     }
 
     function optionalText(data, field, max) {
@@ -53,14 +53,15 @@ service cloud.firestore {
 
     // Aspectos do feedback do evento: ESPELHAR os ids de docs/js/data/event-feedback-form.js.
     function validAspects(data) {
-      return !('aspects' in data) || (data.aspects is map
+      return 'aspects' in data && data.aspects is map
         && data.aspects.keys().hasOnly(['organizacao', 'local', 'alimentacao', 'conteudo', 'networking', 'comunicacao'])
-        && optionalRating(data.aspects, 'organizacao')
-        && optionalRating(data.aspects, 'local')
-        && optionalRating(data.aspects, 'alimentacao')
-        && optionalRating(data.aspects, 'conteudo')
-        && optionalRating(data.aspects, 'networking')
-        && optionalRating(data.aspects, 'comunicacao'));
+        && data.aspects.keys().hasAll(['organizacao', 'local', 'alimentacao', 'conteudo', 'networking', 'comunicacao'])
+        && validRating(data.aspects.organizacao)
+        && validRating(data.aspects.local)
+        && validRating(data.aspects.alimentacao)
+        && validRating(data.aspects.conteudo)
+        && validRating(data.aspects.networking)
+        && validRating(data.aspects.comunicacao);
     }
 
     // Check-in numa palestra: sem campo próprio além da base.
@@ -72,7 +73,7 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
-    // Feedback de palestra: nota 1-5, nome/"o que mais gostou"/"o que melhorar" opcionais.
+    // Feedback de palestra: nota 1-5 e nome (obrigatórios); "o que mais gostou" e "o que melhorar" opcionais.
     // Só quem tem o check-in DAQUELA palestra avalia (o id do check-in é o mesmo id deste documento).
     match /talk-feedback/{docId} {
       allow get: if isOwnDoc(docId); // só a própria pessoa lê o próprio feedback
@@ -80,14 +81,14 @@ service cloud.firestore {
       allow create: if isOwnDoc(docId) && hasValidBaseFields()
         && request.resource.data.keys().hasOnly(['edition', 'entryKey', 'createdAt', 'rating', 'name', 'highlight', 'improve'])
         && validRating(request.resource.data.rating)
-        && optionalText(request.resource.data, 'name', 80)
+        && requiredText(request.resource.data, 'name', 80)
         && optionalText(request.resource.data, 'highlight', 400)
         && optionalText(request.resource.data, 'improve', 400)
         && exists(/databases/$(database)/documents/checkins/$(docId));
       allow update, delete: if false;
     }
 
-    // Feedback do evento (fim de dia): nota geral 1-5 + aspectos 1-5, nota 0-10 de indicação e textos opcionais.
+    // Feedback do evento (fim de dia): nota geral 1-5, os 6 aspectos 1-5, nota 0-10 de indicação e nome (obrigatórios); textos opcionais.
     match /event-feedback/{docId} {
       allow get: if isOwnDoc(docId); // só a própria pessoa lê o próprio feedback
       allow list: if false; // ninguém lê a coleção inteira nem os registros de outra pessoa
@@ -95,8 +96,8 @@ service cloud.firestore {
         && request.resource.data.keys().hasOnly(['edition', 'entryKey', 'createdAt', 'rating', 'aspects', 'nps', 'name', 'highlight', 'improve'])
         && validRating(request.resource.data.rating)
         && validAspects(request.resource.data)
-        && (!('nps' in request.resource.data) || (request.resource.data.nps is int && request.resource.data.nps >= 0 && request.resource.data.nps <= 10))
-        && optionalText(request.resource.data, 'name', 80)
+        && 'nps' in request.resource.data && request.resource.data.nps is int && request.resource.data.nps >= 0 && request.resource.data.nps <= 10
+        && requiredText(request.resource.data, 'name', 80)
         && optionalText(request.resource.data, 'highlight', 400)
         && optionalText(request.resource.data, 'improve', 400);
       allow update, delete: if false;

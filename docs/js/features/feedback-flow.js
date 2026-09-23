@@ -15,13 +15,14 @@ function initFeedbackFlow({
   now = resolveNow(),
   myCheckins = myCheckinsRepository,
   myRatings = myRatingsRepository,
+  myName = myNameRepository,
   form = eventFeedbackFormRepository.getAll(),
 }) {
   const index = calendar.index;
   const endsAt = schedule[schedule.length - 1].end;
   const startsAt = schedule[0].start;
-  const feedback = initTalkFeedback(document.body, { index, reveal, now, myCheckins, myRatings });
-  const eventFeedback = initEventFeedback(document.body, { form, myRatings, now, endsAt });
+  const feedback = initTalkFeedback(document.body, { index, reveal, now, myCheckins, myRatings, myName });
+  const eventFeedback = initEventFeedback(document.body, { form, myRatings, myName, now, endsAt });
   if (!reveal) return { feedback, eventFeedback };
 
   const myTalks = initMyTalks({ rootEl: document.body, index, feedback, eventFeedback, myCheckins, myRatings, createModal, timezone: event.timezone });

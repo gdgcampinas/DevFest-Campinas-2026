@@ -7,3 +7,6 @@
  */
 const myCheckinsRepository = createPersistedSetRepository({ storageKey: "devfest-campinas-2026:my-checkins" });
 const myRatingsRepository = createPersistedSetRepository({ storageKey: "devfest-campinas-2026:my-ratings" });
+
+/** Nome digitado no último feedback, pra pré-preencher o das próximas palestras (o nome é obrigatório). */
+const myNameRepository = createPersistedValueRepository({ storageKey: "devfest-campinas-2026:my-name" });
