@@ -6,6 +6,7 @@ Multi-page site for DevFest Campinas 2026 (GDG Campinas), built the same way as 
 
 - Plain HTML/CSS/JS. Zero build, zero npm dependency. Fonts are self-hosted (Google Sans, OFL, `assets/fonts/`, `css/fonts.css`); no runtime calls to Google Fonts.
 - GitHub Pages source: `docs/` folder on `main`.
+- Nomes dos workflows no GitHub Actions (campo `name:`, com ícone pra achar rápido): ✅ Validar, 🚀 Publicar no main, 🎫 Sincronizar Sympla, 📊 Relatório do evento, 🧹 Limpar dados de teste. **Atenção:** o Promote escuta o nome exato do Validate (`workflow_run`), e roda com o arquivo do `main`; renomear o Validate exige, antes, ensinar o Promote o nome novo e promover, senão a publicação automática para.
 - Working branch: `development`. CI (`.github/workflows/validate.yml`) runs `node --check` on every push/PR to `development`; if it passes, `.github/workflows/promote.yml` fast-forward-merges `development` into `main` automatically. Never commit directly to `main`.
 
 ## Diretiva de Código — Clean Code + Clean Architecture
