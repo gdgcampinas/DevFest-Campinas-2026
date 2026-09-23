@@ -164,7 +164,7 @@ analytics", "Accessibility rules", "Design tokens", "Track rooms").
     mensagem final do Sympla e o QR no encerramento; (c) definir quem monta o tablet de cada
     sala (`checkin-display.html?trilha=<ia|webdata|mobile|mentoring>`). Não feito: nota média
     pública nos cards (decisão: só interno).
-12. **Certificado de participação (task anotada, não iniciada):** decisões em aberto (quem tem
+12. **Certificado de participação PROFISSIONAL (task anotada, não iniciada):** documento A4 em PDF vetorial, identidade visual completa, assinaturas, código único e QR de validação; decisões em aberto (quem tem
     direito, carga horária, nome, validação, textos e assinaturas) em
     `project-docs/IDEAS_BACKLOG.md`. Depende também do logo novo em SVG.
 13. **Script de limpeza dos dados de teste (proposto, aguardando aprovação do Renato):** workflow

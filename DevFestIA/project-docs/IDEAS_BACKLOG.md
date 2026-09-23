@@ -96,7 +96,7 @@ sênior?") que no fim sugerem quais palestras favoritar — preenche a Minha
 agenda automaticamente via `favoritesRepository.addAll()` (já existe,
 reusado do fluxo de agenda compartilhada).
 
-### Certificado de participação do evento — TASK ANOTADA, não iniciada
+### Certificado de participação do evento (profissional) — TASK ANOTADA, não iniciada
 Pedido do Renato (2026-09-23): emitir certificado de participação do DevFest Campinas 2026.
 **Não fazer agora**, só registrado. Reusa peças que já existem (cartão "Eu vou!" em
 canvas, check-ins por palestra, gate por inscrição do Sympla, feedback com nome).
@@ -115,6 +115,21 @@ canvas, check-ins por palestra, gate por inscrição do Sympla, feedback com nom
    assinado pelo job do Sympla (que já tem segredo). Decidir se validação é necessária.
 5. **Texto, assinaturas e logos:** texto aprovado pela organização, quem assina, e os logos
    novos (chegaram, ver handoff item 1; ainda sem SVG).
+
+**Requisito do Renato: certificado PROFISSIONAL** (nível de documento oficial, não um cartão de
+rede social). O que isso pede:
+- **Formato de documento:** A4 paisagem, PDF em alta resolução e texto vetorial (não uma imagem
+  achatada), pronto pra imprimir e pra anexar em currículo/LinkedIn. Por isso a página com CSS de
+  impressão (`certificado.html`) tende a ser melhor que canvas; PNG fica como extra pra postar.
+- **Identidade visual completa:** logo oficial do GDG Campinas (precisa do SVG, ver handoff item 1),
+  fonte Google Sans do site, paleta da marca, moldura e hierarquia tipográfica cuidadas.
+  Passar por design antes de codar (mockup aprovado pelo Renato, como foi com as plenárias).
+- **Conteúdo completo:** nome, nome do evento, data, cidade e local, carga horária, texto formal,
+  assinaturas (imagens) dos responsáveis, e patrocinadores/realização quando aplicável.
+- **Autenticidade:** código único no certificado e QR pra uma página de validação, pra o
+  certificado poder ser conferido por terceiros (ver decisão 4). Sem isso não passa por "profissional".
+- **Sem falha no dia:** testar impressão e PDF nos navegadores comuns (Chrome, Safari, celular) e
+  com nomes longos e acentuados.
 
 **Forma sugerida:** um único template data-driven (`data/certificate.js` via repository:
 textos, assinaturas, logos, regra de horas), desenhado em `<canvas>` client-side pra baixar
