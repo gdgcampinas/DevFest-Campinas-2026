@@ -71,6 +71,11 @@ docs/
       checkin-repository.js      checkinRepository sobre createFirestoreRepository (coleção "checkins")
       feedback-repository.js     feedbackRepository sobre createFirestoreRepository (coleção "talk-feedback")
       event-feedback-repository.js  eventFeedbackRepository sobre createFirestoreRepository (coleção "event-feedback")
+      public-lookup-repository.js   type="module": createPublicLookupRepository() (get por id conhecido, sem lista/login), expõe window.createPublicLookupRepository
+      registrations-repository.js   registrationsRepository sobre ele (coleção "registrations", escrita só pelo job do Sympla)
+      event-stats-repository.js     eventStatsRepository sobre ele (coleção "event-stats": total público de inscritos)
+      email-hash.js                 DUAL (navegador + Node): normalizeEmail/sha256Hex/registrationKey; única fonte da chave "<edição>_<sha256 do e-mail>"
+      verified-registrations.js     verifiedRegistrationsRepository (localStorage, só a chave, nunca o e-mail)
       starfield.js               STAR_LAYERS (posições geradas, box-shadow) + BG_CIRCUIT_SRC + starfieldRepository
       analytics.js              ANALYTICS config (provider, endpoint, notice); empty endpoint = off
       tickets.js                TICKET_TYPES (Grátis / com camiseta / VIP, mock values) + TICKETS_NOTE
@@ -100,6 +105,8 @@ docs/
       talk-feedback.js          talkFeedbackMarkup(state): check-in/avaliação (fases checkin/waiting/rate/done)
       event-feedback.js        eventFeedbackMarkup({phase}): avaliação do evento inteiro (fases loading/rate/done, sem check-in)
       share-card.js             shareCardModalMarkup(): conteúdo do modal do cartão pessoal "Eu vou!" (nome + canvas + ações)
+      registration-gate.js      registrationGateMarkup({phase}): "confirme sua inscrição" (e-mail do Sympla)
+      registration-counter.js   registrationCounterMarkup({count}): "N pessoas já garantiram a vaga"
       construction-notice.js     constructionNoticeMarkup(message): "será revelado em breve" card, reused by every mock section
       install-guide.js           installGuideMarkup(guide): body of the "how to install" modal
       avatar.js                 photo or initials — automatic fallback
@@ -115,7 +122,7 @@ docs/
       sponsor-card.js               sponsor/community item (logo box + name + optional description)
       person-card.js                 person card (team/speakers)
     features/                data + template + behavior, one section each
-      agenda.js, track-filter.js, a11y.js, pwa.js, install-platform.js, starfield.js, talk-feedback.js, event-feedback.js, share-card.js, reveal-gate.js, checkin-display.js, analytics.js, calendar.js, talk-index.js, calendar-actions.js, agenda-share.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
+      agenda.js, track-filter.js, a11y.js, pwa.js, install-platform.js, starfield.js, talk-feedback.js, event-feedback.js, share-card.js, registration-gate.js, registration-counter.js, reveal-gate.js, checkin-display.js, analytics.js, calendar.js, talk-index.js, calendar-actions.js, agenda-share.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
       featured-speakers.js, sponsors.js, partner-communities.js,
       team.js, cod.js, seo.js, stats.js, about.js, highlights.js,
       video.js, realizacao.js, tickets.js, footer.js,
@@ -131,11 +138,16 @@ DevFestIA/                  ← AI continuity and dev tooling, not part of the s
   handoff/HANDOFF_CURRENT.md
   firebase/firestore.rules  security rules, paste manually into the Firebase console — see "Firebase (Firestore)"
   tools/                     check-meta.js (CI), check-install.js (CI), check-lineup.js, check-calendar.js, e2e-offline.js, e2e-kill-switch.js
+    lib/                       google-auth.js (JWT de conta de serviço), firestore-rest.js (repository do Firestore via REST), zero npm
+    sympla-sync/               sync Sympla -> Firestore (repository do Sympla, reconcile puro, caso de uso, raiz de composição) + testes (CI)
+    event-report/              relatório pós-evento (inscritos, presença, check-in e notas) + teste (CI)
   design/                    og-image.html, app-icon.html (sources of generated images)
 
 .github/workflows/
   validate.yml               CI: node --check on every .js, every push/PR
   promote.yml                CI: auto fast-forward development → main
+  sync-sympla.yml            a cada 10 min: Sympla -> Firestore (só roda no main; sem secrets só avisa)
+  event-report.yml           sob demanda: relatório pós-evento no resumo da execução
 ```
 
 ## Check-in e avaliação de palestra (fase 5.2)
@@ -233,6 +245,58 @@ genérica (recebe `event`/`schedule`/`createModal` por parâmetro), então
 o mesmo botão funciona em qualquer outra página só chamando
 `initShareCard()` de novo.
 
+## Inscritos do Sympla: sync, gate do cartão e contador
+
+**Inscrição acontece só no Sympla** (evento `s36cd5d`, `reference_id` 3591517).
+A API do Sympla é só de leitura e sem webhook; o site é estático e o token é
+segredo, então a ponte é um job agendado, sem servidor nosso e sem custo:
+
+- **Job** (`.github/workflows/sync-sympla.yml`, a cada 10 min, só no `main`):
+  `DevFestIA/tools/sympla-sync/sync.js` lê participantes (API v1.5.1, paginação por
+  página, com e-mail, tipo de ingresso, `order_status`, check-in) e pedidos
+  (v1.6.0, cursor, com `buyer_email`). A v1.6.0 devolveu participantes vazios em
+  evento passado (medido no 2025), por isso as duas versões, ambas parâmetros do
+  `createSymplaRepository`. Conta como inscrito só `order_status = APPROVED`.
+- **Reconciliação idempotente** (`reconcile.js`, puro): cada participante entra pelo
+  e-mail dele e pelo do comprador do pedido (participante tem prioridade). Estado
+  anterior = 1 documento (`sync-state/<edição>`, um JSON), então cada rodada custa
+  1 leitura e só as escritas do que mudou (cabe no plano grátis Spark).
+  Cancelamento/reembolso remove sozinho. Se cair no meio, a próxima rodada refaz.
+- **Dados no Firestore** (regras em `DevFestIA/firebase/firestore.rules`, colar à mão):
+  `registrations/<edição>_<sha256(e-mail em minúsculas)>` = `{ edition, ticketName }`
+  (nunca e-mail nem nome), `event-stats/<edição>` = `{ total }` (público),
+  `sync-state/<edição>` (interno). Leitura só por `get` (sem `list`); escrita só
+  pelo job (conta de serviço ignora as regras).
+- **Chave única** (`docs/js/data/email-hash.js`, dual): o site e o job usam o MESMO
+  arquivo pra derivar a chave, então escrita e leitura nunca divergem. Mesma ideia
+  em `firebase-config.js` (dual): o job lê projeto e edição de lá.
+- **Gate do cartão** (`features/registration-gate.js`): a pessoa digita o e-mail do
+  Sympla, o navegador calcula a chave e faz `get`. Achou = libera o cartão e guarda
+  a chave em `verified-registrations` (localStorage). E-mail sem inscrição mostra o
+  botão de compra. `initShareCard({ gate })` é opcional (sem gate o cartão é livre);
+  `?cartao=1` abre o modal sozinho (link pro e-mail de confirmação do Sympla).
+  Limite conhecido: qualquer um pode testar se um e-mail conhecido está inscrito
+  (só revela "tem cartão", sem nome nem dado). A avaliação de palestra NÃO ganhou
+  gate de inscrição de propósito: sem servidor ele seria só de interface (burlável
+  no DevTools); a defesa real continua sendo o check-in por palestra.
+- **Contador** (`features/registration-counter.js`, chamado uma vez em `initShell()`):
+  lê `event-stats/<edição>` e mostra "N pessoas já garantiram a vaga" em qualquer
+  página que tenha `#registrationCounter` (Home e Ingressos). Só com
+  `EVENT.tickets.salesOpen` e a partir de `EVENT.tickets.counterMin` (30). Qualquer
+  falha deixa escondido. `runAfterModules()` (app.js) é o jeito único de esperar os
+  módulos do Firebase; `talk-feedback.js` usa o mesmo.
+- **Painel privado**: o resumo de cada execução do job (Actions) mostra inscritos,
+  check-ins no Sympla, por tipo de ingresso e respostas do formulário (camiseta),
+  sem ir pro Firestore. Formato do `custom_form` ainda não observado (2026 sem vendas
+  no dia da implementação): confirmar na primeira execução real.
+- **Relatório pós-evento** (`event-report.yml`, sob demanda): inscritos, presença na
+  porta, check-in por palestra e notas médias, pro media kit e patrocinadores.
+- **Configuração única** (secrets do repositório): `SYMPLA_TOKEN` e
+  `FIREBASE_SERVICE_ACCOUNT` (conta de serviço com a função "Cloud Datastore User").
+  O hash do evento (`SYMPLA_EVENT_ID_HASH`) não é segredo e fica nos workflows.
+  Sem os secrets o job só avisa e termina com sucesso.
+- Testes: `node --test DevFestIA/tools/sympla-sync/sync.test.js DevFestIA/tools/event-report/build-report.test.js` (rodam no CI).
+
 ## Firebase (Firestore) — check-in e feedback
 
 Único pedaço do site com escrita compartilhada entre visitantes; todo o
@@ -270,8 +334,9 @@ permitir comparar edições depois sem UNION manual entre bancos.
   permite `create` (nunca `update`/`delete` do client), tipo/tamanho de
   campo, e que o prefixo do id do documento bata com o uid de quem
   escreve.
-- Coleções hoje: `checkins`, `talk-feedback`, `event-feedback`. Nenhuma
-  tem leitura pública pelo client (`allow read: if false`); exibir
+- Coleções do visitante hoje: `checkins`, `talk-feedback`, `event-feedback`. Nenhuma
+  tem leitura pública pelo client (`allow read: if false`); `registrations`/`event-stats` são
+  do job do Sympla (ver seção própria); exibir
   agregado (nota média etc.) é trabalho futuro (ver handoff, fase 5.4).
 
 ## Repository pattern for static data

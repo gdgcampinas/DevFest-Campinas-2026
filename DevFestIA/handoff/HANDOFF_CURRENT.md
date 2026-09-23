@@ -16,7 +16,7 @@
 - **PROD (público) esconde todo mock por padrão** — line-up, patrocinadores,
   comunidades, time e ingressos mostram "será revelado em breve" em vez de
   dado fictício. **DEV** (`/DEV/` ou `?lineup=1`) mostra tudo.
-- **Sessão 6 (commitado e no ar):** feedback de fim de
+- **Sessão 6 (commitado e no ar; Sympla -> site pronto, aguardando secrets):** feedback de fim de
   evento (fase 5.3) implementado — hero "Encerrado" da home agora mostra
   o formulário de avaliação do evento; e cartão pessoal "Eu vou!"
   (`ingressos.html`, canvas client-side, baixar/compartilhar). Testado
@@ -129,14 +129,16 @@ analytics", "Accessibility rules", "Design tokens", "Track rooms").
    decidir seletor de idioma, onde vive o texto traduzível (hoje hardcoded
    em `data/*.js` e HTML), e se o line-up real também traduz. Escopo grande,
    task própria antes de tocar em código.
-9. **Gatear cartão "Eu vou!" pela inscrição real do Sympla (backlog,
-   não desenhado):** API confirmada — `GET /v1.6.0/events/{eventIdHash}/participants?participant_email=`
-   (header `s_token`, Renato já pode gerar em Minha Conta →
-   Integrações) devolve status do pedido por e-mail. Site é estático,
-   token não pode ir pro client — precisa de proxy server-side (Cloud
-   Function, nunca usada aqui ainda). Evento já publicado no Sympla (id 3591517);
-   falta o `eventIdHash` (via `GET /v1.6.0/events` com o token) e a Cloud Function. Detalhes em
-   `project-docs/IDEAS_BACKLOG.md`.
+9. **Sympla -> site (implementado, falta ligar os secrets):** job de sync, gate
+   do cartão, contador e relatório prontos e testados (ver PROJECT_CONTEXT, "Inscritos
+   do Sympla"). Falta a configuração única do Renato: (a) criar a conta de serviço
+   do Firebase (função "Cloud Datastore User") e baixar a chave JSON; (b) `gh secret set`
+   de `SYMPLA_TOKEN` e `FIREBASE_SERVICE_ACCOUNT` (por prompt oculto, nunca no chat);
+   (c) colar `DevFestIA/firebase/firestore.rules` no console e Publicar; (d) rodar o
+   workflow "Sync Sympla" com `dry_run` uma vez e conferir o resumo; (e) colocar o
+   link `.../ingressos.html?cartao=1` na mensagem de confirmação do Sympla.
+   Confirmar na primeira execução real: formato do `custom_form` (camiseta) e
+   paginação da v1.5.1 (parâmetro `page`).
 
 ## Backlog de ideias (aprovadas em espírito, nada implementado)
 
