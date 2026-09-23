@@ -122,15 +122,26 @@ analytics", "Accessibility rules", "Design tokens", "Track rooms").
 
 ## Backlog de ideias (aprovadas em espírito, nada implementado)
 
-**Identidade e "uau":**
-- Redemoinho do logo animado como fundo do hero (depende do logo novo em SVG).
-- Cartão de compartilhamento pessoal "Vou ao DevFest Campinas" (canvas, não
-  depende do logo, pode ser feito antes).
+Lista completa, com contexto técnico de cada ideia, em
+`project-docs/IDEAS_BACKLOG.md` (cole a seção que quiser retomar num chat
+novo). Resumo:
 
-**Outras ideias:** quiz "Monte sua trilha", certificado de participação
-gerado no navegador, mentorias com agendamento, vagas dos patrocinadores,
-mapa do local, credencial digital com QR, perguntas ao vivo/enquetes,
-mural da hashtag, votação da comunidade pras salas.
+**Identidade e "uau":** redemoinho do logo animado (depende do logo novo
+em SVG), cartão de compartilhamento pessoal "Vou ao DevFest Campinas"
+(canvas, não depende do logo).
+
+**Engajamento:** quiz "Monte sua trilha", certificado de participação,
+perguntas ao vivo/enquetes, passaporte com QR nos estandes, mural da
+hashtag.
+
+**Conteúdo/utilidade:** nota média por palestra (fase 5.4 do feedback),
+depoimento público x privado (decisão adiada de propósito), mapa do
+local, credencial digital com QR, vagas dos patrocinadores, mentorias com
+agendamento, votação da comunidade pras salas.
+
+**Infra/base:** analytics mais profundo (GA4 + consentimento, separado do
+GoatCounter), QR físico por sala, internacionalização, restringir a chave
+do Firebase por domínio.
 
 ## Como trabalhar e testar aqui
 
