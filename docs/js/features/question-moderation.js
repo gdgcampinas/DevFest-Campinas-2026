@@ -6,7 +6,7 @@
  * conta vê "sem permissão" (a regra é a defesa, a tela só avisa).
  *
  * Reusa resolveEventState() (mesmo relógio do site), talkKey() e rankQuestions(); tudo por parâmetro (`deps()` dá
- * repositories e login). Atualiza sozinha a cada `config.boardPollMs`.
+ * repositories e login). Atualiza sozinha a cada `config.boardPollMs` e retoma o login que já estava feito.
  */
 function pickModerationTalk({ schedule, track, now }) {
   const talkSlots = schedule.filter(slot => slot.talks?.[track.id]);
@@ -17,7 +17,7 @@ function pickModerationTalk({ schedule, track, now }) {
   return slot ? { key: talkKey(slot, track.id), title: slot.talks[track.id].title } : null;
 }
 
-function initQuestionModeration(rootEl, { schedule, track, config, now = () => new Date(), deps = defaultModerationDeps }) {
+function initQuestionModeration(rootEl, { schedule, track, config, now = () => new Date(), deps = defaultModerationDeps, whenReady = runAfterModules }) {
   let email = "";
   let timer = null;
 
@@ -63,6 +63,14 @@ function initQuestionModeration(rootEl, { schedule, track, config, now = () => n
   });
 
   refresh();
+  // Tablet que recarregou (ou dormiu): o login Google persiste, então retoma sozinho sem pedir de novo.
+  whenReady(async () => {
+    email = (await deps().restore().catch(() => null)) ?? "";
+    if (email) {
+      startPolling();
+      refresh();
+    }
+  });
 }
 
 function defaultModerationDeps() {
@@ -70,6 +78,7 @@ function defaultModerationDeps() {
     questions: window.talkQuestionsRepository,
     votes: window.talkQuestionVotesRepository,
     signIn: () => window.firebaseClient.signInWithGoogle(),
+    restore: () => window.firebaseClient.restoreModerator(),
     signOut: () => window.firebaseClient.signOutModerator(),
   };
 }

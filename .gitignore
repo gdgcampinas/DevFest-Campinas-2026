@@ -2,3 +2,6 @@
 docs/js/data/schedule.dev.js
 
 .DS_Store
+
+# Logs do emulador do Firebase
+*-debug.log

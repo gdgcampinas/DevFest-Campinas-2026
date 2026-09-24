@@ -6,9 +6,10 @@
  *
  * `follow({ mountEl, key, phase })` diz onde desenhar, qual palestra seguir e se as perguntas ainda estão abertas;
  * `follow(null)` para (sem palestra na sala). Chamar de novo com o mesmo `key` (a tela foi redesenhada) só troca o
- * `mountEl`. Tudo por parâmetro: `config` (data/talk-questions.js) e `deps()` ({ questions, votes, getUid }).
+ * `mountEl`. Tudo por parâmetro: `config` (data/talk-questions.js), `deps()` ({ questions, votes, getUid }) e `whenReady`
+ * (roda a primeira leitura só depois dos módulos do Firebase, ver runAfterModules em app.js).
  */
-function createBoardQuestions({ config, deps = defaultBoardDeps, limit = 6 }) {
+function createBoardQuestions({ config, deps = defaultBoardDeps, limit = 6, whenReady = runAfterModules }) {
   let target = null;
   let timer = null;
   let lastQuestions = [];
@@ -30,7 +31,8 @@ function createBoardQuestions({ config, deps = defaultBoardDeps, limit = 6 }) {
       if (target?.key !== key) return; // a sala já passou pra outra palestra enquanto lia
       lastQuestions = rankQuestions(approved, voteDocs).slice(0, limit);
       draw();
-    } catch {
+    } catch (error) {
+      console.warn("[quadro da sala] não consegui ler as perguntas:", error);
       draw(true);
     }
   }
@@ -46,7 +48,7 @@ function createBoardQuestions({ config, deps = defaultBoardDeps, limit = 6 }) {
     }
     if (!sameTalk) lastQuestions = [];
     draw();
-    if (!sameTalk) refresh();
+    if (!sameTalk) whenReady(refresh); // os repositories do Firebase são módulos: só existem depois do carregamento da página
     if (!timer) timer = setInterval(refresh, config.boardPollMs);
   }
 

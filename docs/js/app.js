@@ -72,7 +72,7 @@ const isDevModeStored = () => devModeStore.get() === "1";
 function showTopBanner(text) {
   const banner = document.createElement("div");
   banner.textContent = text;
-  banner.style.cssText = "background:var(--google-red);color:#fff;text-align:center;font-size:.75rem;font-weight:700;padding:6px;position:sticky;top:0;z-index:100";
+  banner.style.cssText = "background:var(--google-red);color:#fff;text-align:center;font-size:.75rem;font-weight:700;padding:6px;position:sticky;top:0;z-index:100;width:100%;box-sizing:border-box";
   document.body.prepend(banner);
 }
 

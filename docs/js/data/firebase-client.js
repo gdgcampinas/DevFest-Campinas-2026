@@ -19,9 +19,12 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/fireba
 import { getFirestore } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 import { getAuth, signInAnonymously, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
+import { connectEmulatorIfRequested } from "./firebase-emulator.js?v=2";
+
 const app = initializeApp(FIREBASE_CONFIG);
 const db = getFirestore(app);
 const auth = getAuth(app);
+const emulator = connectEmulatorIfRequested({ db, auth }); // null fora do teste local (ver firebase-emulator.js)
 
 let uidPromise = null;
 
@@ -48,8 +51,19 @@ function ensureAnonymousUid() {
  * apenas pra e-mails da lista de moderadores. O público segue anônimo. Resolve com o e-mail logado.
  */
 async function signInWithGoogle() {
+  if (emulator) return emulator.signInAsModerator();
   const { user } = await signInWithPopup(auth, new GoogleAuthProvider());
   return user.email;
+}
+
+/** E-mail da conta Google que já está logada neste aparelho (o login persiste entre recargas), ou null. */
+function restoreModerator() {
+  return new Promise(resolve => {
+    const unsubscribe = onAuthStateChanged(auth, user => {
+      unsubscribe();
+      resolve(user && !user.isAnonymous ? user.email : null);
+    });
+  });
 }
 
 /** Sai do Google e volta pra sessão anônima (uid novo) na próxima chamada de ensureAnonymousUid. */
@@ -58,4 +72,4 @@ async function signOutModerator() {
   uidPromise = null;
 }
 
-window.firebaseClient = { app, db, auth, ensureAnonymousUid, signInWithGoogle, signOutModerator };
+window.firebaseClient = { app, db, auth, ensureAnonymousUid, signInWithGoogle, restoreModerator, signOutModerator };
