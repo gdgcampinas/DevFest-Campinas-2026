@@ -23,9 +23,9 @@ function questionListMarkup(questions, opts) {
 
 /**
  * Fases: "locked" (sem check-in), "loading", "ready" (lista + formulário se ainda
- * não perguntou), "error". `entryKey` é a palestra; `message` um aviso de erro opcional.
+ * não atingiu o limite de `limit` perguntas), "error". `entryKey` é a palestra; `message` um aviso de erro opcional.
  */
-function talkQuestionsMarkup({ phase, entryKey, questions = [], canAsk = false, name = "", message = "", maxLength }) {
+function talkQuestionsMarkup({ phase, entryKey, questions = [], canAsk = false, limit = 1, name = "", message = "", maxLength }) {
   const title = `<p class="talk-feedback-title">${iconMarkup("mic")}${t("q.title", "Perguntas pro palestrante")}</p>`;
   if (phase === "locked") return `<div class="talk-feedback">${title}<p class="talk-feedback-hint">${t("q.locked", "Faça o check-in nessa palestra pra enviar e votar perguntas.")}</p></div>`;
   if (phase === "loading") return `<div class="talk-feedback talk-feedback--loading">${title}${t("q.loading", "Carregando perguntas…")}</div>`;
@@ -38,7 +38,7 @@ function talkQuestionsMarkup({ phase, entryKey, questions = [], canAsk = false, 
         ${message ? `<p class="talk-feedback-error" role="alert">${message}</p>` : ""}
         <button type="submit" class="chip-btn chip-btn--primary" data-track-event="question_send" data-track-target="${entryKey}">${iconMarkup("check")}${t("q.send", "Enviar pergunta")}</button>
       </form>`
-    : `<p class="talk-feedback-hint">${t("q.alreadyAsked", "Você já enviou sua pergunta. Vote nas outras!")}</p>`;
+    : `<p class="talk-feedback-hint">${t("q.limitReached", "Você já enviou o máximo de {limit} perguntas. Vote nas outras!", { limit })}</p>`;
   const list = questions.length ? questionListMarkup(questions) : `<p class="talk-feedback-hint">${t("q.empty", "Ninguém perguntou ainda. Seja a primeira pessoa!")}</p>`;
   return `<div class="talk-feedback">${title}${form}${list}</div>`;
 }

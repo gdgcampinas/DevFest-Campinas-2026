@@ -1,7 +1,7 @@
 /**
  * Feature: perguntas ao vivo por palestra (bloco dentro do modal). Só quem
  * fez check-in na palestra pergunta e vota (a regra do Firestore exige, isto
- * só espelha na tela). 1 pergunta por pessoa por palestra; 1 voto por pessoa
+ * só espelha na tela). Até `config.maxPerPerson` perguntas por pessoa por palestra; 1 voto por pessoa
  * por pergunta, sem desfazer. A lista se atualiza sozinha com o modal aberto
  * (poll, sem listener em tempo real: leituras previsíveis no plano grátis).
  *
@@ -28,13 +28,13 @@ function initTalkQuestions(rootEl, { index, config, myCheckins, myName, deps = d
     try {
       const uid = await getUid();
       const [questionDocs, voteDocs] = await Promise.all([
-        questions.getWhere({ entryKey: entry.key, hidden: false }),
+        questions.getWhere({ talkKey: entry.key, hidden: false }),
         votes.getWhere({ talkKey: entry.key }),
       ]);
       const ranked = rankQuestions(questionDocs, voteDocs, { myUid: uid });
       containerEl.innerHTML = talkQuestionsMarkup({
         phase: "ready", entryKey: entry.key, questions: ranked, maxLength: config.maxLength,
-        canAsk: !ranked.some(question => question.mine), name: myName.get(), message,
+        canAsk: ranked.filter(question => question.mine).length < config.maxPerPerson, limit: config.maxPerPerson, name: myName.get(), message,
       });
     } catch {
       containerEl.innerHTML = talkQuestionsMarkup({ phase: "error", entryKey: entry.key, message: t("q.loadError", "Não foi possível carregar as perguntas agora. Confira sua conexão.") });
@@ -56,6 +56,26 @@ function initTalkQuestions(rootEl, { index, config, myCheckins, myName, deps = d
       if (!isOnScreen(containerEl)) stopPolling(containerEl);
       else if (!containerEl.querySelector("textarea:focus, input:focus")) load(containerEl, entry);
     }, config.pollMs));
+  }
+
+  /**
+   * Cria a pergunta no primeiro espaço livre da pessoa nessa palestra ("<palestra>#1" a "#N"). A regra recusa
+   * (permission-denied) o espaço já usado, então é só tentar o próximo; se todos falharem, o limite acabou
+   * ou falta o check-in, e quem chamou mostra o aviso.
+   */
+  async function addQuestion(entry, { text, name }) {
+    const { questions, getUid } = deps();
+    const uid = await getUid();
+    for (let slot = 1; slot <= config.maxPerPerson; slot++) {
+      const entryKey = `${entry.key}#${slot}`;
+      try {
+        await questions.add(uid, entryKey, { entryKey, talkKey: entry.key, text, name, hidden: false });
+        return;
+      } catch (error) {
+        if (error.code !== "permission-denied") throw error;
+      }
+    }
+    throw new Error("question-limit");
   }
 
   // Check-in feito agora (feedback-flow dispara o evento): destrava os blocos abertos.
@@ -95,13 +115,12 @@ function initTalkQuestions(rootEl, { index, config, myCheckins, myName, deps = d
     if (!text || !name) return showFormError(form, submitBtn, t("q.required", "Escreva a pergunta e seu nome pra enviar."));
     submitBtn.disabled = true;
     try {
-      const { questions, getUid } = deps();
-      await questions.add(await getUid(), entry.key, { entryKey: entry.key, text, name, hidden: false });
+      await addQuestion(entry, { text, name });
       rememberName(myName, name);
       await load(containerEl, entry);
     } catch {
       submitBtn.disabled = false;
-      showFormError(form, submitBtn, t("q.sendError", "Não foi possível enviar. Confira o check-in e sua conexão (é uma pergunta por pessoa)."));
+      showFormError(form, submitBtn, t("q.sendError", "Não foi possível enviar. Confira o check-in, sua conexão e o limite de perguntas por pessoa."));
     }
   });
 

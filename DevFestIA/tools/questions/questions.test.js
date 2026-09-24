@@ -1,7 +1,6 @@
 /**
  * Testa a ordenação das perguntas ao vivo (docs/js/features/question-ranking.js,
- * função pura) e confere que a config de perguntas está desligada por padrão e
- * coerente com o limite de texto das regras do Firestore.
+ * função pura) e confere que a config de perguntas bate com as regras do Firestore.
  *   node --test DevFestIA/tools/questions/questions.test.js
  */
 const test = require("node:test");
@@ -52,10 +51,19 @@ test("sem uid ninguém é dono nem votou (tela do moderador)", () => {
   assert.strictEqual(item.votes, 1);
 });
 
-test("config: nasce desligada e o limite de texto bate com as regras do Firestore", () => {
+test("config: limites (texto e perguntas por pessoa) batem com as regras do Firestore", () => {
   const read = file => fs.readFileSync(path.join(root, file), "utf8");
-  const { enabled, maxLength } = vm.runInNewContext(`${read("docs/js/data/repository.js")}\n${read("docs/js/data/talk-questions.js")}\ntalkQuestionsConfigRepository.getAll()`);
-  assert.strictEqual(enabled, false, "só ligar depois de publicar as regras");
+  const { maxLength, maxPerPerson } = vm.runInNewContext(`${read("docs/js/data/repository.js")}\n${read("docs/js/data/talk-questions.js")}\ntalkQuestionsConfigRepository.getAll()`);
   const rules = read("DevFestIA/firebase/firestore.rules");
   assert.ok(rules.includes(`requiredText(request.resource.data, 'text', ${maxLength + 1})`), "regra de texto diverge de maxLength");
+  const slots = [...rules.matchAll(/request\.resource\.data\.talkKey \+ '#(\d+)'/g)].map(match => Number(match[1]));
+  assert.deepStrictEqual(slots, Array.from({ length: maxPerPerson }, (_, i) => i + 1), "espaços #1..#N das regras divergem de maxPerPerson");
+});
+
+test("regras: o id do documento tem que ser <uid>_<entryKey> nas perguntas e nos votos", () => {
+  const rules = fs.readFileSync(path.join(root, "DevFestIA/firebase/firestore.rules"), "utf8");
+  ["talk-questions", "talk-question-votes"].forEach(name => {
+    const block = rules.slice(rules.indexOf(`match /${name}/`));
+    assert.ok(block.slice(0, block.indexOf("allow update")).includes("idMatchesEntry(docId)"), `${name}: falta idMatchesEntry`);
+  });
 });

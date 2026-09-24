@@ -30,7 +30,7 @@ function initQuestionModeration(rootEl, { schedule, track, config, now = () => n
     if (!talk) return draw({ phase: "empty", message: "Nenhuma palestra nesta sala por enquanto." });
     const { questions, votes } = deps();
     try {
-      const [questionDocs, voteDocs] = await Promise.all([questions.getWhere({ entryKey: talk.key }), votes.getWhere({ talkKey: talk.key })]);
+      const [questionDocs, voteDocs] = await Promise.all([questions.getWhere({ talkKey: talk.key }), votes.getWhere({ talkKey: talk.key })]);
       draw({ phase: "ready", talkTitle: talk.title, questions: rankQuestions(questionDocs, voteDocs, { includeHidden: true }) });
     } catch (error) {
       draw({ phase: "error", message: error.code === "permission-denied" ? "Sem permissão: essa conta não está na lista de moderadores." : "Não foi possível carregar agora. Tentando de novo em instantes." });
