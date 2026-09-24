@@ -9,7 +9,7 @@
 const TALK_QUESTIONS = {
   enabled: true,
   maxLength: 280,
-  maxPerPerson: 3,
+  maxPerPerson: 10,
   pollMs: 15000,
 };
 

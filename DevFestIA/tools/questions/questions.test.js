@@ -51,17 +51,23 @@ test("sem uid ninguém é dono nem votou (tela do moderador)", () => {
   assert.strictEqual(item.votes, 1);
 });
 
-test("config: limites (texto e perguntas por pessoa) batem com as regras do Firestore", () => {
-  const read = file => fs.readFileSync(path.join(root, file), "utf8");
-  const { maxLength, maxPerPerson } = vm.runInNewContext(`${read("docs/js/data/repository.js")}\n${read("docs/js/data/talk-questions.js")}\ntalkQuestionsConfigRepository.getAll()`);
-  const rules = read("DevFestIA/firebase/firestore.rules");
+const readFile = file => fs.readFileSync(path.join(root, file), "utf8");
+const rules = readFile("DevFestIA/firebase/firestore.rules");
+const config = () => vm.runInNewContext(`${readFile("docs/js/data/repository.js")}\n${readFile("docs/js/data/talk-questions.js")}\ntalkQuestionsConfigRepository.getAll()`);
+
+test("config x regras: limite de texto e de perguntas por pessoa batem", () => {
+  const { maxLength, maxPerPerson } = config();
   assert.ok(rules.includes(`requiredText(request.resource.data, 'text', ${maxLength + 1})`), "regra de texto diverge de maxLength");
-  const slots = [...rules.matchAll(/request\.resource\.data\.talkKey \+ '#(\d+)'/g)].map(match => Number(match[1]));
-  assert.deepStrictEqual(slots, Array.from({ length: maxPerPerson }, (_, i) => i + 1), "espaços #1..#N das regras divergem de maxPerPerson");
+  assert.ok(rules.includes(`int(parts[1]) <= ${maxPerPerson}`), "limite de espaços das regras diverge de maxPerPerson");
+});
+
+test("config x regras: a duração da palestra nas regras é a da grade (schedule-builder.js)", () => {
+  const rulesMinutes = Number(rules.match(/function talkDurationMinutes\(\) \{\s*return (\d+);/)[1]);
+  const gridMinutes = Number(readFile("docs/js/data/schedule-builder.js").match(/talkMin = (\d+)/)[1]);
+  assert.equal(rulesMinutes, gridMinutes, "palestra dura outro tempo na grade: atualize talkDurationMinutes() nas regras");
 });
 
 test("regras: o id do documento tem que ser <uid>_<entryKey> nas perguntas e nos votos", () => {
-  const rules = fs.readFileSync(path.join(root, "DevFestIA/firebase/firestore.rules"), "utf8");
   ["talk-questions", "talk-question-votes"].forEach(name => {
     const block = rules.slice(rules.indexOf(`match /${name}/`));
     assert.ok(block.slice(0, block.indexOf("allow update")).includes("idMatchesEntry(docId)"), `${name}: falta idMatchesEntry`);

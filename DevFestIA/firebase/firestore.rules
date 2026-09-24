@@ -119,40 +119,79 @@ service cloud.firestore {
       return docId == request.auth.uid + '_' + request.resource.data.entryKey;
     }
 
-    // Perguntas ao vivo por palestra: até 3 por pessoa por palestra (entryKey = "<talkKey>#1" a "#3", ESPELHAR
-    // `maxPerPerson` de docs/js/data/talk-questions.js), só com check-in DAQUELA palestra (checkins/<uid>_<talkKey>).
-    // Qualquer pessoa autenticada lista as NÃO ocultas (a consulta precisa filtrar hidden == false); só moderador
-    // lista as ocultas e só ele altera `hidden`.
-    // Limite de texto: ESPELHAR `maxLength` do mesmo arquivo (280 = "size() < 281").
+    // ---- Perguntas ao vivo: janela da palestra ----
+    // A chave da palestra é "<início em UTC, ISO>|<trilha>" (ex.: 2026-11-28T12:00:00.000Z|ia). O relógio do
+    // servidor (request.time) tem que estar entre o início e o fim dela. Chave inventada não fura nada: cria uma
+    // "palestra" que não existe na grade e que nenhuma tela mostra. Nos testes (DevFestIA/tools/questions) as
+    // palestras têm horário relativo a agora, então dá pra testar em qualquer dia.
+    // ESPELHAR docs/js/data/schedule-builder.js (talkWindows: talkMin = 40): se uma palestra durar mais que isso, mude aqui também.
+    function talkDurationMinutes() {
+      return 40;
+    }
+
+    function validTalkKey(talkKey) {
+      return talkKey is string && talkKey.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3}Z\\|[a-z]{1,20}$');
+    }
+
+    function talkStart(talkKey) {
+      return timestamp.date(int(talkKey[0:4]), int(talkKey[5:7]), int(talkKey[8:10]))
+        + duration.time(int(talkKey[11:13]), int(talkKey[14:16]), 0, 0);
+    }
+
+    function talkIsLive(talkKey) {
+      return validTalkKey(talkKey)
+        && request.time >= talkStart(talkKey)
+        && request.time <= talkStart(talkKey) + duration.time(0, talkDurationMinutes(), 0, 0);
+    }
+
+    // Quem fez check-in nessa palestra (o documento do check-in é "<uid>_<talkKey>").
+    function hasCheckin(talkKey) {
+      return exists(/databases/$(database)/documents/checkins/$(request.auth.uid + '_' + talkKey));
+    }
+
+    // Espaço da pergunta: entryKey = "<talkKey>#<1..10>" (número canônico, sem zero à esquerda). ESPELHAR
+    // `maxPerPerson` de docs/js/data/talk-questions.js.
+    function validQuestionSlot(data) {
+      let parts = data.entryKey.split('#');
+      return parts.size() == 2 && parts[0] == data.talkKey
+        && parts[1].matches('^[1-9][0-9]?$') && int(parts[1]) <= 10;
+    }
+
+    // Perguntas ao vivo por palestra. Fila de aprovação: a pergunta nasce "pending"; só o moderador muda o
+    // estado (approved, rejected, answered). A plateia lista só as "approved" (a consulta precisa filtrar
+    // status == approved) e cada pessoa lista as próprias (consulta filtrando uid == a dela).
+    // Limite de texto: ESPELHAR `maxLength` de docs/js/data/talk-questions.js (280 = "size() < 281").
     match /talk-questions/{docId} {
       allow get: if request.auth != null;
-      allow list: if request.auth != null && (isModerator() || resource.data.hidden == false);
+      allow list: if request.auth != null
+        && (isModerator() || resource.data.status == 'approved' || resource.data.uid == request.auth.uid);
       allow create: if isOwnDoc(docId) && idMatchesEntry(docId) && hasValidBaseFields()
-        && request.resource.data.keys().hasOnly(['edition', 'entryKey', 'talkKey', 'createdAt', 'text', 'name', 'hidden'])
-        && request.resource.data.talkKey is string && request.resource.data.talkKey.size() > 0 && request.resource.data.talkKey.size() < 90
-        && request.resource.data.entryKey in [request.resource.data.talkKey + '#1', request.resource.data.talkKey + '#2', request.resource.data.talkKey + '#3']
+        && request.resource.data.keys().hasOnly(['edition', 'entryKey', 'talkKey', 'uid', 'createdAt', 'text', 'name', 'status'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.status == 'pending'
+        && validQuestionSlot(request.resource.data)
         && requiredText(request.resource.data, 'text', 281)
         && requiredText(request.resource.data, 'name', 80)
-        && request.resource.data.hidden == false
-        && exists(/databases/$(database)/documents/checkins/$(request.auth.uid + '_' + request.resource.data.talkKey));
+        && talkIsLive(request.resource.data.talkKey)
+        && hasCheckin(request.resource.data.talkKey);
       allow update: if isModerator()
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['hidden'])
-        && request.resource.data.hidden is bool;
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status in ['approved', 'rejected', 'answered'];
       allow delete: if false;
     }
 
-    // Votos nas perguntas: 1 por pessoa por pergunta (id "<uid>_<id da pergunta>"), sem desfazer. Exige o
-    // check-in na palestra da pergunta e que a pergunta exista, seja dessa palestra e não esteja oculta.
+    // Votos nas perguntas: 1 por pessoa por pergunta (id "<uid>_<id da pergunta>"), sem desfazer. Só em pergunta
+    // aprovada, da mesma palestra, com check-in e durante a palestra.
     match /talk-question-votes/{docId} {
       allow get: if isOwnDoc(docId);
       allow list: if request.auth != null;
       allow create: if isOwnDoc(docId) && idMatchesEntry(docId) && hasValidBaseFields()
         && request.resource.data.keys().hasOnly(['edition', 'entryKey', 'talkKey', 'createdAt'])
-        && request.resource.data.talkKey is string && request.resource.data.talkKey.size() > 0 && request.resource.data.talkKey.size() < 90
-        && exists(/databases/$(database)/documents/checkins/$(request.auth.uid + '_' + request.resource.data.talkKey))
+        && talkIsLive(request.resource.data.talkKey)
+        && hasCheckin(request.resource.data.talkKey)
         && exists(/databases/$(database)/documents/talk-questions/$(request.resource.data.entryKey))
         && get(/databases/$(database)/documents/talk-questions/$(request.resource.data.entryKey)).data.talkKey == request.resource.data.talkKey
-        && get(/databases/$(database)/documents/talk-questions/$(request.resource.data.entryKey)).data.hidden == false;
+        && get(/databases/$(database)/documents/talk-questions/$(request.resource.data.entryKey)).data.status == 'approved';
       allow update, delete: if false;
     }
 
