@@ -138,10 +138,18 @@ service cloud.firestore {
         + duration.time(int(talkKey[11:13]), int(talkKey[14:16]), 0, 0);
     }
 
+    // TRAVA DE HORÁRIO: false = pergunta e voto em qualquer dia e hora (teste em DEV, antes do evento); true = só do
+    // início ao fim da palestra. LIGAR (true) ANTES DO EVENTO, junto com `enforceWindow` de docs/js/data/talk-questions.js
+    // (um teste confere que os dois estão iguais). A linha do return tem que ficar como está (os testes trocam o valor).
+    function windowEnforced() {
+      return false; // TRAVA-DE-HORARIO
+    }
+
     function talkIsLive(talkKey) {
       return validTalkKey(talkKey)
-        && request.time >= talkStart(talkKey)
-        && request.time <= talkStart(talkKey) + duration.time(0, talkDurationMinutes(), 0, 0);
+        && (!windowEnforced()
+          || (request.time >= talkStart(talkKey)
+            && request.time <= talkStart(talkKey) + duration.time(0, talkDurationMinutes(), 0, 0)));
     }
 
     // Quem fez check-in nessa palestra (o documento do check-in é "<uid>_<talkKey>").

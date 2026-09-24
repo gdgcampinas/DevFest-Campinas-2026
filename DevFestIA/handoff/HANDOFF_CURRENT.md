@@ -128,6 +128,7 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
    (line-up real); mantenha-o igual só pros testes locais não divergirem, esquecer dele NÃO quebra o site.
 
 **C. Antes do evento (checklist do dia anterior)**
+0. **LIGAR A TRAVA DE HORÁRIO das perguntas** (hoje desligada pra testar): `windowEnforced()` = `true` em `DevFestIA/firebase/firestore.rules` E `enforceWindow: true` em `docs/js/data/talk-questions.js`; rodar `DevFestIA/tools/questions/run-rules-tests.sh` (o script testa com a trava ligada de qualquer jeito); colar as regras no console; fazer o ensaio (`?ensaio=agora`) pra conferir a janela de verdade; limpar os dados de teste.
 8. 🧹 Limpar dados de teste: rodar em modo teste, conferir, rodar de verdade com `APAGAR` (só antes de
    28/11 08:00), e abrir `reset-teste.html` nos aparelhos de teste. Hoje há ao menos 1 check-in de teste.
 9. Recarregar (Cmd+Shift+R) os tablets e conferir `checkin-display.html?trilha=...` sem `&demo=`.

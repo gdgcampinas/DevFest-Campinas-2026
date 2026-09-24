@@ -68,6 +68,11 @@ test("janela: fechada antes, aberta do início ao fim (limites inclusos), fechad
   assert.strictEqual(questionWindowState(slot, at("12:40:01")), "closed");
 });
 
+test("janela: com a trava desligada (DEV) fica sempre aberta, em qualquer horário", () => {
+  [at("07:00:00"), at("12:20:00"), at("23:59:00")].forEach(moment => assert.strictEqual(questionWindowState(slot, moment, { enforce: false }), "open"));
+  assert.strictEqual(questionWindowState(slot, at("23:59:00"), { enforce: true }), "closed");
+});
+
 test("janela: as regras arredondam o início pro minuto, então a tela nunca abre antes do banco", () => {
   const withSeconds = { start: new Date("2026-11-28T12:00:30Z"), end: new Date("2026-11-28T12:40:30Z") };
   assert.strictEqual(questionWindowState(withSeconds, at("12:00:10")), "before");
@@ -90,6 +95,11 @@ test("config x regras: limite de texto e de perguntas por pessoa batem", () => {
   const { maxLength, maxPerPerson } = config();
   assert.ok(rules.includes(`requiredText(request.resource.data, 'text', ${maxLength + 1})`), "regra de texto diverge de maxLength");
   assert.ok(rules.includes(`int(parts[1]) <= ${maxPerPerson}`), "limite de espaços das regras diverge de maxPerPerson");
+});
+
+test("config x regras: a trava de horário está igual na tela (enforceWindow) e nas regras (windowEnforced)", () => {
+  const rulesValue = rules.match(/function windowEnforced\(\) \{\s*return (true|false); \/\/ TRAVA-DE-HORARIO/)[1] === "true";
+  assert.equal(config().enforceWindow, rulesValue, "ligue/desligue a trava nos dois lugares: data/talk-questions.js e firestore.rules");
 });
 
 test("config x regras: a duração da palestra nas regras é a da grade (schedule-builder.js)", () => {

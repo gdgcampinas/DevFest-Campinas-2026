@@ -2,7 +2,8 @@
  * Feature: perguntas ao vivo por palestra (bloco dentro do modal, lado da plateia). Regras do jogo (as do banco,
  * espelhadas na tela):
  *   - só quem fez check-in NA palestra pergunta e vota;
- *   - só do início ao fim da palestra (question-window.js); antes mostra o aviso, depois só leitura;
+ *   - só do início ao fim da palestra (question-window.js; `config.enforceWindow` liga e desliga essa trava, ver
+ *     data/talk-questions.js); antes mostra o aviso, depois só leitura;
  *   - até `config.maxPerPerson` perguntas por pessoa por palestra;
  *   - a pergunta nasce "pending": só depois que o moderador aprova ela entra na lista pública, no voto e no quadro
  *     da sala. Quem enviou vê as próprias com o estado (aguardando, aprovada, respondida, não aprovada);
@@ -30,7 +31,7 @@ function initTalkQuestions(rootEl, { index, config, myCheckins, myName, now = ()
   const draw = (containerEl, entry, data) => { containerEl.innerHTML = talkQuestionsMarkup({ entryKey: entry.key, maxLength: config.maxLength, limit: config.maxPerPerson, ...data }); };
 
   async function load(containerEl, entry, { message = "" } = {}) {
-    const windowState = questionWindowState(entry.slot, now());
+    const windowState = questionWindowState(entry.slot, now(), { enforce: config.enforceWindow });
     if (windowState === "before") return draw(containerEl, entry, { phase: "waiting" });
     const { questions, votes, getUid } = deps();
     try {

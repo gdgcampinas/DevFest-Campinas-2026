@@ -2,7 +2,9 @@
  * Testa as REGRAS do Firestore das perguntas ao vivo contra o emulador (nada toca o banco real):
  * janela de horário da palestra, check-in, até 10 perguntas por pessoa, fila de aprovação do moderador
  * e votos. As palestras de teste têm horário RELATIVO A AGORA (início daqui a N minutos), então nada
- * depende de ser o dia do evento. Rodar:  DevFestIA/tools/questions/run-rules-tests.sh
+ * depende de ser o dia do evento. A trava de horário é um interruptor nas regras (`windowEnforced()`): o script roda
+ * os testes duas vezes, com a trava ligada (RULES_WINDOW=on, cópia temporária das regras) e como está no arquivo
+ * (RULES_WINDOW=off quando desligada). Rodar:  DevFestIA/tools/questions/run-rules-tests.sh
  */
 const test = require("node:test");
 const assert = require("node:assert/strict");
@@ -11,6 +13,9 @@ const path = require("node:path");
 const { anonymous, google, createDoc, updateDoc, query, seed } = require("../lib/firestore-emulator.js");
 
 const skip = process.env.FIRESTORE_EMULATOR_HOST ? false : "rode com DevFestIA/tools/questions/run-rules-tests.sh (precisa do emulador)";
+const windowOn = process.env.RULES_WINDOW === "on";
+const onlyWithWindow = skip || (windowOn ? false : "só vale com a trava de horário ligada");
+const onlyWithoutWindow = skip || (windowOn ? "só vale com a trava de horário desligada" : false);
 const rules = fs.readFileSync(path.join(__dirname, "..", "..", "firebase", "firestore.rules"), "utf8");
 const moderatorEmail = rules.match(/request\.auth\.token\.email in \['([^']+)'/)[1];
 
@@ -70,13 +75,13 @@ test("pergunta: sem check-in nessa palestra é recusada", { skip }, async () => 
   denied(await ask(await attendee(otherTalk), talk)); // check-in em outra palestra não vale
 });
 
-test("pergunta: antes de a palestra começar e depois de ela acabar é recusada", { skip }, async () => {
+test("pergunta: antes de a palestra começar e depois de ela acabar é recusada", { skip: onlyWithWindow }, async () => {
   for (const talk of [NOT_STARTED(), ENDED()]) {
     denied(await ask(await attendee(talk), talk));
   }
 });
 
-test("pergunta: perto dos limites da janela (no fim e logo depois)", { skip }, async () => {
+test("pergunta: perto dos limites da janela (no fim e logo depois)", { skip: onlyWithWindow }, async () => {
   const almostOver = talkKeyStarted(38);
   allowed(await ask(await attendee(almostOver), almostOver));
   const justOver = talkKeyStarted(42);
@@ -238,7 +243,7 @@ test("voto: sem check-in, fora da janela, repetido ou com id trocado é recusado
   denied(await vote(other, talk, "pergunta-que-nao-existe"));
 });
 
-test("voto: fora da janela da palestra é recusado, mesmo em pergunta aprovada", { skip }, async () => {
+test("voto: fora da janela da palestra é recusado, mesmo em pergunta aprovada", { skip: onlyWithWindow }, async () => {
   const past = talkKeyStarted(60);
   // pergunta aprovada por preparo direto (a janela já fechou para criar de forma normal)
   const author = person();
@@ -254,4 +259,19 @@ test("leitura dos votos: só autenticada; contar votos por palestra funciona", {
   const listed = await query(person(), "talk-question-votes", { talkKey: talk });
   allowed(listed);
   assert.equal(listed.ids.length, 1);
+});
+
+// ---------- trava de horário desligada (teste em DEV) ----------
+test("sem a trava de horário: pergunta e voto valem antes, durante e depois da palestra, mas o resto das travas segue", { skip: onlyWithoutWindow }, async () => {
+  for (const talk of [NOT_STARTED(), LIVE(), ENDED()]) {
+    const who = await attendee(talk);
+    allowed(await ask(who, talk));
+    const id = await approvedQuestion(talk);
+    allowed(await vote(await attendee(talk), talk, id));
+  }
+  const talk = ENDED();
+  denied(await ask(person(), talk)); // sem check-in continua recusado
+  const who = await attendee(talk);
+  denied(await ask(who, talk, 11)); // limite continua valendo
+  denied(await ask(who, talk, 1, { status: "approved" })); // e o moderador continua sendo o único que aprova
 });
