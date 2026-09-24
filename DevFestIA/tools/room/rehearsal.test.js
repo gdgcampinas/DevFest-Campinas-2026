@@ -7,7 +7,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const path = require("node:path");
-const { parseRehearsalStart, rehearsalDeltaMs, shiftSchedule } = require(path.join(__dirname, "..", "..", "..", "docs/js/features/rehearsal.js"));
+const { parseRehearsalStart, resolveRehearsalParam, rehearsalDeltaMs, shiftSchedule } = require(path.join(__dirname, "..", "..", "..", "docs/js/features/rehearsal.js"));
 
 const OFFSET = "-03:00";
 const at = iso => new Date(iso);
@@ -49,4 +49,12 @@ test("deslocamento: a primeira PALESTRA (não o credenciamento) passa a começar
 test("sem parâmetro válido não desloca nada", () => {
   assert.equal(rehearsalDeltaMs(null, schedule(), { now, utcOffset: OFFSET }), null);
   assert.equal(rehearsalDeltaMs("xx", schedule(), { now, utcOffset: OFFSET }), null);
+});
+
+test("agora vira o HH:MM de 5 min atrás no fuso do evento; qualquer outro valor passa direto", () => {
+  assert.equal(resolveRehearsalParam("agora", now, OFFSET), "13:55"); // agora = 14:00 em Campinas
+  assert.equal(resolveRehearsalParam("agora", at("2026-09-25T02:03:00Z"), OFFSET), "22:58"); // 23:03 em Campinas menos 5 min; o dia em UTC não atrapalha
+  assert.equal(resolveRehearsalParam("14:30", now, OFFSET), "14:30");
+  assert.equal(resolveRehearsalParam("0", now, OFFSET), "0");
+  assert.equal(resolveRehearsalParam(null, now, OFFSET), null);
 });

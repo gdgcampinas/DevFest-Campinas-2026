@@ -14,6 +14,16 @@ function offsetToMs(utcOffset) {
   return (sign === "-" ? -1 : 1) * (Number(hours) * 60 + Number(minutes)) * MS_PER_MINUTE;
 }
 
+/**
+ * `agora` vira o "HH:MM" de 5 minutos atrás (no fuso do evento): a primeira palestra já começou e ainda dá ~35 min de
+ * janela. O horário resolvido é o que os outros aparelhos devem usar (os QR do quadro já o carregam).
+ */
+function resolveRehearsalParam(param, now, utcOffset) {
+  if (param !== "agora") return param;
+  const local = new Date(now.getTime() - 5 * MS_PER_MINUTE + offsetToMs(utcOffset));
+  return local.toISOString().slice(11, 16);
+}
+
 /** Date do início pedido, ou null se o formato for inválido. "HH:MM" vale pro dia de hoje no fuso do evento. */
 function parseRehearsalStart(param, now, utcOffset) {
   const text = String(param ?? "");
@@ -41,4 +51,4 @@ function shiftSchedule(schedule, deltaMs) {
   return schedule;
 }
 
-if (typeof module !== "undefined") module.exports = { parseRehearsalStart, rehearsalDeltaMs, shiftSchedule };
+if (typeof module !== "undefined") module.exports = { parseRehearsalStart, resolveRehearsalParam, rehearsalDeltaMs, shiftSchedule };

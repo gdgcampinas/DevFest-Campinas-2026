@@ -85,7 +85,7 @@ const rehearsalStore = createSessionValue("devfest-campinas-2026:rehearsal");
  * precisam carregar pra outros aparelhos entrarem no mesmo ensaio.
  */
 function setupRehearsal({ schedule = SCHEDULE, event = EVENT } = {}) {
-  const fromUrl = getParam("ensaio");
+  const fromUrl = resolveRehearsalParam(getParam("ensaio"), new Date(), event.utcOffset);
   if (fromUrl === "0") rehearsalStore.set(null);
   else if (fromUrl && parseRehearsalStart(fromUrl, new Date(), event.utcOffset)) rehearsalStore.set(fromUrl);
   const param = rehearsalStore.get();
