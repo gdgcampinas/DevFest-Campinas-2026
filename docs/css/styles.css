@@ -976,3 +976,31 @@ body:has(.modal:not([hidden])) .feedback-nudge{display:none}
   .hero-galaxy img{animation-duration:var(--galaxy-duration-reduced,var(--galaxy-duration)) !important;animation-iteration-count:infinite !important}
   .hero-galaxy--still img{animation:none !important}
 }
+
+/* Quiz "Monte sua trilha" (quiz.html, home CTA) */
+.tracks-overview-cta{margin:18px 0 0;text-align:center}
+.quiz{max-width:720px;margin:36px auto 0;padding:0 24px 40px}
+.quiz h2{margin:0 0 6px;font:700 24px var(--font-display);color:oklch(95% 0.005 260)}
+.quiz h2:focus,.quiz legend:focus{outline:none}
+.quiz-progress{margin:0 0 8px;font:700 13px var(--font-body);color:var(--accent)}
+.quiz-progress-bar{height:4px;margin-bottom:22px;border-radius:2px;background:oklch(30% 0.01 260)}
+.quiz-progress-bar span{display:block;height:100%;border-radius:2px;background:var(--accent);transition:width .25s}
+.quiz-question{margin:0;padding:0;border:0}
+.quiz legend{margin:0 0 14px;padding:0;font:700 20px var(--font-display);color:oklch(95% 0.005 260)}
+.quiz-answers{display:grid;gap:10px}
+.quiz-answer{display:flex;gap:12px;align-items:center;padding:14px 16px;border:1px solid var(--line, oklch(35% 0.01 260));border-radius:12px;background:oklch(20% 0.01 260 / .6);font:500 15px var(--font-body);color:oklch(92% 0.005 260);cursor:pointer}
+.quiz-answer:hover{border-color:var(--text)}
+.quiz-answer:has(input:checked){border-color:var(--accent);background:color-mix(in oklch, var(--accent) 14%, transparent)}
+.quiz-answer:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+.quiz-answer input{accent-color:var(--accent);width:18px;height:18px;flex:none}
+.quiz-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.quiz-actions .chip-btn[disabled]{opacity:.45;cursor:not-allowed}
+.quiz-result{position:relative;padding:24px 22px;border:1px solid oklch(35% 0.01 260);border-radius:16px;background:oklch(20% 0.01 260 / .6);overflow:hidden}
+.quiz-result::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--track-color)}
+.quiz-result h3{margin:18px 0 8px;font:700 16px var(--font-display);color:oklch(95% 0.006 260)}
+.quiz-desc,.quiz-also,.quiz-notice,.quiz-added{margin:0 0 10px;font:500 14px var(--font-body);color:var(--muted);line-height:1.55}
+.quiz-shared{margin:0 0 14px;font:700 14px var(--font-body);color:var(--accent)}
+.quiz-talks{margin:0 0 14px;padding:0;list-style:none;display:grid;gap:8px}
+.quiz-talks li{display:grid;grid-template-columns:auto 1fr;column-gap:12px;font:500 14px var(--font-body);color:oklch(92% 0.005 260)}
+.quiz-talk-time{font-weight:700;color:var(--track-color)}
+.quiz-talk-speakers{grid-column:2;font-size:13px;color:var(--muted)}

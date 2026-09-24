@@ -51,6 +51,7 @@ funções, não executa nada sozinho, então incluir sem `favorites.js`/
 docs/
   index.html, grade.html, palestrantes.html, ingressos.html, time.html,
   patrocinio.html, codigo-de-conduta.html   structure only, no logic (the 7 public pages)
+  quiz.html                                 quiz "Monte sua trilha" (public, out of the menu), see "Quiz"
   checkin-display.html                      internal tool (live QR), not a public page — see "Check-in e avaliação"
   reset-teste.html                          internal tool (clears THIS browser's local test data), not a public page — see "Limpeza dos dados de teste"
   DEV/index.html, DEV/grade.html, ... , DEV/dev-loader.js   DEV shortcut, see "PROD x DEV"
@@ -305,6 +306,19 @@ um `onEventEnd(containerEl)` opcional e só chama, a página (`home.js`)
 é quem injeta `eventFeedback.render`. Regra de segurança e coleção
 (`event-feedback`) e o repository (`data/event-feedback-repository.js`)
 já existiam desde a fundação do Firebase (sessão 5); só faltava a UI.
+
+## Quiz "Monte sua trilha" (sessão 7)
+
+Página `quiz.html` (fora do menu, CTA na seção "Trilhas" da home; sitemap e OG como as demais),
+100% estática, sem Firebase. 5 perguntas, cada resposta pesa em uma ou mais trilhas; vence a
+soma maior, empate vai pra trilha que vem primeiro em `TRACKS`.
+- `data/quiz.js`: `QUIZ_QUESTIONS` e `QUIZ_COPY` via `quizRepository` (pesos por id de trilha; trilha nova entra só ganhando peso).
+- `features/quiz-scoring.js` (dual, navegador e Node): `scoreQuiz`, `pickSpread`. Funções puras.
+- `components/quiz.js` (markup) e `features/quiz.js` (`initQuiz`, máquina de passos, tudo por parâmetro).
+- `features/clipboard.js`: `copyWithFeedback`, único lugar que copia texto (reusado pela Minha agenda).
+- Resultado: trilha vencedora (e a segunda, se pontuou). Com `reveal` (DEV ou line-up revelado) sugere 3 palestras espalhadas pelo dia e "Adicionar à minha agenda" (`favoritesRepository.addAll`); em PROD só a trilha e o aviso "será revelado em breve".
+- `?trilha=<id>` abre direto o resultado (link de compartilhar/WhatsApp).
+- Testes: `node --test DevFestIA/tools/quiz/quiz.test.js` (roda no CI; confere pesos x trilhas, que toda trilha pode vencer, empate e `pickSpread`).
 
 ## Cartão pessoal "Eu vou!" (compartilhamento)
 
@@ -578,7 +592,8 @@ Each entry in `TRACKS` (schedule.js/.dev.js) has `icon`, a name from `data/icons
 `docs/js/components/site-nav.js` is the single source of the page list
 (`SITE_PAGES`). Every page calls `renderSiteNav(activePageId, mountEl)`
 once from `initShell()`. Adding, renaming, or reordering a page is a
-one-line change there — never edit nav HTML per page.
+one-line change there — never edit nav HTML per page. `nav: false` keeps a page
+out of the menu but in the offline pre-cache (the quiz, linked from a home CTA).
 
 ## Mock content (until real data arrives)
 

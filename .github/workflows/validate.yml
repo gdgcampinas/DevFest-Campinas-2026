@@ -28,4 +28,4 @@ jobs:
         run: node DevFestIA/tools/check-install.js
 
       - name: Test Sympla sync, event report and purge
-        run: node --test DevFestIA/tools/sympla-sync/sync.test.js DevFestIA/tools/event-report/build-report.test.js DevFestIA/tools/purge-test-data/purge.test.js
+        run: node --test DevFestIA/tools/sympla-sync/sync.test.js DevFestIA/tools/event-report/build-report.test.js DevFestIA/tools/purge-test-data/purge.test.js DevFestIA/tools/quiz/quiz.test.js

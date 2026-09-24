@@ -22,6 +22,11 @@
   (sob demanda, com travas). Secrets no repositório: `SYMPLA_TOKEN`, `FIREBASE_SERVICE_ACCOUNT`.
 - **Estado do git ao fechar a sessão 6:** `development` = `main` = `origin/*` (tudo commitado, no ar).
 
+## Sessão 7 (2026-09-24), em andamento
+Plano autorizado (sem o certificado, que segue aguardando decisões): 1) chave do Firebase por domínio
+(passo a passo pro Renato), 2) quiz "Monte sua trilha" (**feito**, ver PROJECT_CONTEXT "Quiz"),
+3) perguntas por palestra só com check-in, 4) i18n em EN. Cada item = um commit, docs atualizados.
+
 ## Sessão 6: tudo que foi feito (2026-09-23)
 
 1. **Feedback do evento (fase 5.3)** no hero "Encerrado"; bug de "Carregando…" eterno corrigido

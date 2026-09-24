@@ -29,17 +29,14 @@ function initAgendaShare({ mountEl, favorites, index, baseUrl }) {
     });
   }
 
-  mountEl.addEventListener("click", async event => {
+  mountEl.addEventListener("click", event => {
     const copyBtn = event.target.closest("[data-agenda-copy]");
     if (!copyBtn) return;
-    try {
-      await navigator.clipboard.writeText(mountEl.dataset.shareUrl);
-      const label = copyBtn.querySelector("span");
-      label.textContent = "Link copiado";
-      setTimeout(() => (label.textContent = "Copiar link"), 2000);
-    } catch {
-      window.prompt("Copie o link da sua agenda:", mountEl.dataset.shareUrl);
-    }
+    copyWithFeedback(mountEl.dataset.shareUrl, {
+      labelEl: copyBtn.querySelector("span"),
+      idleText: "Copiar link",
+      promptText: "Copie o link da sua agenda:",
+    });
   });
 
   favorites.subscribe(render);
