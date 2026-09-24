@@ -122,7 +122,7 @@ function talkDetailMarkup(track, data, { reveal = true, timeRange = "", room = "
       ${metaItems ? `<div class="detail-meta">${metaItems}</div>` : ""}
       ${reveal ? calendarHtml : ""}
       ${speakerLine}
-      ${reveal && talkKey ? `<div class="talk-feedback-slot"></div>` : ""}
+      ${reveal && talkKey ? `<div class="talk-feedback-slot"></div><div class="talk-questions-slot"></div>` : ""}
     </div>`;
 }
 

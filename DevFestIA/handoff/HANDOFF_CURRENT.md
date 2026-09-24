@@ -25,7 +25,9 @@
 ## Sessão 7 (2026-09-24), em andamento
 Plano autorizado (sem o certificado, que segue aguardando decisões): 1) chave do Firebase por domínio
 (passo a passo pro Renato), 2) quiz "Monte sua trilha" (**feito**, ver PROJECT_CONTEXT "Quiz"),
-3) perguntas por palestra só com check-in, 4) i18n em EN. Cada item = um commit, docs atualizados.
+3) perguntas por palestra só com check-in (**código pronto, DESLIGADO**: ver PROJECT_CONTEXT "Perguntas ao vivo"; falta o Renato
+preencher e-mails de moderadores nas regras, ativar Google em Authentication, autorizar `gdgcampinas.github.io`, colar as regras
+e então ligar `TALK_QUESTIONS.enabled` e testar no banco real), 4) i18n em EN. Cada item = um commit, docs atualizados.
 
 ## Sessão 6: tudo que foi feito (2026-09-23)
 

@@ -4,7 +4,8 @@
  * o botão do cabeçalho. Existe pra as 3 páginas com modal (Home, Grade,
  * Palestrantes) não repetirem essa fiação. Repositories e relógio entram por
  * parâmetro (com os globais do site como padrão). Em PROD (line-up ainda
- * mock, `reveal` falso) só o feedback do evento fica ativo.
+ * mock, `reveal` falso) só o feedback do evento fica ativo. Perguntas por
+ * palestra (features/talk-questions.js) entram junto do feedback da palestra.
  */
 function initFeedbackFlow({
   calendar,
@@ -17,6 +18,7 @@ function initFeedbackFlow({
   myRatings = myRatingsRepository,
   myName = myNameRepository,
   form = eventFeedbackFormRepository.getAll(),
+  questionsConfig = talkQuestionsConfigRepository.getAll(),
 }) {
   const index = calendar.index;
   const endsAt = schedule[schedule.length - 1].end;
@@ -24,6 +26,7 @@ function initFeedbackFlow({
   const feedback = initTalkFeedback(document.body, { index, reveal, now, myCheckins, myRatings, myName });
   const eventFeedback = initEventFeedback(document.body, { form, myRatings, myName, now, endsAt });
   if (!reveal) return { feedback, eventFeedback };
+  const questions = initTalkQuestions(document.body, { index, config: questionsConfig, myCheckins, myName });
 
   const myTalks = initMyTalks({ rootEl: document.body, index, feedback, eventFeedback, myCheckins, myRatings, createModal, timezone: event.timezone });
   initFeedbackNudge({ index, myCheckins, myRatings, now, endsAt, onOpen: myTalks.open });
@@ -36,5 +39,5 @@ function initFeedbackFlow({
     syncButton();
     setInterval(syncButton, 60000);
   }
-  return { feedback, eventFeedback, myTalks };
+  return { feedback, eventFeedback, myTalks, questions };
 }

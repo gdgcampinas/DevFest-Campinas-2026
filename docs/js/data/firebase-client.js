@@ -17,7 +17,7 @@
  */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+import { getAuth, signInAnonymously, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
 
 const app = initializeApp(FIREBASE_CONFIG);
 const db = getFirestore(app);
@@ -43,4 +43,19 @@ function ensureAnonymousUid() {
   return uidPromise;
 }
 
-window.firebaseClient = { app, db, auth, ensureAnonymousUid };
+/**
+ * Login com Google, só pra moderadores (tablet da sala): as regras do Firestore liberam ocultar pergunta
+ * apenas pra e-mails da lista de moderadores. O público segue anônimo. Resolve com o e-mail logado.
+ */
+async function signInWithGoogle() {
+  const { user } = await signInWithPopup(auth, new GoogleAuthProvider());
+  return user.email;
+}
+
+/** Sai do Google e volta pra sessão anônima (uid novo) na próxima chamada de ensureAnonymousUid. */
+async function signOutModerator() {
+  await signOut(auth);
+  uidPromise = null;
+}
+
+window.firebaseClient = { app, db, auth, ensureAnonymousUid, signInWithGoogle, signOutModerator };

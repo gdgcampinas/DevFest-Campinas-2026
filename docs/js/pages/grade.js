@@ -36,8 +36,8 @@ function initGrade() {
   });
 
   const modal = createTalkModal();
-  const { feedback } = initFeedbackFlow({ calendar, reveal, createModal });
-  initTalkDetails(document.body, { schedule: SCHEDULE, tracks: TRACKS, timezone: EVENT.timezone, reveal, modal, favorites: favoritesRepository, calendar, feedback });
+  const { feedback, questions } = initFeedbackFlow({ calendar, reveal, createModal });
+  initTalkDetails(document.body, { schedule: SCHEDULE, tracks: TRACKS, timezone: EVENT.timezone, reveal, modal, favorites: favoritesRepository, calendar, feedback, questions });
 
   const liveStatus = createLiveStatus({ schedule: SCHEDULE, tracks: TRACKS, event: EVENT, reveal, favorites: favoritesRepository, now: resolveNow() });
   liveStatus.tick();

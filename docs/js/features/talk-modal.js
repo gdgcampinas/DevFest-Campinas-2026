@@ -31,7 +31,7 @@ const CARD_INNER_CONTROLS = ".fav-btn, a";
 /** Qualquer elemento que aponte pra uma palestra (card da agenda, do hero ou da galeria de palestrantes). */
 const TALK_TRIGGER = "[data-slot-index][data-track]";
 
-function initTalkDetails(rootEl, { schedule, tracks, timezone, reveal, modal, favorites = null, calendar = null, feedback = null }) {
+function initTalkDetails(rootEl, { schedule, tracks, timezone, reveal, modal, favorites = null, calendar = null, feedback = null, questions = null }) {
   rootEl.addEventListener("click", event => {
     if (event.target.closest(CARD_INNER_CONTROLS)) return;
     const card = event.target.closest(TALK_TRIGGER);
@@ -63,6 +63,8 @@ function initTalkDetails(rootEl, { schedule, tracks, timezone, reveal, modal, fa
     const feedbackSlot = modal.el.querySelector(".talk-feedback-slot");
     const entry = calendar?.index?.get(key);
     if (feedback && entry && feedbackSlot) feedback.render(feedbackSlot, entry);
+    const questionsSlot = modal.el.querySelector(".talk-questions-slot");
+    if (questions && entry && questionsSlot) questions.render(questionsSlot, entry);
   }
 }
 

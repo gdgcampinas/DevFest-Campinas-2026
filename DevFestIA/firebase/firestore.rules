@@ -6,8 +6,8 @@
 // regra certa qualquer pessoa com o DevTools aberto escreve, sobrescreve
 // ou lê o que quiser direto pelo client.
 //
-// Coleções do visitante: checkins, talk-feedback, event-feedback — mesmo formato pras
-// três (ver firestore-repository.js): id do documento = "<uid>_<entryKey>",
+// Coleções do visitante: checkins, talk-feedback, event-feedback, talk-questions, talk-question-votes — mesmo formato pras
+// cinco (ver firestore-repository.js): id do documento = "<uid>_<entryKey>",
 // sempre CRIADO (nunca editado) pelo client, sempre com `edition` e
 // `createdAt` (server timestamp, não confia no relógio do navegador).
 //
@@ -49,6 +49,16 @@ service cloud.firestore {
 
     function optionalText(data, field, max) {
       return !(field in data) || (data[field] is string && data[field].size() < max);
+    }
+
+    // Moderadores das perguntas: entram com Google (tablet da sala) e o e-mail precisa estar na lista.
+    // PREENCHER com os e-mails dos moderadores antes de ligar as perguntas (lista vazia = ninguém modera).
+    // Ativar o provedor Google em Authentication e autorizar o domínio gdgcampinas.github.io no console.
+    function isModerator() {
+      return request.auth != null
+        && request.auth.token.firebase.sign_in_provider == 'google.com'
+        && request.auth.token.email_verified == true
+        && request.auth.token.email in [];
     }
 
     // Aspectos do feedback do evento: ESPELHAR os ids de docs/js/data/event-feedback-form.js.
@@ -100,6 +110,40 @@ service cloud.firestore {
         && requiredText(request.resource.data, 'name', 80)
         && optionalText(request.resource.data, 'highlight', 400)
         && optionalText(request.resource.data, 'improve', 400);
+      allow update, delete: if false;
+    }
+
+    // Perguntas ao vivo por palestra: 1 por pessoa por palestra, só com check-in DAQUELA palestra (o id do
+    // check-in é o mesmo id deste documento). Qualquer pessoa autenticada lista as NÃO ocultas (a consulta
+    // precisa filtrar hidden == false); só moderador lista as ocultas e só ele altera `hidden`.
+    // Limite de texto: ESPELHAR `maxLength` de docs/js/data/talk-questions.js (280 = "size() < 281").
+    match /talk-questions/{docId} {
+      allow get: if request.auth != null;
+      allow list: if request.auth != null && (isModerator() || resource.data.hidden == false);
+      allow create: if isOwnDoc(docId) && hasValidBaseFields()
+        && request.resource.data.keys().hasOnly(['edition', 'entryKey', 'createdAt', 'text', 'name', 'hidden'])
+        && requiredText(request.resource.data, 'text', 281)
+        && requiredText(request.resource.data, 'name', 80)
+        && request.resource.data.hidden == false
+        && exists(/databases/$(database)/documents/checkins/$(docId));
+      allow update: if isModerator()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['hidden'])
+        && request.resource.data.hidden is bool;
+      allow delete: if false;
+    }
+
+    // Votos nas perguntas: 1 por pessoa por pergunta (id "<uid>_<id da pergunta>"), sem desfazer. Exige o
+    // check-in na palestra da pergunta e que a pergunta exista, seja dessa palestra e não esteja oculta.
+    match /talk-question-votes/{docId} {
+      allow get: if isOwnDoc(docId);
+      allow list: if request.auth != null;
+      allow create: if isOwnDoc(docId) && hasValidBaseFields()
+        && request.resource.data.keys().hasOnly(['edition', 'entryKey', 'talkKey', 'createdAt'])
+        && request.resource.data.talkKey is string && request.resource.data.talkKey.size() > 0 && request.resource.data.talkKey.size() < 100
+        && exists(/databases/$(database)/documents/checkins/$(request.auth.uid + '_' + request.resource.data.talkKey))
+        && exists(/databases/$(database)/documents/talk-questions/$(request.resource.data.entryKey))
+        && get(/databases/$(database)/documents/talk-questions/$(request.resource.data.entryKey)).data.entryKey == request.resource.data.talkKey
+        && get(/databases/$(database)/documents/talk-questions/$(request.resource.data.entryKey)).data.hidden == false;
       allow update, delete: if false;
     }
 
