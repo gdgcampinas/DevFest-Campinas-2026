@@ -6,7 +6,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const path = require("node:path");
-const { resolveRoomBoard } = require(path.join(__dirname, "..", "..", "..", "docs/js/features/room-board.js"));
+const { resolveRoomBoard, findTalkSlotByCode } = require(path.join(__dirname, "..", "..", "..", "docs/js/features/room-board.js"));
 
 const at = hhmm => new Date(`2026-11-28T${hhmm}:00-03:00`);
 const talk = title => ({ title, speakers: [{ name: "Ana" }] });
@@ -89,4 +89,28 @@ test("os QR carregam o que o ensaio pede (mesmo horário e modo DEV) em todos os
   result.panels.forEach(panel => assert.ok(panel.url.endsWith("&ensaio=14:30&lineup=1"), panel.url));
   const after = resolveRoomBoard({ ...params, now: at("11:10"), extraQuery: "&ensaio=14:30&lineup=1" });
   assert.equal(after.panels[1].url, "https://site/index.html?avaliar=1&ensaio=14:30&lineup=1");
+});
+
+test("palestra fixada (?palestra=<código>): o quadro mostra ela em qualquer dia e horário, aberta pra perguntas", () => {
+  for (const hhmm of ["07:30", "09:20", "10:00", "11:10"]) {
+    const result = resolveRoomBoard({ ...params, now: at(hhmm), pinnedCode: "9.ia" });
+    assert.equal(result.talk.data.title, "Primeira", `às ${hhmm}`);
+    assert.equal(result.talk.kind, "live");
+    assert.equal(result.questionsPhase, "open");
+    assert.deepEqual(panelIds(result), ["cdCheckin"]);
+    assert.ok(result.talk.progress >= 0 && result.talk.progress <= 1);
+  }
+});
+
+test("palestra fixada com código que não existe nesta sala: ignora e segue o relógio", () => {
+  const result = resolveRoomBoard({ ...params, now: at("09:20"), pinnedCode: "9.mobile" }); // é da outra sala
+  assert.equal(result.talk.key, "2026-11-28T12:00:00.000Z|ia");
+  assert.equal(result.talk.data.title, "Primeira");
+  assert.equal(resolveRoomBoard({ ...params, now: at("07:30"), pinnedCode: "x.ia" }).message, "O evento ainda não começou.");
+});
+
+test("findTalkSlotByCode acha a palestra da trilha pelo código curto", () => {
+  assert.equal(findTalkSlotByCode(schedule, track, "9.ia", params.codeOf), schedule[1]);
+  assert.equal(findTalkSlotByCode(schedule, track, "9.mobile", params.codeOf), null);
+  assert.equal(findTalkSlotByCode(schedule, track, null, params.codeOf), null);
 });

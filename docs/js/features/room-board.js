@@ -13,22 +13,31 @@
  *                  ainda pode responder as perguntas já aprovadas). Depois do fim do evento não há palestra na sala.
  *   questionsPhase "open" (palestra rolando) | "closed" (acabou) | null
  *   panels         QR (mesma forma de sempre) ou `message` quando não há nada pra mostrar.
+ * `pinnedCode` (opcional, `?palestra=<código>` na tela) fixa uma palestra da sala: ela vira a palestra "ao vivo" em qualquer dia
+ * e horário (teste em DEV, sem depender do relógio); código que não é desta sala é ignorado e vale o relógio.
  */
 const roomCheckinUrl = (code, siteUrl, extraQuery = "") => `${siteUrl}grade.html?checkin=${code}${extraQuery}`;
 const roomRateUrl = (code, siteUrl, extraQuery = "") => `${siteUrl}grade.html?avaliar=${code}${extraQuery}`;
 const roomRateEventUrl = (siteUrl, extraQuery = "") => `${siteUrl}index.html?avaliar=1${extraQuery}`;
 
-function resolveRoomBoard({ schedule, track, siteUrl, now, keyOf, codeOf, extraQuery = "" }) {
+/** A palestra desta trilha com esse código curto (o de talkShareCode), ou null. */
+function findTalkSlotByCode(schedule, track, code, codeOf) {
+  if (!code) return null;
+  return schedule.find(slot => slot.talks?.[track.id] && codeOf(slot, track.id) === code) ?? null;
+}
+
+function resolveRoomBoard({ schedule, track, siteUrl, now, keyOf, codeOf, extraQuery = "", pinnedCode = null }) {
   const eventStart = schedule[0].start;
   const eventEnd = schedule[schedule.length - 1].end;
-  if (now < eventStart) return { message: "O evento ainda não começou.", talk: null, questionsPhase: null };
+  const pinned = findTalkSlotByCode(schedule, track, pinnedCode, codeOf);
+  if (now < eventStart && !pinned) return { message: "O evento ainda não começou.", talk: null, questionsPhase: null };
 
   const talkSlots = schedule.filter(slot => slot.talks?.[track.id]);
-  const finished = talkSlots.filter(slot => slot.end <= now).pop();
-  const eventOver = now >= eventEnd;
-  const active = eventOver ? null : talkSlots.find(slot => now >= slot.start && now < slot.end) ?? null;
+  const finished = pinned ? null : talkSlots.filter(slot => slot.end <= now).pop();
+  const eventOver = !pinned && now >= eventEnd;
+  const active = pinned ?? (eventOver ? null : talkSlots.find(slot => now >= slot.start && now < slot.end) ?? null);
 
-  const describe = (slot, kind, progress = 1) => ({ kind, slot, data: slot.talks[track.id], key: keyOf(slot, track.id), progress });
+  const describe = (slot, kind, progress = 1) => ({ kind, slot, data: slot.talks[track.id], key: keyOf(slot, track.id), progress: Math.min(1, Math.max(0, progress)) });
   const talk = active ? describe(active, "live", (now - active.start) / (active.end - active.start))
     : finished && !eventOver ? describe(finished, "last")
     : null;
@@ -47,4 +56,4 @@ function resolveRoomBoard({ schedule, track, siteUrl, now, keyOf, codeOf, extraQ
   return panels.length ? { panels, talk, questionsPhase } : { message: "Nenhuma palestra agora nesta sala.", talk, questionsPhase };
 }
 
-if (typeof module !== "undefined") module.exports = { resolveRoomBoard, roomCheckinUrl, roomRateUrl, roomRateEventUrl };
+if (typeof module !== "undefined") module.exports = { resolveRoomBoard, findTalkSlotByCode, roomCheckinUrl, roomRateUrl, roomRateEventUrl };

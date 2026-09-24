@@ -6,9 +6,10 @@
  * conta vê "sem permissão" (a regra é a defesa, a tela só avisa).
  *
  * Reusa resolveEventState() (mesmo relógio do site), talkKey() e rankQuestions(); tudo por parâmetro (`deps()` dá
- * repositories e login). Atualiza sozinha a cada `config.boardPollMs` e retoma o login que já estava feito.
+ * repositories e login). `pinnedCode` (`?palestra=<código>`) fixa a palestra em qualquer dia e horário. Atualiza sozinha a cada `config.boardPollMs` e retoma o login que já estava feito.
  */
-function pickModerationTalk({ schedule, track, now }) {
+function pickModerationTalk({ schedule, track, now, pinnedSlot = null }) {
+  if (pinnedSlot) return { key: talkKey(pinnedSlot, track.id), title: pinnedSlot.talks[track.id].title };
   const talkSlots = schedule.filter(slot => slot.talks?.[track.id]);
   const state = resolveEventState(now, schedule);
   const slot = state.phase === "live" && state.activeSlot?.talks?.[track.id]
@@ -17,7 +18,7 @@ function pickModerationTalk({ schedule, track, now }) {
   return slot ? { key: talkKey(slot, track.id), title: slot.talks[track.id].title } : null;
 }
 
-function initQuestionModeration(rootEl, { schedule, track, config, now = () => new Date(), deps = defaultModerationDeps, whenReady = runAfterModules }) {
+function initQuestionModeration(rootEl, { schedule, track, config, now = () => new Date(), pinnedCode = null, codeOf, deps = defaultModerationDeps, whenReady = runAfterModules }) {
   let email = "";
   let timer = null;
 
@@ -25,7 +26,7 @@ function initQuestionModeration(rootEl, { schedule, track, config, now = () => n
 
   async function refresh() {
     if (!email) return draw({ phase: "signin" });
-    const talk = pickModerationTalk({ schedule, track, now: now() });
+    const talk = pickModerationTalk({ schedule, track, now: now(), pinnedSlot: findTalkSlotByCode(schedule, track, pinnedCode, codeOf) });
     if (!talk) return draw({ phase: "empty", message: "Nenhuma palestra nesta sala por enquanto." });
     const { questions, votes } = deps();
     try {

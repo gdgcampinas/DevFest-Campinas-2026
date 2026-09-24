@@ -1,5 +1,6 @@
 /**
  * Página: moderação de perguntas (ferramenta interna, fora do nav/sitemap).
+ * `?palestra=<código>` (ex.: 0900.ia) fixa a palestra em qualquer dia, sem depender do relógio (teste em DEV).
  * `?trilha=<id>` escolhe a sala, como em checkin-display.html; sem ela ou
  * com id inválido lista as trilhas (link errado é o erro mais provável).
  */
@@ -13,7 +14,14 @@ function initModeracaoPage() {
     return;
   }
   document.documentElement.style.setProperty("--track-color", track.color);
-  initQuestionModeration(bodyEl, { schedule: SCHEDULE, track, config: talkQuestionsConfigRepository.getAll(), now: resolveNow() });
+  initQuestionModeration(bodyEl, {
+    schedule: SCHEDULE,
+    track,
+    config: talkQuestionsConfigRepository.getAll(),
+    now: resolveNow(),
+    pinnedCode: getParam("palestra"),
+    codeOf: (slot, trackId) => talkShareCode(slot, trackId, EVENT.timezone),
+  });
 }
 
 initModeracaoPage();

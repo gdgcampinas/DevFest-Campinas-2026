@@ -27,6 +27,7 @@ function initCheckinDisplay_page() {
   initCheckinDisplay(document.getElementById("cdScreen"), {
     boardQuestions: questionsConfig.enabled ? createBoardQuestions({ config: questionsConfig }) : null,
     extraQuery: rehearsal.query,
+    pinnedCode: getParam("palestra"),
     schedule: SCHEDULE,
     track,
     timezone: EVENT.timezone,
