@@ -8,14 +8,14 @@
  */
 function initMyTalks({ rootEl, index, feedback, eventFeedback, myCheckins, myRatings, createModal, timezone, openParam = "avaliar" }) {
   let modal = null;
-  const ensureModal = () => modal ?? (modal = createModal("myTalksModal", { label: "Minhas palestras" }));
+  const ensureModal = () => modal ?? (modal = createModal("myTalksModal", { label: t("myTalks.title", "Minhas palestras") }));
 
   const watched = () => myCheckins.getAll().map(key => index.get(key)).filter(Boolean).sort((a, b) => a.slot.start - b.slot.start);
 
   const updateProgress = () => {
     const progressEl = modal?.el.querySelector("[data-my-talks-progress]");
     const items = watched();
-    if (progressEl) progressEl.textContent = `${items.filter(entry => myRatings.has(entry.key)).length} de ${items.length} avaliadas`;
+    if (progressEl) progressEl.textContent = myTalksProgressLabel(items.filter(entry => myRatings.has(entry.key)).length, items.length);
   };
 
   /** `focusKey` destaca e rola até essa palestra (QR de avaliação); `notice` mostra um aviso no topo. */
@@ -53,7 +53,7 @@ function initMyTalks({ rootEl, index, feedback, eventFeedback, myCheckins, myRat
       await feedback.checkin(entry);
       open({ focusKey: entry.key });
     } catch {
-      open({ notice: "Sem conexão pra registrar sua presença nessa palestra. Confira a internet e escaneie de novo." });
+      open({ notice: t("myTalks.offline", "Sem conexão pra registrar sua presença nessa palestra. Confira a internet e escaneie de novo.") });
     }
   }
 

@@ -8,7 +8,7 @@
 
 /** "0945.ia": horário de início no fuso do evento + id da trilha. Curto e estável entre versões da grade. */
 function talkShareCode(slot, trackId, timezone) {
-  return `${formatEventTime(slot.start, timezone).replace(":", "")}.${trackId}`;
+  return `${formatEventTime(slot.start, timezone, CODE_LOCALE).replace(":", "")}.${trackId}`;
 }
 
 function buildTalkIndex(schedule, tracks, timezone) {
@@ -31,14 +31,14 @@ function buildTalkIndex(schedule, tracks, timezone) {
 
 /** Entrada de calendário de uma palestra. `siteUrl` aponta pra grade completa. */
 function talkToCalendarEntry(entry, event, siteUrl) {
-  const speakers = speakerList(entry.data).map(speaker => speaker.name).join(" e ");
+  const speakers = speakerList(entry.data).map(speaker => speaker.name).join(` ${t("common.and", "e")} `);
   return {
     uid: `${entry.code}@devfestcampinas`,
     title: entry.data.title,
     start: entry.slot.start,
     end: entry.slot.end,
     location: eventLocationLabel(event, entry.track.room),
-    details: [speakers && `Palestrante(s): ${speakers}`, `Trilha: ${entry.track.label}`, entry.data.description, `Grade completa: ${siteUrl}`]
+    details: [speakers && t("calendar.speakers", "Palestrante(s): {names}", { names: speakers }), t("calendar.track", "Trilha: {track}", { track: entry.track.label }), entry.data.description, t("calendar.fullSchedule", "Grade completa: {url}", { url: siteUrl })]
       .filter(Boolean).join("\n"),
     url: siteUrl,
   };

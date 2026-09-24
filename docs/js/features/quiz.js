@@ -40,7 +40,7 @@ function initQuiz({ mountEl, questions, copy, tracks, talkIndex, favorites, reve
       talks: entries.map(entry => ({
         timeLabel: formatEventTime(entry.slot.start, timezone),
         title: entry.data.title,
-        speakerNames: speakerList(entry.data).map(speaker => speaker.name).join(" e "),
+        speakerNames: speakerList(entry.data).map(speaker => speaker.name).join(` ${t("common.and", "e")} `),
       })),
       talksNotice: copy.talksSoon,
       agendaAdded,

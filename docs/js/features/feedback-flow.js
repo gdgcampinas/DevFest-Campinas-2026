@@ -33,7 +33,7 @@ function initFeedbackFlow({
 
   const headerTop = document.querySelector(".header-top");
   if (headerTop) {
-    headerTop.insertAdjacentHTML("beforeend", `<button type="button" class="chip-btn header-feedback-btn" data-my-talks-open data-track-event="my_talks_open" hidden>${iconMarkup("star")}Avaliar</button>`);
+    headerTop.insertAdjacentHTML("beforeend", `<button type="button" class="chip-btn header-feedback-btn" data-my-talks-open data-track-event="my_talks_open" hidden>${iconMarkup("star")}${t("common.rate", "Avaliar")}</button>`);
     const button = headerTop.querySelector(".header-feedback-btn");
     const syncButton = () => { button.hidden = now() < startsAt; };
     syncButton();

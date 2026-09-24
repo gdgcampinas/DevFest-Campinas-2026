@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>DevFest Campinas 2026</title>
+<title data-i18n="page.home.title">DevFest Campinas 2026</title>
 <meta name="description" content="Um dia de tecnologia em Campinas: 4 trilhas de palestras, comunidade e networking. 28 de novembro de 2026.">
 <link rel="canonical" href="https://gdgcampinas.github.io/DevFest-Campinas-2026/">
 <meta property="og:type" content="website">
@@ -32,7 +32,7 @@
 <link rel="preload" href="assets/fonts/google-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=1">
 <link rel="stylesheet" href="css/tokens.css?v=3">
-<link rel="stylesheet" href="css/styles.css?v=56">
+<link rel="stylesheet" href="css/styles.css?v=57">
 </head>
 <body>
 
@@ -43,7 +43,7 @@
 <header>
   <div class="header-top">
     <div class="brand" id="brand"></div>
-    <span class="status-pill" id="statusPill">Carregando…</span>
+    <span class="status-pill" id="statusPill" data-i18n="live.loading">Carregando…</span>
   </div>
   <h1 class="wordmark" id="wordmark"></h1>
   <div class="meta-line" id="headerMeta"></div>
@@ -60,9 +60,9 @@
 
 <section class="featured-speakers" id="featuredSpeakersSection" hidden>
   <div class="featured-speakers-inner">
-    <h2>Destaques</h2>
+    <h2 data-i18n="home.highlights">Destaques</h2>
     <div class="featured-speakers-grid"></div>
-    <a class="featured-speakers-cta" href="palestrantes.html">Todos palestrantes</a>
+    <a class="featured-speakers-cta" href="palestrantes.html" data-i18n="home.allSpeakers">Todos palestrantes</a>
   </div>
 </section>
 
@@ -85,51 +85,51 @@
 
 <section class="faq">
   <div class="faq-head">
-    <h2>Antes de vir</h2>
-    <p class="faq-sub">Está chegando! O que você precisa saber para aproveitar 100%.</p>
+    <h2 data-i18n="home.beforeYouCome">Antes de vir</h2>
+    <p class="faq-sub" data-i18n="home.beforeYouComeSub">Está chegando! O que você precisa saber para aproveitar 100%.</p>
   </div>
   <div class="faq-grid" id="beforeYouCome"></div>
   <div class="venue-map-card" id="venueMap"></div>
 </section>
 
 <section class="tracks-overview" id="tracksOverviewSection" hidden>
-  <h2>Trilhas</h2>
+  <h2 data-i18n="home.tracks">Trilhas</h2>
   <div class="tracks-overview-grid faq-grid"></div>
-  <p class="tracks-overview-cta"><a class="chip-btn chip-btn--primary" href="quiz.html" data-track-event="quiz_open" data-track-place="home">Descubra sua trilha em 5 perguntas</a></p>
+  <p class="tracks-overview-cta"><a class="chip-btn chip-btn--primary" href="quiz.html" data-track-event="quiz_open" data-track-place="home" data-i18n="home.quizCta">Descubra sua trilha em 5 perguntas</a></p>
 </section>
 
 <section class="page-teasers">
   <a class="page-teaser" href="grade.html">
-    <h3>Programação completa</h3>
-    <p>Confira a grade completa, filtre por trilha →</p>
+    <h3 data-i18n="home.teaserGrade">Programação completa</h3>
+    <p data-i18n="home.teaserGradeText">Confira a grade completa, filtre por trilha →</p>
   </a>
   <a class="page-teaser" href="palestrantes.html">
-    <h3>Palestrantes</h3>
-    <p>Veja quem vai estar no palco este ano →</p>
+    <h3 data-i18n="home.teaserSpeakers">Palestrantes</h3>
+    <p data-i18n="home.teaserSpeakersText">Veja quem vai estar no palco este ano →</p>
   </a>
   <a class="page-teaser" href="ingressos.html">
-    <h3>Ingressos</h3>
-    <p>Grátis, com camiseta ou VIP — veja os tipos →</p>
+    <h3 data-i18n="home.teaserTickets">Ingressos</h3>
+    <p data-i18n="home.teaserTicketsText">Grátis, com camiseta ou VIP — veja os tipos →</p>
   </a>
 </section>
 
 <section class="realizacao" id="realizacaoSection">
-  <h2>Realização</h2>
+  <h2 data-i18n="home.realization">Realização</h2>
   <div class="realizacao-grid"></div>
 </section>
 
 <section class="testimonials" id="testimonialsSection" hidden>
-  <h2>Histórias de quem viveu essa experiência</h2>
+  <h2 data-i18n="home.testimonials">Histórias de quem viveu essa experiência</h2>
   <div class="testimonials-grid"></div>
 </section>
 
 <section class="sponsors" id="sponsorsSection" hidden>
-  <h2>Patrocinadores e parceiros</h2>
+  <h2 data-i18n="home.sponsors">Patrocinadores e parceiros</h2>
   <div class="sponsors-grid"></div>
 </section>
 
 <section class="partner-communities" id="partnerCommunitiesSection" hidden>
-  <h2>Comunidades parceiras</h2>
+  <h2 data-i18n="home.communities">Comunidades parceiras</h2>
   <div class="partner-communities-grid"></div>
 </section>
 
@@ -139,10 +139,10 @@
     <a href="https://www.instagram.com/gdgcampinas" target="_blank" rel="noopener">Instagram</a>
     <a href="https://www.linkedin.com/company/gdg-campinas/" target="_blank" rel="noopener">LinkedIn</a>
     <a href="https://linktr.ee/gdgcampinas" target="_blank" rel="noopener">Linktree</a>
-    <a href="codigo-de-conduta.html">Código de conduta</a>
+    <a href="codigo-de-conduta.html" data-i18n="footer.conduct">Código de conduta</a>
   </div>
   <div class="credits">
-    DevFest Campinas — realizado pelo <a href="https://gdg.community.dev/gdg-campinas/" target="_blank" rel="noopener">GDG Campinas</a>.
+    <span data-i18n="footer.credits">DevFest Campinas — realizado pelo</span> <a href="https://gdg.community.dev/gdg-campinas/" target="_blank" rel="noopener">GDG Campinas</a>.
     <span class="tag">#DevFestCampinas2026</span>
   </div>
 </footer>
@@ -163,6 +163,10 @@
   é montado na definição a partir dos repositories de speakers e de talks.
 -->
 <script src="js/data/repository.js?v=1"></script>
+<script src="js/data/i18n/languages.js?v=1"></script>
+<script src="js/data/i18n/en.js?v=3"></script>
+<script src="js/features/i18n-core.js?v=1"></script>
+<script src="js/features/i18n.js?v=1"></script>
 <script src="js/data/firebase-config.js?v=1"></script>
 <script type="module" src="js/data/firebase-client.js?v=2"></script>
 <script type="module" src="js/data/firestore-repository.js?v=2"></script>
@@ -195,7 +199,7 @@
 <script src="js/data/talk-formats.js?v=1"></script>
 <script src="js/data/sponsors.js?v=4"></script>
 <script src="js/data/partner-communities.js?v=3"></script>
-<script src="js/data/highlights.js?v=5"></script>
+<script src="js/data/highlights.js?v=6"></script>
 <script src="js/data/video.js?v=3"></script>
 <script src="js/data/stats.js?v=2"></script>
 <script src="js/data/about.js?v=2"></script>
@@ -206,43 +210,44 @@
 <script src="js/data/analytics.js?v=2"></script>
 <script src="js/data/install-guides.js?v=2"></script>
 <script src="js/data/testimonials.js?v=3"></script>
-<script src="js/components/site-nav.js?v=4"></script>
+<script src="js/components/site-nav.js?v=5"></script>
+<script src="js/components/language-switcher.js?v=1"></script>
 <script src="js/components/avatar.js?v=1"></script>
 <script src="js/components/icon.js?v=1"></script>
 <script src="js/components/hero-galaxy.js?v=6"></script>
-<script src="js/components/registration-counter.js?v=1"></script>
-<script src="js/components/construction-notice.js?v=1"></script>
-<script src="js/components/modal.js?v=1"></script>
+<script src="js/components/registration-counter.js?v=2"></script>
+<script src="js/components/construction-notice.js?v=2"></script>
+<script src="js/components/modal.js?v=2"></script>
 <script src="js/components/install-guide.js?v=1"></script>
-<script src="js/components/favorite-button.js?v=2"></script>
+<script src="js/components/favorite-button.js?v=3"></script>
 <script src="js/components/speaker-link.js?v=1"></script>
 <script src="js/components/talk-meta.js?v=1"></script>
-<script src="js/components/calendar-links.js?v=1"></script>
-<script src="js/components/track-card.js?v=10"></script>
-<script src="js/components/rating-inputs.js?v=2"></script>
-<script src="js/components/talk-feedback.js?v=5"></script>
-<script src="js/components/talk-questions.js?v=1"></script>
-<script src="js/components/event-feedback.js?v=3"></script>
-<script src="js/components/my-talks.js?v=3"></script>
-<script src="js/components/feedback-nudge.js?v=1"></script>
+<script src="js/components/calendar-links.js?v=2"></script>
+<script src="js/components/track-card.js?v=11"></script>
+<script src="js/components/rating-inputs.js?v=3"></script>
+<script src="js/components/talk-feedback.js?v=6"></script>
+<script src="js/components/talk-questions.js?v=2"></script>
+<script src="js/components/event-feedback.js?v=4"></script>
+<script src="js/components/my-talks.js?v=4"></script>
+<script src="js/components/feedback-nudge.js?v=2"></script>
 <script src="js/components/info-card.js?v=1"></script>
 <script src="js/components/sponsor-card.js?v=2"></script>
 <script src="js/components/person-card.js?v=3"></script>
-<script src="js/features/agenda.js?v=3"></script>
+<script src="js/features/agenda.js?v=5"></script>
 <script src="js/features/hero-galaxy.js?v=5"></script>
 <script src="js/features/registration-counter.js?v=1"></script>
-<script src="js/features/live-status.js?v=7"></script>
-<script src="js/features/talk-modal.js?v=7"></script>
-<script src="js/features/talk-feedback.js?v=7"></script>
+<script src="js/features/live-status.js?v=9"></script>
+<script src="js/features/talk-modal.js?v=8"></script>
+<script src="js/features/talk-feedback.js?v=8"></script>
 <script src="js/features/question-ranking.js?v=1"></script>
-<script src="js/features/talk-questions.js?v=1"></script>
-<script src="js/features/event-feedback.js?v=5"></script>
-<script src="js/features/my-talks.js?v=2"></script>
+<script src="js/features/talk-questions.js?v=2"></script>
+<script src="js/features/event-feedback.js?v=6"></script>
+<script src="js/features/my-talks.js?v=3"></script>
 <script src="js/features/feedback-nudge.js?v=2"></script>
-<script src="js/features/feedback-flow.js?v=3"></script>
+<script src="js/features/feedback-flow.js?v=4"></script>
 <script src="js/features/calendar.js?v=1"></script>
-<script src="js/features/talk-index.js?v=1"></script>
-<script src="js/features/calendar-actions.js?v=1"></script>
+<script src="js/features/talk-index.js?v=2"></script>
+<script src="js/features/calendar-actions.js?v=2"></script>
 <script src="js/features/favorites.js?v=1"></script>
 <script src="js/features/sponsors.js?v=1"></script>
 <script src="js/features/team.js?v=2"></script>
@@ -252,22 +257,22 @@
 <script src="js/features/stats.js?v=1"></script>
 <script src="js/features/about.js?v=1"></script>
 <script src="js/features/highlights.js?v=1"></script>
-<script src="js/features/video.js?v=1"></script>
+<script src="js/features/video.js?v=2"></script>
 <script src="js/features/realizacao.js?v=1"></script>
 <script src="js/features/partner-communities.js?v=1"></script>
-<script src="js/features/tickets.js?v=4"></script>
+<script src="js/features/tickets.js?v=5"></script>
 <script src="js/features/footer.js?v=2"></script>
 <script src="js/features/featured-speakers.js?v=3"></script>
 <script src="js/features/tracks-overview.js?v=2"></script>
 <script src="js/features/testimonials.js?v=2"></script>
-<script src="js/features/ticker.js?v=2"></script>
+<script src="js/features/ticker.js?v=3"></script>
 <script src="js/features/starfield.js?v=2"></script>
 <script src="js/features/reveal-gate.js?v=1"></script>
-<script src="js/features/a11y.js?v=1"></script>
+<script src="js/features/a11y.js?v=2"></script>
 <script src="js/features/install-platform.js?v=1"></script>
-<script src="js/features/pwa.js?v=3"></script>
+<script src="js/features/pwa.js?v=4"></script>
 <script src="js/features/analytics.js?v=1"></script>
-<script src="js/app.js?v=21"></script>
-<script src="js/pages/home.js?v=17"></script>
+<script src="js/app.js?v=22"></script>
+<script src="js/pages/home.js?v=18"></script>
 </body>
 </html>

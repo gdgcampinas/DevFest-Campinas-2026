@@ -30,10 +30,10 @@ function initEventFeedback(rootEl, { form, myRatings, myName, now = () => new Da
     const data = new FormData(formEl);
     const text = field => formEl.querySelector(`[name=${field}]`).value.trim();
     const name = text("name");
-    if (!name) return showFormError(formEl, submitBtn, "Informe seu nome pra enviar a avaliação.");
+    if (!name) return showFormError(formEl, submitBtn, t("fb.nameRequired", "Informe seu nome pra enviar a avaliação."));
     const aspects = Object.fromEntries(form.aspects.map(aspect => [aspect.id, Number(data.get(`aspect-${aspect.id}`))]));
     const nps = data.get("event-nps");
-    if (nps === null) return showFormError(formEl, submitBtn, "Escolha uma nota de 0 a 10 na pergunta de indicação.");
+    if (nps === null) return showFormError(formEl, submitBtn, t("evfb.npsRequired", "Escolha uma nota de 0 a 10 na pergunta de indicação."));
     submitBtn.disabled = true;
     const optional = { highlight: text("highlight"), improve: text("improve") };
     try {
@@ -52,7 +52,7 @@ function initEventFeedback(rootEl, { form, myRatings, myName, now = () => new Da
       rootEl.dispatchEvent(new CustomEvent(FEEDBACK_CHANGED_EVENT));
     } catch {
       submitBtn.disabled = false;
-      showFormError(formEl, submitBtn, "Não foi possível enviar agora. Confira sua conexão e tente de novo.");
+      showFormError(formEl, submitBtn, t("evfb.sendError", "Não foi possível enviar agora. Confira sua conexão e tente de novo."));
     }
   });
 

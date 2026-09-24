@@ -3,8 +3,8 @@ function initIngressos() {
   const reveal = initShell("ingressos");
 
   renderOrConstruction(reveal, document.getElementById("ticketsSection"),
-    () => renderTickets(EVENT.tickets, ticketsRepository.getAll(), document.getElementById("ticketsSection"), { note: TICKETS_NOTE }),
-    "Os tipos e valores de ingresso serão revelados em breve.");
+    () => renderTickets(EVENT.tickets, ticketsRepository.getAll(), document.getElementById("ticketsSection"), { note: tt(TICKETS_NOTE) }),
+    t("tickets.soon", "Os tipos e valores de ingresso serão revelados em breve."));
 
   const gate = EVENT.tickets.registrationGate
     ? createRegistrationGate({

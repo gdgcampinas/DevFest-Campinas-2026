@@ -9,10 +9,10 @@ function initTime() {
   renderTeamIntro(teamIntroRepository.getAll(), document.getElementById("teamIntroSection"));
   renderOrConstruction(reveal, document.getElementById("organizadoresSection"),
     () => renderTeamGroup(team, "organizador", document.getElementById("organizadoresSection"), document.querySelector("#organizadoresSection .team-grid")),
-    "Organizadores serão revelados em breve.");
+    t("time.organizersSoon", "Organizadores serão revelados em breve."));
   renderOrConstruction(reveal, document.getElementById("voluntariosSection"),
     () => renderTeamGroup(team, "voluntario", document.getElementById("voluntariosSection"), document.querySelector("#voluntariosSection .team-grid")),
-    "Voluntários serão revelados em breve.");
+    t("time.volunteersSoon", "Voluntários serão revelados em breve."));
 }
 
 initTime();

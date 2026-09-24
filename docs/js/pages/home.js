@@ -26,19 +26,19 @@ function initHome() {
   renderVenueInfo(EVENT, document.getElementById("venueInfo"), SCHEDULE);
   renderVenueMap(EVENT, document.getElementById("venueMap"));
   initClickableCard(document.querySelector('[data-item="parking"]'), modal, () =>
-    galleryMarkup("Estacionamento", "Informações em breve.", PARKING_IMAGES));
+    galleryMarkup(t("before.parking", "Estacionamento"), t("before.infoSoon", "Informações em breve."), PARKING_IMAGES));
   initClickableCard(document.querySelector('[data-item="food"]'), modal, () =>
-    galleryMarkup("Cardápio", "Informações em breve.", FOOD_IMAGES));
+    galleryMarkup(t("before.menu", "Cardápio"), t("before.infoSoon", "Informações em breve."), FOOD_IMAGES));
   renderTracksOverview(TRACKS, document.getElementById("tracksOverviewSection"), document.querySelector(".tracks-overview-grid"));
 
   renderRealizacao(EVENT.hosts, document.querySelector(".realizacao-grid"));
   renderTestimonials(testimonialsRepository.getAll(), document.getElementById("testimonialsSection"), document.querySelector(".testimonials-grid"));
   renderOrConstruction(reveal, document.getElementById("sponsorsSection"),
     () => renderSponsors(sponsorsRepository.getAll(), document.getElementById("sponsorsSection"), document.querySelector(".sponsors-grid")),
-    "Patrocinadores serão revelados em breve.");
+    t("home.sponsorsSoon", "Patrocinadores serão revelados em breve."));
   renderOrConstruction(reveal, document.getElementById("partnerCommunitiesSection"),
     () => renderPartnerCommunities(partnerCommunitiesRepository.getAll(), document.getElementById("partnerCommunitiesSection"), document.querySelector(".partner-communities-grid")),
-    "Comunidades parceiras serão reveladas em breve.");
+    t("home.communitiesSoon", "Comunidades parceiras serão reveladas em breve."));
 
   const liveStatus = createLiveStatus({
     schedule: SCHEDULE,

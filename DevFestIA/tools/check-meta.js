@@ -31,7 +31,7 @@ const metaContent = (html, attr, key) => {
 pages.forEach(file => {
   const html = fs.readFileSync(path.join(docs, file), "utf8");
   const expectedUrl = file === "index.html" ? baseUrl : baseUrl + file;
-  const title = (html.match(/<title>(.*?)<\/title>/) || [])[1];
+  const title = (html.match(/<title[^>]*>(.*?)<\/title>/) || [])[1];
 
   const required = {
     "og:title": metaContent(html, "property", "og:title"),

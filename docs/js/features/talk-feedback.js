@@ -105,7 +105,7 @@ function initTalkFeedback(rootEl, { index, reveal = true, now = () => new Date()
         await doCheckin(entry);
         render(container, entry);
       } catch {
-        container.innerHTML = talkFeedbackMarkup({ phase: "checkin", entryKey: entry.key, message: "Sem conexão agora. Tente de novo em instantes." });
+        container.innerHTML = talkFeedbackMarkup({ phase: "checkin", entryKey: entry.key, message: t("checkin.offline", "Sem conexão agora. Tente de novo em instantes.") });
       }
     }
   });
@@ -120,7 +120,7 @@ function initTalkFeedback(rootEl, { index, reveal = true, now = () => new Date()
     const submitBtn = form.querySelector("[type=submit]");
     const text = field => form.querySelector(`[name=${field}]`).value.trim();
     const name = text("name");
-    if (!name) return showFormError(form, submitBtn, "Informe seu nome pra enviar a avaliação.");
+    if (!name) return showFormError(form, submitBtn, t("fb.nameRequired", "Informe seu nome pra enviar a avaliação."));
     submitBtn.disabled = true;
     const optional = { highlight: text("highlight"), improve: text("improve") };
     try {
@@ -137,7 +137,7 @@ function initTalkFeedback(rootEl, { index, reveal = true, now = () => new Date()
       announceChange();
     } catch {
       submitBtn.disabled = false;
-      showFormError(form, submitBtn, "Não foi possível enviar agora. Confira sua conexão e o check-in e tente de novo.");
+      showFormError(form, submitBtn, t("rate.sendError", "Não foi possível enviar agora. Confira sua conexão e o check-in e tente de novo."));
     }
   });
 

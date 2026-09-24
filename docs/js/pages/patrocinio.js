@@ -6,7 +6,7 @@ function initPatrocinio() {
   renderInfoCards(patrocinioBenefitsRepository.getAll(), document.querySelector("#beneficiosSection .faq-grid"));
   renderOrConstruction(reveal, document.getElementById("sponsorsSection"),
     () => renderSponsors(sponsorsRepository.getAll(), document.getElementById("sponsorsSection"), document.querySelector(".sponsors-grid")),
-    "Patrocinadores serão revelados em breve.");
+    t("home.sponsorsSoon", "Patrocinadores serão revelados em breve."));
   renderTestimonials(testimonialsRepository.getAll(), document.getElementById("testimonialsSection"), document.querySelector(".testimonials-grid"));
 }
 

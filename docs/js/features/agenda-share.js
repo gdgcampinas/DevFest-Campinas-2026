@@ -13,7 +13,7 @@ function agendaShareUrl(codes, baseUrl) {
 }
 
 function agendaShareMessage(count, url) {
-  return `Minha agenda no DevFest Campinas 2026 (${count} ${count === 1 ? "palestra" : "palestras"}): ${url}`;
+  return t("agenda.shareMessage", "Minha agenda no DevFest Campinas 2026 ({talks}): {url}", { talks: tn("agenda.talks", count, "{count} palestra", "{count} palestras"), url });
 }
 
 function initAgendaShare({ mountEl, favorites, index, baseUrl }) {
@@ -34,8 +34,8 @@ function initAgendaShare({ mountEl, favorites, index, baseUrl }) {
     if (!copyBtn) return;
     copyWithFeedback(mountEl.dataset.shareUrl, {
       labelEl: copyBtn.querySelector("span"),
-      idleText: "Copiar link",
-      promptText: "Copie o link da sua agenda:",
+      idleText: t("agenda.copy", "Copiar link"),
+      promptText: t("agenda.copyPrompt", "Copie o link da sua agenda:"),
     });
   });
 
@@ -63,9 +63,9 @@ function initSharedAgendaBanner({ bannerEl, favorites, index, onSaved = () => {}
 
   bannerEl.hidden = false;
   bannerEl.innerHTML = `
-    <span>Você abriu uma agenda compartilhada com <strong>${keys.length} ${keys.length === 1 ? "palestra" : "palestras"}</strong>.</span>
-    <button type="button" class="chip-btn chip-btn--primary" data-shared-save data-track-event="shared_agenda_save">Salvar na minha agenda</button>
-    <button type="button" class="chip-btn" data-shared-dismiss>Agora não</button>`;
+    <span>${t("agenda.sharedOpened", "Você abriu uma agenda compartilhada com {talks}.", { talks: `<strong>${tn("agenda.talks", keys.length, "{count} palestra", "{count} palestras")}</strong>` })}</span>
+    <button type="button" class="chip-btn chip-btn--primary" data-shared-save data-track-event="shared_agenda_save">${t("agenda.save", "Salvar na minha agenda")}</button>
+    <button type="button" class="chip-btn" data-shared-dismiss>${t("common.notNow", "Agora não")}</button>`;
 
   bannerEl.addEventListener("click", event => {
     if (event.target.closest("[data-shared-save]")) {

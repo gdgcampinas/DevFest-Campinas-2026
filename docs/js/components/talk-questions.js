@@ -6,13 +6,13 @@
  */
 function questionItemMarkup(question, { moderator = false } = {}) {
   const classes = ["question-item", question.hidden ? "is-hidden" : "", question.mine ? "is-mine" : ""].filter(Boolean).join(" ");
-  const votes = `<span class="question-votes" aria-label="${question.votes} ${question.votes === 1 ? "voto" : "votos"}">${question.votes}</span>`;
+  const votes = `<span class="question-votes" aria-label="${tn("q.votes", question.votes, "{count} voto", "{count} votos")}">${question.votes}</span>`;
   const action = moderator
     ? `<button type="button" class="chip-btn" data-question-hide="${escapeHtml(question.id)}" data-hidden="${question.hidden ? "0" : "1"}">${question.hidden ? "Mostrar" : "Ocultar"}</button>`
-    : `<button type="button" class="chip-btn question-vote" data-question-vote="${escapeHtml(question.id)}" aria-pressed="${question.voted}"${question.voted || question.mine ? " disabled" : ""}>${iconMarkup("thumbs-up")}${question.voted ? "Votado" : "Votar"}</button>`;
+    : `<button type="button" class="chip-btn question-vote" data-question-vote="${escapeHtml(question.id)}" aria-pressed="${question.voted}"${question.voted || question.mine ? " disabled" : ""}>${iconMarkup("thumbs-up")}${question.voted ? t("q.voted", "Votado") : t("q.vote", "Votar")}</button>`;
   return `<li class="${classes}">
     ${votes}
-    <div class="question-body"><p class="question-text">${escapeHtml(question.text)}</p><p class="question-author">${escapeHtml(question.name)}${question.mine ? " (você)" : ""}</p></div>
+    <div class="question-body"><p class="question-text">${escapeHtml(question.text)}</p><p class="question-author">${escapeHtml(question.name)}${question.mine ? ` (${t("q.you", "você")})` : ""}</p></div>
     ${action}
   </li>`;
 }
@@ -26,20 +26,20 @@ function questionListMarkup(questions, opts) {
  * não perguntou), "error". `entryKey` é a palestra; `message` um aviso de erro opcional.
  */
 function talkQuestionsMarkup({ phase, entryKey, questions = [], canAsk = false, name = "", message = "", maxLength }) {
-  const title = `<p class="talk-feedback-title">${iconMarkup("mic")}Perguntas pro palestrante</p>`;
-  if (phase === "locked") return `<div class="talk-feedback">${title}<p class="talk-feedback-hint">Faça o check-in nessa palestra pra enviar e votar perguntas.</p></div>`;
-  if (phase === "loading") return `<div class="talk-feedback talk-feedback--loading">${title}Carregando perguntas…</div>`;
+  const title = `<p class="talk-feedback-title">${iconMarkup("mic")}${t("q.title", "Perguntas pro palestrante")}</p>`;
+  if (phase === "locked") return `<div class="talk-feedback">${title}<p class="talk-feedback-hint">${t("q.locked", "Faça o check-in nessa palestra pra enviar e votar perguntas.")}</p></div>`;
+  if (phase === "loading") return `<div class="talk-feedback talk-feedback--loading">${title}${t("q.loading", "Carregando perguntas…")}</div>`;
   if (phase === "error") return `<div class="talk-feedback">${title}<p class="talk-feedback-error" role="alert">${message}</p></div>`;
 
   const form = canAsk
     ? `<form class="feedback-form question-form" data-question-form data-entry-key="${entryKey}">
-        <textarea class="feedback-input" name="text" placeholder="Sua pergunta" maxlength="${maxLength - 1}" rows="2" required></textarea>
-        <input type="text" class="feedback-input" name="name" value="${escapeHtml(name)}" placeholder="Seu nome" maxlength="79" autocomplete="name" required>
+        <textarea class="feedback-input" name="text" placeholder="${t("q.placeholder", "Sua pergunta")}" maxlength="${maxLength - 1}" rows="2" required></textarea>
+        <input type="text" class="feedback-input" name="name" value="${escapeHtml(name)}" placeholder="${t("fb.name", "Seu nome")}" maxlength="79" autocomplete="name" required>
         ${message ? `<p class="talk-feedback-error" role="alert">${message}</p>` : ""}
-        <button type="submit" class="chip-btn chip-btn--primary" data-track-event="question_send" data-track-target="${entryKey}">${iconMarkup("check")}Enviar pergunta</button>
+        <button type="submit" class="chip-btn chip-btn--primary" data-track-event="question_send" data-track-target="${entryKey}">${iconMarkup("check")}${t("q.send", "Enviar pergunta")}</button>
       </form>`
-    : `<p class="talk-feedback-hint">Você já enviou sua pergunta. Vote nas outras!</p>`;
-  const list = questions.length ? questionListMarkup(questions) : `<p class="talk-feedback-hint">Ninguém perguntou ainda. Seja a primeira pessoa!</p>`;
+    : `<p class="talk-feedback-hint">${t("q.alreadyAsked", "Você já enviou sua pergunta. Vote nas outras!")}</p>`;
+  const list = questions.length ? questionListMarkup(questions) : `<p class="talk-feedback-hint">${t("q.empty", "Ninguém perguntou ainda. Seja a primeira pessoa!")}</p>`;
   return `<div class="talk-feedback">${title}${form}${list}</div>`;
 }
 

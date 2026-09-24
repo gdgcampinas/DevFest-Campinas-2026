@@ -6,8 +6,8 @@
 function calendarLinksMarkup({ googleUrl, key }) {
   return `
     <div class="cal-links">
-      <span class="cal-label">${iconMarkup("calendar")}Adicionar ao calendário</span>
+      <span class="cal-label">${iconMarkup("calendar")}${t("calendar.add", "Adicionar ao calendário")}</span>
       <a class="cal-link" href="${googleUrl}" target="_blank" rel="noopener" data-track-event="calendar_add" data-track-target="google">Google Agenda</a>
-      <button type="button" class="cal-link" data-ics-key="${key}" data-track-event="calendar_add" data-track-target="ics">Apple / Outlook (.ics)</button>
+      <button type="button" class="cal-link" data-ics-key="${key}" data-track-event="calendar_add" data-track-target="ics">${t("calendar.ics", "Apple / Outlook (.ics)")}</button>
     </div>`;
 }

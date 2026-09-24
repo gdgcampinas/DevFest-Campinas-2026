@@ -13,8 +13,8 @@
  * aplicada via --track-color inline — nenhum CSS aqui depende do id
  * da trilha, então funciona pra qualquer quantidade/nome de trilha.
  */
-const HIDDEN_SPEAKER_LABEL = "Em breve";
-const HIDDEN_TITLE_LABEL = "Título a confirmar";
+const hiddenSpeakerLabel = () => t("card.soon", "Em breve");
+const hiddenTitleLabel = () => t("card.titleTbd", "Título a confirmar");
 
 /**
  * Normaliza speaker único ou `speakers: [{name, linkedin}]` (palestra
@@ -33,7 +33,7 @@ function trackCardMarkup(track, data, {
   startLabel = "", duration = "", talkKey = "", favorite = false, progress = 0,
 } = {}) {
   const speakers = reveal ? speakerList(data) : [];
-  const speaker = reveal ? speakers.map((s) => s.name).join(" & ") || data.speaker : HIDDEN_SPEAKER_LABEL;
+  const speaker = reveal ? speakers.map((s) => s.name).join(" & ") || data.speaker : hiddenSpeakerLabel();
   const title = reveal && data.title ? data.title : "";
   const room = reveal ? track.room : "";
   const meta = reveal && speakers.length === 1 ? speakerMetaLine(speakers[0]) : "";
@@ -41,7 +41,7 @@ function trackCardMarkup(track, data, {
   // AGORA substitui o chip de horário; fora do ao-vivo o chip guarda o
   // rótulo original em data-label pra live-status trocar por "Em N min".
   const statusTag = live
-    ? `<span class="now-tag"><span class="dot"></span>AGORA</span>`
+    ? `<span class="now-tag"><span class="dot"></span>${t("card.now", "AGORA")}</span>`
     : startLabel ? `<span class="time-chip" data-label="${startLabel}">${startLabel}</span>` : "";
 
   const foot = [
@@ -61,7 +61,7 @@ function trackCardMarkup(track, data, {
         <span class="track-label"><span class="dot" style="background:${track.color}"></span>${track.shortLabel ?? track.label}</span>
         ${statusTag}
       </div>
-      <div class="title${title ? "" : " title--pending"}">${title || HIDDEN_TITLE_LABEL}</div>
+      <div class="title${title ? "" : " title--pending"}">${title || hiddenTitleLabel()}</div>
       ${reveal ? talkTagsMarkup(data) : ""}
       <div class="talk-who">
         ${talkAvatarsMarkup(speakers)}
@@ -87,7 +87,7 @@ function speakerMetaLine(speaker) {
 
 function talkDetailMarkup(track, data, { reveal = true, timeRange = "", room = "", talkKey = "", favorite = false, calendarHtml = "" } = {}) {
   const speakers = reveal ? speakerList(data) : [];
-  const title = reveal ? data.title : "Palestra a confirmar";
+  const title = reveal ? data.title : t("card.talkTbd", "Palestra a confirmar");
   const description = reveal && data.description ? data.description : "";
   const roomLabel = reveal ? room : "";
 
@@ -108,7 +108,7 @@ function talkDetailMarkup(track, data, { reveal = true, timeRange = "", room = "
         const block = `<div class="detail-speaker-block">${nameEl}${meta ? `<div class="detail-speaker-meta">${meta}</div>` : ""}</div>`;
         return `<div class="detail-speaker-row">${avatarMarkup(s.name, s.photo, "detail-avatar")}${block}${talkLinksMarkup([s])}</div>`;
       }).join("")}</div>`
-    : `<div class="detail-speaker">${HIDDEN_SPEAKER_LABEL}</div>`;
+    : `<div class="detail-speaker">${hiddenSpeakerLabel()}</div>`;
 
   return `
     <div class="detail" data-track="${track.id}" style="--track-color:${track.color}">

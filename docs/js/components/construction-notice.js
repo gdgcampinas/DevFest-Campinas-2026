@@ -5,6 +5,6 @@
  * Um template só, reusado por patrocinadores, comunidades, time,
  * ingressos e grade — só a mensagem muda por parâmetro.
  */
-function constructionNoticeMarkup(message = "Será revelado em breve. Time trabalhando nisso! 🚧") {
+function constructionNoticeMarkup(message = t("notice.default", "Será revelado em breve. Time trabalhando nisso! 🚧")) {
   return `<div class="construction-notice">${iconMarkup("wrench")}<p>${message}</p></div>`;
 }

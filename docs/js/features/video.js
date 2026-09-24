@@ -13,7 +13,7 @@ function renderVideo(video, sectionEl, mountEl) {
 
   const thumb = `https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`;
   mountEl.innerHTML = `
-    <button class="video-facade" style="background-image:url('${thumb}')" aria-label="Reproduzir vídeo: ${video.title}">
+    <button class="video-facade" style="background-image:url('${thumb}')" aria-label="${t("video.play", "Reproduzir vídeo: {title}", { title: video.title })}">
       <span class="video-play">▶</span>
     </button>`;
 

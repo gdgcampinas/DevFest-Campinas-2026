@@ -7,7 +7,7 @@ function quizIntroMarkup(copy) {
   return `
     <h2 tabindex="-1" data-quiz-focus>${copy.title}</h2>
     <p class="faq-sub">${copy.subtitle}</p>
-    <button type="button" class="chip-btn chip-btn--primary" data-quiz-start data-track-event="quiz_start">${copy.start}</button>`;
+    <button type="button" class="chip-btn chip-btn--primary" data-quiz-start data-track-event="quiz_start">${copy.startButton}</button>`;
 }
 
 function quizQuestionMarkup({ question, index, total, selectedId, isLast, copy }) {
@@ -17,14 +17,14 @@ function quizQuestionMarkup({ question, index, total, selectedId, isLast, copy }
       <span>${answer.label}</span>
     </label>`).join("");
   return `
-    <p class="quiz-progress">Pergunta ${index + 1} de ${total}</p>
+    <p class="quiz-progress">${t("quiz.progress", "Pergunta {n} de {total}", { n: index + 1, total })}</p>
     <div class="quiz-progress-bar" aria-hidden="true"><span style="width:${((index + 1) / total) * 100}%"></span></div>
     <fieldset class="quiz-question">
       <legend tabindex="-1" data-quiz-focus>${question.text}</legend>
       <div class="quiz-answers">${answers}</div>
     </fieldset>
     <div class="quiz-actions">
-      ${index > 0 ? `<button type="button" class="chip-btn" data-quiz-back>Voltar</button>` : ""}
+      ${index > 0 ? `<button type="button" class="chip-btn" data-quiz-back>${t("common.back", "Voltar")}</button>` : ""}
       <button type="button" class="chip-btn chip-btn--primary" data-quiz-next${selectedId ? "" : " disabled"}>${isLast ? copy.seeResult : copy.next}</button>
     </div>`;
 }

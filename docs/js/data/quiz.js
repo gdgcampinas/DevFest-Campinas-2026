@@ -57,11 +57,11 @@ const QUIZ_QUESTIONS = [
   },
 ];
 
-/** Textos fixos da página; separados das perguntas pra facilitar troca (e tradução). */
+/** Textos fixos da página (os dois com {track} usam t(); os demais são traduzidos por igualdade de texto, tt). */
 const QUIZ_COPY = {
   title: "Monte sua trilha",
   subtitle: "Cinco perguntas rápidas e a gente sugere a trilha do DevFest que mais combina com você.",
-  start: "Começar",
+  startButton: "Começar",
   next: "Próxima",
   seeResult: "Ver minha trilha",
   restart: "Refazer o quiz",
@@ -75,8 +75,8 @@ const QUIZ_COPY = {
   share: "Copiar link do resultado",
   shared: "Link copiado",
   whatsapp: "Compartilhar no WhatsApp",
-  shareMessage: track => `Fiz o quiz do DevFest Campinas 2026 e minha trilha é ${track}!`,
-  sharedBanner: track => `Alguém te mostrou a trilha ${track}. Descubra a sua:`,
+  shareMessage: track => t("quiz.shareMessage", "Fiz o quiz do DevFest Campinas 2026 e minha trilha é {track}!", { track }),
+  sharedBanner: track => t("quiz.sharedBanner", "Alguém te mostrou a trilha {track}. Descubra a sua:", { track }),
 };
 
 const quizRepository = createRepository({ questions: QUIZ_QUESTIONS, copy: QUIZ_COPY });

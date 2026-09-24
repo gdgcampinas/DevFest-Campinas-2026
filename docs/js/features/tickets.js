@@ -7,17 +7,18 @@
  *   sem url, mas waitlistUrl → "Avise-me quando abrir" (Instagram/WhatsApp)
  *   nenhum dos dois → só o status ("Em breve"), sem link morto
  */
-const priceFormatter = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+/** Preço sempre em reais (o valor é em BRL), só a formatação segue o idioma. */
+const priceFormatter = () => new Intl.NumberFormat(i18n.locale, { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 
 /** Preço ausente (ainda não definido) vira o texto de `tbdLabel`, em vez de um valor inventado. */
 function ticketPriceMarkup(price, { tbdLabel = "" } = {}) {
   if (price == null) return `<div class="ticket-price ticket-price--tbd">${tbdLabel}</div>`;
-  return `<div class="ticket-price">${priceFormatter.format(price)}</div>`;
+  return `<div class="ticket-price">${priceFormatter().format(price)}</div>`;
 }
 
 function ticketCtaState(tickets, { label = tickets.label, url = tickets.url } = {}) {
   if (url) return { kind: "buy", href: url, label };
-  if (tickets.waitlistUrl) return { kind: "waitlist", href: tickets.waitlistUrl, label: "Avise-me quando abrir" };
+  if (tickets.waitlistUrl) return { kind: "waitlist", href: tickets.waitlistUrl, label: t("tickets.waitlist", "Avise-me quando abrir") };
   return { kind: "soon", label: tickets.status };
 }
 
@@ -29,13 +30,13 @@ function ticketButtonMarkup(state, { className = "cta", place = "" } = {}) {
 }
 
 function ticketCardMarkup(type, tickets) {
-  const state = ticketCtaState(tickets, { label: "Garantir ingresso", url: type.url ?? tickets.url });
+  const state = ticketCtaState(tickets, { label: t("tickets.buy", "Garantir ingresso"), url: type.url ?? tickets.url });
   const benefits = type.benefits.map(benefit => `<li>${iconMarkup("check")}<span>${benefit}</span></li>`).join("");
   return `
     <div class="ticket${type.featured ? " ticket--featured" : ""}" style="--ticket-color:${type.color}">
       ${type.badge ? `<span class="ticket-badge">${type.badge}</span>` : ""}
       <h3 class="ticket-name">${type.name}</h3>
-      ${ticketPriceMarkup(type.price, { tbdLabel: TICKET_PRICE_TBD })}
+      ${ticketPriceMarkup(type.price, { tbdLabel: tt(TICKET_PRICE_TBD) })}
       <p class="ticket-desc">${type.description}</p>
       <ul class="ticket-benefits">${benefits}</ul>
       ${ticketButtonMarkup(state, { className: "cta cta--block", place: `ticket-${type.id}` })}

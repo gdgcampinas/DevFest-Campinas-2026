@@ -27,7 +27,9 @@ Plano autorizado (sem o certificado, que segue aguardando decisões): 1) chave d
 (passo a passo pro Renato), 2) quiz "Monte sua trilha" (**feito**, ver PROJECT_CONTEXT "Quiz"),
 3) perguntas por palestra só com check-in (**código pronto, DESLIGADO**: ver PROJECT_CONTEXT "Perguntas ao vivo"; falta o Renato
 preencher e-mails de moderadores nas regras, ativar Google em Authentication, autorizar `gdgcampinas.github.io`, colar as regras
-e então ligar `TALK_QUESTIONS.enabled` e testar no banco real), 4) i18n em EN. Cada item = um commit, docs atualizados.
+e então ligar `TALK_QUESTIONS.enabled` e testar no banco real), 4) i18n: **feito para EN** (ver PROJECT_CONTEXT "Internacionalização"; PT segue padrão, seletor PT|EN no cabeçalho, conferidor no CI; ES/FR = só um dicionário novo;
+falta traduzir o corpo de Palestrantes/Time/Patrocínio/Código de Conduta e o conteúdo do line-up quando for real, e alguém nativo revisar o EN).
+Cada item = um commit, docs atualizados.
 
 ## Sessão 6: tudo que foi feito (2026-09-23)
 

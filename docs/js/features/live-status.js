@@ -71,6 +71,13 @@ function resolveEventState(now, schedule) {
 function createLiveStatus({ schedule, tracks, event, elements = {}, now = () => new Date(), reveal = true, favorites = null, soonMinutes = 15, onEventEnd = null }) {
   const { statusPill, hero, stickyTxt, stickyPulse } = elements;
 
+  // Textos que se repetem em mais de um lugar do hero, da pílula e da barra fixa.
+  const startsInLabel = ms => t("live.starts", "Começa em {time}", { time: formatDaysHMS(ms) });
+  const endedLabel = () => t("live.ended", "Encerrado");
+  const happeningNowLabel = () => t("live.now", "ACONTECENDO AGORA");
+  const nextChangeLabel = ms => t("live.nextChange", "próxima troca em {time}", { time: formatMS(ms) });
+  const nextBlockLabel = next => t("live.nextBlock", "próximo bloco às {time}", { time: formatEventTime(next.start, event.timezone) });
+
   // dot fica num nó fixo, criado uma vez só — só o texto é trocado a
   // cada tick, então a animação de pulso nunca reinicia sozinha.
   function renderStatusPill(state) {
@@ -80,36 +87,36 @@ function createLiveStatus({ schedule, tracks, event, elements = {}, now = () => 
     }
     statusPill.classList.toggle("live", state.phase === "live");
     const txt = statusPill.querySelector(".txt");
-    if (state.phase === "before") txt.textContent = `Começa em ${formatDaysHMS(state.first - now())}`;
-    else if (state.phase === "live") txt.textContent = "AO VIVO";
-    else txt.textContent = "Encerrado";
+    if (state.phase === "before") txt.textContent = startsInLabel(state.first - now());
+    else if (state.phase === "live") txt.textContent = t("live.live", "AO VIVO");
+    else txt.textContent = endedLabel();
   }
 
   function renderHeroBefore(state) {
     if (!hero) return;
     hero.innerHTML = `
       <div class="hero-card hero-before">
-        <div class="hero-label">O EVENTO COMEÇA EM</div>
+        <div class="hero-label">${t("live.heroStarts", "O EVENTO COMEÇA EM")}</div>
         <div class="countdown" id="heroCountdown">${formatDaysHMS(state.first - now())}</div>
         <div class="hero-before-row">
           ${event.tickets ? ticketButtonMarkup(ticketCtaState(event.tickets), { className: "cta", place: "hero" }) : ""}
-          <span class="hero-hint">Programação abaixo em modo prévia</span>
+          <span class="hero-hint">${t("live.preview", "Programação abaixo em modo prévia")}</span>
         </div>
       </div>`;
     stickyPulse.style.display = "none";
-    stickyTxt.textContent = `Começa em ${formatDaysHMS(state.first - now())}`;
+    stickyTxt.textContent = startsInLabel(state.first - now());
   }
 
   function renderHeroAfter() {
     if (!hero) return;
     hero.innerHTML = `
       <div class="hero-card hero-after">
-        <div class="title">Obrigado por participar! 🎉</div>
-        <div class="sub">O ${event.name} ${new Date().getFullYear()} foi encerrado. Fotos e conteúdos em breve pelo GDG Campinas.</div>
+        <div class="title">${t("live.thanks", "Obrigado por participar! 🎉")}</div>
+        <div class="sub">${t("live.endedText", "O {event} {year} foi encerrado. Fotos e conteúdos em breve pelo GDG Campinas.", { event: event.name, year: new Date().getFullYear() })}</div>
         <div data-event-feedback-container></div>
       </div>`;
     stickyPulse.style.display = "none";
-    stickyTxt.textContent = "Encerrado";
+    stickyTxt.textContent = endedLabel();
     onEventEnd?.(hero.querySelector("[data-event-feedback-container]"));
   }
 
@@ -121,21 +128,21 @@ function createLiveStatus({ schedule, tracks, event, elements = {}, now = () => 
       const next = state.nextSlot;
       hero.innerHTML = `
         <div class="hero-card live">
-          <div class="hero-label"><span class="dot"></span>ACONTECENDO AGORA</div>
-          <div class="hero-hint">Intervalo entre sessões${next ? ` — próximo bloco às ${formatEventTime(next.start, event.timezone)}` : ""}</div>
+          <div class="hero-label"><span class="dot"></span>${happeningNowLabel()}</div>
+          <div class="hero-hint">${t("live.breakLong", "Intervalo entre sessões")}${next ? ` — ${nextBlockLabel(next)}` : ""}</div>
         </div>`;
-      stickyTxt.textContent = next ? `Intervalo — próximo bloco às ${formatEventTime(next.start, event.timezone)}` : "Intervalo";
+      stickyTxt.textContent = next ? `${t("live.break", "Intervalo")} — ${nextBlockLabel(next)}` : t("live.break", "Intervalo");
       stickyPulse.style.display = "inline-block";
       return;
     }
 
-    const nextChange = `<span class="next-change" id="nextChangeText">próxima troca em ${formatMS(slot.end - now())}</span>`;
+    const nextChange = `<span class="next-change" id="nextChangeText">${nextChangeLabel(slot.end - now())}</span>`;
 
     if (slot.banner) {
       hero.innerHTML = `
         <div class="hero-card live">
           <div class="hero-live-top">
-            <div class="hero-label"><span class="dot"></span>ACONTECENDO AGORA</div>
+            <div class="hero-label"><span class="dot"></span>${happeningNowLabel()}</div>
             ${nextChange}
           </div>
           ${bannerMarkup(slot)}
@@ -147,14 +154,14 @@ function createLiveStatus({ schedule, tracks, event, elements = {}, now = () => 
       hero.innerHTML = `
         <div class="hero-card live">
           <div class="hero-live-top">
-            <div class="hero-label"><span class="dot"></span>ACONTECENDO AGORA</div>
+            <div class="hero-label"><span class="dot"></span>${happeningNowLabel()}</div>
             ${nextChange}
           </div>
           <div class="talks" data-view="all">${cards}</div>
         </div>`;
       stickyTxt.textContent = reveal
-        ? `Agora: ${tracks.map(track => speakerList(slot.talks[track.id]).map(s => s.name).join(" & ")).join(" · ")}`
-        : "Agora: confira sua trilha";
+        ? t("live.nowSpeakers", "Agora: {names}", { names: tracks.map(track => speakerList(slot.talks[track.id]).map(s => s.name).join(" & ")).join(" · ") })
+        : t("live.nowCheckTrack", "Agora: confira sua trilha");
     }
     stickyPulse.style.display = "inline-block";
   }
@@ -171,10 +178,10 @@ function createLiveStatus({ schedule, tracks, event, elements = {}, now = () => 
     if (state.phase === "before") {
       const el = document.getElementById("heroCountdown");
       if (el) el.textContent = formatDaysHMS(state.first - now());
-      if (stickyTxt) stickyTxt.textContent = `Começa em ${formatDaysHMS(state.first - now())}`;
+      if (stickyTxt) stickyTxt.textContent = startsInLabel(state.first - now());
     } else if (state.phase === "live" && state.activeSlot) {
       const el = document.getElementById("nextChangeText");
-      if (el) el.textContent = `próxima troca em ${formatMS(state.activeSlot.end - now())}`;
+      if (el) el.textContent = nextChangeLabel(state.activeSlot.end - now());
       const width = `${Math.round(slotProgress(state.activeSlot, now()) * 100)}%`;
       document.querySelectorAll(".talk-progress b").forEach(bar => (bar.style.width = width));
     }
@@ -195,7 +202,7 @@ function createLiveStatus({ schedule, tracks, event, elements = {}, now = () => 
       el.classList.toggle("past", slot.end <= currentTime);
       el.classList.toggle("soon", isSoon);
       el.querySelectorAll(".time-chip").forEach(chip => {
-        chip.textContent = isSoon ? `Em ${Math.ceil((slot.start - currentTime) / 60000)} min` : chip.dataset.label;
+        chip.textContent = isSoon ? t("live.soon", "Em {min} min", { min: Math.ceil((slot.start - currentTime) / 60000) }) : chip.dataset.label;
       });
     });
   }

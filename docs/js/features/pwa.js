@@ -36,7 +36,7 @@ function canUseServiceWorker() {
   return "serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost");
 }
 
-function initOfflineNotice({ message = "Você está sem internet. Mostrando a versão salva no aparelho." } = {}) {
+function initOfflineNotice({ message = t("pwa.offline", "Você está sem internet. Mostrando a versão salva no aparelho.") } = {}) {
   const bar = document.createElement("div");
   bar.className = "offline-bar";
   bar.setAttribute("role", "status");
@@ -54,7 +54,7 @@ function initOfflineNotice({ message = "Você está sem internet. Mostrando a ve
  * guia de instalação da plataforma. Tudo entra por parâmetro: onde
  * montar, qual plataforma, de onde vêm os guias e como abrir o modal.
  */
-function initInstallPrompt({ mountEl, platform, guides, createGuideModal, label = "Instalar app" }) {
+function initInstallPrompt({ mountEl, platform, guides, createGuideModal, label = t("pwa.install", "Instalar app") }) {
   if (isRunningAsInstalledApp()) return;
   mountEl.insertAdjacentHTML("afterbegin", `<button type="button" class="chip-btn" data-install data-track-event="pwa_install" data-track-kind="guide">${iconMarkup("download")}${label}</button>`);
   const buttonEl = mountEl.querySelector("[data-install]");
@@ -97,7 +97,7 @@ function initPwa() {
       mountEl: actionsEl,
       platform: detectInstallPlatform({ ua: navigator.userAgent, maxTouchPoints: navigator.maxTouchPoints }),
       guides: installGuidesRepository,
-      createGuideModal: () => createModal("installModal", { label: "Como instalar o app" }),
+      createGuideModal: () => createModal("installModal", { label: t("pwa.guideLabel", "Como instalar o app") }),
     });
   }
 }

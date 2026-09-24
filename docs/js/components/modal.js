@@ -14,7 +14,7 @@ function createModal(id, { label = "" } = {}) {
   if (label) modalEl.setAttribute("aria-label", label);
   modalEl.innerHTML = `<div class="modal-backdrop"></div>
     <div class="modal-card">
-      <button class="modal-close" aria-label="Fechar">✕</button>
+      <button class="modal-close" aria-label="${t("common.close", "Fechar")}">✕</button>
       <div class="modal-content"></div>
     </div>`;
   document.body.appendChild(modalEl);

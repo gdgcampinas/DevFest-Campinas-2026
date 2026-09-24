@@ -65,7 +65,7 @@ function drawShareCard(canvas, { event, dateLabel, name = "", logo = null }) {
 
   ctx.fillStyle = cssToken("--accent");
   ctx.font = `700 52px ${display}`;
-  ctx.fillText(name ? `${name} vai!` : "Eu vou!", 72, 340);
+  ctx.fillText(name ? t("shareCard.nameGoes", "{name} vai!", { name }) : t("shareCard.going", "Eu vou!"), 72, 340);
 
   ctx.fillStyle = "#f4f5f8";
   wrapText(ctx, event.name.toUpperCase(), 72, 460, width - 144, 92, `700 88px ${display}`);
@@ -76,10 +76,10 @@ function drawShareCard(canvas, { event, dateLabel, name = "", logo = null }) {
   ctx.fillText(`${dateLabel} · ${event.address}`, 72, 720);
 
   const tracks = [
-    { label: "IA", color: blue },
-    { label: "Front, Back e Data", color: yellow },
-    { label: "Mobile e Agile", color: green },
-    { label: "Carreiras e Mentorias", color: red },
+    { label: t("shareCard.trackIa", "IA"), color: blue },
+    { label: t("shareCard.trackWeb", "Front, Back e Data"), color: yellow },
+    { label: t("shareCard.trackMobile", "Mobile e Agile"), color: green },
+    { label: t("shareCard.trackCareers", "Carreiras e Mentorias"), color: red },
   ];
   let ty = height - 260;
   ctx.font = `500 30px ${body}`;
@@ -140,7 +140,7 @@ function initShareCard(rootEl, { event, schedule, createModal, gate = null, tick
     logo = image;
     if (modal && !modal.el.hidden) redraw(modal.el); // o modal abriu antes do logo chegar
   });
-  const ensureModal = () => modal ?? (modal = createModal("shareCardModal", { label: "Cartão de compartilhamento" }));
+  const ensureModal = () => modal ?? (modal = createModal("shareCardModal", { label: t("shareCard.modalLabel", "Cartão de compartilhamento") }));
   const dateLabel = eventDateLabel(schedule, event.timezone);
 
   function redraw(modalEl) {
@@ -183,7 +183,7 @@ function initShareCard(rootEl, { event, schedule, createModal, gate = null, tick
       canvas.toBlob(async blob => {
         const file = new File([blob], "devfest-campinas-2026-eu-vou.png", { type: "image/png" });
         if (!navigator.canShare?.({ files: [file] })) return;
-        await navigator.share({ files: [file], title: event.name, text: `Eu vou pro ${event.name} 2026!` }).catch(() => {});
+        await navigator.share({ files: [file], title: event.name, text: t("shareCard.shareText", "Eu vou pro {event} 2026!", { event: event.name }) }).catch(() => {});
       });
     }
   });

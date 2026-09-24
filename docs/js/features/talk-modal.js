@@ -6,7 +6,7 @@
  * formata maior via talkDetailMarkup (components/track-card.js).
  */
 function createTalkModal() {
-  const modal = createModal("talkModal", { label: "Detalhes da palestra" });
+  const modal = createModal("talkModal", { label: t("talk.detail", "Detalhes da palestra") });
 
   function open(track, data, meta) {
     modal.openHTML(talkDetailMarkup(track, data, meta));
@@ -107,8 +107,8 @@ function initMenuCarousel(modalEl) {
 function galleryMarkup(title, subtitle, images) {
   const slides = images.map(m => `<img src="${m.file}" alt="${m.alt}" loading="lazy">`).join("");
   const nav = images.length > 1
-    ? `<button class="menu-nav prev" aria-label="Anterior">‹</button>
-       <button class="menu-nav next" aria-label="Próximo">›</button>
+    ? `<button class="menu-nav prev" aria-label="${t("gallery.prev", "Anterior")}">‹</button>
+       <button class="menu-nav next" aria-label="${t("gallery.next", "Próximo")}">›</button>
        <div class="menu-dots">${images.map((_, i) => `<span class="${i === 0 ? "active" : ""}"></span>`).join("")}</div>`
     : "";
   return `

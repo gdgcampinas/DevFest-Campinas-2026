@@ -3,19 +3,23 @@
  * Tudo injetado por parâmetro (schedule, tracks) — nada hardcoded aqui,
  * então essa mesma função serve pra qualquer lista de trilhas/horários.
  */
-function formatEventTime(date, timezone) {
-  return date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", timeZone: timezone });
+/** Idioma fixo dos códigos curtos (QR, ?agenda=): nunca muda com o idioma da tela. */
+const CODE_LOCALE = "pt-BR";
+
+/** Sempre 24h ("09:00"), em qualquer idioma: mantém a largura das colunas de horário da grade. */
+function formatEventTime(date, timezone, locale = i18n.locale) {
+  return date.toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone: timezone });
 }
 
-/** "08h" — padrão usado nas outras comunicações do evento (sem minutos). */
-function hourLabel(date, timezone) {
-  const hour = date.toLocaleTimeString("pt-BR", { hour: "2-digit", timeZone: timezone, hour12: false });
-  return `${hour}h`;
+/** "08h" em português (padrão das outras comunicações do evento); em outros idiomas, a hora no formato local ("8 AM"). */
+function hourLabel(date, timezone, locale = i18n.locale) {
+  if (!locale.startsWith("pt")) return date.toLocaleTimeString(locale, { hour: "numeric", timeZone: timezone });
+  return `${date.toLocaleTimeString(locale, { hour: "2-digit", timeZone: timezone, hour12: false })}h`;
 }
 
 /** "40 min" — duração do slot, calculada do próprio horário (nada hardcoded). */
 function durationLabel(slot) {
-  return `${Math.round((slot.end - slot.start) / 60000)} min`;
+  return t("agenda.minutes", "{min} min", { min: Math.round((slot.end - slot.start) / 60000) });
 }
 
 function timeRangeLabel(slot, timezone) {
@@ -24,7 +28,7 @@ function timeRangeLabel(slot, timezone) {
 
 /** "28 de novembro de 2026" — usado no header e no ticker (app.js/ticker.js), 1 lugar só. */
 function eventDateLabel(schedule, timezone) {
-  return schedule[0].start.toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric", timeZone: timezone });
+  return schedule[0].start.toLocaleDateString(i18n.locale, { day: "2-digit", month: "long", year: "numeric", timeZone: timezone });
 }
 
 /**

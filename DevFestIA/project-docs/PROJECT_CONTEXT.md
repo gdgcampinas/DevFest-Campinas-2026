@@ -95,6 +95,7 @@ docs/
       mock-talks.js             36 mock talks (9 per track, by position) linked to speakers by speakerIds
       schedule-builder.js        talkWindows/buildSchedule/catalogTalks (loads before schedule)
       schedule.js               PROD: EVENT, TRACKS, DAY_PLAN → SCHEDULE (mock until reveal)
+      i18n/languages.js, i18n/en.js  idiomas (I18N_LANGUAGES) e dicionário em inglês, ver "Internacionalização"
       schedule.dev.js            DEV schedule (real, gitignored, local only)
       placeholder.js             placeholder image generator (mock logos)
       sponsors.js                sponsors/partners by tier
@@ -331,6 +332,19 @@ Chave geral: `TALK_QUESTIONS.enabled` em `data/talk-questions.js` (hoje `false`;
 - Moderação: `moderacao.html?trilha=<id>` (ferramenta interna, `noindex`, fora do sitemap; uma por sala). Mostra a palestra atual da trilha, mais votadas primeiro, "Ocultar/Mostrar". Login com Google só pra moderador (`firebaseClient.signInWithGoogle`); as regras (`isModerator()`) liberam listar ocultas e alterar `hidden` só pra e-mails da lista. Público segue anônimo.
 - Regras em `DevFestIA/firebase/firestore.rules` (colar à mão): lista de moderadores precisa ser preenchida (vazia = ninguém modera); a consulta do público tem que filtrar `hidden == false`.
 - Falta pra ligar: Renato preenche os e-mails, ativa o provedor Google em Authentication, autoriza o domínio `gdgcampinas.github.io` e cola as regras; depois `enabled: true` e teste contra o banco real (uid novo, chaves de palestra sem documento).
+
+## Internacionalização (sessão 7): PT padrão, EN pronto
+
+Idioma por `?lang=en|pt` (gravado em localStorage; sem detecção automática do navegador) e seletor "PT | EN" nas ações do cabeçalho
+(`components/language-switcher.js`, só aparece com mais de um idioma cadastrado). Trocar de idioma recarrega a página.
+**Português é o padrão e mora no próprio código**: cada texto é `t("chave", "Texto em português")`; só os OUTROS idiomas têm dicionário,
+então idioma novo = uma linha em `data/i18n/languages.js` + um arquivo `data/i18n/<id>.js` (ES/FR entram assim, sem mexer em código).
+- `features/i18n-core.js` (dual, testado em Node): `createI18n` (idioma, `t`, `tn` plural via `chave.one`/`chave.other`, `tt`, `{marcadores}`), `localizeStrings`.
+- `features/i18n.js` (navegador): globais `i18n`, `t`, `tn`, `tt`; `applyStaticTranslations` (HTML com `data-i18n="chave"` e `data-i18n-attrs="atributo:chave"`, o PT continua escrito no HTML), `languageHref`.
+- Dicionário: `{ strings: { chave: texto }, texts: { "texto PT": texto } }`. `strings` = chaves de `t()/tn()`; `texts` = **dados** (trilhas, ingressos, banners da grade, sobre, estatísticas, guias de instalação, quiz, rodapé...) traduzidos por igualdade de texto em `LOCALIZED_DATASETS` (`app.js`, lista de funções), uma vez no `initShell`, no lugar: quem consome o dado não sabe de idioma. Dado novo que aparece na tela entra nessa lista.
+- Datas/moeda seguem `i18n.locale`; horários da grade sempre em 24h; códigos curtos (QR, `?agenda=`) usam `CODE_LOCALE = "pt-BR"` pra nunca mudarem com o idioma.
+- **Conferidor no CI:** `node DevFestIA/tools/i18n/check-i18n.js` (toda chave usada existe em todo idioma, sem chave sobrando, mesmos `{marcadores}`, `t()` só com chave literal, todo texto de tela dos dados traduzido; `KEEP_AS_IS`/`SKIP_KEYS` no script). Testes do núcleo: `DevFestIA/tools/i18n/i18n.test.js`.
+- **Escopo do EN (v1):** casca de todas as páginas (cabeçalho, menu, rodapé, faixa, status ao vivo, PWA), Principal, Grade, Ingressos, quiz, check-in/avaliação/perguntas/Minhas palestras/cartão. **Continuam em PT** (conteúdo do line-up e páginas que ainda não foram traduzidas): títulos, descrições, palestrantes e tags das palestras, time, patrocinadores, depoimentos, Código de Conduta e o corpo de Palestrantes/Time/Patrocínio, e as ferramentas internas (`checkin-display`, `moderacao`, `reset-teste`). O texto dos metadados de compartilhamento (OG/Twitter) segue em PT (robôs não rodam JS).
 
 ## Cartão pessoal "Eu vou!" (compartilhamento)
 
@@ -734,6 +748,7 @@ que já devia estar limpa). `dev-loader.js` também busca a página real com
   advances in real time from that offset (never freezes).
 - `?lineup=1` — forces the line-up to show even before
   `EVENT.lineupRevealed` is true.
+- `?lang=en` / `?lang=pt` — idioma da página (fica gravado no navegador).
 
 ## Deploy checklist
 

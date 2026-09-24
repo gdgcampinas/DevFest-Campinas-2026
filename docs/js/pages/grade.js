@@ -10,7 +10,7 @@ function initGrade() {
   // trilha, formato, palestrante) — em vez de esconder campo por campo
   // (como o modal de palestra faz), troca a página toda por um aviso.
   if (!reveal) {
-    document.querySelector("main").innerHTML = `<div class="faq"><div class="faq-head">${constructionNoticeMarkup("A programação completa será revelada em breve. Volte para conferir!")}</div></div>`;
+    document.querySelector("main").innerHTML = `<div class="faq"><div class="faq-head">${constructionNoticeMarkup(t("grade.soon", "A programação completa será revelada em breve. Volte para conferir!"))}</div></div>`;
     return;
   }
 
@@ -23,7 +23,7 @@ function initGrade() {
 
   initFavorites(document.body, favoritesRepository);
   const favToggleEl = document.getElementById("favToggle");
-  renderFavoritesToggle(favToggleEl, "Minha agenda");
+  renderFavoritesToggle(favToggleEl, t("agenda.mine", "Minha agenda"));
   initFavoritesFilter({ toggleEl: favToggleEl, scopeEl: agendaEl, emptyEl: document.getElementById("favoritesEmpty"), repository: favoritesRepository });
 
   const calendar = initCalendarActions(document.body, { schedule: SCHEDULE, tracks: TRACKS, event: EVENT, favorites: favoritesRepository });

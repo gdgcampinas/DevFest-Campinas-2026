@@ -20,6 +20,6 @@ const SITE_PAGES = [
 function renderSiteNav(activeId, mountEl) {
   mountEl.innerHTML = SITE_PAGES
     .filter(page => page.nav !== false)
-    .map(page => `<a href="${page.href}"${page.id === activeId ? ` class="current"` : ""}>${page.label}</a>`)
+    .map(page => `<a href="${page.href}"${page.id === activeId ? ` class="current"` : ""}>${tt(page.label)}</a>`)
     .join("");
 }

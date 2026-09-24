@@ -12,7 +12,7 @@ function escapeHtml(text) {
 
 function starRatingMarkup({ name, label, required = false, defaultValue = 5 }) {
   const stars = [1, 2, 3, 4, 5]
-    .map(n => `<label class="feedback-star" title="${n} de 5"><input type="radio" name="${name}" value="${n}"${required ? " required" : ""}${n === defaultValue ? " checked" : ""}><span>★</span></label>`)
+    .map(n => `<label class="feedback-star" title="${t("rating.of5", "{n} de 5", { n })}"><input type="radio" name="${name}" value="${n}"${required ? " required" : ""}${n === defaultValue ? " checked" : ""}><span>★</span></label>`)
     .join("");
   return `<div class="feedback-stars" role="radiogroup" aria-label="${label}">${stars}</div>`;
 }
@@ -21,6 +21,6 @@ function npsScaleMarkup({ name, min, max, lowLabel, highLabel, required = false 
   const options = Array.from({ length: max - min + 1 }, (_, offset) => min + offset)
     .map(value => `<label class="nps-option"><input type="radio" name="${name}" value="${value}"${required ? " required" : ""}><span>${value}</span></label>`)
     .join("");
-  return `<div class="nps-scale" role="radiogroup" aria-label="Nota de ${min} a ${max}">${options}</div>
+  return `<div class="nps-scale" role="radiogroup" aria-label="${t("rating.scale", "Nota de {min} a {max}", { min, max })}">${options}</div>
     <div class="nps-labels"><span>${lowLabel}</span><span>${highLabel}</span></div>`;
 }

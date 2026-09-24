@@ -109,8 +109,8 @@ function warnIfDemoMode() {
   const valid = parseDemoDate(demo) !== null;
   const banner = document.createElement("div");
   banner.textContent = valid
-    ? "⚠️ MODO TESTE — data simulada, não é o horário real do evento"
-    : `⚠️ ?demo="${demo}" inválido — mostrando horário real. Formato: AAAA-MM-DDTHH:MM`;
+    ? t("demo.banner", "⚠️ MODO TESTE — data simulada, não é o horário real do evento")
+    : t("demo.invalid", "⚠️ ?demo=\"{demo}\" inválido — mostrando horário real. Formato: AAAA-MM-DDTHH:MM", { demo });
   banner.style.cssText = "background:var(--google-red);color:#fff;text-align:center;font-size:.75rem;font-weight:700;padding:6px;position:sticky;top:0;z-index:100";
   document.body.prepend(banner);
 }
@@ -130,7 +130,7 @@ function googleCalendarUrl(event, schedule) {
     start: schedule[0].start,
     end: schedule[schedule.length - 1].end,
     location: eventLocationLabel(event),
-    details: `Agenda ao vivo: ${location.href}`,
+    details: t("calendar.live", "Agenda ao vivo: {url}", { url: location.href }),
   });
 }
 
@@ -164,9 +164,9 @@ function renderHeaderMeta(event, schedule, mountEl) {
   mountEl.innerHTML = `
     <span class="when">${dateLabel}</span>
     <span class="sep">·</span>
-    <span class="when">das ${start} às ${end}</span>
+    <span class="when">${t("header.hours", "das {start} às {end}", { start, end })}</span>
     <span class="sep">·</span>
-    <a class="venue-link" href="${directions}" target="_blank" rel="noopener">${event.venue} · como chegar</a>`;
+    <a class="venue-link" href="${directions}" target="_blank" rel="noopener">${event.venue} · ${t("header.directions", "como chegar")}</a>`;
 }
 
 function renderVenueInfo(event, mountEl, schedule) {
@@ -175,8 +175,8 @@ function renderVenueInfo(event, mountEl, schedule) {
   mountEl.innerHTML = `
     <p class="venue-addr">${event.venue}<br>${event.address}</p>
     <div class="venue-actions">
-      <a class="go go-primary" href="${directions}" target="_blank" rel="noopener">Como chegar</a>
-      <a class="go go-cal" href="${gcal}" target="_blank" rel="noopener">+ Calendário</a>
+      <a class="go go-primary" href="${directions}" target="_blank" rel="noopener">${t("venue.directions", "Como chegar")}</a>
+      <a class="go go-cal" href="${gcal}" target="_blank" rel="noopener">${t("venue.calendar", "+ Calendário")}</a>
     </div>`;
 }
 
@@ -184,8 +184,8 @@ function renderVenueMap(event, mountEl) {
   // mapa externo (endereço/entrada) pode; planta interna do prédio, não.
   const { embed } = googleMapsUrls(event.address);
   mountEl.innerHTML = `
-    <div class="label">Local</div>
-    <div class="frame"><iframe src="${embed}" loading="lazy" title="Mapa até ${event.venue}"></iframe></div>`;
+    <div class="label">${t("venue.label", "Local")}</div>
+    <div class="frame"><iframe src="${embed}" loading="lazy" title="${t("venue.mapTitle", "Mapa até {venue}", { venue: event.venue })}"></iframe></div>`;
 }
 
 /**
@@ -221,28 +221,73 @@ function buildBeforeYouComeItems(tracks) {
       id: "parking",
       trackColor: trackA?.color ?? fallback,
       icon: ICON_PARKING,
-      title: "Estacionamento",
-      body: "Informações do estacionamento em breve.",
+      title: t("before.parking", "Estacionamento"),
+      body: t("before.parkingSoon", "Informações do estacionamento em breve."),
       clickable: PARKING_IMAGES.length > 0,
-      linkText: PARKING_IMAGES.length > 0 ? "Ver estacionamento" : "",
+      linkText: PARKING_IMAGES.length > 0 ? t("before.seeParking", "Ver estacionamento") : "",
     },
     {
       id: "food",
       trackColor: trackB?.color ?? fallback,
       icon: ICON_FOOD,
-      title: "Comida",
-      body: "Opções de alimentação em breve.",
+      title: t("before.food", "Comida"),
+      body: t("before.foodSoon", "Opções de alimentação em breve."),
       clickable: FOOD_IMAGES.length > 0,
-      linkText: FOOD_IMAGES.length > 0 ? "Ver cardápio" : "",
+      linkText: FOOD_IMAGES.length > 0 ? t("before.seeMenu", "Ver cardápio") : "",
     },
     {
       id: "venue",
       trackColor: trackC?.color ?? fallback,
       icon: ICON_VENUE,
-      title: "Local",
+      title: t("venue.label", "Local"),
       mountId: "venueInfo",
     },
   ];
+}
+
+/**
+ * Dados que aparecem na tela em português e são traduzidos por igualdade de texto (tt, ver
+ * features/i18n-core.js). Cada item é uma função porque nem toda página carrega todos os dados.
+ */
+const LOCALIZED_DATASETS = [
+  () => EVENT,
+  () => TRACKS,
+  () => SCHEDULE.filter(slot => slot.banner), // só os blocos combinados (o conteúdo das palestras é do line-up, não do site)
+  () => ticketsRepository.getAll(),
+  () => statsRepository.getAll(),
+  () => aboutRepository.getAll(),
+  () => footerRepository.getAll(),
+  () => eventFeedbackFormRepository.getAll(),
+  () => quizRepository.getAll(),
+  () => talkFormatsRepository.getAll(),
+  () => installGuidesRepository.getAll(),
+  () => videoRepository.getAll(),
+  () => highlightsRepository.getAll(),
+  () => analyticsRepository.getAll(),
+];
+
+/** Traduz os dados no lugar (uma vez, antes de qualquer render); no idioma padrão não faz nada. */
+function localizeDatasets(datasets = LOCALIZED_DATASETS) {
+  if (i18n.isDefault) return;
+  datasets.forEach(getDataset => {
+    try {
+      localizeStrings(getDataset(), tt);
+    } catch (error) {
+      if (!(error instanceof ReferenceError)) throw error;
+    }
+  });
+}
+
+/** Seletor "PT | EN" nas ações do cabeçalho; só aparece se houver mais de um idioma com dicionário. */
+function renderLanguageSwitcher(actionsEl) {
+  const available = i18nLanguagesRepository.getAll().filter(language => language.id === I18N_DEFAULT_LANGUAGE || I18N_DICTIONARIES[language.id]);
+  if (!actionsEl || available.length < 2) return;
+  actionsEl.insertAdjacentHTML("afterbegin", languageSwitcherMarkup({
+    languages: available,
+    current: i18n.lang,
+    hrefFor: languageHref,
+    label: t("lang.label", "Idioma"),
+  }));
 }
 
 /**
@@ -251,6 +296,8 @@ function buildBeforeYouComeItems(tracks) {
  * esse valor pra decidir o que mostrar de dado sensível.
  */
 function initShell(activePageId) {
+  localizeDatasets();
+  applyStaticTranslations();
   warnIfDemoMode();
   initSkipLink();
   initStarfield(document.body, { layers: starfieldRepository.getAll(), circuitSrc: BG_CIRCUIT_SRC });
@@ -268,6 +315,7 @@ function initShell(activePageId) {
 
   initTicketCta(EVENT.tickets, { headerTopEl: document.querySelector(".header-top"), sectionEl: document.getElementById("ticketsSection") });
 
+  renderLanguageSwitcher(document.querySelector(".header-actions"));
   initPwa();
   initAnalytics(analyticsRepository.getAll(), { rootEl: document });
   initRegistrationCounter({

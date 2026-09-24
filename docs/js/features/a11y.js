@@ -19,7 +19,7 @@ function motionSafeBehavior() {
  * aparece com foco. O alvo é o primeiro bloco depois do <header>, sem
  * exigir markup novo em nenhuma página.
  */
-function initSkipLink({ label = "Pular para o conteúdo" } = {}) {
+function initSkipLink({ label = t("a11y.skip", "Pular para o conteúdo") } = {}) {
   const target = document.querySelector("header")?.nextElementSibling;
   if (!target) return;
   target.id = target.id || SKIP_TARGET_ID;

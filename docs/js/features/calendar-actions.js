@@ -20,7 +20,7 @@ function initCalendarActions(rootEl, { schedule, tracks, event, favorites, page 
     if (clickEvent.target.closest("[data-agenda-export]")) {
       const entries = favorites.getAll().map(key => index.get(key)).filter(Boolean)
         .sort((a, b) => a.slot.start - b.slot.start).map(toEntry);
-      if (entries.length) downloadTextFile("devfest-campinas-2026-minha-agenda.ics", "text/calendar;charset=utf-8", buildIcs(entries, { calendarName: `${event.name} (minha agenda)` }));
+      if (entries.length) downloadTextFile("devfest-campinas-2026-minha-agenda.ics", "text/calendar;charset=utf-8", buildIcs(entries, { calendarName: t("calendar.agendaName", "{event} (minha agenda)", { event: event.name }) }));
     }
   });
 

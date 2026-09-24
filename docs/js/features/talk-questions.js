@@ -37,7 +37,7 @@ function initTalkQuestions(rootEl, { index, config, myCheckins, myName, deps = d
         canAsk: !ranked.some(question => question.mine), name: myName.get(), message,
       });
     } catch {
-      containerEl.innerHTML = talkQuestionsMarkup({ phase: "error", entryKey: entry.key, message: "Não foi possível carregar as perguntas agora. Confira sua conexão." });
+      containerEl.innerHTML = talkQuestionsMarkup({ phase: "error", entryKey: entry.key, message: t("q.loadError", "Não foi possível carregar as perguntas agora. Confira sua conexão.") });
     }
   }
 
@@ -79,7 +79,7 @@ function initTalkQuestions(rootEl, { index, config, myCheckins, myName, deps = d
         .catch(error => { if (error.code !== "permission-denied") throw error; });
       await load(containerEl, entry);
     } catch {
-      await load(containerEl, entry, { message: "Não foi possível votar agora. Tente de novo." });
+      await load(containerEl, entry, { message: t("q.voteError", "Não foi possível votar agora. Tente de novo.") });
     }
   });
 
@@ -92,7 +92,7 @@ function initTalkQuestions(rootEl, { index, config, myCheckins, myName, deps = d
     const submitBtn = form.querySelector("[type=submit]");
     const text = form.querySelector("[name=text]").value.trim();
     const name = form.querySelector("[name=name]").value.trim();
-    if (!text || !name) return showFormError(form, submitBtn, "Escreva a pergunta e seu nome pra enviar.");
+    if (!text || !name) return showFormError(form, submitBtn, t("q.required", "Escreva a pergunta e seu nome pra enviar."));
     submitBtn.disabled = true;
     try {
       const { questions, getUid } = deps();
@@ -101,7 +101,7 @@ function initTalkQuestions(rootEl, { index, config, myCheckins, myName, deps = d
       await load(containerEl, entry);
     } catch {
       submitBtn.disabled = false;
-      showFormError(form, submitBtn, "Não foi possível enviar. Confira o check-in e sua conexão (é uma pergunta por pessoa).");
+      showFormError(form, submitBtn, t("q.sendError", "Não foi possível enviar. Confira o check-in e sua conexão (é uma pergunta por pessoa)."));
     }
   });
 

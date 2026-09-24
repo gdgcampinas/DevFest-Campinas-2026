@@ -14,7 +14,7 @@ const HIGHLIGHTS_VERSION = 2;
 function highlightPhoto(number) {
   return {
     file: `assets/img/highlights/devfest-2025-${String(number).padStart(2, "0")}.jpg?v=${HIGHLIGHTS_VERSION}`,
-    alt: `Foto ${number} do DevFest Campinas 2025`,
+    alt: t("highlights.alt", "Foto {number} do DevFest Campinas 2025", { number }),
   };
 }
 
