@@ -1,16 +1,20 @@
 /**
- * Feature: perguntas ao vivo por palestra (bloco dentro do modal). Só quem
- * fez check-in na palestra pergunta e vota (a regra do Firestore exige, isto
- * só espelha na tela). Até `config.maxPerPerson` perguntas por pessoa por palestra; 1 voto por pessoa
- * por pergunta, sem desfazer. A lista se atualiza sozinha com o modal aberto
- * (poll, sem listener em tempo real: leituras previsíveis no plano grátis).
+ * Feature: perguntas ao vivo por palestra (bloco dentro do modal, lado da plateia). Regras do jogo (as do banco,
+ * espelhadas na tela):
+ *   - só quem fez check-in NA palestra pergunta e vota;
+ *   - só do início ao fim da palestra (question-window.js); antes mostra o aviso, depois só leitura;
+ *   - até `config.maxPerPerson` perguntas por pessoa por palestra;
+ *   - a pergunta nasce "pending": só depois que o moderador aprova ela entra na lista pública, no voto e no quadro
+ *     da sala. Quem enviou vê as próprias com o estado (aguardando, aprovada, respondida, não aprovada);
+ *   - 1 voto por pessoa por pergunta aprovada, sem desfazer.
+ * A lista se atualiza sozinha com o modal aberto (poll, sem listener em tempo real: leituras previsíveis no plano
+ * grátis).
  *
- * Tudo entra por parâmetro: `config` (data/talk-questions.js), `deps()` devolve
- * { questions, votes, getUid } (os repositories carregam depois, como módulos,
- * então são resolvidos no uso; os testes passam substitutos), `myCheckins` diz
- * o check-in deste navegador. Desligado (`config.enabled` falso), não faz nada.
+ * Tudo entra por parâmetro: `config` (data/talk-questions.js), `now` (relógio, respeita ?demo=), `myCheckins` (o
+ * check-in deste navegador) e `deps()` ({ questions, votes, getUid }: os repositories carregam depois, como módulos,
+ * então são resolvidos no uso; os testes passam substitutos). Desligado (`config.enabled` falso), não faz nada.
  */
-function initTalkQuestions(rootEl, { index, config, myCheckins, myName, deps = defaultQuestionDeps }) {
+function initTalkQuestions(rootEl, { index, config, myCheckins, myName, now = () => new Date(), deps = defaultQuestionDeps }) {
   const timers = new WeakMap();
   const containerOf = element => element.closest("[data-questions-container]");
   const entryOf = element => index.get(containerOf(element).dataset.questionsContainer);
@@ -23,21 +27,31 @@ function initTalkQuestions(rootEl, { index, config, myCheckins, myName, deps = d
   /** Só continua atualizando enquanto o bloco existe e está visível (modal aberto). */
   const isOnScreen = containerEl => containerEl.isConnected && containerEl.getClientRects().length > 0;
 
+  const draw = (containerEl, entry, data) => { containerEl.innerHTML = talkQuestionsMarkup({ entryKey: entry.key, maxLength: config.maxLength, limit: config.maxPerPerson, ...data }); };
+
   async function load(containerEl, entry, { message = "" } = {}) {
+    const windowState = questionWindowState(entry.slot, now());
+    if (windowState === "before") return draw(containerEl, entry, { phase: "waiting" });
     const { questions, votes, getUid } = deps();
     try {
       const uid = await getUid();
-      const [questionDocs, voteDocs] = await Promise.all([
-        questions.getWhere({ talkKey: entry.key, hidden: false }),
+      const [approvedDocs, mineDocs, voteDocs] = await Promise.all([
+        questions.getWhere({ talkKey: entry.key, status: QUESTION_STATUS.approved }),
+        questions.getWhere({ talkKey: entry.key, uid }),
         votes.getWhere({ talkKey: entry.key }),
       ]);
-      const ranked = rankQuestions(questionDocs, voteDocs, { myUid: uid });
-      containerEl.innerHTML = talkQuestionsMarkup({
-        phase: "ready", entryKey: entry.key, questions: ranked, maxLength: config.maxLength,
-        canAsk: ranked.filter(question => question.mine).length < config.maxPerPerson, limit: config.maxPerPerson, name: myName.get(), message,
+      const mine = mineDocs.sort((a, b) => a.createdAtMs - b.createdAtMs);
+      draw(containerEl, entry, {
+        phase: windowState,
+        approved: rankQuestions(approvedDocs, voteDocs, { myUid: uid }),
+        mine,
+        canAsk: windowState === "open" && mine.length < config.maxPerPerson,
+        remaining: config.maxPerPerson - mine.length,
+        name: myName.get(),
+        message,
       });
     } catch {
-      containerEl.innerHTML = talkQuestionsMarkup({ phase: "error", entryKey: entry.key, message: t("q.loadError", "Não foi possível carregar as perguntas agora. Confira sua conexão.") });
+      draw(containerEl, entry, { phase: "error", message: t("q.loadError", "Não foi possível carregar as perguntas agora. Confira sua conexão.") });
     }
   }
 
@@ -46,11 +60,8 @@ function initTalkQuestions(rootEl, { index, config, myCheckins, myName, deps = d
     if (!config.enabled || !containerEl) return;
     containerEl.dataset.questionsContainer = entry.key;
     stopPolling(containerEl);
-    if (!myCheckins.has(entry.key)) {
-      containerEl.innerHTML = talkQuestionsMarkup({ phase: "locked", entryKey: entry.key });
-      return;
-    }
-    containerEl.innerHTML = talkQuestionsMarkup({ phase: "loading", entryKey: entry.key });
+    if (!myCheckins.has(entry.key)) return draw(containerEl, entry, { phase: "locked" });
+    draw(containerEl, entry, { phase: "loading" });
     load(containerEl, entry);
     timers.set(containerEl, setInterval(() => {
       if (!isOnScreen(containerEl)) stopPolling(containerEl);
@@ -58,24 +69,15 @@ function initTalkQuestions(rootEl, { index, config, myCheckins, myName, deps = d
     }, config.pollMs));
   }
 
-  /**
-   * Cria a pergunta no primeiro espaço livre da pessoa nessa palestra ("<palestra>#1" a "#N"). A regra recusa
-   * (permission-denied) o espaço já usado, então é só tentar o próximo; se todos falharem, o limite acabou
-   * ou falta o check-in, e quem chamou mostra o aviso.
-   */
+  /** Cria a pergunta no primeiro espaço livre da pessoa nessa palestra; sem espaço, o limite acabou. */
   async function addQuestion(entry, { text, name }) {
     const { questions, getUid } = deps();
     const uid = await getUid();
-    for (let slot = 1; slot <= config.maxPerPerson; slot++) {
-      const entryKey = `${entry.key}#${slot}`;
-      try {
-        await questions.add(uid, entryKey, { entryKey, talkKey: entry.key, text, name, hidden: false });
-        return;
-      } catch (error) {
-        if (error.code !== "permission-denied") throw error;
-      }
-    }
-    throw new Error("question-limit");
+    const used = (await questions.getWhere({ talkKey: entry.key, uid })).map(question => question.entryKey);
+    const slot = firstFreeQuestionSlot(used, entry.key, config.maxPerPerson);
+    if (!slot) throw new Error("question-limit");
+    const entryKey = questionEntryKey(entry.key, slot);
+    await questions.add(uid, entryKey, { entryKey, talkKey: entry.key, uid, text, name, status: QUESTION_STATUS.pending });
   }
 
   // Check-in feito agora (feedback-flow dispara o evento): destrava os blocos abertos.
@@ -120,7 +122,7 @@ function initTalkQuestions(rootEl, { index, config, myCheckins, myName, deps = d
       await load(containerEl, entry);
     } catch {
       submitBtn.disabled = false;
-      showFormError(form, submitBtn, t("q.sendError", "Não foi possível enviar. Confira o check-in, sua conexão e o limite de perguntas por pessoa."));
+      showFormError(form, submitBtn, t("q.sendError", "Não foi possível enviar. Confira o check-in, sua conexão, o horário da palestra e o limite de perguntas."));
     }
   });
 

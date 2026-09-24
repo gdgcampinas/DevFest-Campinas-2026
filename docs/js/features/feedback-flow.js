@@ -26,7 +26,7 @@ function initFeedbackFlow({
   const feedback = initTalkFeedback(document.body, { index, reveal, now, myCheckins, myRatings, myName });
   const eventFeedback = initEventFeedback(document.body, { form, myRatings, myName, now, endsAt });
   if (!reveal) return { feedback, eventFeedback };
-  const questions = initTalkQuestions(document.body, { index, config: questionsConfig, myCheckins, myName });
+  const questions = initTalkQuestions(document.body, { index, config: questionsConfig, myCheckins, myName, now });
 
   const myTalks = initMyTalks({ rootEl: document.body, index, feedback, eventFeedback, myCheckins, myRatings, createModal, timezone: event.timezone });
   initFeedbackNudge({ index, myCheckins, myRatings, now, endsAt, onOpen: myTalks.open });
