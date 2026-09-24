@@ -28,15 +28,22 @@ function emulatorRequested() {
   }
 }
 
+let labelShown = false;
+function showEmulatorLabel() {
+  if (labelShown) return;
+  labelShown = true;
+  const label = document.createElement("div");
+  label.textContent = "EMULADOR (banco local, nada vai pro Firebase de verdade)";
+  label.style.cssText = "position:fixed;left:0;bottom:0;z-index:9999;background:#7c3aed;color:#fff;font:700 11px sans-serif;padding:3px 8px";
+  document.addEventListener("DOMContentLoaded", () => document.body.appendChild(label));
+}
+
 /** Devolve { signInAsModerator } quando o emulador foi ligado, ou null (uso normal). */
 export function connectEmulatorIfRequested({ db, auth }) {
   if (!emulatorRequested()) return null;
   connectFirestoreEmulator(db, "127.0.0.1", 8085);
   connectAuthEmulator(auth, "http://127.0.0.1:9099", { disableWarnings: true });
-  const label = document.createElement("div");
-  label.textContent = "EMULADOR (banco local, nada vai pro Firebase de verdade)";
-  label.style.cssText = "position:fixed;left:0;bottom:0;z-index:9999;background:#7c3aed;color:#fff;font:700 11px sans-serif;padding:3px 8px";
-  document.addEventListener("DOMContentLoaded", () => document.body.appendChild(label));
+  showEmulatorLabel();
   return {
     async signInAsModerator(email = new URLSearchParams(location.search).get("moderador") ?? DEFAULT_MODERATOR) {
       const credential = GoogleAuthProvider.credential(JSON.stringify({ sub: `google-${email}`, email, email_verified: true }));

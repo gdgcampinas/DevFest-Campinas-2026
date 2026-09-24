@@ -11,11 +11,15 @@
  * A lista se atualiza sozinha com o modal aberto (poll, sem listener em tempo real: leituras previsíveis no plano
  * grátis).
  *
+ * Auto-correção: este navegador guarda "já fiz check-in" localmente, mas o que vale pro banco é o check-in do uid atual. Se
+ * o uid mudou (login trocado, dados do site apagados pela metade), o banco recusa com "permission-denied" mesmo com o
+ * check-in "feito" na tela: nesse caso `ensureCheckin(entry)` refaz o check-in (idempotente) e a ação é tentada de novo, uma vez.
+ *
  * Tudo entra por parâmetro: `config` (data/talk-questions.js), `now` (relógio, respeita ?demo=), `myCheckins` (o
  * check-in deste navegador) e `deps()` ({ questions, votes, getUid }: os repositories carregam depois, como módulos,
  * então são resolvidos no uso; os testes passam substitutos). Desligado (`config.enabled` falso), não faz nada.
  */
-function initTalkQuestions(rootEl, { index, config, myCheckins, myName, now = () => new Date(), deps = defaultQuestionDeps }) {
+function initTalkQuestions(rootEl, { index, config, myCheckins, myName, now = () => new Date(), deps = defaultQuestionDeps, ensureCheckin = async () => {} }) {
   const timers = new WeakMap();
   const containerOf = element => element.closest("[data-questions-container]");
   const entryOf = element => index.get(containerOf(element).dataset.questionsContainer);
@@ -70,6 +74,17 @@ function initTalkQuestions(rootEl, { index, config, myCheckins, myName, now = ()
     }, config.pollMs));
   }
 
+  /** Roda `action`; se o banco recusar (check-in do uid atual ausente), refaz o check-in e tenta mais uma vez. */
+  async function withCheckinRetry(entry, action) {
+    try {
+      return await action();
+    } catch (error) {
+      if (error.code !== "permission-denied") throw error;
+      await ensureCheckin(entry);
+      return action();
+    }
+  }
+
   /** Cria a pergunta no primeiro espaço livre da pessoa nessa palestra; sem espaço, o limite acabou. */
   async function addQuestion(entry, { text, name }) {
     const { questions, getUid } = deps();
@@ -78,7 +93,7 @@ function initTalkQuestions(rootEl, { index, config, myCheckins, myName, now = ()
     const slot = firstFreeQuestionSlot(used, entry.key, config.maxPerPerson);
     if (!slot) throw new Error("question-limit");
     const entryKey = questionEntryKey(entry.key, slot);
-    await questions.add(uid, entryKey, { entryKey, talkKey: entry.key, uid, text, name, status: QUESTION_STATUS.pending });
+    await withCheckinRetry(entry, () => questions.add(uid, entryKey, { entryKey, talkKey: entry.key, uid, text, name, status: QUESTION_STATUS.pending }));
   }
 
   // Check-in feito agora (feedback-flow dispara o evento): destrava os blocos abertos.
@@ -97,8 +112,9 @@ function initTalkQuestions(rootEl, { index, config, myCheckins, myName, now = ()
     voteBtn.disabled = true;
     try {
       const { votes, getUid } = deps();
-      // "permission-denied" = já votou (a regra recusa o segundo voto): só recarrega, não é erro pra pessoa.
-      await votes.add(await getUid(), voteBtn.dataset.questionVote, { entryKey: voteBtn.dataset.questionVote, talkKey: entry.key })
+      // "permission-denied" depois de refazer o check-in = já votou (a regra recusa o segundo voto): só recarrega, não é erro pra pessoa.
+      const uid = await getUid();
+      await withCheckinRetry(entry, () => votes.add(uid, voteBtn.dataset.questionVote, { entryKey: voteBtn.dataset.questionVote, talkKey: entry.key }))
         .catch(error => { if (error.code !== "permission-denied") throw error; });
       await load(containerEl, entry);
     } catch {

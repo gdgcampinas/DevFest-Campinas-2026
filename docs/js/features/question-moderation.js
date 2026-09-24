@@ -75,10 +75,10 @@ function initQuestionModeration(rootEl, { schedule, track, config, now = () => n
 
 function defaultModerationDeps() {
   return {
-    questions: window.talkQuestionsRepository,
-    votes: window.talkQuestionVotesRepository,
-    signIn: () => window.firebaseClient.signInWithGoogle(),
-    restore: () => window.firebaseClient.restoreModerator(),
-    signOut: () => window.firebaseClient.signOutModerator(),
+    questions: window.moderationQuestionsRepository,
+    votes: window.moderationVotesRepository,
+    signIn: () => window.moderatorClient.signInWithGoogle(),
+    restore: () => window.moderatorClient.restoreModerator(),
+    signOut: () => window.moderatorClient.signOutModerator(),
   };
 }
