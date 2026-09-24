@@ -6,10 +6,6 @@
  * nota menor clica numa estrela anterior e as seguintes esvaziam (o
  * preenchimento "até a marcada" é só CSS, ver .feedback-star em styles.css).
  */
-function escapeHtml(text) {
-  return String(text ?? "").replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
-}
-
 function starRatingMarkup({ name, label, required = false, defaultValue = 5 }) {
   const stars = [1, 2, 3, 4, 5]
     .map(n => `<label class="feedback-star" title="${t("rating.of5", "{n} de 5", { n })}"><input type="radio" name="${name}" value="${n}"${required ? " required" : ""}${n === defaultValue ? " checked" : ""}><span>★</span></label>`)

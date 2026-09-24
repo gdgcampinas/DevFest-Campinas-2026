@@ -1,5 +1,6 @@
 /**
- * Página: check-in ao vivo (ferramenta interna, fora do nav/sitemap).
+ * Página: QUADRO DA SALA, antes "check-in ao vivo" (ferramenta interna, fora do nav/sitemap; o endereço não mudou
+ * pra não quebrar os tablets já configurados).
  * `?trilha=<id>` escolhe a sala — sem esse parâmetro, ou com um id que
  * não existe em TRACKS, mostra a lista de trilhas disponíveis em vez de
  * quebrar (link errado é o erro mais provável aqui, sem tela de conserto
@@ -21,7 +22,9 @@ function initCheckinDisplay_page() {
     return;
   }
 
+  const questionsConfig = talkQuestionsConfigRepository.getAll();
   initCheckinDisplay(document.getElementById("cdScreen"), {
+    boardQuestions: questionsConfig.enabled ? createBoardQuestions({ config: questionsConfig }) : null,
     schedule: SCHEDULE,
     track,
     timezone: EVENT.timezone,
