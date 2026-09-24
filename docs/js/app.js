@@ -40,24 +40,61 @@ function runAfterModules(task) {
   else task();
 }
 
-const DEV_MODE_KEY = "devfest-campinas-2026:dev-mode";
-
-/** Guarda em sessionStorage sem quebrar em modo privado/bloqueado — DEV só não persiste nesse caso, não trava a página. */
-function setDevModeStorage(value) {
-  try {
-    if (value) sessionStorage.setItem(DEV_MODE_KEY, "1");
-    else sessionStorage.removeItem(DEV_MODE_KEY);
-  } catch {
-    /* sem persistência: ?lineup=1 ainda funciona nesta página, só não sobrevive à navegação */
-  }
+/**
+ * Valor guardado só nesta aba (sessionStorage), sem quebrar em modo privado/bloqueado: sem persistência o valor
+ * ainda vale na página atual, só não sobrevive à navegação. `set(null)` apaga.
+ */
+function createSessionValue(key) {
+  return {
+    get() {
+      try {
+        return sessionStorage.getItem(key);
+      } catch {
+        return null;
+      }
+    },
+    set(value) {
+      try {
+        if (value === null) sessionStorage.removeItem(key);
+        else sessionStorage.setItem(key, value);
+      } catch {
+        /* sem persistência */
+      }
+    },
+  };
 }
 
-function isDevModeStored() {
-  try {
-    return sessionStorage.getItem(DEV_MODE_KEY) === "1";
-  } catch {
-    return false;
-  }
+const devModeStore = createSessionValue("devfest-campinas-2026:dev-mode");
+const setDevModeStorage = value => devModeStore.set(value ? "1" : null);
+const isDevModeStored = () => devModeStore.get() === "1";
+
+/** Faixa vermelha fixa no topo pros modos de teste (data simulada, ensaio): avisa que aquilo não é o evento de verdade. */
+function showTopBanner(text) {
+  const banner = document.createElement("div");
+  banner.textContent = text;
+  banner.style.cssText = "background:var(--google-red);color:#fff;text-align:center;font-size:.75rem;font-weight:700;padding:6px;position:sticky;top:0;z-index:100";
+  document.body.prepend(banner);
+}
+
+const rehearsalStore = createSessionValue("devfest-campinas-2026:rehearsal");
+
+/**
+ * Modo ensaio (features/rehearsal.js): com `?ensaio=HH:MM` (ou já guardado nesta aba) desloca a grade pra a 1ª palestra
+ * começar naquele horário de hoje, liga o modo DEV (line-up visível) e mostra a faixa. `?ensaio=0` desliga. Precisa rodar
+ * ANTES de qualquer render que leia a grade. Devolve { active, query }: `query` é o que os links/QR desse ensaio
+ * precisam carregar pra outros aparelhos entrarem no mesmo ensaio.
+ */
+function setupRehearsal({ schedule = SCHEDULE, event = EVENT } = {}) {
+  const fromUrl = getParam("ensaio");
+  if (fromUrl === "0") rehearsalStore.set(null);
+  else if (fromUrl && parseRehearsalStart(fromUrl, new Date(), event.utcOffset)) rehearsalStore.set(fromUrl);
+  const param = rehearsalStore.get();
+  const delta = rehearsalDeltaMs(param, schedule, { now: new Date(), utcOffset: event.utcOffset });
+  if (delta === null) return { active: false, query: "" };
+  shiftSchedule(schedule, delta);
+  setDevModeStorage(true);
+  showTopBanner(`🎭 MODO ENSAIO: a grade foi deslocada (1ª palestra às ${param}). Usa o banco de verdade: apague os dados de teste depois.`);
+  return { active: true, param, query: `&ensaio=${param}&lineup=1` };
 }
 
 /** null se `demo` não veio na URL ou não é uma data válida. */
@@ -107,12 +144,9 @@ function warnIfDemoMode() {
   const demo = getParam("demo");
   if (!demo) return;
   const valid = parseDemoDate(demo) !== null;
-  const banner = document.createElement("div");
-  banner.textContent = valid
+  showTopBanner(valid
     ? t("demo.banner", "⚠️ MODO TESTE — data simulada, não é o horário real do evento")
-    : t("demo.invalid", "⚠️ ?demo=\"{demo}\" inválido — mostrando horário real. Formato: AAAA-MM-DDTHH:MM", { demo });
-  banner.style.cssText = "background:var(--google-red);color:#fff;text-align:center;font-size:.75rem;font-weight:700;padding:6px;position:sticky;top:0;z-index:100";
-  document.body.prepend(banner);
+    : t("demo.invalid", "⚠️ ?demo=\"{demo}\" inválido — mostrando horário real. Formato: AAAA-MM-DDTHH:MM", { demo }));
 }
 
 /** Único lugar que sabe montar URLs do Google Maps a partir de um endereço. */
@@ -296,6 +330,7 @@ function renderLanguageSwitcher(actionsEl) {
  * esse valor pra decidir o que mostrar de dado sensível.
  */
 function initShell(activePageId) {
+  setupRehearsal();
   localizeDatasets();
   applyStaticTranslations();
   warnIfDemoMode();

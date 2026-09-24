@@ -7,6 +7,7 @@
  * na hora do evento).
  */
 function initCheckinDisplay_page() {
+  const rehearsal = setupRehearsal();
   const brandEl = document.getElementById("cdBrand");
   brandEl.textContent = EVENT.name;
 
@@ -25,6 +26,7 @@ function initCheckinDisplay_page() {
   const questionsConfig = talkQuestionsConfigRepository.getAll();
   initCheckinDisplay(document.getElementById("cdScreen"), {
     boardQuestions: questionsConfig.enabled ? createBoardQuestions({ config: questionsConfig }) : null,
+    extraQuery: rehearsal.query,
     schedule: SCHEDULE,
     track,
     timezone: EVENT.timezone,

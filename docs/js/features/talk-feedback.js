@@ -20,6 +20,8 @@
  * clique/submit e do handler de `?checkin=`.
  */
 const FEEDBACK_CHANGED_EVENT = "devfest:feedback-changed";
+/** Pede pra abrir a palestra (detail.key) no modal: disparado depois do check-in por QR, pra a pessoa já cair na palestra (perguntas e avaliação). */
+const OPEN_TALK_EVENT = "devfest:open-talk";
 
 /** Guarda o nome e já preenche os outros campos de nome abertos e vazios (não pedir o nome 10 vezes). */
 function rememberName(repository, name) {
@@ -71,7 +73,9 @@ function initTalkFeedback(rootEl, { index, reveal = true, now = () => new Date()
     const url = new URL(location.href);
     url.searchParams.delete("checkin");
     history.replaceState(null, "", url);
-    if (entry) await doCheckin(entry).catch(() => {});
+    if (!entry) return;
+    await doCheckin(entry).catch(() => {});
+    rootEl.dispatchEvent(new CustomEvent(OPEN_TALK_EVENT, { detail: { key: entry.key } }));
   }
   if (getParam("checkin")) runAfterModules(handleCheckinParam);
 

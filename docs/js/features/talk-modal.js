@@ -47,9 +47,8 @@ function initTalkDetails(rootEl, { schedule, tracks, timezone, reveal, modal, fa
     openFromCard(card);
   });
 
-  function openFromCard(card) {
-    const slot = schedule[Number(card.dataset.slotIndex)];
-    const track = tracks.find(t => t.id === card.dataset.track);
+  /** Abre o modal da palestra (slot x trilha) e preenche os blocos de feedback e de perguntas dela. */
+  function openTalk(slot, track) {
     if (!slot || !track || !slot.talks) return;
     const key = talkKey(slot, track.id);
     modal.open(track, slot.talks[track.id], {
@@ -66,6 +65,18 @@ function initTalkDetails(rootEl, { schedule, tracks, timezone, reveal, modal, fa
     const questionsSlot = modal.el.querySelector(".talk-questions-slot");
     if (questions && entry && questionsSlot) questions.render(questionsSlot, entry);
   }
+
+  function openFromCard(card) {
+    openTalk(schedule[Number(card.dataset.slotIndex)], tracks.find(t => t.id === card.dataset.track));
+  }
+
+  // QR de check-in escaneado (talk-feedback.js): depois do check-in, abre a própria palestra.
+  rootEl.addEventListener(OPEN_TALK_EVENT, event => {
+    const entry = calendar?.index?.get(event.detail.key);
+    if (entry) openTalk(entry.slot, entry.track);
+  });
+
+  return { openTalk };
 }
 
 /**

@@ -83,3 +83,10 @@ test("a palestra é da trilha da sala, nunca de outra trilha no mesmo horário",
   assert.equal(mobile.talk.data.title, "Outra sala");
   assert.match(mobile.talk.key, /\|mobile$/);
 });
+
+test("os QR carregam o que o ensaio pede (mesmo horário e modo DEV) em todos os links", () => {
+  const result = resolveRoomBoard({ ...params, now: at("10:00"), extraQuery: "&ensaio=14:30&lineup=1" });
+  result.panels.forEach(panel => assert.ok(panel.url.endsWith("&ensaio=14:30&lineup=1"), panel.url));
+  const after = resolveRoomBoard({ ...params, now: at("11:10"), extraQuery: "&ensaio=14:30&lineup=1" });
+  assert.equal(after.panels[1].url, "https://site/index.html?avaliar=1&ensaio=14:30&lineup=1");
+});

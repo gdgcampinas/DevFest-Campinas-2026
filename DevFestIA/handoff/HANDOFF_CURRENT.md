@@ -25,9 +25,12 @@
 ## Sessão 7 (2026-09-24), em andamento
 Plano autorizado (sem o certificado, que segue aguardando decisões): 1) chave do Firebase por domínio
 (passo a passo pro Renato), 2) quiz "Monte sua trilha" (**feito**, ver PROJECT_CONTEXT "Quiz"),
-3) perguntas por palestra (**ligado**, até 3 por pessoa; falta o Renato colar as regras e testar no banco real, ver PROJECT_CONTEXT "Perguntas ao vivo"), 4) i18n: **feito para EN** (ver PROJECT_CONTEXT "Internacionalização"; PT segue padrão, seletor PT|EN no cabeçalho, conferidor no CI; ES/FR = só um dicionário novo;
+3) perguntas por palestra **refeitas** (moderador aprova antes, só durante a palestra, até 10 por pessoa, quadro da sala, modo ensaio; ver PROJECT_CONTEXT "Perguntas ao vivo, moderação e quadro da sala"). **Falta o Renato colar as regras novas** (`pbcopy < DevFestIA/firebase/firestore.rules`, console Firebase > Firestore > Regras > Publicar) e o **ensaio ao vivo** com celular + TV + tablet do moderador (roteiro abaixo), 4) i18n: **feito para EN** (ver PROJECT_CONTEXT "Internacionalização"; PT segue padrão, seletor PT|EN no cabeçalho, conferidor no CI; ES/FR = só um dicionário novo;
 falta traduzir o corpo de Palestrantes/Time/Patrocínio/Código de Conduta e o conteúdo do line-up quando for real, e alguém nativo revisar o EN).
 Cada item = um commit, docs atualizados.
+
+**Roteiro do ensaio das perguntas (com o banco de verdade):** 1) escolher um horário daqui a 5 min, ex. 14:30; 2) TV/tablet da sala: `.../checkin-display.html?trilha=ia&ensaio=14:30`; 3) tablet do moderador: `.../moderacao.html?trilha=ia&ensaio=14:30` (entra com o Google da lista); 4) celular: escanear o QR da TV (já traz o ensaio), fazer o check-in, mandar perguntas, ver "aguardando o moderador"; 5) moderador aprova; a pergunta aparece na TV e no celular; votar; 6) depois do fim (40 min) o formulário fecha; 7) apagar os dados de teste: workflow "🧹 Limpar dados de teste" (simulação e depois APAGAR).
+Regras: `DevFestIA/tools/questions/run-rules-tests.sh` roda 21 testes no emulador (Java 21 já instalado via brew).
 
 ## Sessão 6: tudo que foi feito (2026-09-23)
 

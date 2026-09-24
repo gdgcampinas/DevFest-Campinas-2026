@@ -8,7 +8,7 @@
  * O que mostrar em cada horário é decidido por resolveRoomBoard() (room-board.js, função pura e testada); aqui só se
  * desenha. `boardQuestions` (opcional) é quem lê e mostra as perguntas.
  */
-function initCheckinDisplay(rootEl, { schedule, track, timezone, siteUrl, now = () => new Date(), boardQuestions = null }) {
+function initCheckinDisplay(rootEl, { schedule, track, timezone, siteUrl, now = () => new Date(), boardQuestions = null, extraQuery = "" }) {
   const bodyEl = rootEl.querySelector(".cd-body");
   let lastSignature = null;
 
@@ -33,7 +33,7 @@ function initCheckinDisplay(rootEl, { schedule, track, timezone, siteUrl, now = 
   }
 
   const tick = () => draw(resolveRoomBoard({
-    schedule, track, siteUrl, now: now(),
+    schedule, track, siteUrl, now: now(), extraQuery,
     keyOf: talkKey,
     codeOf: (slot, trackId) => talkShareCode(slot, trackId, timezone),
   }));

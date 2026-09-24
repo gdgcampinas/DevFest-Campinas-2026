@@ -1,4 +1,4 @@
-Sep 24, 2026 11:23:06 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start
+Sep 24, 2026 11:37:23 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start
 INFO: Started WebSocket server on ws://127.0.0.1:9150
 
 API endpoint: http://127.0.0.1:8085
@@ -16,15 +16,15 @@ If you are running a Firestore in Datastore Mode project, run:
 Note: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.
 Dev App Server is now running.
 
-Sep 24, 2026 11:23:06 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+Sep 24, 2026 11:37:24 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
 INFO: Detected non-HTTP/2 connection.
-Sep 24, 2026 11:23:06 AM io.grpc.netty.TcpMetrics loadEpollInfo
+Sep 24, 2026 11:37:24 AM io.grpc.netty.TcpMetrics loadEpollInfo
 INFO: Epoll available during static init of TcpMetrics:false
-Sep 24, 2026 11:23:06 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+Sep 24, 2026 11:37:24 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
 INFO: Detected HTTP/2 connection.
-Sep 24, 2026 11:23:07 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+Sep 24, 2026 11:37:24 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
 INFO: Detected non-HTTP/2 connection.
-Sep 24, 2026 11:23:07 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:24 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -58,10 +58,10 @@ evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:07 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:24 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
-Sep 24, 2026 11:23:07 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:24 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -95,10 +95,10 @@ evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:07 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:24 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
-Sep 24, 2026 11:23:07 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:24 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -132,10 +132,10 @@ evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:07 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:24 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
-Sep 24, 2026 11:23:07 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:24 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -169,10 +169,10 @@ evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:07 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:24 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
-Sep 24, 2026 11:23:07 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -206,10 +206,10 @@ evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:07 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
-Sep 24, 2026 11:23:07 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -243,10 +243,10 @@ evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:07 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
-Sep 24, 2026 11:23:07 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -280,10 +280,10 @@ evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:07 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
-Sep 24, 2026 11:23:07 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -317,10 +317,10 @@ evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:07 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
-Sep 24, 2026 11:23:07 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'update' @ L177, false for 'update' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -354,10 +354,10 @@ evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:07 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'update' @ L177, false for 'update' @ L220
-Sep 24, 2026 11:23:07 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -391,10 +391,10 @@ evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:07 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
-Sep 24, 2026 11:23:07 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -428,10 +428,10 @@ evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:07 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
-Sep 24, 2026 11:23:07 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -465,10 +465,10 @@ evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:07 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
-Sep 24, 2026 11:23:07 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -502,10 +502,10 @@ evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:07 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
-Sep 24, 2026 11:23:07 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -539,10 +539,10 @@ evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:07 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
-Sep 24, 2026 11:23:07 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -576,10 +576,10 @@ evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:07 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
-Sep 24, 2026 11:23:07 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -613,10 +613,10 @@ evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:07 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
-Sep 24, 2026 11:23:07 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -650,10 +650,10 @@ evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:07 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
-Sep 24, 2026 11:23:07 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -687,10 +687,10 @@ evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:07 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
-Sep 24, 2026 11:23:07 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -724,10 +724,10 @@ evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:07 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
-Sep 24, 2026 11:23:07 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -761,10 +761,10 @@ evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:07 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
-Sep 24, 2026 11:23:07 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -798,10 +798,10 @@ evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:07 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
-Sep 24, 2026 11:23:07 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -835,10 +835,10 @@ evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:07 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
-Sep 24, 2026 11:23:07 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -872,10 +872,10 @@ evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:07 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
-Sep 24, 2026 11:23:08 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -909,10 +909,10 @@ evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:08 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L168:24 for 'create' @ L168, false for 'create' @ L220, false for 'update' @ L177, false for 'update' @ L220, false for 'create' @ L168, false for 'create' @ L220
-Sep 24, 2026 11:23:08 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 Property status is undefined on object. for 'list' @ L166, false for 'list' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -950,10 +950,10 @@ Property status is undefined on object. for 'list' @ L166, false for 'list' @ L2
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:08 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 Property status is undefined on object. for 'list' @ L166, false for 'list' @ L220
-Sep 24, 2026 11:23:08 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 Property uid is undefined on object. for 'list' @ L166, false for 'list' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -991,10 +991,10 @@ Property uid is undefined on object. for 'list' @ L166, false for 'list' @ L220
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:08 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 Property uid is undefined on object. for 'list' @ L166, false for 'list' @ L220
-Sep 24, 2026 11:23:08 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 Property status is undefined on object. for 'list' @ L166, false for 'list' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -1032,10 +1032,10 @@ Property status is undefined on object. for 'list' @ L166, false for 'list' @ L2
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:08 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 Property status is undefined on object. for 'list' @ L166, false for 'list' @ L220
-Sep 24, 2026 11:23:08 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 false for 'list' @ L166, false for 'list' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -1073,10 +1073,10 @@ false for 'list' @ L166, false for 'list' @ L220
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:08 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 false for 'list' @ L166, false for 'list' @ L220
-Sep 24, 2026 11:23:08 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 false for 'list' @ L187, false for 'list' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -1114,10 +1114,10 @@ false for 'list' @ L187, false for 'list' @ L220
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:08 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 false for 'list' @ L187, false for 'list' @ L220
-Sep 24, 2026 11:23:08 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 false for 'update' @ L177, false for 'update' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -1151,10 +1151,10 @@ false for 'update' @ L177, false for 'update' @ L220
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:08 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 false for 'update' @ L177, false for 'update' @ L220
-Sep 24, 2026 11:23:08 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 false for 'update' @ L177, false for 'update' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -1188,10 +1188,10 @@ false for 'update' @ L177, false for 'update' @ L220
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:08 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 false for 'update' @ L177, false for 'update' @ L220
-Sep 24, 2026 11:23:08 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 false for 'update' @ L177, false for 'update' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -1225,10 +1225,10 @@ false for 'update' @ L177, false for 'update' @ L220
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:08 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 false for 'update' @ L177, false for 'update' @ L220
-Sep 24, 2026 11:23:08 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 false for 'update' @ L177, false for 'update' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -1262,10 +1262,10 @@ false for 'update' @ L177, false for 'update' @ L220
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:08 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 false for 'update' @ L177, false for 'update' @ L220
-Sep 24, 2026 11:23:08 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 false for 'update' @ L177, false for 'update' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -1299,47 +1299,10 @@ false for 'update' @ L177, false for 'update' @ L220
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:08 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 false for 'update' @ L177, false for 'update' @ L220
-Sep 24, 2026 11:23:08 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
-WARNING: Operation failed: 
-evaluation error at L177:24 for 'update' @ L177, false for 'update' @ L220, false for 'update' @ L177, false for 'update' @ L220
-com.google.cloud.datastore.core.exception.DatastoreException: 
-evaluation error at L177:24 for 'update' @ L177, false for 'update' @ L220, false for 'update' @ L177, false for 'update' @ L220
-	at com.google.cloud.datastore.core.exception.DatastoreException$Builder.build(DatastoreException.java:152)
-	at com.google.cloud.datastore.emulator.impl.rules.DefaultEmulatorRulesAuthorizer.verboseError(DefaultEmulatorRulesAuthorizer.java:349)
-	at com.google.cloud.datastore.emulator.impl.rules.DefaultEmulatorRulesAuthorizer.withVerboseErrors(DefaultEmulatorRulesAuthorizer.java:326)
-	at com.google.cloud.datastore.emulator.impl.rules.DefaultEmulatorRulesAuthorizer.checkCommit(DefaultEmulatorRulesAuthorizer.java:114)
-	at com.google.cloud.datastore.emulator.impl.firestore.FirestoreEmulatorHelper.commitHelper(FirestoreEmulatorHelper.java:386)
-	at com.google.cloud.datastore.emulator.impl.firestore.FirestoreEmulatorHelper.internalCommit(FirestoreEmulatorHelper.java:336)
-	at com.google.cloud.datastore.emulator.impl.firestore.CloudFirestoreV1.commit(CloudFirestoreV1.java:525)
-	at com.google.cloud.datastore.emulator.impl.firestore.CloudFirestoreV1Router.commit(CloudFirestoreV1Router.java:177)
-	at com.google.cloud.datastore.emulator.firestore.v1.FirestoreV1GrpcAdapter$1.lambda$commit$0(FirestoreV1GrpcAdapter.java:162)
-	at com.google.cloud.datastore.emulator.firestore.v1.FirestoreV1GrpcAdapter.unary(FirestoreV1GrpcAdapter.java:72)
-	at com.google.cloud.datastore.emulator.firestore.v1.FirestoreV1GrpcAdapter$1.commit(FirestoreV1GrpcAdapter.java:162)
-	at com.google.firestore.v1.FirestoreGrpc$MethodHandlers.invoke(FirestoreGrpc.java:1404)
-	at io.grpc.stub.ServerCalls$UnaryServerCallHandler$UnaryServerCallListener.onHalfClose(ServerCalls.java:182)
-	at io.grpc.PartialForwardingServerCallListener.onHalfClose(PartialForwardingServerCallListener.java:35)
-	at io.grpc.ForwardingServerCallListener.onHalfClose(ForwardingServerCallListener.java:23)
-	at io.grpc.ForwardingServerCallListener$SimpleForwardingServerCallListener.onHalfClose(ForwardingServerCallListener.java:40)
-	at io.grpc.Contexts$ContextualizedServerCallListener.onHalfClose(Contexts.java:86)
-	at io.grpc.PartialForwardingServerCallListener.onHalfClose(PartialForwardingServerCallListener.java:35)
-	at io.grpc.ForwardingServerCallListener.onHalfClose(ForwardingServerCallListener.java:23)
-	at io.grpc.ForwardingServerCallListener$SimpleForwardingServerCallListener.onHalfClose(ForwardingServerCallListener.java:40)
-	at io.grpc.Contexts$ContextualizedServerCallListener.onHalfClose(Contexts.java:86)
-	at io.grpc.internal.ServerCallImpl$ServerStreamListenerImpl.halfClosed(ServerCallImpl.java:356)
-	at io.grpc.internal.ServerImpl$JumpToApplicationThreadServerStreamListener$1HalfClosed.runInContext(ServerImpl.java:861)
-	at io.grpc.internal.ContextRunnable.run(ContextRunnable.java:37)
-	at io.grpc.internal.SerializingExecutor.run(SerializingExecutor.java:133)
-	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
-	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
-	at java.base/java.lang.Thread.run(Thread.java:1583)
-
-Sep 24, 2026 11:23:08 AM io.gapi.emulators.netty.HttpHandler$1 onError
-INFO: Exception when handling request: PERMISSION_DENIED: 
-evaluation error at L177:24 for 'update' @ L177, false for 'update' @ L220, false for 'update' @ L177, false for 'update' @ L220
-Sep 24, 2026 11:23:08 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L177:24 for 'update' @ L177, false for 'update' @ L220, false for 'update' @ L177, false for 'update' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -1373,10 +1336,10 @@ evaluation error at L177:24 for 'update' @ L177, false for 'update' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:08 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L177:24 for 'update' @ L177, false for 'update' @ L220, false for 'update' @ L177, false for 'update' @ L220
-Sep 24, 2026 11:23:08 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L177:24 for 'update' @ L177, false for 'update' @ L220, false for 'update' @ L177, false for 'update' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -1410,10 +1373,47 @@ evaluation error at L177:24 for 'update' @ L177, false for 'update' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:08 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L177:24 for 'update' @ L177, false for 'update' @ L220, false for 'update' @ L177, false for 'update' @ L220
-Sep 24, 2026 11:23:09 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+WARNING: Operation failed: 
+evaluation error at L177:24 for 'update' @ L177, false for 'update' @ L220, false for 'update' @ L177, false for 'update' @ L220
+com.google.cloud.datastore.core.exception.DatastoreException: 
+evaluation error at L177:24 for 'update' @ L177, false for 'update' @ L220, false for 'update' @ L177, false for 'update' @ L220
+	at com.google.cloud.datastore.core.exception.DatastoreException$Builder.build(DatastoreException.java:152)
+	at com.google.cloud.datastore.emulator.impl.rules.DefaultEmulatorRulesAuthorizer.verboseError(DefaultEmulatorRulesAuthorizer.java:349)
+	at com.google.cloud.datastore.emulator.impl.rules.DefaultEmulatorRulesAuthorizer.withVerboseErrors(DefaultEmulatorRulesAuthorizer.java:326)
+	at com.google.cloud.datastore.emulator.impl.rules.DefaultEmulatorRulesAuthorizer.checkCommit(DefaultEmulatorRulesAuthorizer.java:114)
+	at com.google.cloud.datastore.emulator.impl.firestore.FirestoreEmulatorHelper.commitHelper(FirestoreEmulatorHelper.java:386)
+	at com.google.cloud.datastore.emulator.impl.firestore.FirestoreEmulatorHelper.internalCommit(FirestoreEmulatorHelper.java:336)
+	at com.google.cloud.datastore.emulator.impl.firestore.CloudFirestoreV1.commit(CloudFirestoreV1.java:525)
+	at com.google.cloud.datastore.emulator.impl.firestore.CloudFirestoreV1Router.commit(CloudFirestoreV1Router.java:177)
+	at com.google.cloud.datastore.emulator.firestore.v1.FirestoreV1GrpcAdapter$1.lambda$commit$0(FirestoreV1GrpcAdapter.java:162)
+	at com.google.cloud.datastore.emulator.firestore.v1.FirestoreV1GrpcAdapter.unary(FirestoreV1GrpcAdapter.java:72)
+	at com.google.cloud.datastore.emulator.firestore.v1.FirestoreV1GrpcAdapter$1.commit(FirestoreV1GrpcAdapter.java:162)
+	at com.google.firestore.v1.FirestoreGrpc$MethodHandlers.invoke(FirestoreGrpc.java:1404)
+	at io.grpc.stub.ServerCalls$UnaryServerCallHandler$UnaryServerCallListener.onHalfClose(ServerCalls.java:182)
+	at io.grpc.PartialForwardingServerCallListener.onHalfClose(PartialForwardingServerCallListener.java:35)
+	at io.grpc.ForwardingServerCallListener.onHalfClose(ForwardingServerCallListener.java:23)
+	at io.grpc.ForwardingServerCallListener$SimpleForwardingServerCallListener.onHalfClose(ForwardingServerCallListener.java:40)
+	at io.grpc.Contexts$ContextualizedServerCallListener.onHalfClose(Contexts.java:86)
+	at io.grpc.PartialForwardingServerCallListener.onHalfClose(PartialForwardingServerCallListener.java:35)
+	at io.grpc.ForwardingServerCallListener.onHalfClose(ForwardingServerCallListener.java:23)
+	at io.grpc.ForwardingServerCallListener$SimpleForwardingServerCallListener.onHalfClose(ForwardingServerCallListener.java:40)
+	at io.grpc.Contexts$ContextualizedServerCallListener.onHalfClose(Contexts.java:86)
+	at io.grpc.internal.ServerCallImpl$ServerStreamListenerImpl.halfClosed(ServerCallImpl.java:356)
+	at io.grpc.internal.ServerImpl$JumpToApplicationThreadServerStreamListener$1HalfClosed.runInContext(ServerImpl.java:861)
+	at io.grpc.internal.ContextRunnable.run(ContextRunnable.java:37)
+	at io.grpc.internal.SerializingExecutor.run(SerializingExecutor.java:133)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
+INFO: Exception when handling request: PERMISSION_DENIED: 
+evaluation error at L177:24 for 'update' @ L177, false for 'update' @ L220, false for 'update' @ L177, false for 'update' @ L220
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, false for 'update' @ L195, false for 'update' @ L220, false for 'create' @ L188, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -1447,10 +1447,10 @@ evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:09 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, false for 'update' @ L195, false for 'update' @ L220, false for 'create' @ L188, false for 'create' @ L220
-Sep 24, 2026 11:23:09 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, false for 'update' @ L195, false for 'update' @ L220, false for 'create' @ L188, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -1484,10 +1484,10 @@ evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:09 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, false for 'update' @ L195, false for 'update' @ L220, false for 'create' @ L188, false for 'create' @ L220
-Sep 24, 2026 11:23:09 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, false for 'update' @ L195, false for 'update' @ L220, false for 'create' @ L188, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -1521,10 +1521,10 @@ evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:09 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, false for 'update' @ L195, false for 'update' @ L220, false for 'create' @ L188, false for 'create' @ L220
-Sep 24, 2026 11:23:09 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, false for 'update' @ L195, false for 'update' @ L220, false for 'create' @ L188, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -1558,10 +1558,10 @@ evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:09 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, false for 'update' @ L195, false for 'update' @ L220, false for 'create' @ L188, false for 'create' @ L220
-Sep 24, 2026 11:23:09 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, false for 'update' @ L195, false for 'update' @ L220, false for 'update' @ L195, false for 'update' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -1595,10 +1595,10 @@ evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:09 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, false for 'update' @ L195, false for 'update' @ L220, false for 'update' @ L195, false for 'update' @ L220
-Sep 24, 2026 11:23:09 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, false for 'update' @ L195, false for 'update' @ L220, false for 'create' @ L188, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -1632,10 +1632,10 @@ evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:09 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, false for 'update' @ L195, false for 'update' @ L220, false for 'create' @ L188, false for 'create' @ L220
-Sep 24, 2026 11:23:09 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, false for 'update' @ L195, false for 'update' @ L220, false for 'create' @ L188, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -1669,10 +1669,10 @@ evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:09 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, false for 'update' @ L195, false for 'update' @ L220, false for 'create' @ L188, false for 'create' @ L220
-Sep 24, 2026 11:23:09 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, false for 'update' @ L195, false for 'update' @ L220, false for 'create' @ L188, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -1706,10 +1706,10 @@ evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:09 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, false for 'update' @ L195, false for 'update' @ L220, false for 'create' @ L188, false for 'create' @ L220
-Sep 24, 2026 11:23:09 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
+Sep 24, 2026 11:37:25 AM com.google.cloud.datastore.emulator.impl.util.WrappedStreamObserver onError
 WARNING: Operation failed: 
 evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, false for 'update' @ L195, false for 'update' @ L220, false for 'create' @ L188, false for 'create' @ L220
 com.google.cloud.datastore.core.exception.DatastoreException: 
@@ -1743,7 +1743,7 @@ evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, fals
 	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
 	at java.base/java.lang.Thread.run(Thread.java:1583)
 
-Sep 24, 2026 11:23:09 AM io.gapi.emulators.netty.HttpHandler$1 onError
+Sep 24, 2026 11:37:25 AM io.gapi.emulators.netty.HttpHandler$1 onError
 INFO: Exception when handling request: PERMISSION_DENIED: 
 evaluation error at L188:24 for 'create' @ L188, false for 'create' @ L220, false for 'update' @ L195, false for 'update' @ L220, false for 'create' @ L188, false for 'create' @ L220
 *** shutting down gRPC server since JVM is shutting down

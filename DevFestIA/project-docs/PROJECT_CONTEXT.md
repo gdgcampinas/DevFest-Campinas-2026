@@ -52,8 +52,8 @@ docs/
   index.html, grade.html, palestrantes.html, ingressos.html, time.html,
   patrocinio.html, codigo-de-conduta.html   structure only, no logic (the 7 public pages)
   quiz.html                                 quiz "Monte sua trilha" (public, out of the menu), see "Quiz"
-  checkin-display.html                      internal tool (live QR), not a public page — see "Check-in e avaliação"
-  moderacao.html                            internal tool (moderador de perguntas por sala), see "Perguntas ao vivo"
+  checkin-display.html                      internal tool: QUADRO DA SALA (talk + live approved questions + QR), not a public page — see "Perguntas ao vivo, moderação e quadro da sala"
+  moderacao.html                            internal tool (moderador de perguntas por sala), see "Perguntas ao vivo, moderação e quadro da sala"
   reset-teste.html                          internal tool (clears THIS browser's local test data), not a public page — see "Limpeza dos dados de teste"
   DEV/index.html, DEV/grade.html, ... , DEV/dev-loader.js   DEV shortcut, see "PROD x DEV"
   PROD/index.html                           DEV-exit shortcut, see "PROD x DEV"
@@ -322,16 +322,28 @@ soma maior, empate vai pra trilha que vem primeiro em `TRACKS`.
 - `?trilha=<id>` abre direto o resultado (link de compartilhar/WhatsApp).
 - Testes: `node --test DevFestIA/tools/quiz/quiz.test.js` (roda no CI; confere pesos x trilhas, que toda trilha pode vencer, empate e `pickSpread`).
 
-## Perguntas ao vivo por palestra (sessão 7; ligado, só aparece com o line-up visível: DEV ou depois da revelação)
+## Perguntas ao vivo, moderação e quadro da sala (sessão 7)
 
-Dentro do modal da palestra (slot `.talk-questions-slot`, ao lado do feedback), só com check-in na palestra.
-Chave geral: `TALK_QUESTIONS.enabled` em `data/talk-questions.js` (hoje `true`; também `maxLength` 280, `maxPerPerson` 3 e `pollMs`). As regras precisam estar publicadas, senão o bloco mostra erro de carregamento.
-- Dados (Firestore, mesmo padrão dos outros): `talk-questions` (id `<uid>_<talkKey>#<1..3>`: até 3 perguntas por pessoa por palestra; campos `talkKey`, `text`, `name` obrigatório, `hidden`) e `talk-question-votes` (id `<uid>_<id da pergunta>`: 1 voto por pergunta, sem desfazer; campo `talkKey`). Repositories `talk-questions-repository.js` e `talk-question-votes-repository.js` sobre `createFirestoreRepository`, que ganhou `getWhere(filters)` (devolve `{id, ..., createdAtMs}`) e `update(id, fields)`.
-- `features/question-ranking.js` (dual): `rankQuestions`, mais votadas primeiro, "eu votei"/"é minha" saem do id (uid), sem estado local. Testes: `node --test DevFestIA/tools/questions/questions.test.js` (no CI; também confere que `enabled` nasce `false` e que `maxLength` bate com a regra).
-- `components/talk-questions.js` (markup, tudo com `escapeHtml`) e `features/talk-questions.js` (`initTalkQuestions`, poll de `pollMs` com o modal aberto, sem listener em tempo real: leituras previsíveis no plano grátis), ligado por `initFeedbackFlow`. Dependências injetáveis (`deps()`), com os repositories do Firebase como padrão.
-- Moderação: `moderacao.html?trilha=<id>` (ferramenta interna, `noindex`, fora do sitemap; uma por sala). Mostra a palestra atual da trilha, mais votadas primeiro, "Ocultar/Mostrar". Login com Google só pra moderador (`firebaseClient.signInWithGoogle`); as regras (`isModerator()`) liberam listar ocultas e alterar `hidden` só pra e-mails da lista. Público segue anônimo.
-- Regras em `DevFestIA/firebase/firestore.rules` (colar à mão): lista de moderadores precisa ser preenchida (vazia = ninguém modera); a consulta do público tem que filtrar `hidden == false`.
-- As regras exigem `docId == <uid>_<entryKey>` (`idMatchesEntry`) nas perguntas e nos votos, senão dava pra furar o limite com ids diferentes. Moderador atual: `gdgcampinascontato@gmail.com` (lista em `isModerator()`). Falta: colar as regras e testar contra o banco real (uid novo, chaves de palestra sem documento).
+Um fluxo só, da pergunta ao quadro. Regras do jogo (as do banco, espelhadas na tela):
+- **Só quem fez check-in NA palestra** pergunta e vota; a pergunta fica ligada à palestra pela chave (`talkKey`).
+- **Só do início ao fim da palestra** (limites inclusos): antes, a tela avisa; depois, só leitura. O banco confere pelo relógio do servidor e pelo horário que vem na chave (`talkIsLive` nas regras, duração 40 min = `talkDurationMinutes()`, espelho de `talkMin` do `schedule-builder.js`, com teste que compara). `features/question-window.js` (dual) é o espelho na tela.
+- **Até 10 perguntas por pessoa por palestra** (`maxPerPerson`): espaço `<talkKey>#1..#10`; o id do documento tem que ser `<uid>_<entryKey>` (`idMatchesEntry`), senão dava pra furar o limite.
+- **O moderador aprova antes de ir ao ar.** `status`: `pending` (nasce assim) -> `approved` (aparece pra plateia, no voto e no quadro) | `rejected` | `answered` (sai do quadro). Só e-mail Google verificado da lista em `isModerator()` (hoje `gdgcampinascontato@gmail.com`) muda o `status`. Plateia lista só `approved` (consulta filtra `status == approved`); cada pessoa lista as próprias (`uid == a dela`) e vê o estado de cada uma.
+- **Voto:** 1 por pessoa por pergunta aprovada, só na janela, sem desfazer.
+- **Tudo em `data/talk-questions.js`:** `enabled`, `maxLength` 280, `maxPerPerson`, `pollMs`, `boardPollMs`, `QUESTION_STATUS`. As regras espelham `maxLength`/`maxPerPerson` (testes conferem).
+
+**Três telas, cada uma com um trabalho**
+1. **Modal da palestra no celular** (`components/talk-questions.js`, `features/talk-questions.js`): envia, acompanha o estado das próprias, vota. O QR de check-in (`?checkin=<código>`) agora faz o check-in E abre a própria palestra (`OPEN_TALK_EVENT`, `talk-modal.js`).
+2. **Moderação** (`moderacao.html?trilha=<id>`, interna, uma por sala; `components/question-moderation.js`, `features/question-moderation.js`): login Google; fila para aprovar, no ar, respondidas, rejeitadas; atualiza a cada `boardPollMs`.
+3. **Quadro da sala** (`checkin-display.html?trilha=<id>`, o endereço antigo da tela de QR): TV/tablet, só leitura, sem login. Junta a palestra da sala (título, quem fala, horário, progresso), as perguntas aprovadas (mais votadas primeiro, 6) e os QR (check-in da atual, avaliação da anterior, avaliação do evento). `features/room-board.js` (dual, `resolveRoomBoard`) decide o que mostrar a cada horário; `features/board-questions.js` lê e desenha; `components/room-board.js` é o markup.
+
+**Dados (Firestore):** `talk-questions` (`talkKey`, `uid`, `text`, `name`, `status`) e `talk-question-votes` (`entryKey` = id da pergunta, `talkKey`), via `createFirestoreRepository` (`getWhere`, `update`). `features/question-ranking.js` (dual): `rankQuestions` filtra e ordena por estado. `features/question-slots.js` (dual): primeiro espaço livre.
+
+**Modo ensaio** (`features/rehearsal.js`, `setupRehearsal` em `app.js`): `?ensaio=HH:MM` desloca a grade inteira pra a 1ª palestra começar naquele horário de hoje, liga o modo DEV e mostra a faixa "MODO ENSAIO". Serve pra testar tudo com o banco de verdade em qualquer dia (as regras olham o relógio real e a chave). Todo aparelho do ensaio usa o MESMO horário: os QR do quadro carregam `&ensaio=HH:MM&lineup=1` sozinhos. `?ensaio=0` desliga. Dados de teste saem pelo workflow "Limpar dados de teste" (agora inclui as duas coleções de perguntas).
+
+**Como testar (teste primeiro):**
+- Regras no emulador do Firestore, sem tocar o banco real: `DevFestIA/tools/questions/run-rules-tests.sh` (Java 21 + Firebase CLI; 21 casos: janela, limites, id trocado, moderador, votos). Cliente em `DevFestIA/tools/lib/firestore-emulator.js` (só `node:`). Palestras de teste com horário relativo a agora. Fora do CI (baixa o emulador); rodar sempre que mexer nas regras.
+- Lógica pura no CI: `DevFestIA/tools/questions/questions.test.js`, `DevFestIA/tools/room/*.test.js`.
 
 ## Internacionalização (sessão 7): PT padrão, EN pronto
 
