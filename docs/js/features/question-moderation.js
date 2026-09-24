@@ -1,13 +1,12 @@
 /**
- * Feature: tela do moderador de perguntas (ferramenta interna, uma por sala).
- * Mostra as perguntas da palestra que está rolando na trilha (ou da última
- * que terminou, pra sobrar tempo de responder) com as mais votadas primeiro,
- * e deixa ocultar/mostrar. Só e-mails da lista de moderadores nas regras do
- * Firestore conseguem listar as ocultas e alterar `hidden`; quem entrar com
- * outra conta vê "sem permissão" (a regra é a defesa, a tela só avisa).
+ * Feature: tela do moderador de perguntas (ferramenta interna, uma por sala). É quem decide o que vai ao ar:
+ * mostra as perguntas da palestra que está rolando na trilha (ou da última que terminou, pra dar tempo de
+ * responder) em quatro grupos (fila, no ar, respondidas, rejeitadas) e muda o estado com um toque. Só e-mail Google
+ * da lista de moderadores nas regras do Firestore consegue listar tudo e alterar o `status`; quem entrar com outra
+ * conta vê "sem permissão" (a regra é a defesa, a tela só avisa).
  *
- * Reusa resolveEventState() (mesmo relógio do site), talkKey() e
- * rankQuestions(); tudo por parâmetro (`deps()` dá repositories e login).
+ * Reusa resolveEventState() (mesmo relógio do site), talkKey() e rankQuestions(); tudo por parâmetro (`deps()` dá
+ * repositories e login). Atualiza sozinha a cada `config.boardPollMs`.
  */
 function pickModerationTalk({ schedule, track, now }) {
   const talkSlots = schedule.filter(slot => slot.talks?.[track.id]);
@@ -31,13 +30,13 @@ function initQuestionModeration(rootEl, { schedule, track, config, now = () => n
     const { questions, votes } = deps();
     try {
       const [questionDocs, voteDocs] = await Promise.all([questions.getWhere({ talkKey: talk.key }), votes.getWhere({ talkKey: talk.key })]);
-      draw({ phase: "ready", talkTitle: talk.title, questions: rankQuestions(questionDocs, voteDocs, { includeHidden: true }) });
+      draw({ phase: "ready", talkTitle: talk.title, questions: rankQuestions(questionDocs, voteDocs, { statuses: Object.values(QUESTION_STATUS) }) });
     } catch (error) {
       draw({ phase: "error", message: error.code === "permission-denied" ? "Sem permissão: essa conta não está na lista de moderadores." : "Não foi possível carregar agora. Tentando de novo em instantes." });
     }
   }
 
-  const startPolling = () => { timer = setInterval(refresh, config.pollMs / 2); };
+  const startPolling = () => { timer = setInterval(refresh, config.boardPollMs); };
   const stopPolling = () => clearInterval(timer);
 
   rootEl.addEventListener("click", async event => {
@@ -55,10 +54,10 @@ function initQuestionModeration(rootEl, { schedule, track, config, now = () => n
       email = "";
       refresh();
     } else {
-      const hideBtn = event.target.closest("[data-question-hide]");
-      if (!hideBtn) return;
-      hideBtn.disabled = true;
-      await deps().questions.update(hideBtn.dataset.questionHide, { hidden: hideBtn.dataset.hidden === "1" }).catch(() => {});
+      const setBtn = event.target.closest("[data-question-set]");
+      if (!setBtn) return;
+      setBtn.disabled = true;
+      await deps().questions.update(setBtn.dataset.questionId, { status: setBtn.dataset.questionSet }).catch(() => {});
       refresh();
     }
   });
