@@ -145,6 +145,7 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
     de desenhar: tamanho e proporção do painel, entrada (HDMI de notebook ou navegador), origem das fotos
     ao vivo, arquivo da fênix (mascote em criação: vídeo, sprites ou animação, com som?), quem opera.
     Já dá pra começar pelas cenas que não dependem disso (agora/próximas, QR, números, galáxia).
+11b. **Área administrativa com login** (CRUD de moderadores, palestrantes, patrocinadores...; análise e caminho recomendado em `IDEAS_BACKLOG.md`): começar por moderadores CRUD; depois de fechar perguntas e quadro da sala.
 12. **Internacionalização (PT/EN/ES/FR):** grande, precisa ser desenhada.
 13. Ideias em `IDEAS_BACKLOG.md`: quiz "Monte sua trilha", enquetes/perguntas ao vivo, passaporte com
     QR nos estandes, mural da hashtag, mapa do local, credencial digital, mentorias, votação das salas,
