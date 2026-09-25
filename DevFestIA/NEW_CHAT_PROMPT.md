@@ -72,54 +72,40 @@ verificado, o que depende dele. Armadilhas e como testar: seção "Como
 trabalhar e testar aqui" do handoff (bump de ?v=N, cache do
 schedule.dev.js, painel do app sem service worker, etc.).
 
-ESTADO EM 2026-09-23, fim da sessão 6 (detalhes completos no handoff)
-Site de 7 páginas no ar (main = development, CI verde), mais 2 ferramentas
-internas (`checkin-display.html` por sala e `reset-teste.html`). Tudo grátis, sem
-servidor nosso: Firebase (Firestore + Auth anônimo, plano Spark) guarda check-ins,
-avaliações e o total de inscritos; um job do GitHub Actions lê o Sympla a cada 10 min
-e grava no Firestore. Inscrição é só no Sympla (evento s36cd5d, vendas abertas, 0
-inscritos até agora). Resto do site 100% estático, sem build.
+ESTADO EM 2026-09-25, fim da sessão 7 (detalhes completos no handoff)
+Site de 7 páginas mais quiz, no ar (main = development, CI verde), e ferramentas internas: quadro da sala
+(`checkin-display.html?trilha=<id>`), moderação (`moderacao.html?trilha=<id>`) e `reset-teste.html`. Firebase
+(Firestore + Auth) no plano Spark guarda check-ins, avaliações, perguntas e votos; job do GitHub Actions lê o Sympla.
+Inglês pronto (`?lang=en`). Sessão 7 entregou: chave do Firebase por domínio (Renato), quiz, EN, perguntas ao vivo v2
+(pergunta pendente -> moderador aprova/rejeita/respondida -> votos), moderação, quadro da sala, modo ensaio
+(`?ensaio=agora`), palestra fixada (`?palestra=0900.ia`), emulador local + 21 testes das regras, logins de plateia e
+moderador separados. Trava de horário das perguntas DESLIGADA de propósito (teste em DEV): LIGAR antes do evento.
 
-PROD x DEV (da sessão 5, continua valendo): PROD (público) esconde todo mock
-("será revelado em breve"); DEV é `/DEV/<página>` ou `?lineup=1`; `/PROD/` volta
-ao público. A identidade visual vale nos dois. `?demo=2026-11-28T09:20` simula o horário.
-
-O que a sessão 6 entregou: feedback do evento; cartão "Eu vou!" (canvas, com gate
-opcional por inscrição, hoje DESLIGADO em `EVENT.tickets.registrationGate: false`);
-link real do Sympla; job Sympla -> Firestore com contador de inscritos; feedback v2
-("Minhas palestras" em `?avaliar=1`, aviso "avalie", QR de avaliação na tela da sala,
-estrelas que começam cheias, NOME OBRIGATÓRIO, evento com 6 aspectos e nota 0-10;
-regras do Firestore exigem o check-in e foram testadas no banco real); relatório
-do evento v2; limpeza dos dados de teste (workflow com travas + `reset-teste.html`);
-workflows com ícone; logo novo aplicado (SVG em `docs/assets/brand`, paleta do site
-igual às cores do logo, script `DevFestIA/design/build-brand-assets.sh`); galáxia
-girando no hero da home (presa no card, centrada no "olho" azul+vermelho, gira
-mais devagar com "Reduzir movimento", `?movimento=1` força).
+PRÓXIMO TRABALHO (decidido, teste primeiro em cada etapa; ver "PRÓXIMO TRABALHO" no handoff)
+Motor: pergunta -> moderador autoriza/nega/devolve (volta pra fila) -> votos -> a "na vez" (novo estado `current`).
+Plano B sem TV: página Sala ao vivo no celular (`sala.html`, QR fixo por sala) + tela Palco do moderador. ANTES: redesenho
+da leitura do Firestore (o poll atual estoura as 50 mil leituras/dia do Spark; uma TV sozinha passa de 50 mil numa
+palestra) e a decisão do Blaze como seguro. Aberto: o Renato não conseguia moderar (login Google da moderação, agora com
+sessão própria e erro visível); pedir o que aparece na tela.
 
 PENDÊNCIAS
-Do Renato/organização: dados reais (local, salas/MCs, line-up, patrocinadores,
-time, valores); plenárias (A, B ou C, recomendo B); mensagens do Sympla com os
-links `.../ingressos.html?cartao=1` e `.../index.html?avaliar=1` + QR no
-encerramento; quem monta os tablets das salas.
-Quando houver inscrições: conferir o resumo do "🎫 Sincronizar Sympla" (formato do
-formulário de camiseta e paginação), testar o gate com e-mail real e ligar
-`registrationGate` (só no `schedule.js`: o `schedule.dev.js` é gitignored e local,
-esquecer dele não quebra o site).
-Antes do evento: rodar "🧹 Limpar dados de teste" (simulação, depois de verdade com
-APAGAR, só antes de 28/11 08:00) e `reset-teste.html` nos aparelhos de teste.
-Tasks anotadas, não iniciadas (as duas dependem de DECISÕES do Renato: pergunte antes de
-desenhar): certificado de participação PROFISSIONAL (A4 PDF vetorial, código único e QR
-de validação; decidir quem recebe e carga horária);
-mural do telão de LED (cenas em rodízio, fênix, galáxia; decidir tamanho do painel
-e origem das fotos); internacionalização; demais ideias em `project-docs/IDEAS_BACKLOG.md`.
+Do Renato/organização: dados reais (local, salas/MCs, line-up, patrocinadores, time, valores); plenárias (A, B ou C,
+recomendo B); mensagens do Sympla com os links `.../ingressos.html?cartao=1` e `.../index.html?avaliar=1` + QR no
+encerramento; quem monta os tablets/TVs das salas (ou o plano B com QR impresso); decidir o Blaze.
+Antes do evento: LIGAR a trava de horário das perguntas (regras + `enforceWindow`), rodar "🧹 Limpar dados de teste"
+(simulação, depois APAGAR, só antes de 28/11 08:00) e `reset-teste.html` nos aparelhos de teste; ensaio geral.
+Quando houver inscrições: conferir o resumo do "🎫 Sincronizar Sympla", testar o gate com e-mail real e ligar
+`registrationGate` (só no `schedule.js`).
+Tasks anotadas: certificado profissional (decidir quem recebe e carga horária), mural do telão de LED, área
+administrativa com login (CRUD de moderadores/palestrantes; caminho em `project-docs/IDEAS_BACKLOG.md`),
+internacionalização de ES/FR e do corpo das outras páginas.
 
-ARMADILHAS (leia "Como trabalhar e testar aqui" no handoff antes de agir)
-O HTML no GitHub Pages fica 10 min em cache e o navegador do WhatsApp guarda mais:
-antes de "corrigir" um print, confira com curl o que está publicado. Subir `?v=N`
-em toda página que referencia um arquivo que mudou (e `SW_VERSION` ao trocar
-`/assets/`). Nunca renomear o workflow Validar sem antes o Promote ouvir o nome
-novo. Secrets do Sympla/Firebase nunca no chat. Regras do Firestore são coladas
-à mão no console (`pbcopy < DevFestIA/firebase/firestore.rules`).
+ARMADILHAS (leia "Como trabalhar e testar aqui" e "Armadilhas desta sessão" no handoff antes de agir)
+O HTML no GitHub Pages fica 10 min em cache: confira com curl o que está publicado. `?v=N` tem que ser igual em todas
+as páginas pra cada arquivo. Regras do Firestore são coladas à mão no console (`pbcopy < DevFestIA/firebase/firestore.rules`;
+o Firebase CLI não está logado). Nunca renomear o workflow Validar sem antes o Promote ouvir o nome novo. Secrets nunca
+no chat. Sempre passar links COMPLETOS ao Renato. Testes de ponta a ponta: `DevFestIA/tools/emulator/start.sh` + site com
+`?emulador=1`; regras: `DevFestIA/tools/questions/run-rules-tests.sh` (porta 8085 livre).
 
 DIRETIVA DE ENGAJAMENTO
 Você é parceiro técnico do projeto, não executor passivo.

@@ -333,6 +333,8 @@ Um fluxo só, da pergunta ao quadro. Regras do jogo (as do banco, espelhadas na 
 - **Voto:** 1 por pessoa por pergunta aprovada, só na janela, sem desfazer.
 - **Tudo em `data/talk-questions.js`:** `enabled`, `maxLength` 280, `maxPerPerson`, `pollMs`, `boardPollMs`, `QUESTION_STATUS`. As regras espelham `maxLength`/`maxPerPerson` (testes conferem).
 
+**Decidido, ainda não implementado (ver handoff "PRÓXIMO TRABALHO"):** "devolver" = a pergunta volta pra fila (`pending`); "escolhida" = as mais votadas sobem e o moderador marca a "na vez" (`current`); plano B sem TV = página Sala ao vivo no celular com QR fixo por sala + tela Palco do moderador; e o redesenho da leitura pra caber nas 50 mil leituras/dia do Spark (documento único por palestra, contagem agregada só na TV/moderação).
+
 **Três telas, cada uma com um trabalho**
 1. **Modal da palestra no celular** (`components/talk-questions.js`, `features/talk-questions.js`): envia, acompanha o estado das próprias, vota. O QR de check-in (`?checkin=<código>`) agora faz o check-in E abre a própria palestra (`OPEN_TALK_EVENT`, `talk-modal.js`).
 2. **Moderação** (`moderacao.html?trilha=<id>`, interna, uma por sala; `components/question-moderation.js`, `features/question-moderation.js`): login Google; fila para aprovar, no ar, respondidas, rejeitadas; atualiza a cada `boardPollMs`.

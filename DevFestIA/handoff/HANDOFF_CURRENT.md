@@ -1,6 +1,6 @@
 # Handoff — Current State
 
-**Last updated:** 2026-09-23, fim da sessão 6. Antes de confiar neste texto, rode
+**Last updated:** 2026-09-25, fim da sessão 7. Antes de confiar neste texto, rode
 `git status --short --branch` e `git log --oneline --decorate -10` (o git não mente).
 
 ## Status em uma olhada
@@ -20,17 +20,29 @@
 - **Workflows no GitHub Actions** (com ícone): ✅ Validar, 🚀 Publicar no main, 🎫 Sincronizar Sympla
   (cron 10 min), 📊 Relatório do evento (sob demanda + 30 min em 28/11), 🧹 Limpar dados de teste
   (sob demanda, com travas). Secrets no repositório: `SYMPLA_TOKEN`, `FIREBASE_SERVICE_ACCOUNT`.
-- **Estado do git ao fechar a sessão 6:** `development` = `main` = `origin/*` (tudo commitado, no ar).
+- **Estado do git ao fechar a sessão 7:** `development` = `main` = `origin/*` (tudo commitado e no ar, último commit `1f695e5`). Dados de TESTE ficaram no Firestore de verdade (check-ins, perguntas "TESTE"/"Teste testes"): limpar com o workflow antes do evento.
 
-## Sessão 7 (2026-09-24), em andamento
-Plano autorizado (sem o certificado, que segue aguardando decisões): 1) chave do Firebase por domínio
-(passo a passo pro Renato), 2) quiz "Monte sua trilha" (**feito**, ver PROJECT_CONTEXT "Quiz"),
-3) perguntas por palestra **refeitas** (moderador aprova antes, só durante a palestra, até 10 por pessoa, quadro da sala, modo ensaio; ver PROJECT_CONTEXT "Perguntas ao vivo, moderação e quadro da sala"). **Falta o Renato colar as regras novas** (`pbcopy < DevFestIA/firebase/firestore.rules`, console Firebase > Firestore > Regras > Publicar) e o **ensaio ao vivo** com celular + TV + tablet do moderador (roteiro abaixo), 4) i18n: **feito para EN** (ver PROJECT_CONTEXT "Internacionalização"; PT segue padrão, seletor PT|EN no cabeçalho, conferidor no CI; ES/FR = só um dicionário novo;
-falta traduzir o corpo de Palestrantes/Time/Patrocínio/Código de Conduta e o conteúdo do line-up quando for real, e alguém nativo revisar o EN).
-Cada item = um commit, docs atualizados.
+## Sessão 7 (2026-09-24/25): o que foi feito
 
-**Roteiro do ensaio das perguntas (com o banco de verdade):** 1) escolher um horário daqui a 5 min, ex. 14:30; 2) TV/tablet da sala: `.../checkin-display.html?trilha=ia&ensaio=14:30`; 3) tablet do moderador: `.../moderacao.html?trilha=ia&ensaio=14:30` (entra com o Google da lista); 4) celular: escanear o QR da TV (já traz o ensaio), fazer o check-in, mandar perguntas, ver "aguardando o moderador"; 5) moderador aprova; a pergunta aparece na TV e no celular; votar; 6) depois do fim (40 min) o formulário fecha; 7) apagar os dados de teste: workflow "🧹 Limpar dados de teste" (simulação e depois APAGAR).
-Regras: `DevFestIA/tools/questions/run-rules-tests.sh` roda 21 testes no emulador (Java 21 já instalado via brew).
+1. **Chave do Firebase restrita por domínio** (feito pelo Renato no Google Cloud: `gdgcampinas.github.io`, `localhost:8080`, `devfest-campinas.firebaseapp.com`). Login Google ativado e domínio autorizado.
+2. **Quiz "Monte sua trilha"** (`quiz.html`, CTA na home; PROD só trilha, DEV/revelado sugere 3 palestras e adiciona à Minha agenda).
+3. **Inglês** (`?lang=en`, seletor PT|EN, PT continua padrão no código, conferidor no CI, ES/FR = só um dicionário novo).
+4. **Perguntas ao vivo v2, moderação e quadro da sala** (ver PROJECT_CONTEXT "Perguntas ao vivo, moderação e quadro da sala"): pergunta nasce `pending`, moderador aprova/rejeita/marca respondida, até 10 por pessoa, só com check-in, voto só em aprovada; `moderacao.html`, quadro da sala (`checkin-display.html`, antiga tela de QR), modo ensaio (`?ensaio=agora|HH:MM`), palestra fixada (`?palestra=0900.ia`), QR de check-in abre a palestra no celular.
+5. **Testes de verdade sem tocar o banco:** emulador local (`DevFestIA/tools/emulator/start.sh`, site com `?emulador=1`) e 21 casos das regras (`DevFestIA/tools/questions/run-rules-tests.sh`, roda com a trava de horário ligada e como está no arquivo). O emulador guarda os dados sob o projeto `devfest-campinas`.
+6. **Logins separados:** plateia (anônimo) e moderador (Google) são apps Firebase diferentes (`window.firebaseClient` / `window.moderatorClient`), pra entrar como moderador não trocar a identidade da plateia no mesmo navegador; se o banco recusar por check-in ausente o site refaz o check-in e tenta de novo.
+7. **Trava de horário das perguntas: DESLIGADA de propósito (teste em DEV).** Interruptor em dois lugares que precisam ficar iguais: `windowEnforced()` em `firestore.rules` e `enforceWindow` em `docs/js/data/talk-questions.js` (um teste confere). **LIGAR antes do evento** (checklist C, item 0).
+8. **Task anotada:** área administrativa com login (CRUD de moderadores, palestrantes...), análise em `project-docs/IDEAS_BACKLOG.md` (caminho recomendado: admin grava no Firestore + job exporta JSON; começar por moderadores CRUD).
+
+## PRÓXIMO TRABALHO (decidido com o Renato, fazer nesta ordem, teste primeiro em cada etapa)
+**Motor das perguntas:** pessoa pergunta -> moderador autoriza, nega ou **devolve (a pergunta volta pra fila, `pending`)** -> pessoas votam -> pergunta é escolhida: as mais votadas sobem e o moderador/MC marca a que está **"na vez"** (novo estado `current`, aparece grande pra todos, sai quando marcarem "respondida").
+**Plano B sem TV:** página **Sala ao vivo** no celular (`sala.html?trilha=ia`) que descobre a palestra do momento pelo relógio (reusa `resolveRoomBoard`): check-in e perguntar, perguntas autorizadas com votar, a que está na vez, "Avaliar a palestra anterior". **Um QR fixo por sala** (4 cartazes + slide de abertura de cada palestrante). Tela **Palco** do moderador (pergunta na vez grande, próximas mais votadas, aviso da fila, "Respondida, próxima"/"Pular"). A TV vira extra.
+1. Modelo: estado `current` e "devolver" (regras + testes no emulador + UI da moderação).
+2. **Redesenho da leitura (custo!)**: hoje o poll relê perguntas + TODOS os votos a cada 15 s (celular) e 5 s (TV): uma TV sozinha passa de 50 mil leituras numa palestra (limite do Spark = 50 mil/dia). Plano: documento único por palestra (`talk-boards/<talkKey>`, escrito só pelo moderador na mesma operação que aprova) que plateia e TV escutam (`onSnapshot`); contagem de votos só no quadro/moderação por consulta agregada a cada 30-60 s (só as 6 mais votadas); celular mostra só "Votar/Votado" sem placar ao vivo (decisão pendente do Renato: aceitar); minhas perguntas só escuta quem já perguntou; ouvir só com o modal aberto; teste de orçamento de leituras com repositórios falsos. **Decisão pendente: migrar pro Blaze** (mesmas 50 mil grátis, sem travar; alerta de orçamento) como seguro.
+3. Página Sala ao vivo (plano B). 4. Tela Palco. 5. Cartazes/QR fixo por sala + slide. 6. Ensaio geral com celular sem TV e depois com TV.
+
+**Aberto agora:** o Renato relatou "não consigo moderar" em `moderacao.html?trilha=ia&palestra=0900.ia`. A moderação agora tem sessão de login própria (precisa entrar com o Google de novo uma vez) e mostra o código do erro de login na tela (`auth/popup-blocked`, "Sem permissão" = e-mail fora da lista ou regras antigas...). Falta ele dizer o que aparece. No emulador o fluxo inteiro funciona (aprovar, rejeitar, respondida, reaprovar, login retomado).
+
+**Armadilhas desta sessão:** (a) `?v=` por arquivo precisa ser IGUAL em todas as páginas que o referenciam, senão o cache serve arquivo velho (já houve páginas com número desatualizado); (b) `?ensaio=` fica guardado na aba (sessionStorage): use `?ensaio=0&emulador=0` pra limpar antes de testar outra coisa; (c) o Firebase MCP daqui aponta pra outro projeto e o Firebase CLI não está logado: **regras do Firestore continuam sendo coladas à mão** (`pbcopy < DevFestIA/firebase/firestore.rules`), e o Renato já publicou a versão com a trava de horário desligada; (d) `run-rules-tests.sh` precisa da porta 8085 livre (pare o `start.sh` antes); os testes do emulador NÃO rodam no CI (baixam o emulador); (e) apagar IndexedDB do Firebase com outra aba aberta na mesma origem trava o login (`deleteDatabase` fica bloqueado); (f) testes que gravam no banco de verdade deixam dados: rodar 🧹 Limpar dados de teste (agora inclui `talk-questions` e `talk-question-votes`) antes do evento.
 
 ## Sessão 6: tudo que foi feito (2026-09-23)
 
