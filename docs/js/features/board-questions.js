@@ -1,38 +1,49 @@
 /**
- * Feature: perguntas aprovadas no quadro da sala. Segue UMA palestra por vez (a que o quadro mostra) e a cada
- * `config.boardPollMs` lê as perguntas aprovadas e os votos, ordena (mais votadas primeiro) e mostra as `limit`
- * primeiras. Só leitura, sem login: usa o login anônimo do site, e as regras do Firestore já deixam qualquer pessoa
- * autenticada listar as aprovadas. Se a leitura falhar, mantém a última lista e avisa.
+ * Feature: perguntas aprovadas no quadro da sala. Segue UMA palestra por vez (a que o quadro mostra) e escuta o documento
+ * do quadro dela (`talk-boards/<talkKey>`, escrito pela tela do moderador, ver board-publisher.js) com listener: cada mudança
+ * de ordem custa 1 leitura, e não uma consulta repetida de perguntas e votos (que numa TV ligada o dia todo estouraria o plano
+ * grátis). Mostra as `limit` primeiras. Só leitura, sem login: usa o login anônimo do site. Se a leitura falhar, mantém a
+ * última lista e avisa.
  *
  * `follow({ mountEl, key, phase })` diz onde desenhar, qual palestra seguir e se as perguntas ainda estão abertas;
  * `follow(null)` para (sem palestra na sala). Chamar de novo com o mesmo `key` (a tela foi redesenhada) só troca o
- * `mountEl`. Tudo por parâmetro: `config` (data/talk-questions.js), `deps()` ({ questions, votes, getUid }) e `whenReady`
- * (roda a primeira leitura só depois dos módulos do Firebase, ver runAfterModules em app.js).
+ * `mountEl`. Tudo por parâmetro: `deps()` ({ boards, getUid }) e `whenReady` (só liga o listener depois dos módulos do
+ * Firebase, ver runAfterModules em app.js).
  */
-function createBoardQuestions({ config, deps = defaultBoardDeps, limit = 6, whenReady = runAfterModules }) {
+function createBoardQuestions({ deps = defaultBoardDeps, limit = 6, whenReady = runAfterModules }) {
   let target = null;
-  let timer = null;
+  let stopListening = null;
   let lastQuestions = [];
 
   function draw(offline = false) {
     if (target) target.mountEl.innerHTML = boardQuestionsMarkup({ questions: lastQuestions, phase: target.phase, offline });
   }
 
-  async function refresh() {
-    if (!target) return;
-    const { key } = target;
-    const { questions, votes, getUid } = deps();
+  function stop() {
+    stopListening?.();
+    stopListening = null;
+    lastQuestions = [];
+  }
+
+  async function listenTo(key) {
+    const { boards, getUid } = deps();
     try {
       await getUid();
-      const [approved, voteDocs] = await Promise.all([
-        questions.getWhere({ talkKey: key, status: QUESTION_STATUS.approved }),
-        votes.getWhere({ talkKey: key }),
-      ]);
-      if (target?.key !== key) return; // a sala já passou pra outra palestra enquanto lia
-      lastQuestions = rankQuestions(approved, voteDocs).slice(0, limit);
-      draw();
+      if (target?.key !== key) return; // a sala já passou pra outra palestra enquanto entrava
+      stopListening = boards.listen(
+        key,
+        board => {
+          if (target?.key !== key) return;
+          lastQuestions = (board?.questions ?? []).slice(0, limit);
+          draw();
+        },
+        error => {
+          console.warn("[quadro da sala] não consegui ler as perguntas:", error);
+          draw(true);
+        }
+      );
     } catch (error) {
-      console.warn("[quadro da sala] não consegui ler as perguntas:", error);
+      console.warn("[quadro da sala] não consegui entrar:", error);
       draw(true);
     }
   }
@@ -40,16 +51,12 @@ function createBoardQuestions({ config, deps = defaultBoardDeps, limit = 6, when
   function follow(next) {
     const sameTalk = next && target && next.key === target.key;
     target = next;
-    if (!next) {
-      clearInterval(timer);
-      timer = null;
-      lastQuestions = [];
-      return;
+    if (!next) return stop();
+    if (!sameTalk) {
+      stop();
+      whenReady(() => listenTo(next.key)); // os repositories do Firebase são módulos: só existem depois do carregamento da página
     }
-    if (!sameTalk) lastQuestions = [];
     draw();
-    if (!sameTalk) whenReady(refresh); // os repositories do Firebase são módulos: só existem depois do carregamento da página
-    if (!timer) timer = setInterval(refresh, config.boardPollMs);
   }
 
   return { follow };
@@ -58,8 +65,7 @@ function createBoardQuestions({ config, deps = defaultBoardDeps, limit = 6, when
 /** Padrão de produção: os repositories do Firebase (módulos, só existem depois do carregamento). */
 function defaultBoardDeps() {
   return {
-    questions: window.talkQuestionsRepository,
-    votes: window.talkQuestionVotesRepository,
+    boards: window.talkBoardsRepository,
     getUid: () => window.firebaseClient.ensureAnonymousUid(),
   };
 }

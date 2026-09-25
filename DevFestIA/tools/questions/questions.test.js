@@ -11,23 +11,24 @@ const vm = require("node:vm");
 
 const root = path.join(__dirname, "..", "..", "..");
 const { rankQuestions } = require(path.join(root, "docs/js/features/question-ranking.js"));
+const { buildBoardSnapshot } = require(path.join(root, "docs/js/features/board-snapshot.js"));
+const { createBoardPublisher, approvedSignature } = require(path.join(root, "docs/js/features/board-publisher.js"));
 const { questionWindowState } = require(path.join(root, "docs/js/features/question-window.js"));
 const { questionEntryKey, firstFreeQuestionSlot } = require(path.join(root, "docs/js/features/question-slots.js"));
 
 const question = (id, createdAtMs, extra = {}) => ({ id, text: id, name: "x", createdAtMs, status: "approved", ...extra });
-const vote = (uid, questionId) => ({ id: `${uid}_${questionId}`, entryKey: questionId });
 
 test("ranking: só as aprovadas por padrão; mais votadas primeiro; empate pela mais antiga", () => {
   const ranked = rankQuestions(
     [question("a_t", 1), question("b_t", 2), question("c_t", 3), question("p_t", 0, { status: "pending" }), question("r_t", 0, { status: "rejected" })],
-    [vote("u1", "c_t"), vote("u2", "c_t"), vote("u1", "b_t"), vote("u2", "b_t")]
+    { c_t: 2, b_t: 2 }
   );
   assert.deepStrictEqual(ranked.map(item => item.id), ["b_t", "c_t", "a_t"]);
   assert.deepStrictEqual(ranked.map(item => item.votes), [2, 2, 0]);
 });
 
-test("ranking: voted e mine saem do id (uid), sem estado local", () => {
-  const ranked = rankQuestions([question("me_t", 1), question("other_t", 2)], [vote("me", "other_t")], { myUid: "me" });
+test("ranking: voted vem dos votos guardados neste navegador e mine sai do id (uid)", () => {
+  const ranked = rankQuestions([question("me_t", 1), question("other_t", 2)], {}, { myUid: "me", votedIds: new Set(["other_t"]) });
   const byId = Object.fromEntries(ranked.map(item => [item.id, item]));
   assert.strictEqual(byId.me_t.mine, true);
   assert.strictEqual(byId.other_t.mine, false);
@@ -36,7 +37,7 @@ test("ranking: voted e mine saem do id (uid), sem estado local", () => {
 });
 
 test("ranking: uid que é prefixo de outro não confunde a autoria", () => {
-  assert.strictEqual(rankQuestions([question("abc_t", 1)], [], { myUid: "ab" })[0].mine, false);
+  assert.strictEqual(rankQuestions([question("abc_t", 1)], {}, { myUid: "ab" })[0].mine, false);
 });
 
 test("ranking: tela do moderador (todos os estados) agrupa por estado na ordem pedida; pendentes da mais antiga pra mais nova", () => {
@@ -45,12 +46,12 @@ test("ranking: tela do moderador (todos os estados) agrupa por estado na ordem p
     question("pe_novo_t", 9, { status: "pending" }), question("pe_velho_t", 2, { status: "pending" }),
     question("ans_t", 1, { status: "answered" }), question("rej_t", 1, { status: "rejected" }),
   ];
-  const ranked = rankQuestions(questions, [vote("u", "ap2_t")], { statuses: ["pending", "approved", "answered", "rejected"] });
+  const ranked = rankQuestions(questions, { ap2_t: 1 }, { statuses: ["pending", "approved", "answered", "rejected"] });
   assert.deepStrictEqual(ranked.map(item => item.id), ["pe_velho_t", "pe_novo_t", "ap2_t", "ap1_t", "ans_t", "rej_t"]);
 });
 
 test("ranking: sem uid ninguém é dono nem votou", () => {
-  const [item] = rankQuestions([question("a_t", 1)], [vote("u", "a_t")]);
+  const [item] = rankQuestions([question("a_t", 1)], { a_t: 1 });
   assert.strictEqual(item.mine, false);
   assert.strictEqual(item.voted, false);
   assert.strictEqual(item.votes, 1);
@@ -118,4 +119,74 @@ test("regras: o id do documento tem que ser <uid>_<entryKey> nas perguntas e nos
     const block = rules.slice(rules.indexOf(`match /${name}/`));
     assert.ok(block.slice(0, block.indexOf("allow update")).includes("idMatchesEntry(docId)"), `${name}: falta idMatchesEntry`);
   });
+});
+
+// ---------- quadro público da palestra ----------
+test("quadro: só as aprovadas, na ordem dos votos, sem número de votos por padrão", () => {
+  const questions = [question("a_t", 1), question("b_t", 2), question("p_t", 0, { status: "pending" })];
+  assert.deepStrictEqual(buildBoardSnapshot(questions, { b_t: 3 }), { questions: [{ id: "b_t", text: "b_t", name: "x" }, { id: "a_t", text: "a_t", name: "x" }] });
+  assert.deepStrictEqual(buildBoardSnapshot(questions, { b_t: 3 }, { includeVotes: true }).questions.map(item => item.votes), [3, 0]);
+});
+
+/** Repositories falsos que contam leituras (uma consulta de contagem = 1 leitura) e gravações. */
+function fakeBoardWorld(counts) {
+  const world = { reads: 0, writes: 0, counts };
+  world.votes = { countWhere: async ({ entryKey }) => { world.reads++; return world.counts[entryKey] ?? 0; } };
+  world.boards = { set: async () => { world.writes++; } };
+  return world;
+}
+
+test("publicador: só regrava o quadro quando a ordem muda (votos que não mudam a ordem não custam nada pra plateia)", async () => {
+  const world = fakeBoardWorld({ a_t: 1, b_t: 5 });
+  const publisher = createBoardPublisher({ talkKey: "k", votes: world.votes, boards: world.boards });
+  const questions = [question("a_t", 1), question("b_t", 2)];
+  await publisher.publish(questions);
+  assert.equal(world.writes, 1);
+  world.counts = { a_t: 1, b_t: 9 }; // mais votos, mesma ordem
+  await publisher.publish(questions);
+  assert.equal(world.writes, 1);
+  world.counts = { a_t: 10, b_t: 9 }; // a ordem virou
+  await publisher.publish(questions);
+  assert.equal(world.writes, 2);
+  await publisher.publish([...questions, question("c_t", 3)]); // pergunta nova aprovada
+  assert.equal(world.writes, 3);
+});
+
+test("publicador: com publishVotes ligado o quadro regrava a cada voto novo", async () => {
+  const world = fakeBoardWorld({ a_t: 1 });
+  const publisher = createBoardPublisher({ talkKey: "k", votes: world.votes, boards: world.boards, includeVotes: true });
+  await publisher.publish([question("a_t", 1)]);
+  world.counts = { a_t: 2 };
+  await publisher.publish([question("a_t", 1)]);
+  assert.equal(world.writes, 2);
+});
+
+test("publicador: assinatura das aprovadas muda ao aprovar, rejeitar ou reabrir", () => {
+  const base = [question("a_t", 1), question("b_t", 2, { status: "pending" })];
+  const before = approvedSignature(base);
+  assert.notEqual(approvedSignature([base[0], { ...base[1], status: "approved" }]), before);
+  assert.notEqual(approvedSignature([{ ...base[0], status: "rejected" }, base[1]]), before);
+  assert.equal(approvedSignature([base[0], { ...base[1], text: "outro texto" }]), before);
+});
+
+test("orçamento de leituras: uma palestra cheia cabe no plano grátis (50 mil leituras por dia)", async () => {
+  const cfg = config();
+  const talksPerDay = 36;
+  const phonesListening = 120; // celulares com o modal aberto durante a palestra, por sala (mais que o esperado)
+  const talkMinutes = 40;
+  const world = fakeBoardWorld({});
+  const publisher = createBoardPublisher({ talkKey: "k", votes: world.votes, boards: world.boards, includeVotes: cfg.publishVotes });
+  const questions = Array.from({ length: 12 }, (_, i) => question(`q${i}_t`, i));
+  const askersShare = 0.1; // só quem já perguntou relê as próprias perguntas
+  let listenerReads = phonesListening; // cada celular lê o quadro uma vez ao abrir
+  for (let minute = 0; minute * 60000 < talkMinutes * 60000; minute += cfg.boardPublishMs / 60000) {
+    // votos entrando: a cada ciclo, mais votos (um deles vira a ordem de vez em quando)
+    questions.forEach((item, i) => { world.counts[item.id] = (world.counts[item.id] ?? 0) + (i === minute % 12 ? 3 : 1); });
+    const before = world.writes;
+    await publisher.publish(questions);
+    listenerReads += (world.writes - before) * phonesListening; // 1 leitura por celular por regravação
+  }
+  const perTalk = world.reads + listenerReads + Math.round(phonesListening * askersShare) * 3; // + as próprias perguntas de quem perguntou (até 3)
+  const perDay = perTalk * talksPerDay;
+  assert.ok(perDay < 50000, `estimativa de ${perDay} leituras/dia passa do limite grátis (50000): ${JSON.stringify({ moderatorCounts: world.reads, boardWrites: world.writes, listenerReads })}`);
 });

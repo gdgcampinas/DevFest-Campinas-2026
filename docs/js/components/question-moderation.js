@@ -48,5 +48,5 @@ function questionModerationMarkup({ phase, trackLabel, talkTitle = "", questions
   const account = `<p class="mod-account">${escapeHtml(email)} <button type="button" class="chip-btn" data-mod-signout>Sair</button></p>`;
   if (phase === "empty") return `${head}${account}<p class="mod-hint">${message}</p>`;
   if (phase === "error") return `${head}${account}<p class="talk-feedback-error" role="alert">${message}</p>`;
-  return `${head}${account}<h2 class="mod-talk">${escapeHtml(talkTitle)}</h2>${MODERATION_SECTIONS.map(section => moderationSectionMarkup(section, questions)).join("")}`;
+  return `${head}${account}<h2 class="mod-talk">${escapeHtml(talkTitle)}</h2>${message ? `<p class="talk-feedback-error" role="alert">${message}</p>` : ""}${MODERATION_SECTIONS.map(section => moderationSectionMarkup(section, questions)).join("")}`;
 }

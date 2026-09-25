@@ -19,8 +19,9 @@ function roomTalkHeaderMarkup({ track, talk, timezone }) {
 }
 
 function boardQuestionMarkup(question) {
-  return `<li class="cd-question">
-    <span class="cd-question-votes">${question.votes}<small>${question.votes === 1 ? "voto" : "votos"}</small></span>
+  const hasVotes = typeof question.votes === "number"; // só com o quadro publicando votos (config publishVotes)
+  return `<li class="cd-question${hasVotes ? "" : " cd-question--no-votes"}">
+    ${hasVotes ? `<span class="cd-question-votes">${question.votes}<small>${question.votes === 1 ? "voto" : "votos"}</small></span>` : ""}
     <div><p class="cd-question-text">${escapeHtml(question.text)}</p><p class="cd-question-author">${escapeHtml(question.name)}</p></div>
   </li>`;
 }

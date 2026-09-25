@@ -25,7 +25,7 @@ function initCheckinDisplay_page() {
 
   const questionsConfig = talkQuestionsConfigRepository.getAll();
   initCheckinDisplay(document.getElementById("cdScreen"), {
-    boardQuestions: questionsConfig.enabled ? createBoardQuestions({ config: questionsConfig }) : null,
+    boardQuestions: questionsConfig.enabled ? createBoardQuestions({}) : null,
     extraQuery: rehearsal.query,
     pinnedCode: getParam("palestra"),
     schedule: SCHEDULE,

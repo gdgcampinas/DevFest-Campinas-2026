@@ -26,6 +26,8 @@ function toValue(value) {
   if (typeof value === "boolean") return { booleanValue: value };
   if (Number.isInteger(value)) return { integerValue: String(value) };
   if (value instanceof Date) return { timestampValue: value.toISOString() };
+  if (Array.isArray(value)) return { arrayValue: { values: value.map(toValue) } };
+  if (typeof value === "object") return { mapValue: { fields: toFields(value) } };
   throw new Error(`valor não suportado: ${value}`);
 }
 const toFields = data => Object.fromEntries(Object.entries(data).map(([key, value]) => [key, toValue(value)]));
@@ -50,14 +52,15 @@ async function call(as, url, body) {
 const documentName = (collection, id) => `projects/${PROJECT}/databases/(default)/documents/${collection}/${id}`;
 
 /**
- * Grava o documento como o site faz (setDoc): campos do `data` + `createdAt` com o horário do servidor (REQUEST_TIME).
+ * Grava o documento como o site faz (setDoc): campos do `data` + um campo com o horário do servidor (REQUEST_TIME):
+ * `createdAt` por padrão, ou o que `stamp` disser (o quadro da palestra usa `updatedAt`).
  * Sem pré-condição: se o documento já existir, as regras enxergam um update (e recusam), igual ao SDK.
  */
-function createDoc(as, collection, id, data) {
+function createDoc(as, collection, id, data, { stamp = "createdAt" } = {}) {
   return call(as, endpoint(":commit"), {
     writes: [{
       update: { name: documentName(collection, id), fields: toFields(data) },
-      updateTransforms: [{ fieldPath: "createdAt", setToServerValue: "REQUEST_TIME" }],
+      updateTransforms: [{ fieldPath: stamp, setToServerValue: "REQUEST_TIME" }],
     }],
   });
 }
@@ -73,7 +76,7 @@ function updateDoc(as, collection, id, data) {
   });
 }
 
-const getDoc = (as, collection, id) => call(as, endpoint(`/${collection}/${id}`));
+const getDoc = (as, collection, id) => call(as, endpoint(`/${collection}/${encodeURIComponent(id)}`)); // o id tem `|` e `#` (chave da palestra)
 
 /** Consulta por igualdade ({campo: valor}), como getWhere() do site. Devolve os ids em `ids`. */
 async function query(as, collection, filters) {

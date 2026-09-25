@@ -16,6 +16,8 @@ function initFeedbackFlow({
   now = resolveNow(),
   myCheckins = myCheckinsRepository,
   myRatings = myRatingsRepository,
+  myVotes = myVotesRepository,
+  myAsked = myAskedRepository,
   myName = myNameRepository,
   form = eventFeedbackFormRepository.getAll(),
   questionsConfig = talkQuestionsConfigRepository.getAll(),
@@ -26,7 +28,7 @@ function initFeedbackFlow({
   const feedback = initTalkFeedback(document.body, { index, reveal, now, myCheckins, myRatings, myName });
   const eventFeedback = initEventFeedback(document.body, { form, myRatings, myName, now, endsAt });
   if (!reveal) return { feedback, eventFeedback };
-  const questions = initTalkQuestions(document.body, { index, config: questionsConfig, myCheckins, myName, now, ensureCheckin: feedback.checkin });
+  const questions = initTalkQuestions(document.body, { index, config: questionsConfig, myCheckins, myVotes, myAsked, myName, now, ensureCheckin: feedback.checkin });
 
   const myTalks = initMyTalks({ rootEl: document.body, index, feedback, eventFeedback, myCheckins, myRatings, createModal, timezone: event.timezone });
   initFeedbackNudge({ index, myCheckins, myRatings, now, endsAt, onOpen: myTalks.open });

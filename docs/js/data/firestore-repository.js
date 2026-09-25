@@ -13,11 +13,15 @@
  * primeiro — é isso que trava "1 registro por pessoa por entrada",
  * não uma checagem no cliente (que dá pra burlar).
  */
-import { collection, doc, setDoc, getDoc, getDocs, updateDoc, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+import { collection, doc, setDoc, getDoc, getDocs, getCountFromServer, onSnapshot, updateDoc, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
 function createFirestoreRepository({ db, collectionName, edition }) {
   const col = () => collection(db, collectionName);
   const docId = (uid, entryKey) => `${uid}_${entryKey}`;
+  /** Consulta desta edição por igualdade ({campo: valor}); um valor em array vira "in" (até 30 itens). */
+  const filteredQuery = filters => query(col(), where("edition", "==", edition), ...Object.entries(filters).map(([field, value]) => (Array.isArray(value) ? where(field, "in", value) : where(field, "==", value))));
+  /** Documento do Firestore no formato do site: { id, ...dados, createdAtMs }. */
+  const toItem = snapshot => ({ id: snapshot.id, ...snapshot.data(), createdAtMs: snapshot.data().createdAt?.toMillis?.() ?? 0 });
 
   return createRepository(null, {
     /**
@@ -52,9 +56,18 @@ function createFirestoreRepository({ db, collectionName, edition }) {
      * já restringe do jeito que ela exige (ver firestore.rules).
      */
     async getWhere(filters = {}) {
-      const constraints = [where("edition", "==", edition), ...Object.entries(filters).map(([field, value]) => where(field, "==", value))];
-      const snap = await getDocs(query(col(), ...constraints));
-      return snap.docs.map(d => ({ id: d.id, ...d.data(), createdAtMs: d.data().createdAt?.toMillis?.() ?? 0 }));
+      return (await getDocs(filteredQuery(filters))).docs.map(toItem);
+    },
+    /**
+     * Mesma consulta de getWhere, mas fica ligada: `onNext(itens)` roda agora e a cada mudança; devolve a função que desliga.
+     * Custa 1 leitura por documento que muda (mais os do primeiro envio), não por consulta repetida: é o que cabe no plano grátis.
+     */
+    listen(filters, onNext, onError) {
+      return onSnapshot(filteredQuery(filters), snapshot => onNext(snapshot.docs.map(toItem)), onError);
+    },
+    /** Quantos documentos casam com `filters`, contados no servidor (1 leitura por até 1000 documentos, não um por documento). */
+    async countWhere(filters = {}) {
+      return (await getCountFromServer(filteredQuery(filters))).data().count;
     },
     /** Atualiza campos de um documento por id; só passa se a regra permitir (hoje: moderação ocultar pergunta). */
     async update(id, fields) {

@@ -166,13 +166,14 @@ service cloud.firestore {
     }
 
     // Perguntas ao vivo por palestra. Fila de aprovação: a pergunta nasce "pending"; só o moderador muda o
-    // estado (approved, rejected, answered). A plateia lista só as "approved" (a consulta precisa filtrar
-    // status == approved) e cada pessoa lista as próprias (consulta filtrando uid == a dela).
+    // estado (approved, rejected, answered). A plateia NÃO lista as aprovadas (lê o quadro `talk-boards`, um documento
+    // por palestra: 1 leitura em vez de uma consulta por celular); cada pessoa lista só as próprias (consulta filtrando
+    // uid == a dela) e o moderador lista tudo.
     // Limite de texto: ESPELHAR `maxLength` de docs/js/data/talk-questions.js (280 = "size() < 281").
     match /talk-questions/{docId} {
       allow get: if request.auth != null;
       allow list: if request.auth != null
-        && (isModerator() || resource.data.status == 'approved' || resource.data.uid == request.auth.uid);
+        && (isModerator() || resource.data.uid == request.auth.uid);
       allow create: if isOwnDoc(docId) && idMatchesEntry(docId) && hasValidBaseFields()
         && request.resource.data.keys().hasOnly(['edition', 'entryKey', 'talkKey', 'uid', 'createdAt', 'text', 'name', 'status'])
         && request.resource.data.uid == request.auth.uid
@@ -189,10 +190,11 @@ service cloud.firestore {
     }
 
     // Votos nas perguntas: 1 por pessoa por pergunta (id "<uid>_<id da pergunta>"), sem desfazer. Só em pergunta
-    // aprovada, da mesma palestra, com check-in e durante a palestra.
+    // aprovada, da mesma palestra, com check-in e durante a palestra. Só o moderador lista/conta (o quadro público
+    // não traz o placar por padrão, e ninguém baixa os votos de todo mundo).
     match /talk-question-votes/{docId} {
       allow get: if isOwnDoc(docId);
-      allow list: if request.auth != null;
+      allow list: if isModerator();
       allow create: if isOwnDoc(docId) && idMatchesEntry(docId) && hasValidBaseFields()
         && request.resource.data.keys().hasOnly(['edition', 'entryKey', 'talkKey', 'createdAt'])
         && talkIsLive(request.resource.data.talkKey)
@@ -201,6 +203,20 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/talk-questions/$(request.resource.data.entryKey)).data.talkKey == request.resource.data.talkKey
         && get(/databases/$(database)/documents/talk-questions/$(request.resource.data.entryKey)).data.status == 'approved';
       allow update, delete: if false;
+    }
+
+    // Quadro público de cada palestra: as perguntas aprovadas na ordem certa, montado e gravado SÓ pelo moderador
+    // (features/board-publisher.js) e lido por qualquer pessoa autenticada, por id (a plateia e a TV ouvem UM documento).
+    // O id é a chave da palestra. Ninguém lista. Formato: { edition, updatedAt, questions: [{ id, text, name, votes? }] }.
+    match /talk-boards/{talkKey} {
+      allow get: if request.auth != null;
+      allow list: if false;
+      allow create, update: if isModerator() && validTalkKey(talkKey)
+        && request.resource.data.keys().hasOnly(['edition', 'updatedAt', 'questions'])
+        && request.resource.data.edition is string && isKnownEdition(request.resource.data.edition)
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.questions is list && request.resource.data.questions.size() <= 100;
+      allow delete: if false;
     }
 
     // Inscritos do Sympla e total público: escritos SÓ pelo job (DevFestIA/tools/sympla-sync)

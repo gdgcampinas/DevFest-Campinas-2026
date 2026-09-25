@@ -10,7 +10,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
-const { anonymous, google, createDoc, updateDoc, query, seed } = require("../lib/firestore-emulator.js");
+const { anonymous, google, createDoc, updateDoc, getDoc, query, seed } = require("../lib/firestore-emulator.js");
 
 const skip = process.env.FIRESTORE_EMULATOR_HOST ? false : "rode com DevFestIA/tools/questions/run-rules-tests.sh (precisa do emulador)";
 const windowOn = process.env.RULES_WINDOW === "on";
@@ -142,17 +142,19 @@ test("pergunta: chave de palestra fora do formato é recusada", { skip }, async 
 });
 
 // ---------- ler ----------
-test("leitura: a plateia lista só as aprovadas da palestra; pendentes ficam escondidas", { skip }, async () => {
+test("leitura: a plateia NÃO lista as perguntas dos outros (aprovadas, pendentes ou sem filtro); o moderador lista tudo", { skip }, async () => {
   const talk = LIVE();
   const approvedId = await approvedQuestion(talk);
   const pending = await attendee(talk);
   allowed(await ask(pending, talk));
   const reader = person();
-  const listed = await query(reader, "talk-questions", { talkKey: talk, status: "approved" });
-  allowed(listed);
-  assert.deepEqual(listed.ids, [approvedId]);
-  denied(await query(reader, "talk-questions", { talkKey: talk })); // sem filtro de status
+  denied(await query(reader, "talk-questions", { talkKey: talk, status: "approved" }));
   denied(await query(reader, "talk-questions", { talkKey: talk, status: "pending" }));
+  denied(await query(reader, "talk-questions", { talkKey: talk }));
+  const listed = await query(moderator(), "talk-questions", { talkKey: talk });
+  allowed(listed);
+  assert.equal(listed.ids.length, 2);
+  assert.ok(listed.ids.includes(approvedId));
 });
 
 test("leitura: cada pessoa lista as próprias (qualquer estado) e só as próprias", { skip }, async () => {
@@ -252,13 +254,45 @@ test("voto: fora da janela da palestra é recusado, mesmo em pergunta aprovada",
   denied(await vote(await attendee(past), past, questionId));
 });
 
-test("leitura dos votos: só autenticada; contar votos por palestra funciona", { skip }, async () => {
+test("leitura dos votos: só o moderador lista (ou conta) os votos; a pessoa lê só o próprio voto por id", { skip }, async () => {
   const talk = LIVE();
   const id = await approvedQuestion(talk);
-  allowed(await vote(await attendee(talk), talk, id));
-  const listed = await query(person(), "talk-question-votes", { talkKey: talk });
+  const voter = await attendee(talk);
+  allowed(await vote(voter, talk, id));
+  denied(await query(person(), "talk-question-votes", { talkKey: talk }));
+  denied(await query(voter, "talk-question-votes", { talkKey: talk }));
+  const listed = await query(moderator(), "talk-question-votes", { talkKey: talk });
   allowed(listed);
   assert.equal(listed.ids.length, 1);
+  allowed(await getDoc(voter, "talk-question-votes", `${voter.uid}_${id}`));
+  denied(await getDoc(person(), "talk-question-votes", `${voter.uid}_${id}`));
+});
+
+// ---------- quadro público da palestra ----------
+const boardData = (extra = {}) => ({ edition: "2026", questions: [{ id: "u_x#1", text: "Uma pergunta?", name: "Ana" }], ...extra });
+const putBoard = (who, talkKey, data = boardData()) => createDoc(who, "talk-boards", talkKey, data, { stamp: "updatedAt" });
+
+test("quadro: só o moderador grava (cria e regrava); qualquer pessoa autenticada lê por id; ninguém lista", { skip }, async () => {
+  const talk = LIVE();
+  denied(await putBoard(person(), talk));
+  denied(await putBoard(google(nextId("g"), "outra.pessoa@gmail.com"), talk));
+  const mod = moderator();
+  allowed(await putBoard(mod, talk));
+  allowed(await putBoard(mod, talk, boardData({ questions: [] }))); // regrava (update)
+  const reader = person();
+  allowed(await getDoc(reader, "talk-boards", talk));
+  denied(await getDoc(null, "talk-boards", talk));
+  denied(await query(reader, "talk-boards", { edition: "2026" }));
+  denied(await query(mod, "talk-boards", { edition: "2026" }));
+});
+
+test("quadro: chave fora do formato, campo a mais, edição desconhecida e horário do cliente são recusados", { skip }, async () => {
+  const mod = moderator();
+  denied(await putBoard(mod, "qualquer-coisa"));
+  denied(await putBoard(mod, LIVE(), boardData({ extra: "x" })));
+  denied(await putBoard(mod, LIVE(), boardData({ edition: "1999" })));
+  denied(await putBoard(mod, LIVE(), { edition: "2026", questions: "não é lista" }));
+  denied(await createDoc(mod, "talk-boards", LIVE(), boardData({ updatedAt: new Date("2020-01-01T00:00:00Z") }), { stamp: "criadoEm" })); // sem o horário do servidor
 });
 
 // ---------- trava de horário desligada (teste em DEV) ----------

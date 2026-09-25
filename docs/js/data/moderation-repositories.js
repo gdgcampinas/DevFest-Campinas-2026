@@ -14,5 +14,12 @@ const moderationVotesRepository = window.createFirestoreRepository({
   edition: CURRENT_EDITION,
 });
 
+const moderationBoardsRepository = window.createFirestoreDocumentRepository({
+  db: window.moderatorClient.db,
+  collectionName: "talk-boards",
+  edition: CURRENT_EDITION,
+});
+
 window.moderationQuestionsRepository = moderationQuestionsRepository;
+window.moderationBoardsRepository = moderationBoardsRepository;
 window.moderationVotesRepository = moderationVotesRepository;

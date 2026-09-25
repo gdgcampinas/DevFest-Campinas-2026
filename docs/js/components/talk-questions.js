@@ -14,11 +14,13 @@ function questionStatusLabel(status) {
 
 /** Pergunta aprovada na lista da plateia; `voteEnabled` falso (palestra encerrada) tira o botão. */
 function questionItemMarkup(question, { voteEnabled = true } = {}) {
-  const votes = `<span class="question-votes" aria-label="${tn("q.votes", question.votes, "{count} voto", "{count} votos")}">${question.votes}</span>`;
+  // O número só existe quando o quadro publica votos (config publishVotes); sem ele a lista mostra só a ordem.
+  const hasVotes = typeof question.votes === "number";
+  const votes = hasVotes ? `<span class="question-votes" aria-label="${tn("q.votes", question.votes, "{count} voto", "{count} votos")}">${question.votes}</span>` : "";
   const action = voteEnabled
     ? `<button type="button" class="chip-btn question-vote" data-question-vote="${escapeHtml(question.id)}" aria-pressed="${question.voted}"${question.voted || question.mine ? " disabled" : ""}>${iconMarkup("thumbs-up")}${question.voted ? t("q.voted", "Votado") : t("q.vote", "Votar")}</button>`
     : "";
-  return `<li class="question-item${question.mine ? " is-mine" : ""}">
+  return `<li class="question-item${question.mine ? " is-mine" : ""}${hasVotes ? "" : " question-item--no-votes"}">
     ${votes}
     <div class="question-body"><p class="question-text">${escapeHtml(question.text)}</p><p class="question-author">${escapeHtml(question.name)}${question.mine ? ` (${t("q.you", "você")})` : ""}</p></div>
     ${action}
