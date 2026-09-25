@@ -1036,6 +1036,8 @@ body:has(.modal:not([hidden])) .feedback-nudge{display:none}
 .question-status--answered{color:var(--google-blue, #3186ff);border-color:currentColor}
 .question-status--rejected{color:var(--google-red, #fc413d);border-color:currentColor}
 .question-status--pending{color:var(--google-yellow, #ffec00);border-color:currentColor}
+.question-status--current{color:var(--google-yellow, #ffec00);border-color:currentColor;display:inline-block;margin:0 0 6px}
+.question-item--current{border-color:var(--google-yellow, #ffec00)}
 .question-item--moderation{grid-template-columns:auto 1fr auto}
 .question-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 .mod-section{margin:22px 0 0}

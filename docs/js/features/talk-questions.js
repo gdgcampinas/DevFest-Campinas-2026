@@ -41,14 +41,14 @@ function initTalkQuestions(rootEl, { index, config, myCheckins, myName, now = ()
     try {
       const uid = await getUid();
       const [approvedDocs, mineDocs, voteDocs] = await Promise.all([
-        questions.getWhere({ talkKey: entry.key, status: QUESTION_STATUS.approved }),
+        questions.getWhere({ talkKey: entry.key, status: [...PUBLIC_QUESTION_STATUSES] }),
         questions.getWhere({ talkKey: entry.key, uid }),
         votes.getWhere({ talkKey: entry.key }),
       ]);
       const mine = mineDocs.sort((a, b) => a.createdAtMs - b.createdAtMs);
       draw(containerEl, entry, {
         phase: windowState,
-        approved: rankQuestions(approvedDocs, voteDocs, { myUid: uid }),
+        approved: rankQuestions(approvedDocs, voteDocs, { myUid: uid, statuses: PUBLIC_QUESTION_STATUSES }),
         mine,
         canAsk: windowState === "open" && mine.length < config.maxPerPerson,
         remaining: config.maxPerPerson - mine.length,

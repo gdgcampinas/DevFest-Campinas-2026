@@ -25,11 +25,11 @@ function createBoardQuestions({ config, deps = defaultBoardDeps, limit = 6, when
     try {
       await getUid();
       const [approved, voteDocs] = await Promise.all([
-        questions.getWhere({ talkKey: key, status: QUESTION_STATUS.approved }),
+        questions.getWhere({ talkKey: key, status: [...PUBLIC_QUESTION_STATUSES] }),
         votes.getWhere({ talkKey: key }),
       ]);
       if (target?.key !== key) return; // a sala já passou pra outra palestra enquanto lia
-      lastQuestions = rankQuestions(approved, voteDocs).slice(0, limit);
+      lastQuestions = rankQuestions(approved, voteDocs, { statuses: PUBLIC_QUESTION_STATUSES }).slice(0, limit);
       draw();
     } catch (error) {
       console.warn("[quadro da sala] não consegui ler as perguntas:", error);

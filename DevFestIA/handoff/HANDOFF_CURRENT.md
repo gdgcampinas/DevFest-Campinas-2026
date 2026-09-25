@@ -1,6 +1,6 @@
 # Handoff — Current State
 
-**Last updated:** 2026-09-25, fim da sessão 7. Antes de confiar neste texto, rode
+**Last updated:** 2026-09-25, sessão 8 (etapa 1 do motor feita). Antes de confiar neste texto, rode
 `git status --short --branch` e `git log --oneline --decorate -10` (o git não mente).
 
 ## Status em uma olhada
@@ -36,7 +36,7 @@
 ## PRÓXIMO TRABALHO (decidido com o Renato, fazer nesta ordem, teste primeiro em cada etapa)
 **Motor das perguntas:** pessoa pergunta -> moderador autoriza, nega ou **devolve (a pergunta volta pra fila, `pending`)** -> pessoas votam -> pergunta é escolhida: as mais votadas sobem e o moderador/MC marca a que está **"na vez"** (novo estado `current`, aparece grande pra todos, sai quando marcarem "respondida").
 **Plano B sem TV:** página **Sala ao vivo** no celular (`sala.html?trilha=ia`) que descobre a palestra do momento pelo relógio (reusa `resolveRoomBoard`): check-in e perguntar, perguntas autorizadas com votar, a que está na vez, "Avaliar a palestra anterior". **Um QR fixo por sala** (4 cartazes + slide de abertura de cada palestrante). Tela **Palco** do moderador (pergunta na vez grande, próximas mais votadas, aviso da fila, "Respondida, próxima"/"Pular"). A TV vira extra.
-1. Modelo: estado `current` e "devolver" (regras + testes no emulador + UI da moderação).
+1. ~~Modelo: estado `current` e "devolver"~~ FEITO na sessão 8 (regras, 24 testes no emulador, plano `question-status-plan.js`, botões Pôr na vez/Tirar da vez/Devolver na moderação, quadro e modal da plateia mostram a da vez; conferido no emulador). **REGRAS NOVAS: o Renato precisa colar `firestore.rules` no console** (`pbcopy < DevFestIA/firebase/firestore.rules`) antes de testar no ar.
 2. **Redesenho da leitura (custo!)**: hoje o poll relê perguntas + TODOS os votos a cada 15 s (celular) e 5 s (TV): uma TV sozinha passa de 50 mil leituras numa palestra (limite do Spark = 50 mil/dia). Plano: documento único por palestra (`talk-boards/<talkKey>`, escrito só pelo moderador na mesma operação que aprova) que plateia e TV escutam (`onSnapshot`); contagem de votos só no quadro/moderação por consulta agregada a cada 30-60 s (só as 6 mais votadas); celular mostra só "Votar/Votado" sem placar ao vivo (decisão pendente do Renato: aceitar); minhas perguntas só escuta quem já perguntou; ouvir só com o modal aberto; teste de orçamento de leituras com repositórios falsos. **Decisão pendente: migrar pro Blaze** (mesmas 50 mil grátis, sem travar; alerta de orçamento) como seguro.
 3. Página Sala ao vivo (plano B). 4. Tela Palco. 5. Cartazes/QR fixo por sala + slide. 6. Ensaio geral com celular sem TV e depois com TV.
 

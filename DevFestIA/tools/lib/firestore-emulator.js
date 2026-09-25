@@ -75,12 +75,12 @@ function updateDoc(as, collection, id, data) {
 
 const getDoc = (as, collection, id) => call(as, endpoint(`/${collection}/${id}`));
 
-/** Consulta por igualdade ({campo: valor}), como getWhere() do site. Devolve os ids em `ids`. */
+/** Consulta por igualdade ({campo: valor}); valor em array vira "in", como getWhere() do site. Devolve os ids em `ids`. */
 async function query(as, collection, filters) {
   const where = Object.entries(filters);
   const structuredQuery = {
     from: [{ collectionId: collection }],
-    where: { compositeFilter: { op: "AND", filters: where.map(([field, value]) => ({ fieldFilter: { field: { fieldPath: field }, op: "EQUAL", value: toValue(value) } })) } },
+    where: { compositeFilter: { op: "AND", filters: where.map(([field, value]) => ({ fieldFilter: { field: { fieldPath: field }, ...(Array.isArray(value) ? { op: "IN", value: { arrayValue: { values: value.map(toValue) } } } : { op: "EQUAL", value: toValue(value) }) } })) } },
   };
   const result = await call(as, endpoint(":runQuery"), { structuredQuery });
   const ids = Array.isArray(result.body) ? result.body.filter(row => row.document).map(row => row.document.name.split("/").pop()) : [];

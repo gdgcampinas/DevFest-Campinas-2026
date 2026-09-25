@@ -19,9 +19,10 @@ function roomTalkHeaderMarkup({ track, talk, timezone }) {
 }
 
 function boardQuestionMarkup(question) {
-  return `<li class="cd-question">
+  const current = question.status === "current";
+  return `<li class="cd-question${current ? " cd-question--current" : ""}">
     <span class="cd-question-votes">${question.votes}<small>${question.votes === 1 ? "voto" : "votos"}</small></span>
-    <div><p class="cd-question-text">${escapeHtml(question.text)}</p><p class="cd-question-author">${escapeHtml(question.name)}</p></div>
+    <div>${current ? `<p class="cd-question-now">Na vez</p>` : ""}<p class="cd-question-text">${escapeHtml(question.text)}</p><p class="cd-question-author">${escapeHtml(question.name)}</p></div>
   </li>`;
 }
 

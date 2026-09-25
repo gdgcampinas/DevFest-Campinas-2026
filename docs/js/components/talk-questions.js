@@ -7,6 +7,7 @@ function questionStatusLabel(status) {
   return {
     pending: t("q.status.pending", "Aguardando o moderador"),
     approved: t("q.status.approved", "Aprovada"),
+    current: t("q.status.current", "Na vez"),
     answered: t("q.status.answered", "Respondida"),
     rejected: t("q.status.rejected", "Não aprovada"),
   }[status];
@@ -15,12 +16,12 @@ function questionStatusLabel(status) {
 /** Pergunta aprovada na lista da plateia; `voteEnabled` falso (palestra encerrada) tira o botão. */
 function questionItemMarkup(question, { voteEnabled = true } = {}) {
   const votes = `<span class="question-votes" aria-label="${tn("q.votes", question.votes, "{count} voto", "{count} votos")}">${question.votes}</span>`;
-  const action = voteEnabled
+  const action = voteEnabled && question.status !== "current" // a da vez já saiu da votação (as regras só aceitam voto em "approved")
     ? `<button type="button" class="chip-btn question-vote" data-question-vote="${escapeHtml(question.id)}" aria-pressed="${question.voted}"${question.voted || question.mine ? " disabled" : ""}>${iconMarkup("thumbs-up")}${question.voted ? t("q.voted", "Votado") : t("q.vote", "Votar")}</button>`
     : "";
-  return `<li class="question-item${question.mine ? " is-mine" : ""}">
+  return `<li class="question-item${question.mine ? " is-mine" : ""}${question.status === "current" ? " question-item--current" : ""}">
     ${votes}
-    <div class="question-body"><p class="question-text">${escapeHtml(question.text)}</p><p class="question-author">${escapeHtml(question.name)}${question.mine ? ` (${t("q.you", "você")})` : ""}</p></div>
+    <div class="question-body">${question.status === "current" ? `<p class="question-status question-status--current">${questionStatusLabel("current")}</p>` : ""}<p class="question-text">${escapeHtml(question.text)}</p><p class="question-author">${escapeHtml(question.name)}${question.mine ? ` (${t("q.you", "você")})` : ""}</p></div>
     ${action}
   </li>`;
 }
