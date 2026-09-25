@@ -173,7 +173,14 @@ function initTalkQuestions(rootEl, { index, config, myCheckins, myVotes, myAsked
       const session = sessions.get(containerEl);
       if (session) await refreshMine(session);
       paint(containerEl, { force: true });
-    } catch {
+    } catch (error) {
+      if (error.message === "question-limit") {
+        // O limite já estava cheio (perguntas de antes deste navegador guardar "já perguntei aqui"): mostra as próprias e o aviso do máximo.
+        myAsked.addAll([entry.key]);
+        const session = sessions.get(containerEl);
+        if (session) await refreshMine(session).catch(() => {});
+        return paint(containerEl, { force: true });
+      }
       submitBtn.disabled = false;
       showFormError(form, submitBtn, t("q.sendError", "Não foi possível enviar. Confira o check-in, sua conexão, o horário da palestra e o limite de perguntas."));
     }
