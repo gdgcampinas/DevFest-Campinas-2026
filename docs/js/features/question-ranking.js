@@ -6,8 +6,8 @@
  * aponta pra pergunta por `entryKey` (id da pergunta) e o id do voto é "<uid>_<id da pergunta>", então "eu já
  * votei" e "a pergunta é minha" saem só do id, sem estado local.
  *
- * `statuses` (padrão só "approved") filtra E ordena por estado, na ordem dada: a plateia e o quadro passam os
- * públicos (PUBLIC_QUESTION_STATUSES: a da vez primeiro, depois as aprovadas); o moderador passa todos ("pending" primeiro). Dentro do estado: pendentes da mais antiga pra mais nova
+ * `statuses` (padrão só "approved") filtra E ordena por estado, na ordem dada: a plateia e o quadro usam só as
+ * aprovadas; o moderador passa todos ("pending" primeiro). Dentro do estado: pendentes da mais antiga pra mais nova
  * (fila de atendimento); os demais, mais votadas primeiro e, no empate, a mais antiga.
  */
 function rankQuestions(questions, votes, { myUid = null, statuses = ["approved"] } = {}) {

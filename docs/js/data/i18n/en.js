@@ -124,7 +124,6 @@ I18N_DICTIONARIES.en = {
     "q.empty": "No approved questions yet.",
     "q.status.pending": "Waiting for the moderator",
     "q.status.approved": "Approved",
-    "q.status.current": "Up now",
     "q.status.answered": "Answered",
     "q.status.rejected": "Not approved",
     "q.waiting": "Questions open when the talk starts and close when it ends.",

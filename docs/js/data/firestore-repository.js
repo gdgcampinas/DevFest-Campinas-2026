@@ -46,13 +46,13 @@ function createFirestoreRepository({ db, collectionName, edition }) {
       return found;
     },
     /**
-     * Documentos desta edição que casam com `filters` ({campo: valor}, por igualdade; um valor em array vira "in", até 30 itens).
+     * Documentos desta edição que casam com `filters` ({campo: valor}, todos por igualdade).
      * Devolve { id, ...dados, createdAtMs }: com id, pra quem precisa apontar pro documento
      * (voto numa pergunta, ocultar). A regra do Firestore só deixa listar o que a consulta
      * já restringe do jeito que ela exige (ver firestore.rules).
      */
     async getWhere(filters = {}) {
-      const constraints = [where("edition", "==", edition), ...Object.entries(filters).map(([field, value]) => (Array.isArray(value) ? where(field, "in", value) : where(field, "==", value)))];
+      const constraints = [where("edition", "==", edition), ...Object.entries(filters).map(([field, value]) => where(field, "==", value))];
       const snap = await getDocs(query(col(), ...constraints));
       return snap.docs.map(d => ({ id: d.id, ...d.data(), createdAtMs: d.data().createdAt?.toMillis?.() ?? 0 }));
     },

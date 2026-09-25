@@ -12,7 +12,6 @@ const vm = require("node:vm");
 const root = path.join(__dirname, "..", "..", "..");
 const { rankQuestions } = require(path.join(root, "docs/js/features/question-ranking.js"));
 const { questionWindowState } = require(path.join(root, "docs/js/features/question-window.js"));
-const { planStatusChange } = require(path.join(root, "docs/js/features/question-status-plan.js"));
 const { questionEntryKey, firstFreeQuestionSlot } = require(path.join(root, "docs/js/features/question-slots.js"));
 
 const question = (id, createdAtMs, extra = {}) => ({ id, text: id, name: "x", createdAtMs, status: "approved", ...extra });
@@ -48,21 +47,6 @@ test("ranking: tela do moderador (todos os estados) agrupa por estado na ordem p
   ];
   const ranked = rankQuestions(questions, [vote("u", "ap2_t")], { statuses: ["pending", "approved", "answered", "rejected"] });
   assert.deepStrictEqual(ranked.map(item => item.id), ["pe_velho_t", "pe_novo_t", "ap2_t", "ap1_t", "ans_t", "rej_t"]);
-});
-
-test("ranking: a plateia (approved + current) vê a da vez primeiro, mesmo com menos votos que as aprovadas", () => {
-  const ranked = rankQuestions(
-    [question("a_t", 1), question("b_t", 2), question("vez_t", 3, { status: "current" }), question("dev_t", 4, { status: "pending" })],
-    [vote("u1", "a_t"), vote("u2", "a_t")],
-    { statuses: ["current", "approved"] }
-  );
-  assert.deepStrictEqual(ranked.map(item => item.id), ["vez_t", "a_t", "b_t"]);
-});
-
-test("ranking: tela do moderador coloca a da vez entre a fila e as aprovadas", () => {
-  const questions = [question("ap_t", 1), question("vez_t", 2, { status: "current" }), question("pe_t", 3, { status: "pending" })];
-  const ranked = rankQuestions(questions, [], { statuses: ["pending", "current", "approved", "answered", "rejected"] });
-  assert.deepStrictEqual(ranked.map(item => item.id), ["pe_t", "vez_t", "ap_t"]);
 });
 
 test("ranking: sem uid ninguém é dono nem votou", () => {
@@ -129,34 +113,9 @@ test("regras: todos os estados do site existem nas regras", () => {
   Object.values(QUESTION_STATUS).forEach(status => assert.ok(rules.includes(`'${status}'`), `estado "${status}" não aparece nas regras`));
 });
 
-test("regras: os estados públicos da config são os que a regra de leitura libera", () => {
-  const { PUBLIC_QUESTION_STATUSES } = vm.runInNewContext(`${readFile("docs/js/data/repository.js")}\n${readFile("docs/js/data/talk-questions.js")}\n({ PUBLIC_QUESTION_STATUSES })`);
-  const readRule = rules.match(/resource\.data\.status in \[([^\]]+)\]/)[1].split(",").map(item => item.trim().replace(/'/g, ""));
-  assert.deepEqual([...PUBLIC_QUESTION_STATUSES].sort(), readRule.sort());
-});
-
 test("regras: o id do documento tem que ser <uid>_<entryKey> nas perguntas e nos votos", () => {
   ["talk-questions", "talk-question-votes"].forEach(name => {
     const block = rules.slice(rules.indexOf(`match /${name}/`));
     assert.ok(block.slice(0, block.indexOf("allow update")).includes("idMatchesEntry(docId)"), `${name}: falta idMatchesEntry`);
   });
-});
-
-// ---------- plano de mudança de estado (só uma na vez por palestra) ----------
-const doc = (id, status) => ({ id, status });
-
-test("plano: pôr na vez rebaixa a que já estava na vez, antes de subir a nova", () => {
-  const docs = [doc("a", "approved"), doc("b", "current"), doc("c", "approved")];
-  assert.deepStrictEqual(planStatusChange(docs, "c", "current"), [{ id: "b", status: "approved" }, { id: "c", status: "current" }]);
-});
-
-test("plano: sem ninguém na vez, ou repondo a mesma, é uma atualização só", () => {
-  assert.deepStrictEqual(planStatusChange([doc("a", "approved")], "a", "current"), [{ id: "a", status: "current" }]);
-  assert.deepStrictEqual(planStatusChange([doc("a", "current")], "a", "current"), [{ id: "a", status: "current" }]);
-});
-
-test("plano: qualquer outra mudança (respondida, devolver, tirar do ar) não mexe na da vez", () => {
-  const docs = [doc("a", "approved"), doc("b", "current")];
-  ["answered", "pending", "rejected", "approved"].forEach(to => assert.deepStrictEqual(planStatusChange(docs, "a", to), [{ id: "a", status: to }]));
-  assert.deepStrictEqual(planStatusChange(docs, "b", "pending"), [{ id: "b", status: "pending" }]);
 });

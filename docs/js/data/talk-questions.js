@@ -11,19 +11,15 @@
  */
 /**
  * Estados de uma pergunta (campo `status`, o mesmo das regras do Firestore): nasce "pending"; o moderador aprova
- * ("approved": aparece pra plateia e no quadro da sala), põe na vez ("current": a que está sendo respondida agora,
- * uma por palestra), marca como respondida ("answered"), rejeita ("rejected") ou devolve pra fila ("pending").
+ * ("approved": aparece pra plateia e no quadro da sala), rejeita ("rejected") ou marca como respondida ("answered").
  */
-const QUESTION_STATUS = Object.freeze({ pending: "pending", approved: "approved", current: "current", answered: "answered", rejected: "rejected" });
-
-/** Estados que a plateia e o quadro enxergam, na ordem em que aparecem (a da vez primeiro). ESPELHAR a regra `list` das perguntas. */
-const PUBLIC_QUESTION_STATUSES = Object.freeze([QUESTION_STATUS.current, QUESTION_STATUS.approved]);
+const QUESTION_STATUS = Object.freeze({ pending: "pending", approved: "approved", answered: "answered", rejected: "rejected" });
 
 const TALK_QUESTIONS = {
   enabled: true,
   enforceWindow: false,
   maxLength: 280,
-  maxPerPerson: 10,
+  maxPerPerson: 3,
   pollMs: 15000,
   boardPollMs: 5000,
 };

@@ -1,7 +1,7 @@
 /**
  * Feature: tela do moderador de perguntas (ferramenta interna, uma por sala). É quem decide o que vai ao ar:
  * mostra as perguntas da palestra que está rolando na trilha (ou da última que terminou, pra dar tempo de
- * responder) em cinco grupos (fila, na vez, no ar, respondidas, rejeitadas) e muda o estado com um toque. Só e-mail Google
+ * responder) em quatro grupos (fila, no ar, respondidas, rejeitadas) e muda o estado com um toque. Só e-mail Google
  * da lista de moderadores nas regras do Firestore consegue listar tudo e alterar o `status`; quem entrar com outra
  * conta vê "sem permissão" (a regra é a defesa, a tela só avisa).
  *
@@ -33,7 +33,6 @@ const signInErrorMessage = error => `${SIGNIN_ERROR_HINTS[error?.code] ?? "Não 
 function initQuestionModeration(rootEl, { schedule, track, config, now = () => new Date(), pinnedCode = null, codeOf, deps = defaultModerationDeps, whenReady = runAfterModules }) {
   let email = "";
   let timer = null;
-  let currentDocs = [];
 
   const draw = data => { rootEl.innerHTML = questionModerationMarkup({ trackLabel: track.label, email, ...data }); };
 
@@ -44,7 +43,6 @@ function initQuestionModeration(rootEl, { schedule, track, config, now = () => n
     const { questions, votes } = deps();
     try {
       const [questionDocs, voteDocs] = await Promise.all([questions.getWhere({ talkKey: talk.key }), votes.getWhere({ talkKey: talk.key })]);
-      currentDocs = questionDocs;
       draw({ phase: "ready", talkTitle: talk.title, questions: rankQuestions(questionDocs, voteDocs, { statuses: Object.values(QUESTION_STATUS) }) });
     } catch (error) {
       draw({ phase: "error", message: error.code === "permission-denied" ? "Sem permissão: essa conta não está na lista de moderadores." : "Não foi possível carregar agora. Tentando de novo em instantes." });
@@ -73,11 +71,7 @@ function initQuestionModeration(rootEl, { schedule, track, config, now = () => n
       const setBtn = event.target.closest("[data-question-set]");
       if (!setBtn) return;
       setBtn.disabled = true;
-      // Em ordem (a que estava na vez é rebaixada antes de a nova subir); se uma falhar, as seguintes nem tentam.
-      for (const change of planStatusChange(currentDocs, setBtn.dataset.questionId, setBtn.dataset.questionSet)) {
-        const saved = await deps().questions.update(change.id, { status: change.status }).then(() => true, () => false);
-        if (!saved) break;
-      }
+      await deps().questions.update(setBtn.dataset.questionId, { status: setBtn.dataset.questionSet }).catch(() => {});
       refresh();
     }
   });

@@ -6,15 +6,13 @@
  */
 const MODERATION_ACTIONS = {
   pending: [{ to: "approved", label: "Aprovar", primary: true }, { to: "rejected", label: "Rejeitar" }],
-  approved: [{ to: "current", label: "Pôr na vez", primary: true }, { to: "answered", label: "Respondida" }, { to: "pending", label: "Devolver" }, { to: "rejected", label: "Tirar do ar" }],
-  current: [{ to: "answered", label: "Respondida", primary: true }, { to: "approved", label: "Tirar da vez" }, { to: "pending", label: "Devolver" }],
+  approved: [{ to: "answered", label: "Respondida", primary: true }, { to: "rejected", label: "Tirar do ar" }],
   answered: [{ to: "approved", label: "Reabrir" }],
-  rejected: [{ to: "approved", label: "Aprovar" }, { to: "pending", label: "Devolver" }],
+  rejected: [{ to: "approved", label: "Aprovar" }],
 };
 
 const MODERATION_SECTIONS = [
   { status: "pending", title: "Fila para aprovar", empty: "Nenhuma pergunta esperando." },
-  { status: "current", title: "Na vez (aparece grande pra todos)", empty: "" },
   { status: "approved", title: "No ar (aparecem no quadro da sala)", empty: "Nenhuma pergunta no ar." },
   { status: "answered", title: "Respondidas", empty: "" },
   { status: "rejected", title: "Rejeitadas", empty: "" },
@@ -23,7 +21,7 @@ const MODERATION_SECTIONS = [
 function moderationItemMarkup(question) {
   const actions = MODERATION_ACTIONS[question.status].map(action =>
     `<button type="button" class="chip-btn${action.primary ? " chip-btn--primary" : ""}" data-question-set="${action.to}" data-question-id="${escapeHtml(question.id)}">${action.label}</button>`).join("");
-  return `<li class="question-item question-item--moderation question-item--${question.status}">
+  return `<li class="question-item question-item--moderation">
     <span class="question-votes" aria-label="${tn("q.votes", question.votes, "{count} voto", "{count} votos")}">${question.votes}</span>
     <div class="question-body"><p class="question-text">${escapeHtml(question.text)}</p><p class="question-author">${escapeHtml(question.name)}</p></div>
     <div class="question-actions">${actions}</div>

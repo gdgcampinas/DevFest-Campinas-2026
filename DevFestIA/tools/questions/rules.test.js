@@ -1,6 +1,6 @@
 /**
  * Testa as REGRAS do Firestore das perguntas ao vivo contra o emulador (nada toca o banco real):
- * janela de horário da palestra, check-in, até 10 perguntas por pessoa, fila de aprovação do moderador
+ * janela de horário da palestra, check-in, até 3 perguntas por pessoa, fila de aprovação do moderador
  * e votos. As palestras de teste têm horário RELATIVO A AGORA (início daqui a N minutos), então nada
  * depende de ser o dia do evento. A trava de horário é um interruptor nas regras (`windowEnforced()`): o script roda
  * os testes duas vezes, com a trava ligada (RULES_WINDOW=on, cópia temporária das regras) e como está no arquivo
@@ -90,11 +90,11 @@ test("pergunta: perto dos limites da janela (no fim e logo depois)", { skip: onl
   denied(await ask(await attendee(aboutToStart), aboutToStart));
 });
 
-test("pergunta: até 10 por pessoa por palestra, a 11ª e a 0 são recusadas", { skip }, async () => {
+test("pergunta: até 3 por pessoa por palestra, a 4ª e a 0 são recusadas", { skip }, async () => {
   const talk = LIVE();
   const who = await attendee(talk);
-  for (let slot = 1; slot <= 10; slot++) allowed(await ask(who, talk, slot));
-  denied(await ask(who, talk, 11));
+  for (let slot = 1; slot <= 3; slot++) allowed(await ask(who, talk, slot));
+  denied(await ask(who, talk, 4));
   denied(await ask(who, talk, 0));
   denied(await ask(who, talk, 1)); // o espaço já usado é "update": recusa
 });
@@ -165,25 +165,6 @@ test("leitura: cada pessoa lista as próprias (qualquer estado) e só as própri
   denied(await query(person(), "talk-questions", { talkKey: talk, uid: author.uid }));
 });
 
-test("leitura: a plateia também lista a pergunta que está na vez (approved + current), mas não pending, answered nem rejected", { skip }, async () => {
-  const talk = LIVE();
-  const mod = moderator();
-  const ids = {};
-  for (const status of ["approved", "current", "answered", "rejected"]) {
-    ids[status] = await approvedQuestion(talk);
-    if (status !== "approved") assert.ok((await updateDoc(mod, "talk-questions", ids[status], { status })).ok);
-  }
-  const author = await attendee(talk);
-  assert.ok((await ask(author, talk)).ok); // fica pending
-  const reader = person();
-  const listed = await query(reader, "talk-questions", { talkKey: talk, status: ["current", "approved"] });
-  allowed(listed);
-  assert.deepEqual([...listed.ids].sort(), [ids.approved, ids.current].sort());
-  allowed(await query(reader, "talk-questions", { talkKey: talk, status: "current" }));
-  denied(await query(reader, "talk-questions", { talkKey: talk, status: ["current", "pending"] }));
-  denied(await query(reader, "talk-questions", { talkKey: talk, status: ["approved", "answered"] }));
-});
-
 test("leitura: sem estar autenticada não lê nada", { skip }, async () => {
   denied(await query(null, "talk-questions", { status: "approved" }));
   denied(await query(null, "talk-question-votes", { talkKey: LIVE() }));
@@ -210,25 +191,12 @@ test("moderação: só e-mail Google verificado da lista lista tudo e muda o est
   allowed(await updateDoc(mod, "talk-questions", id, { status: "approved" }));
 });
 
-test("moderação: põe na vez (current), tira da vez e devolve pra fila (pending) de qualquer estado", { skip }, async () => {
-  const talk = LIVE();
-  const id = await approvedQuestion(talk);
-  const mod = moderator();
-  allowed(await updateDoc(mod, "talk-questions", id, { status: "current" }));
-  allowed(await updateDoc(mod, "talk-questions", id, { status: "approved" }));
-  allowed(await updateDoc(mod, "talk-questions", id, { status: "current" }));
-  allowed(await updateDoc(mod, "talk-questions", id, { status: "pending" })); // devolvida
-  allowed(await updateDoc(mod, "talk-questions", id, { status: "approved" }));
-  allowed(await updateDoc(mod, "talk-questions", id, { status: "rejected" }));
-  allowed(await updateDoc(mod, "talk-questions", id, { status: "pending" }));
-  denied(await updateDoc(person(), "talk-questions", id, { status: "current" })); // plateia não move nada
-});
-
-test("moderação: só muda o estado (nunca o texto) e não inventa estado", { skip }, async () => {
+test("moderação: só muda o estado (nunca o texto), e não volta a pendente nem inventa estado", { skip }, async () => {
   const talk = LIVE();
   const id = await approvedQuestion(talk);
   const mod = moderator();
   denied(await updateDoc(mod, "talk-questions", id, { text: "editado pelo moderador" }));
+  denied(await updateDoc(mod, "talk-questions", id, { status: "pending" }));
   denied(await updateDoc(mod, "talk-questions", id, { status: "qualquer" }));
 });
 
@@ -246,14 +214,14 @@ test("voto: em pergunta aprovada, com check-in, durante a palestra", { skip }, a
   allowed(await vote(await attendee(talk), talk, id));
 });
 
-test("voto: pergunta pendente, rejeitada, respondida ou na vez não recebe voto", { skip }, async () => {
+test("voto: pergunta pendente, rejeitada ou respondida não recebe voto", { skip }, async () => {
   const talk = LIVE();
   const author = await attendee(talk);
   assert.ok((await ask(author, talk)).ok);
   const pendingId = `${author.uid}_${talk}#1`;
   denied(await vote(await attendee(talk), talk, pendingId));
   const mod = moderator();
-  for (const status of ["rejected", "answered", "current"]) {
+  for (const status of ["rejected", "answered"]) {
     const id = await approvedQuestion(talk);
     assert.ok((await updateDoc(mod, "talk-questions", id, { status })).ok);
     denied(await vote(await attendee(talk), talk, id));
@@ -304,6 +272,6 @@ test("sem a trava de horário: pergunta e voto valem antes, durante e depois da 
   const talk = ENDED();
   denied(await ask(person(), talk)); // sem check-in continua recusado
   const who = await attendee(talk);
-  denied(await ask(who, talk, 11)); // limite continua valendo
+  denied(await ask(who, talk, 4)); // limite continua valendo
   denied(await ask(who, talk, 1, { status: "approved" })); // e o moderador continua sendo o único que aprova
 });
