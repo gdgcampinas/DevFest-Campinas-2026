@@ -74,21 +74,25 @@ service cloud.firestore {
         && validRating(data.aspects.comunicacao);
     }
 
-    // Check-in numa palestra: sem campo próprio além da base.
+    // Check-in numa palestra: sem campo próprio além da base. A chave é sempre a de uma palestra (formato validTalkKey) e o id
+    // é exatamente "<uid>_<chave>": sem isso uma pessoa criaria check-ins e, com eles, avaliações à vontade com chaves inventadas.
     match /checkins/{docId} {
       allow get: if isOwnDoc(docId); // só a própria pessoa lê o próprio check-in
       allow list: if false; // ninguém lê a coleção inteira nem os registros de outra pessoa
-      allow create: if isOwnDoc(docId) && hasValidBaseFields()
+      allow create: if isOwnDoc(docId) && idMatchesEntry(docId) && hasValidBaseFields()
+        && validTalkKey(request.resource.data.entryKey)
         && request.resource.data.keys().hasOnly(['edition', 'entryKey', 'createdAt']);
       allow update, delete: if false;
     }
 
     // Feedback de palestra: nota 1-5 e nome (obrigatórios); "o que mais gostou" e "o que melhorar" opcionais.
-    // Só quem tem o check-in DAQUELA palestra avalia (o id do check-in é o mesmo id deste documento).
+    // Só quem tem o check-in DAQUELA palestra avalia (o id do check-in é o mesmo id deste documento) e só depois de a palestra
+    // acabar (com a trava de horário ligada, `talkEnded`).
     match /talk-feedback/{docId} {
       allow get: if isOwnDoc(docId); // só a própria pessoa lê o próprio feedback
       allow list: if false; // ninguém lê a coleção inteira nem os registros de outra pessoa
-      allow create: if isOwnDoc(docId) && hasValidBaseFields()
+      allow create: if isOwnDoc(docId) && idMatchesEntry(docId) && hasValidBaseFields()
+        && validTalkKey(request.resource.data.entryKey) && talkEnded(request.resource.data.entryKey)
         && request.resource.data.keys().hasOnly(['edition', 'entryKey', 'createdAt', 'rating', 'name', 'highlight', 'improve'])
         && validRating(request.resource.data.rating)
         && requiredText(request.resource.data, 'name', 80)
@@ -99,10 +103,12 @@ service cloud.firestore {
     }
 
     // Feedback do evento (fim de dia): nota geral 1-5, os 6 aspectos 1-5, nota 0-10 de indicação e nome (obrigatórios); textos opcionais.
+    // Uma avaliação por pessoa: a chave é sempre EVENT_FEEDBACK_KEY (docs/js/features/event-feedback.js, um teste confere).
     match /event-feedback/{docId} {
       allow get: if isOwnDoc(docId); // só a própria pessoa lê o próprio feedback
       allow list: if false; // ninguém lê a coleção inteira nem os registros de outra pessoa
-      allow create: if isOwnDoc(docId) && hasValidBaseFields()
+      allow create: if isOwnDoc(docId) && idMatchesEntry(docId) && hasValidBaseFields()
+        && request.resource.data.entryKey == 'event-end'
         && request.resource.data.keys().hasOnly(['edition', 'entryKey', 'createdAt', 'rating', 'aspects', 'nps', 'name', 'highlight', 'improve'])
         && validRating(request.resource.data.rating)
         && validAspects(request.resource.data)
@@ -114,7 +120,7 @@ service cloud.firestore {
     }
 
     // O id do documento precisa ser exatamente "<uid>_<entryKey>": sem isso a mesma pessoa criaria vários
-    // documentos com ids diferentes e furaria o limite de perguntas e de votos.
+    // documentos com ids diferentes e furaria o limite de perguntas, de votos, de check-ins e de avaliações.
     function idMatchesEntry(docId) {
       return docId == request.auth.uid + '_' + request.resource.data.entryKey;
     }
@@ -150,6 +156,12 @@ service cloud.firestore {
         && (!windowEnforced()
           || (request.time >= talkStart(talkKey)
             && request.time <= talkStart(talkKey) + duration.time(0, talkDurationMinutes(), 0, 0)));
+    }
+
+    // A palestra já acabou (avaliar só depois): com a trava de horário desligada (DEV) vale sempre.
+    function talkEnded(talkKey) {
+      return validTalkKey(talkKey)
+        && (!windowEnforced() || request.time > talkStart(talkKey) + duration.time(0, talkDurationMinutes(), 0, 0));
     }
 
     // Quem fez check-in nessa palestra (o documento do check-in é "<uid>_<talkKey>").

@@ -8,49 +8,13 @@
  */
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const fs = require("node:fs");
-const path = require("node:path");
 const { anonymous, google, createDoc, updateDoc, getDoc, query, seed } = require("../lib/firestore-emulator.js");
+const { skip, onlyWithWindow, onlyWithoutWindow, rules, moderatorEmail, nextId, person, moderator, talkKeyStarted, LIVE, NOT_STARTED, ENDED, base, checkin, attendee, denied, allowed } = require("../lib/rules-test-kit.js");
 
-const skip = process.env.FIRESTORE_EMULATOR_HOST ? false : "rode com DevFestIA/tools/questions/run-rules-tests.sh (precisa do emulador)";
-const windowOn = process.env.RULES_WINDOW === "on";
-const onlyWithWindow = skip || (windowOn ? false : "só vale com a trava de horário ligada");
-const onlyWithoutWindow = skip || (windowOn ? "só vale com a trava de horário desligada" : false);
-const rules = fs.readFileSync(path.join(__dirname, "..", "..", "firebase", "firestore.rules"), "utf8");
-const moderatorEmail = rules.match(/request\.auth\.token\.email in \['([^']+)'/)[1];
-
-// ---------- cenário ----------
-let counter = 0;
-const nextId = prefix => `${prefix}${Date.now().toString(36)}${counter++}`;
-const person = () => anonymous(nextId("u"));
-const moderator = () => google(nextId("m"), moderatorEmail);
-
-/** Trilha única por chamada (só letras, como o formato da chave exige): cada teste tem a sua palestra, sem dados de outro teste. */
-const uniqueTrack = () => `t${Date.now().toString(36)}${counter++}`.replace(/[0-9]/g, digit => "abcdefghij"[digit]);
-
-/** Chave de palestra que COMEÇOU há `startedMinAgo` minutos (negativo = começa daqui a N). Duração de 40 min, como na grade. */
-function talkKeyStarted(startedMinAgo, track = uniqueTrack()) {
-  const start = new Date(Date.now() - startedMinAgo * 60000);
-  start.setUTCSeconds(0, 0);
-  return `${start.toISOString()}|${track}`;
-}
-const LIVE = () => talkKeyStarted(10);
-const NOT_STARTED = () => talkKeyStarted(-30);
-const ENDED = () => talkKeyStarted(60);
-
-const base = { edition: "2026" };
-const checkin = (who, talkKey) => createDoc(who, "checkins", `${who.uid}_${talkKey}`, { ...base, entryKey: talkKey });
 const questionData = (who, talkKey, slot = 1, extra = {}) => ({ ...base, entryKey: `${talkKey}#${slot}`, talkKey, uid: who.uid, text: "Uma pergunta?", name: "Ana", status: "pending", ...extra });
 const ask = (who, talkKey, slot = 1, extra = {}) => createDoc(who, "talk-questions", `${who.uid}_${talkKey}#${slot}`, questionData(who, talkKey, slot, extra));
 const vote = (who, talkKey, questionId, extra = {}) => createDoc(who, "talk-question-votes", `${who.uid}_${questionId}`, { ...base, entryKey: questionId, talkKey, ...extra });
 
-/** Pessoa com check-in na palestra. */
-async function attendee(talkKey) {
-  const who = person();
-  const result = await checkin(who, talkKey);
-  assert.ok(result.ok, `check-in de preparo falhou: ${JSON.stringify(result.body)}`);
-  return who;
-}
 /** Pergunta já aprovada pelo moderador (preparo). */
 async function approvedQuestion(talkKey) {
   const author = await attendee(talkKey);
@@ -59,8 +23,6 @@ async function approvedQuestion(talkKey) {
   assert.ok((await updateDoc(moderator(), "talk-questions", id, { status: "approved" })).ok);
   return id;
 }
-const denied = result => assert.ok(!result.ok && result.code === "PERMISSION_DENIED", `esperava PERMISSION_DENIED, veio ${result.status} ${JSON.stringify(result.body).slice(0, 200)}`);
-const allowed = result => assert.ok(result.ok, `esperava sucesso, veio ${result.status} ${JSON.stringify(result.body).slice(0, 300)}`);
 
 // ---------- enviar pergunta ----------
 test("pergunta: com check-in e durante a palestra é aceita, sempre pendente", { skip }, async () => {
@@ -137,7 +99,7 @@ test("pergunta: nasce pendente, com texto e nome válidos, sem campo extra", { s
 test("pergunta: chave de palestra fora do formato é recusada", { skip }, async () => {
   const who = person();
   const forged = "qualquer-coisa";
-  assert.ok((await checkin(who, forged)).ok);
+  denied(await checkin(who, forged)); // nem o check-in aceita chave inventada
   denied(await ask(who, forged));
 });
 

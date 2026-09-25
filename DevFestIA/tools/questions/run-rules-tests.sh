@@ -9,7 +9,7 @@ cd "$(dirname "$0")/../../.."
 run() { # $1 = valor de RULES_WINDOW, $2 = pasta com firebase.json + firestore.rules
   echo "== regras com a trava de horário: $1 =="
   RULES_WINDOW="$1" firebase emulators:exec --only firestore --project demo-devfest --config "$2/firebase.json" \
-    "node --test DevFestIA/tools/questions/rules.test.js"
+    "node --test DevFestIA/tools/questions/rules.test.js DevFestIA/tools/questions/feedback-rules.test.js"
 }
 
 TMP="$(mktemp -d)"
