@@ -20,7 +20,7 @@
  * clique/submit e do handler de `?checkin=`.
  */
 const FEEDBACK_CHANGED_EVENT = "devfest:feedback-changed";
-/** Pede pra abrir a palestra (detail.key) no modal: disparado depois do check-in por QR, pra a pessoa já cair na palestra (perguntas e avaliação). */
+/** Pede pra abrir a palestra (detail.key) no modal: disparado depois do check-in por QR, pra a pessoa já cair na palestra (perguntas e avaliação). `detail.message` é um aviso opcional pro bloco de check-in (ex.: o QR foi lido sem internet). */
 const OPEN_TALK_EVENT = "devfest:open-talk";
 
 /** Guarda o nome e já preenche os outros campos de nome abertos e vazios (não pedir o nome 10 vezes). */
@@ -58,11 +58,11 @@ function initTalkFeedback(rootEl, { index, reveal = true, now = () => new Date()
     return { phase: myRatings.has(entry.key) ? "done" : "rate", entryKey: entry.key };
   }
 
-  /** Preenche containerEl com o bloco de feedback da palestra (chamado pelo modal e por Minhas palestras). */
-  function render(containerEl, entry) {
+  /** Preenche containerEl com o bloco de feedback da palestra (chamado pelo modal e por Minhas palestras). `message` = aviso opcional. */
+  function render(containerEl, entry, { message = "" } = {}) {
     if (!reveal || !containerEl) return;
     containerEl.dataset.feedbackContainer = entry.key;
-    containerEl.innerHTML = talkFeedbackMarkup({ ...stateFor(entry), name: myName.get() });
+    containerEl.innerHTML = talkFeedbackMarkup({ ...stateFor(entry), name: myName.get(), message });
   }
 
   /** `?checkin=<code>` na URL: faz o check-in e limpa o parâmetro. Agendado por runAfterModules. */
@@ -74,8 +74,10 @@ function initTalkFeedback(rootEl, { index, reveal = true, now = () => new Date()
     url.searchParams.delete("checkin");
     history.replaceState(null, "", url);
     if (!entry) return;
-    await doCheckin(entry).catch(() => {});
-    rootEl.dispatchEvent(new CustomEvent(OPEN_TALK_EVENT, { detail: { key: entry.key } }));
+    // Sem internet o check-in não grava: abre a palestra mesmo assim, com o aviso e o botão de check-in à mão.
+    const failed = await doCheckin(entry).then(() => false, () => true);
+    const message = failed ? t("checkin.offline", "Sem conexão agora. Tente de novo em instantes.") : "";
+    rootEl.dispatchEvent(new CustomEvent(OPEN_TALK_EVENT, { detail: { key: entry.key, message } }));
   }
   if (getParam("checkin")) runAfterModules(handleCheckinParam);
 

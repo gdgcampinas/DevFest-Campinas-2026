@@ -144,11 +144,13 @@ function initTalkQuestions(rootEl, { index, config, myCheckins, myVotes, myAsked
     voteBtn.disabled = true;
     try {
       const { votes, getUid } = deps();
-      // "permission-denied" depois de refazer o check-in = já votou (a regra recusa o segundo voto): só marca, não é erro pra pessoa.
       const uid = await getUid();
-      await withCheckinRetry(entry, () => votes.add(uid, voteBtn.dataset.questionVote, { entryKey: voteBtn.dataset.questionVote, talkKey: entry.key }))
-        .catch(error => { if (error.code !== "permission-denied") throw error; });
-      myVotes.addAll([voteBtn.dataset.questionVote]);
+      const questionId = voteBtn.dataset.questionVote;
+      // "permission-denied" pode ser "já votou" (a regra recusa o segundo voto) OU outra recusa (palestra encerrada, pergunta que saiu
+      // do ar...): só conta como "Votado" se o voto existe mesmo no banco; senão o erro sobe e a pessoa vê o aviso.
+      await withCheckinRetry(entry, () => votes.add(uid, questionId, { entryKey: questionId, talkKey: entry.key }))
+        .catch(async error => { if (error.code !== "permission-denied" || !(await votes.has(uid, questionId))) throw error; });
+      myVotes.addAll([questionId]);
       paint(containerEl, { force: true });
     } catch {
       paint(containerEl, { force: true, message: t("q.voteError", "Não foi possível votar agora. Tente de novo.") });

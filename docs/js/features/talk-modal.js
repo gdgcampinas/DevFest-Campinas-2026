@@ -48,7 +48,7 @@ function initTalkDetails(rootEl, { schedule, tracks, timezone, reveal, modal, fa
   });
 
   /** Abre o modal da palestra (slot x trilha) e preenche os blocos de feedback e de perguntas dela. */
-  function openTalk(slot, track) {
+  function openTalk(slot, track, { feedbackMessage = "" } = {}) {
     if (!slot || !track || !slot.talks) return;
     const key = talkKey(slot, track.id);
     modal.open(track, slot.talks[track.id], {
@@ -61,7 +61,7 @@ function initTalkDetails(rootEl, { schedule, tracks, timezone, reveal, modal, fa
     });
     const feedbackSlot = modal.el.querySelector(".talk-feedback-slot");
     const entry = calendar?.index?.get(key);
-    if (feedback && entry && feedbackSlot) feedback.render(feedbackSlot, entry);
+    if (feedback && entry && feedbackSlot) feedback.render(feedbackSlot, entry, { message: feedbackMessage });
     const questionsSlot = modal.el.querySelector(".talk-questions-slot");
     if (questions && entry && questionsSlot) questions.render(questionsSlot, entry);
   }
@@ -73,7 +73,7 @@ function initTalkDetails(rootEl, { schedule, tracks, timezone, reveal, modal, fa
   // QR de check-in escaneado (talk-feedback.js): depois do check-in, abre a própria palestra.
   rootEl.addEventListener(OPEN_TALK_EVENT, event => {
     const entry = calendar?.index?.get(event.detail.key);
-    if (entry) openTalk(entry.slot, entry.track);
+    if (entry) openTalk(entry.slot, entry.track, { feedbackMessage: event.detail.message });
   });
 
   return { openTalk };
