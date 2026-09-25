@@ -30,5 +30,10 @@ jobs:
       - name: Test Sympla sync, event report and purge
         run: node --test DevFestIA/tools/sympla-sync/sync.test.js DevFestIA/tools/event-report/build-report.test.js DevFestIA/tools/purge-test-data/purge.test.js DevFestIA/tools/quiz/quiz.test.js DevFestIA/tools/questions/questions.test.js DevFestIA/tools/i18n/i18n.test.js DevFestIA/tools/room/room-board.test.js DevFestIA/tools/room/rehearsal.test.js
 
+      - name: Test the screens (jsdom, fake repositories)
+        run: |
+          npm ci --prefix DevFestIA/tools
+          node --test DevFestIA/tools/dom/*.test.js
+
       - name: Check translations
         run: node DevFestIA/tools/i18n/check-i18n.js

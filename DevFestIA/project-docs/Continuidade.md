@@ -15,10 +15,10 @@ trabalho sem depender do histórico de uma conversa específica.
 - **[handoff/HANDOFF_CURRENT.md](../handoff/HANDOFF_CURRENT.md)** —
   estado atual do projeto, diário de bordo. Atualizar a cada task
   concluída: o que foi feito, o que falta, próximos passos.
-- **[../tools/](../tools/)** — scripts em Node, sem npm: verificação (`check-meta.js` e
+- **[../tools/](../tools/)** — scripts em Node (a única dependência npm é o `jsdom` dos testes de tela em `dom/`, com `package.json` só nesta pasta): verificação (`check-meta.js` e
   `check-install.js` rodam no CI; `check-lineup.js`, `check-calendar.js` e os `e2e-*.js` são manuais),
   `sympla-sync/` (job Sympla -> Firestore), `event-report/` (relatório do evento), `purge-test-data/`
-  (limpeza dos dados de teste), `quiz/`, `questions/`, `room/`, `i18n/` (testes puros no CI; `questions/run-rules-tests.sh` testa as
+  (limpeza dos dados de teste), `quiz/`, `questions/`, `room/`, `i18n/` (testes puros no CI), `dom/` (testes de tela em jsdom, no CI: `npm ci --prefix DevFestIA/tools && node --test DevFestIA/tools/dom/*.test.js`; `questions/run-rules-tests.sh` testa as
   regras no emulador, local), `emulator/start.sh` (Firebase local pra testar o site inteiro com `?emulador=1`) e `lib/` (auth Google, cliente REST do
   Firestore e cliente do emulador); os testes de Node rodam no CI. **[../design/](../design/)** — fontes HTML das imagens geradas e o
   `build-brand-assets.sh` que regera favicon, ícones do app e imagem de compartilhamento a partir do

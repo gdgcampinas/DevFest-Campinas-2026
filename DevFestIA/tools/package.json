@@ -1,0 +1,11 @@
+{
+  "name": "devfest-campinas-tools",
+  "private": true,
+  "description": "Só o que os testes de tela (jsdom) precisam. O site em docs/ continua sem build nem npm.",
+  "scripts": {
+    "test:dom": "node --test dom/*.test.js"
+  },
+  "devDependencies": {
+    "jsdom": "^26.1.0"
+  }
+}

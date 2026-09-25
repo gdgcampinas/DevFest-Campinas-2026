@@ -5,3 +5,6 @@ docs/js/data/schedule.dev.js
 
 # Logs do emulador do Firebase
 *-debug.log
+
+# Dependências dos testes de tela (jsdom)
+DevFestIA/tools/node_modules/

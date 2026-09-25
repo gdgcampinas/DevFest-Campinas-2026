@@ -1,6 +1,6 @@
 # Handoff — Current State
 
-**Last updated:** 2026-09-25, sessão 8. Antes de confiar neste texto, rode
+**Last updated:** 2026-09-25, sessão 8 (perguntas, votos, moderação e feedbacks auditados e testados; Sala ao vivo PAUSADA por decisão do Renato). Antes de confiar neste texto, rode
 `git status --short --branch` e `git log --oneline --decorate -10` (o git não mente).
 
 ## Status em uma olhada
@@ -190,6 +190,7 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
   `firebaseLocalStorageDb` + recarregar) e chaves de palestra sem documento.
 - **`prefers-reduced-motion`** está ligado no Browser pane e no iPhone do Renato: a galáxia gira mais
   devagar por config; regra global de styles.css zera outras animações.
+- **Testes de tela (jsdom, sessão 8):** `npm ci --prefix DevFestIA/tools && node --test DevFestIA/tools/dom/*.test.js` (59 casos: perguntas da plateia, moderação, quadro da sala, feedback da palestra e do evento; rodam no CI). Regras do Firestore: `DevFestIA/tools/questions/run-rules-tests.sh` (35 casos, emulador, local).
 - **Testes automáticos:** `node --test DevFestIA/tools/sympla-sync/sync.test.js DevFestIA/tools/event-report/build-report.test.js DevFestIA/tools/purge-test-data/purge.test.js`
   (rodam no CI; o Node 24 não aceita diretório em `--test`, passe os arquivos). `check-meta.js` e
   `check-install.js` também rodam no CI.
