@@ -97,11 +97,13 @@ function initQuestionModeration(rootEl, { schedule, track, config, now = () => n
     watch = {
       talk,
       publisher: createBoardPublisher({ talkKey: talk.key, votes, boards, includeVotes: config.publishVotes }),
-      stopListening: questionsRepo.listen({ talkKey: talk.key }, onQuestions, onListenError),
+      stopListening: () => {},
       // A cada ciclo confere se a sala já passou pra outra palestra; senão, só recalcula a ordem.
       timer: setInterval(() => (pickTalk()?.key !== talk.key ? startWatching() : publish()), config.boardPublishMs),
     };
     drawReady();
+    // Por último: o listener pode responder na hora (cache), e aí `watch` já precisa existir.
+    watch.stopListening = questionsRepo.listen({ talkKey: talk.key }, onQuestions, onListenError);
   }
 
   rootEl.addEventListener("click", async event => {
