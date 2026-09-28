@@ -1,6 +1,6 @@
 # Handoff — Current State
 
-**Last updated:** 2026-09-25, sessão 8 (perguntas, votos, moderação e feedbacks auditados e testados; Sala ao vivo PAUSADA por decisão do Renato). Antes de confiar neste texto, rode
+**Last updated:** 2026-09-28, sessão 9. Banner "Seja patrocinador" em `patrocinio.html` e cards com ícone em "Sobre"/"GDG" na home; ideia "álbum ao vivo" registrada no backlog (junta as tasks de mural de fotos e mural do LED). Antes de confiar neste texto, rode
 `git status --short --branch` e `git log --oneline --decorate -10` (o git não mente).
 
 ## Status em uma olhada
@@ -130,6 +130,13 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
    `.../index.html?avaliar=1`; QR de avaliação do evento no encerramento (QR de exemplo já gerados).
 4. **Tablets das salas:** definir quem monta e abrir os 4 links com antecedência (recarga forçada).
 5. Confirmar grafia/existência dos lugares das salas.
+6. **Patrocínio FIAP (PC 1427137, R$1.500,00, aprovado):** emitir a nota fiscal na **1ª semana de
+   dezembro/2026** (data de entrega no PC é 02/12/2026, não pode ter competência anterior a isso) e
+   sempre antes do dia 25 do mês pra cair no ciclo de pagamento; incluir o número do PC nos dados
+   adicionais e os dados bancários no corpo da NF; enviar NF + boleto pra `notafiscal@fiap.com.br`
+   (também `compras@fiap.com.br` e `jullieti.borba@alura.com.br`). Pagamento sai só nos dias 05/10/15/20,
+   45 dias após emissão. Pendente confirmar com a Jullieti se precisa gerar boleto à parte (depósito) ou
+   se a NF com dados bancários já basta — mensagem de dúvida rascunhada, aguardando envio do Renato.
 
 **B. Quando entrarem as primeiras inscrições**
 6. Conferir o resumo do 🎫 Sincronizar Sympla: formato do `custom_form` (camiseta) e paginação da

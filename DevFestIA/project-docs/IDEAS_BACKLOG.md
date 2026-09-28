@@ -39,6 +39,21 @@ Pedido do Renato (2026-09-23): o evento vai ter um painel de LED; queremos uma
 "aba" do site pra rodar nele, passando álbum do evento, o mascote e conteúdo
 ao vivo. **Não fazer agora**, só registrado.
 
+**Álbum ao vivo integrado ao mural (2026-09-28):** a cena "álbum" deste mural e a task
+"Mural com fotos das pessoas" (abaixo) são a MESMA coisa, não duas separadas. Fonte das
+fotos: **álbum colaborativo do Google Photos** (QR aponta pra ele, sem app nosso, sem
+Cloud Storage — que hoje exige Blaze, já descartado). Como aparece no telão: o modo
+apresentação (slideshow com avanço automático) do próprio álbum, dentro de uma
+`<iframe>` na cena "Álbum ao vivo" do `mural.html`, misturada no rodízio com as outras
+cenas. Moderação: manual, dentro do app do Google Photos — álbum colaborativo deixa
+qualquer participante remover foto de qualquer pessoa; alguém da organização com o
+app aberto vigia (atraso de minutos, não instantâneo, igual à fila das perguntas mas
+sem fila nossa). Zero Firestore, zero custo de leitura extra. Trava: **o painel precisa
+aceitar navegador** (não só HDMI de notebook), senão a `<iframe>` não roda — decisão em
+aberto, ver "Perguntas em aberto" abaixo. Se um dia quiser moderação automática antes
+de ir ao ar (como as perguntas), precisaria de fila no Firestore com link externo —
+mais trabalho, não recomendado pro primeiro ano.
+
 **Mascote:** uma **fênix** está sendo feita (inspirada na capivara dançando que
 o Google fez). Ela entra como cena animada do mural. Depende do arquivo
 (vídeo em loop, sprites ou Lottie/SVG animado) que o Renato vai enviar.
@@ -140,6 +155,13 @@ palestrante vê em tempo real. Precisaria de mais uma coleção no Firestore
 escopo parecido com o check-in ao vivo (`checkin-display.html`), mas com
 escrita em tempo real (Firestore já suporta listener `onSnapshot`, não
 usado ainda no projeto).
+
+### Mural com fotos das pessoas (álbum ao vivo) — TASK ANOTADA, não iniciada
+Pedido do Renato (2026-09-28): plateia sobe fotos que tirou do evento e elas aparecem no
+telão. **Não fazer agora**, só registrado. **Ver a análise e o desenho completos na task
+"Mural eletrônico" acima ("Álbum ao vivo integrado ao mural")** — as duas tasks viraram
+uma só: fonte = álbum colaborativo do Google Photos, exibição = slideshow do álbum numa
+cena do mural, moderação = manual no app do Google Photos.
 
 ### Passaporte DevFest com QR nos estandes
 Quem visita cada estande dos patrocinadores escaneia um QR, junta
