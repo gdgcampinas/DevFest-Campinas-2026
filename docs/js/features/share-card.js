@@ -79,7 +79,7 @@ function drawShareCard(canvas, { event, dateLabel, name = "", logo = null }) {
     { label: t("shareCard.trackIa", "IA"), color: blue },
     { label: t("shareCard.trackWeb", "Front, Back e Data"), color: yellow },
     { label: t("shareCard.trackMobile", "Mobile e Agile"), color: green },
-    { label: t("shareCard.trackCareers", "Carreiras e Mentorias"), color: red },
+    { label: t("shareCard.trackCareers", "Carreira em Tecnologia"), color: red },
   ];
   let ty = height - 260;
   ctx.font = `500 30px ${body}`;

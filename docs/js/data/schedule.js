@@ -72,7 +72,7 @@ const TRACKS = [
     description: "Arquitetura, engenharia de dados e desenvolvimento web — as bases que sustentam qualquer produto digital." },
   { id: "mobile", label: "Mobile / Agile", shortLabel: "Mobile/Agile", room: roomFor("Lagoa do Taquaral"), mc: "MC a definir", color: "var(--mobile)", icon: "phone",
     description: "Apps nativos e multiplataforma, e os métodos ágeis que fazem times entregarem rápido e com qualidade." },
-  { id: "mentoring", label: "Carreiras & Mentorias", shortLabel: "Carreiras", room: roomFor("Mercadão Central"), mc: "MC a definir", color: "var(--mentoring)", icon: "rocket",
+  { id: "mentoring", label: "Carreira em Tecnologia", shortLabel: "Carreira", room: roomFor("Mercadão Central"), mc: "MC a definir", color: "var(--mentoring)", icon: "rocket",
     description: "Trajetórias, mentoria e como crescer na área — de quem já passou pelos mesmos desafios." },
 ];
 
