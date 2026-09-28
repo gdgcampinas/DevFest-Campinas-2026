@@ -677,7 +677,7 @@ a.featured-speaker:focus-visible{outline:2px solid var(--text);outline-offset:4p
 .patrocinio-cta{border-color:var(--amber);color:var(--amber)}
 .patrocinio-cta:hover{background:color-mix(in oklch, var(--amber) 12%, transparent)}
 
-.sponsorship-banner{max-width:420px;margin:28px auto 0;padding:0 24px}
+.sponsorship-banner{max-width:640px;margin:28px auto 0;padding:0 24px}
 .sponsorship-banner img{width:100%;height:auto;display:block;border-radius:20px;border:1px solid var(--card-border)}
 
 /* faixa animada (marquee) — texto de EVENT/SCHEDULE, CSS puro */
