@@ -454,8 +454,6 @@ a.featured-speaker:focus-visible{outline:2px solid var(--text);outline-offset:4p
 /* sobre */
 .about{max-width:1180px;margin:36px auto 0;padding:0 24px;display:grid;grid-template-columns:1fr;gap:20px}
 @media(min-width:780px){.about{grid-template-columns:repeat(2,1fr)}}
-.about-block h3{margin:0 0 8px;font:700 18px var(--font-display);color:oklch(95% 0.006 260)}
-.about-block p{margin:0;font:500 13.5px var(--font-body);color:var(--muted);line-height:1.6}
 
 /* realização — reaproveita EVENT.hosts */
 .realizacao{max-width:1180px;margin:36px auto 0;padding:0 24px}
@@ -678,6 +676,9 @@ a.featured-speaker:focus-visible{outline:2px solid var(--text);outline-offset:4p
 .patrocinio-subtitle{margin:0 0 22px;font:500 15px var(--font-body);color:var(--muted);line-height:1.6}
 .patrocinio-cta{border-color:var(--amber);color:var(--amber)}
 .patrocinio-cta:hover{background:color-mix(in oklch, var(--amber) 12%, transparent)}
+
+.sponsorship-banner{max-width:420px;margin:28px auto 0;padding:0 24px}
+.sponsorship-banner img{width:100%;height:auto;display:block;border-radius:20px;border:1px solid var(--card-border)}
 
 /* faixa animada (marquee) — texto de EVENT/SCHEDULE, CSS puro */
 .ticker{overflow:hidden;background:var(--live);border-bottom:1px solid var(--card-border)}

@@ -3,6 +3,7 @@ function initPatrocinio() {
   const reveal = initShell("patrocinio");
 
   renderPatrocinioIntro(patrocinioIntroRepository.getAll(), document.getElementById("patrocinioIntro"));
+  renderSponsorshipBanner(sponsorshipBannerRepository.getAll(), document.getElementById("sponsorshipBanner"));
   renderInfoCards(patrocinioBenefitsRepository.getAll(), document.querySelector("#beneficiosSection .faq-grid"));
   renderOrConstruction(reveal, document.getElementById("sponsorsSection"),
     () => renderSponsors(sponsorsRepository.getAll(), document.getElementById("sponsorsSection"), document.querySelector(".sponsors-grid")),
