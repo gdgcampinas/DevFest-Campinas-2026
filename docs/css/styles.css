@@ -1006,6 +1006,20 @@ body:has(.modal:not([hidden])) .feedback-nudge{display:none}
 .quiz{max-width:720px;margin:36px auto 0;padding:0 24px 40px}
 .quiz h2{margin:0 0 6px;font:700 24px var(--font-display);color:oklch(95% 0.005 260)}
 .quiz h2:focus,.quiz legend:focus{outline:none}
+
+/* Tela inicial do quiz: mesma linguagem de card do resultado (.quiz-result), pra não ficar
+   um botão solto sozinho na tela — ícone, título, texto e botão centralizados dentro de um card. */
+.quiz-intro{position:relative;padding:36px 28px;text-align:center;overflow:hidden;
+  border:1px solid oklch(35% 0.01 260);border-radius:16px;background:oklch(20% 0.01 260 / .6)}
+.quiz-intro::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent)}
+.quiz-intro-icon{
+  display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;
+  width:56px;height:56px;border-radius:16px;
+  background:color-mix(in oklch, var(--accent) 16%, transparent);color:var(--accent);
+}
+.quiz-intro-icon .icon{width:28px;height:28px}
+.quiz-intro h2{margin:0 0 10px}
+.quiz-intro-sub{margin:0 auto 24px;max-width:440px;font:500 14.5px var(--font-body);color:var(--muted);line-height:1.6}
 .quiz-progress{margin:0 0 8px;font:700 13px var(--font-body);color:var(--accent)}
 .quiz-progress-bar{height:4px;margin-bottom:22px;border-radius:2px;background:oklch(30% 0.01 260)}
 .quiz-progress-bar span{display:block;height:100%;border-radius:2px;background:var(--accent);transition:width .25s}

@@ -5,9 +5,12 @@
  */
 function quizIntroMarkup(copy) {
   return `
-    <h2 tabindex="-1" data-quiz-focus>${copy.title}</h2>
-    <p class="faq-sub">${copy.subtitle}</p>
-    <button type="button" class="chip-btn chip-btn--primary" data-quiz-start data-track-event="quiz_start">${copy.startButton}</button>`;
+    <div class="quiz-intro">
+      <span class="quiz-intro-icon">${iconMarkup("sparkles")}</span>
+      <h2 tabindex="-1" data-quiz-focus>${copy.title}</h2>
+      <p class="quiz-intro-sub">${copy.subtitle}</p>
+      <button type="button" class="chip-btn chip-btn--primary" data-quiz-start data-track-event="quiz_start">${copy.startButton}</button>
+    </div>`;
 }
 
 function quizQuestionMarkup({ question, index, total, selectedId, isLast, copy }) {
