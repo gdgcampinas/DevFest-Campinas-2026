@@ -1,6 +1,6 @@
 # Handoff — Current State
 
-**Last updated:** 2026-09-28, sessão 9. Banner "Seja patrocinador" em `patrocinio.html` e cards com ícone em "Sobre"/"GDG" na home; ideia "álbum ao vivo" registrada no backlog (junta as tasks de mural de fotos e mural do LED). Antes de confiar neste texto, rode
+**Last updated:** 2026-09-28, sessão 9. Banner "Seja patrocinador" em `patrocinio.html`, cards com ícone em "Sobre"/"GDG" na home, trilha renomeada pra "Carreira em Tecnologia", ordem da home ajustada (Sobre antes dos números, depoimentos depois das fotos, Realização depois de Comunidades parceiras), ideia "álbum ao vivo" registrada no backlog. **ARMADILHA que mordeu nesta sessão: mudei o CONTEÚDO de `schedule.js` sem subir o `?v=` que ele carrega** (`schedule.js?v=22` continuou em todas as páginas mesmo com o texto novo), então o nome da trilha ficou em cache até o commit seguinte corrigir; aproveitei pra alinhar o `checkin-display.html`, que já estava desalinhado (`?v=18` contra `?v=22` do resto) antes disso. Reforça a regra: TODO arquivo cujo conteúdo mudou precisa do `?v=` subido em TODAS as páginas que o referenciam, sem exceção, e conferir se todas já estavam na mesma versão antes de mexer. Antes de confiar neste texto, rode
 `git status --short --branch` e `git log --oneline --decorate -10` (o git não mente).
 
 ## Status em uma olhada
