@@ -59,9 +59,9 @@ function quizResultMarkup({ track, runnerUp, talks, talksNotice, agendaAdded, wh
       ${runnerUp ? `<p class="quiz-also">${copy.alsoFits} <strong>${runnerUp.label}</strong></p>` : ""}
       ${talksBlock}
     </div>
-    <div class="quiz-actions">
+    <div class="quiz-share-actions">
+      <a class="chip-btn chip-btn--primary" href="${whatsappUrl}" target="_blank" rel="noopener" data-track-event="quiz_share" data-track-target="whatsapp">${iconMarkup("share")}<span>${copy.whatsapp}</span></a>
       <button type="button" class="chip-btn" data-quiz-copy data-track-event="quiz_share" data-track-target="copy">${iconMarkup("link")}<span>${copy.share}</span></button>
-      <a class="chip-btn" href="${whatsappUrl}" target="_blank" rel="noopener" data-track-event="quiz_share" data-track-target="whatsapp">${iconMarkup("share")}${copy.whatsapp}</a>
       <button type="button" class="chip-btn" data-quiz-restart>${copy.restart}</button>
     </div>`;
 }

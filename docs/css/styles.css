@@ -1043,6 +1043,16 @@ body:has(.modal:not([hidden])) .feedback-nudge{display:none}
 .quiz-talk-time{font-weight:700;color:var(--track-color)}
 .quiz-talk-speakers{grid-column:2;font-size:13px;color:var(--muted)}
 
+/* Ações de compartilhar o resultado do quiz: mesmos .chip-btn da navegação (que fica pequena/quase
+   transparente de propósito, pra não competir com o conteúdo), mas aqui elas SÃO o conteúdo da tela,
+   então ganham tamanho e fundo sólido pra não sumir contra o fundo escuro. */
+.quiz-share-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:22px}
+@media(max-width:560px){.quiz-share-actions{grid-template-columns:1fr}}
+.quiz-share-actions .chip-btn{justify-content:center;padding:14px 16px;border-radius:12px;font:700 13.5px var(--font-body)}
+.quiz-share-actions .chip-btn:not(.chip-btn--primary){background:oklch(24% 0.01 260);border:1px solid oklch(38% 0.01 260)}
+.quiz-share-actions .chip-btn:not(.chip-btn--primary):hover{border-color:var(--text)}
+.quiz-share-actions .chip-btn .icon{width:16px;height:16px}
+
 /* Perguntas ao vivo por palestra (components/talk-questions.js) e tela do moderador (moderacao.html) */
 .talk-questions-slot:empty{display:none}
 .question-form{margin-bottom:14px}
