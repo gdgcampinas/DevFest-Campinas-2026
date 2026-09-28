@@ -978,8 +978,31 @@ body:has(.modal:not([hidden])) .feedback-nudge{display:none}
   .hero-galaxy--still img{animation:none !important}
 }
 
-/* Quiz "Monte sua trilha" (quiz.html, home CTA) */
-.tracks-overview-cta{margin:18px 0 0;text-align:center}
+/* Quiz "Monte sua trilha" (quiz.html, home CTA): mesma linguagem visual dos cards de trilha (.faq-item),
+   só que em faixa horizontal com o botão embutido, pra não ficar um botão solto sem contexto. */
+.tracks-quiz-banner{
+  --track-color: var(--accent);
+  margin:18px 0 0;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  text-decoration:none;position:relative;overflow:hidden;
+  background:linear-gradient(180deg,var(--card-a),var(--card-b));
+  border:1px solid var(--card-border);border-radius:var(--radius);
+  padding:18px 20px;transition:border-color .15s;
+}
+.tracks-quiz-banner::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--track-color)}
+.tracks-quiz-banner:hover{border-color:color-mix(in oklch, var(--track-color) 55%, var(--card-border))}
+.tracks-quiz-banner-icon{
+  width:44px;height:44px;border-radius:12px;flex:0 0 auto;
+  background:color-mix(in oklch, var(--track-color) 16%, transparent);
+  color:var(--track-color);display:flex;align-items:center;justify-content:center;
+}
+.tracks-quiz-banner-icon .icon{width:26px;height:26px}
+.tracks-quiz-banner-text{display:flex;flex-direction:column;gap:2px;flex:1 1 260px}
+.tracks-quiz-banner-text strong{font:700 15.5px var(--font-display);color:oklch(97% 0.005 260)}
+.tracks-quiz-banner-text span{font:500 13px var(--font-body);color:var(--muted)}
+.tracks-quiz-banner-cta{
+  flex:0 0 auto;font:700 13px var(--font-body);color:oklch(14% 0.01 260);
+  background:var(--track-color);border-radius:100px;padding:10px 18px;white-space:nowrap;
+}
 .quiz{max-width:720px;margin:36px auto 0;padding:0 24px 40px}
 .quiz h2{margin:0 0 6px;font:700 24px var(--font-display);color:oklch(95% 0.005 260)}
 .quiz h2:focus,.quiz legend:focus{outline:none}

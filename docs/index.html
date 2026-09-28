@@ -32,7 +32,7 @@
 <link rel="preload" href="assets/fonts/google-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=1">
 <link rel="stylesheet" href="css/tokens.css?v=3">
-<link rel="stylesheet" href="css/styles.css?v=63">
+<link rel="stylesheet" href="css/styles.css?v=64">
 </head>
 <body>
 
@@ -86,7 +86,14 @@
 <section class="tracks-overview" id="tracksOverviewSection" hidden>
   <h2 data-i18n="home.tracks">Trilhas</h2>
   <div class="tracks-overview-grid faq-grid"></div>
-  <p class="tracks-overview-cta"><a class="chip-btn chip-btn--primary" href="quiz.html" data-track-event="quiz_open" data-track-place="home" data-i18n="home.quizCta">Descubra sua trilha em 5 perguntas</a></p>
+  <a class="tracks-quiz-banner" href="quiz.html" data-track-event="quiz_open" data-track-place="home">
+    <span class="tracks-quiz-banner-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 3v4M17 5h4M5 17v4M3 19h4"/></svg></span>
+    <span class="tracks-quiz-banner-text">
+      <strong data-i18n="home.quizBannerTitle">Não sabe por onde começar?</strong>
+      <span data-i18n="home.quizBannerBody">Responda 5 perguntas rápidas e descubra qual trilha combina com você.</span>
+    </span>
+    <span class="tracks-quiz-banner-cta" data-i18n="home.quizCta">Descubra sua trilha →</span>
+  </a>
 </section>
 
 <section class="stats" id="statsSection" hidden>
@@ -164,7 +171,7 @@
 -->
 <script src="js/data/repository.js?v=1"></script>
 <script src="js/data/i18n/languages.js?v=1"></script>
-<script src="js/data/i18n/en.js?v=5"></script>
+<script src="js/data/i18n/en.js?v=6"></script>
 <script src="js/features/i18n-core.js?v=1"></script>
 <script src="js/features/i18n.js?v=1"></script>
 <script src="js/data/firebase-config.js?v=1"></script>
