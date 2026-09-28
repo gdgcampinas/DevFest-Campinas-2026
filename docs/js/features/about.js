@@ -1,8 +1,6 @@
-/** Feature: blocos de texto institucional ("Sobre"). */
+/** Feature: blocos institucionais ("Sobre"). Reusa o card com ícone de components/info-card.js (mesmo padrão de
+ * "Antes de vir" e "Por que patrocinar"): cada item já traz `icon` (nome de data/icons.js) resolvido em SVG aqui,
+ * pra o componente genérico não precisar saber de iconsRepository. */
 function renderAbout(sections, mountEl) {
-  mountEl.innerHTML = sections.map(section => `
-    <div class="about-block">
-      <h3>${section.title}</h3>
-      <p>${section.body}</p>
-    </div>`).join("");
+  renderInfoCards(sections.map(section => ({ ...section, icon: iconMarkup(section.icon) })), mountEl);
 }
