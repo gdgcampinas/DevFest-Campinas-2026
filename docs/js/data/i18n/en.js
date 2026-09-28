@@ -193,8 +193,6 @@ I18N_DICTIONARIES.en = {
     "home.quizCta": "Find your track →",
     "home.teaserGrade": "Full schedule",
     "home.teaserGradeText": "Check the full schedule, filter by track →",
-    "home.teaserSpeakers": "Speakers",
-    "home.teaserSpeakersText": "See who's taking the stage this year →",
     "home.teaserTickets": "Tickets",
     "home.teaserTicketsText": "Free, with a T-shirt or VIP: see the types →",
     "home.realization": "Organized by",
