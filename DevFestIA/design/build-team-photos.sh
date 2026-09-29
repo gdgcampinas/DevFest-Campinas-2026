@@ -21,6 +21,7 @@ declare -a PHOTOS=(
   "Davi Andrade.jpeg|davi-andrade"
   "Débora Nortes.jpg|debora-nortes"
   "Felipe de Oliveira .jpeg|felipe-de-oliveira"
+  "Gustavo Costa .jpeg|gustavo-costa"
   "Henrique Ferreira Rodrigues da Silva.jpeg|henrique-ferreira-rodrigues-da-silva"
   "Henrique Ribeiro Medeiros da Silva.jpeg|henrique-ribeiro-medeiros-da-silva"
   "João Estevão Camilo.jpeg|joao-estevao-camilo"
