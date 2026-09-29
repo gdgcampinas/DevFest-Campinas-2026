@@ -13,7 +13,7 @@ function renderTeamIntro(intro, mountEl) {
  */
 function createPersonModal() {
   const modal = createModal("personModal", { label: t("team.detail", "Sobre a pessoa") });
-  return { ...modal, open: person => modal.openHTML(personDetailMarkup(person, { heading: t("team.discover", "Descubra mais sobre") })) };
+  return { ...modal, open: person => modal.openHTML(personDetailMarkup(person)) };
 }
 
 function renderTeamGroup(team, type, sectionEl, gridEl, { onSelect = null } = {}) {

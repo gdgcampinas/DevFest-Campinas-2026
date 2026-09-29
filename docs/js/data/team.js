@@ -55,7 +55,7 @@ const TEAM = [
   volunteer("Paula Santos", "https://www.linkedin.com/in/paula-santos-", "f", teamPhoto("paula-santos")),
   volunteer("João Estevão Camilo", "https://www.linkedin.com/in/joãoestevaocamilo", "m", teamPhoto("joao-estevao-camilo")),
   volunteer("Camila Fernanda Ignacio", "https://www.linkedin.com/in/camila-fernanda-ignácio-379253103", "f", teamPhoto("camila-fernanda-ignacio")),
-  volunteer("Ricardo Koiti Matsushita", "https://www.linkedin.com/in/ricardo-koiti-matsushita-545006225", "m", teamPhoto("ricardo-koiti-matsushita")),
+  volunteer("Ricardo Koiti Matsushita", "https://www.linkedin.com/in/ricardo-koiti-matsushita-545006225", "m", teamPhoto("ricardo-koiti-matsushita"), "Ricardo Koiti Matsushita é estudante de Análise e Desenvolvimento de Sistemas na FATEC Americana e acredita no poder da comunidade, das conexões e da troca de conhecimento. Atualmente trabalha como estagiário."),
   volunteer("Débora Nortes", "https://www.linkedin.com/in/deboranortes", "f", teamPhoto("debora-nortes")),
   // Real (2026-09-29): LinkedIn dele não veio no trecho do grupo (mandou por PV); mantido o da leva anterior, mesma pessoa.
   volunteer("Davi Andrade", "https://www.linkedin.com/in/davi-lima-4695b3211", "m", teamPhoto("davi-andrade")),

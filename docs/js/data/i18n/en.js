@@ -166,7 +166,7 @@ I18N_DICTIONARIES.en = {
     "pwa.guideLabel": "How to install the app",
     "talk.detail": "Talk details",
     "team.detail": "About this person",
-    "team.discover": "Learn more about",
+    "team.discoverHint": "Learn more →",
     "team.linkedin": "See on LinkedIn",
     "gallery.prev": "Previous",
     "gallery.next": "Next",

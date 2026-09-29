@@ -762,14 +762,15 @@ footer{max-width:1180px;margin:36px auto 0;padding:0 24px;display:flex;flex-dire
 .modal-backdrop{position:absolute;inset:0;background:rgba(3,4,8,.75);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .modal-card{
   --modal-close-size:32px;--modal-close-inset:14px; /* botão X: tamanho e recuo, também usados por quem precisa desviar dele */
+  --modal-pad-x:26px;--modal-pad-y:28px; /* também usado por quem precisa sangrar até a borda (ex.: foto do person-detail) */
   position:relative;max-width:540px;width:100%;max-height:85vh;overflow-y:auto;
   background:linear-gradient(135deg,var(--card-a),var(--card-b));
-  border:1px solid var(--card-border);border-radius:16px;padding:28px 26px;
+  border:1px solid var(--card-border);border-radius:16px;padding:var(--modal-pad-y) var(--modal-pad-x);
 }
 .modal-close{
   position:absolute;top:var(--modal-close-inset);right:var(--modal-close-inset);width:var(--modal-close-size);height:var(--modal-close-size);border-radius:50%;
-  background:transparent;border:1px solid var(--card-border);color:var(--muted);
-  font-size:16px;cursor:pointer;line-height:1;
+  background:rgba(3,4,8,.55);backdrop-filter:blur(3px);border:1px solid var(--card-border);color:var(--muted);
+  font-size:16px;cursor:pointer;line-height:1;z-index:2; /* fica por cima de conteúdo que sangra até a borda, ex.: foto do person-detail */
 }
 .modal-close:hover{background:rgba(255,255,255,.06);color:var(--text)}
 
@@ -857,16 +858,26 @@ a.detail-speaker .li-icon{
 .person-name strong{font-weight:800}
 .person-role{margin-top:3px;font:500 12px var(--font-body);color:var(--muted-dim)}
 
-/* modal "Descubra mais sobre" (components/person-detail.js) */
+/* modal de detalhe da pessoa (components/person-detail.js) — foto sangra até a borda do modal (mesma
+   proporção/foco do person-photo do card) com a barra de cor da pessoa por cima, "como os cards" pedido
+   pelo Renato; sem título de seção, só o conteúdo */
 .person-detail{display:flex;flex-direction:column;gap:12px;text-align:center;align-items:center}
-.person-detail-heading{margin:0;padding-right:calc(var(--modal-close-size) + var(--modal-close-inset));font:700 12px var(--font-body);text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
-.person-detail-photo{width:160px;aspect-ratio:4/5;border-radius:14px;object-fit:cover;object-position:50% 22%;border:1px solid var(--card-border)}
-.person-detail-photo--fallback{display:flex;align-items:center;justify-content:center;font:700 40px var(--font-display);color:var(--muted);background:var(--card-b)}
-.person-detail-name{margin:0;font:700 22px var(--font-display);color:oklch(97% 0.005 260)}
+.person-detail-photo-wrap{
+  position:relative;align-self:stretch;
+  margin:calc(var(--modal-pad-y) * -1) calc(var(--modal-pad-x) * -1) 4px;
+  border-radius:16px 16px 0 0;overflow:hidden;
+}
+.person-detail-photo-wrap::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:var(--track-color);z-index:1}
+.person-detail-photo{width:100%;aspect-ratio:16/11;object-fit:cover;object-position:50% 22%;display:block}
+.person-detail-photo--fallback{display:flex;align-items:center;justify-content:center;font:700 44px var(--font-display);color:var(--muted);background:var(--card-b)}
+.person-detail-name{margin:4px 0 0;font:700 22px var(--font-display);color:oklch(97% 0.005 260)}
 .person-detail-role{margin:-6px 0 0;font:500 13px var(--font-body);color:var(--muted-dim)}
 .person-detail-bio{margin:0;font:400 15px/1.55 var(--font-body);color:var(--text);text-align:left;white-space:pre-line}
 .person-detail-link{font:600 13px var(--font-body);color:var(--google-blue);text-decoration:none}
 .person-detail-link:hover{text-decoration:underline}
+
+/* dica no card (só quando clicável): reusa a cor da barra do card, mesmo idioma de .faq-link */
+.person-hint{display:block;margin-top:4px;font:700 10.5px var(--font-body);text-transform:uppercase;letter-spacing:.3px;color:var(--track-color)}
 
 /* padding-right reserva o canto do botão X do modal, pra estrela nunca ficar por baixo dele */
 .detail-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;padding-right:calc(var(--modal-close-size) + var(--modal-close-inset))}
@@ -911,17 +922,17 @@ textarea.feedback-input{resize:vertical;min-height:44px}
 .share-card-canvas{width:100%;max-width:320px;aspect-ratio:1080/1350;border-radius:14px;border:1px solid var(--card-border);display:block;margin:0 auto 14px}
 .share-card-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 
-/* código de conduta */
-.cod{max-width:1180px;margin:36px auto 0;padding:0 24px}
-.cod h2{margin:0 0 12px;font:700 22px var(--font-display);color:oklch(95% 0.005 260)}
-.cod-intro{margin:0 0 12px;font:500 14px var(--font-body);color:var(--muted);line-height:1.6}
-.cod-rules{margin:0 0 12px;padding-left:20px;display:flex;flex-direction:column;gap:6px}
-.cod-rules li{font:500 13.5px var(--font-body);color:var(--muted);line-height:1.55}
-.cod-contacts{margin:0;font:600 13px var(--font-body);color:var(--text)}
+/* código de conduta — intro reusa .team-intro-card, regras reusam .faq-item/.faq-grid
+   (info-card.js), contato reusa .faq-item + .social-links do rodapé; só o espaçamento é próprio daqui */
+.cod{max-width:1180px;margin:36px auto 0;padding:0 24px;display:flex;flex-direction:column;gap:20px}
+.cod-intro-card{margin:0}
+.cod-contact{text-align:center}
+.cod-contact .faq-icon{margin-left:auto;margin-right:auto}
+.cod-contact-links{padding-top:10px}
 
 @media(max-width:480px){
   .modal{padding:12px}
-  .modal-card{padding:22px 18px;max-height:90vh}
+  .modal-card{--modal-pad-x:18px;--modal-pad-y:22px;padding:var(--modal-pad-y) var(--modal-pad-x);max-height:90vh}
   .detail{margin:-22px -18px 0;padding:20px 18px 0}
   .detail-title{font-size:19px}
   .detail-desc{font-size:13.5px}

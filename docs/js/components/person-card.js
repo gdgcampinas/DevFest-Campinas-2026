@@ -31,6 +31,7 @@ function personCardMarkup(person, index) {
       <div class="person-info">
         <div class="person-name">${personNameMarkup(person.name)}</div>
         ${person.role ? `<div class="person-role">${person.role}</div>` : ""}
+        ${clickable ? `<span class="person-hint">${t("team.discoverHint", "Conheça mais →")}</span>` : ""}
       </div>
     </div>`;
 }
