@@ -1,24 +1,12 @@
 /**
- * Organizadores (ainda MOCK, até confirmar nomes/fotos reais) e voluntários (reais, ver abaixo) do
- * DevFest Campinas 2026. `type` distingue organizador de voluntário (mesmo grid/card, só filtra em
- * 2 seções na página Time). `social` aceita qualquer rede — cada item vira 1 ícone.
+ * Organizadores e voluntários do DevFest Campinas 2026 — todo mundo aqui é REAL (a leva mock foi
+ * substituída, ver histórico do arquivo se precisar do padrão antigo). `type` distingue organizador
+ * de voluntário (mesmo grid/card, só filtra em 2 seções na página Time). `social` vira 1 ícone por rede.
  *
- * `photo` é a URL final (ou "" pra cair no fallback de iniciais de components/avatar.js — é assim que
- * os voluntários sem foto ainda aparecem, sem precisar de imagem placeholder nenhuma). Organizadores
- * mock passam `mockPhoto(id)` explicitamente; quando o nome/foto real chegar, troca só o `photo` aqui.
+ * `photo` é a URL final (ou "" pra cair no fallback de iniciais de components/avatar.js — sem precisar
+ * de imagem placeholder nenhuma). `linkedin` também é opcional (`""` = sem ícone ainda): quem entrou
+ * na lista mas ainda não mandou a rede fica sem o badge até completar.
  */
-const socialLinks = {
-  linkedin: { name: "linkedin", link: MOCK_LINKEDIN_URL },
-  facebook: { name: "facebook", link: MOCK_FACEBOOK_URL },
-};
-
-const member = (type, name, role, photo, networks = ["linkedin"]) => ({
-  name,
-  role,
-  type,
-  photo,
-  social: networks.map(network => socialLinks[network]),
-});
 
 /**
  * Foto real de organizador/voluntário (assets/img/team/, ver `DevFestIA/design/build-team-photos.sh` pra gerar
@@ -28,17 +16,13 @@ const member = (type, name, role, photo, networks = ["linkedin"]) => ({
 const TEAM_PHOTO_VERSION = 1;
 const teamPhoto = slug => `assets/img/team/${slug}.webp?v=${TEAM_PHOTO_VERSION}`;
 
-/**
- * Pessoa real (organizador ou voluntário) com o próprio LinkedIn — não o mock genérico de `member()`.
- * `photo` opcional: sem ela cai pra iniciais (components/avatar.js), sem precisar de placeholder.
- * `role` opcional (o card só mostra se tiver).
- */
-const person = (type, name, linkedin, { role = "", photo = "" } = {}) => ({
+/** Pessoa real (organizador ou voluntário). `photo` e `linkedin` opcionais: sem eles, cai pra iniciais e some o ícone. */
+const person = (type, name, { role = "", photo = "", linkedin = "" } = {}) => ({
   name,
   role,
   type,
   photo,
-  social: [{ name: "linkedin", link: linkedin }],
+  social: linkedin ? [{ name: "linkedin", link: linkedin }] : [],
 });
 
 /**
@@ -46,17 +30,17 @@ const person = (type, name, linkedin, { role = "", photo = "" } = {}) => ({
  * primeira leva tinha gente fora da lista oficial, foi substituída inteira por esta), ver
  * DevFestIA/project-docs/PROJECT_CONTEXT.md "Time".
  */
-const volunteer = (name, linkedin, photo = "") => person("voluntario", name, linkedin, { role: "Voluntário(a)", photo });
+const volunteer = (name, linkedin, photo = "") => person("voluntario", name, { role: "Voluntário(a)", photo, linkedin });
+/** Organizador: mesmo `person()`, só fixando o `type`. */
+const organizer = (name, { role = "", photo = "", linkedin = "" } = {}) => person("organizador", name, { role, photo, linkedin });
 
 const TEAM = [
-  member("organizador", "Fernanda Albuquerque", "Direção Geral", mockPhoto(47), ["facebook", "linkedin"]),
-  member("organizador", "Rodrigo Menezes", "Curadoria de Conteúdo", mockPhoto(66)),
-  member("organizador", "Patrícia Lacerda", "Comunicação e Marketing", mockPhoto(48), ["facebook", "linkedin"]),
-  member("organizador", "Bruno Cavalcanti", "Parcerias e Patrocínio", mockPhoto(63)),
-  member("organizador", "Tatiane Moraes", "Operações e Logística", mockPhoto(49)),
-  member("organizador", "Felipe Nascimento", "Tecnologia e Site", mockPhoto(68)),
-  // Real (2026-09-29): cargo ainda não confirmado pelo Renato, ver aviso no handoff.
-  person("organizador", "Renato Ramos", "https://www.linkedin.com/in/renato-ramos-95885a38", { photo: teamPhoto("renato-ramos") }),
+  // Organizadores reais (2026-09-30): só 4, a leva mock inteira saiu. Cargo ainda não confirmado pelo Renato.
+  organizer("Renato Ramos", { linkedin: "https://www.linkedin.com/in/renato-ramos-95885a38", photo: teamPhoto("renato-ramos") }),
+  // Foto ainda não recebida como arquivo (só colada na conversa) — falta rodar build-team-photos.sh com ela.
+  organizer("Bianca Issa"),
+  organizer("Michel Salomé", { linkedin: "https://www.linkedin.com/in/michel-luis-salome-de-barros" }),
+  organizer("Carlos H"),
   volunteer("Paula Santos", "https://www.linkedin.com/in/paula-santos-", teamPhoto("paula-santos")),
   volunteer("João Estevão Camilo", "https://www.linkedin.com/in/joãoestevaocamilo", teamPhoto("joao-estevao-camilo")),
   volunteer("Ricardo Koiti Matsushita", "https://www.linkedin.com/in/ricardo-koiti-matsushita-545006225", teamPhoto("ricardo-koiti-matsushita")),
