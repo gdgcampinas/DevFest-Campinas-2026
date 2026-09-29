@@ -864,7 +864,7 @@ a.detail-speaker .li-icon{
 .person-detail-photo--fallback{display:flex;align-items:center;justify-content:center;font:700 40px var(--font-display);color:var(--muted);background:var(--card-b)}
 .person-detail-name{margin:0;font:700 22px var(--font-display);color:oklch(97% 0.005 260)}
 .person-detail-role{margin:-6px 0 0;font:500 13px var(--font-body);color:var(--muted-dim)}
-.person-detail-bio{margin:0;font:400 15px/1.55 var(--font-body);color:var(--text);text-align:left}
+.person-detail-bio{margin:0;font:400 15px/1.55 var(--font-body);color:var(--text);text-align:left;white-space:pre-line}
 .person-detail-link{font:600 13px var(--font-body);color:var(--google-blue);text-decoration:none}
 .person-detail-link:hover{text-decoration:underline}
 

@@ -43,7 +43,11 @@ const organizer = (name, { role = "", photo = "", linkedin = "", bio = "" } = {}
 
 const TEAM = [
   // Organizadores reais (2026-09-30): só 4, a leva mock inteira saiu. Cargo ainda não confirmado pelo Renato.
-  organizer("Renato Ramos", { linkedin: "https://www.linkedin.com/in/renato-ramos-95885a38", photo: teamPhoto("renato-ramos") }),
+  organizer("Renato Ramos", {
+    linkedin: "https://www.linkedin.com/in/renato-ramos-95885a38",
+    photo: teamPhoto("renato-ramos"),
+    bio: "Desenvolvedor de software com mais de 15 anos de experiência em soluções cross-platform (Mobile e Web), atuando tanto no back-end quanto no front-end. Especialista em aplicações mobile para Android e iOS, além de aplicações web baseadas em padrões modernos, integrando bases de dados locais e remotas em soluções robustas e escaláveis.\n\nApaixonado por tecnologias de ponta e por código simples e legível. Nas horas vagas, é músico (guitarra e violoncelo) e organizador do GDG Campinas.",
+  }),
   organizer("Bianca Issa"),
   organizer("Michel Salomé", { linkedin: "https://www.linkedin.com/in/michel-luis-salome-de-barros", photo: teamPhoto("michel-salome") }),
   organizer("Carlos H"),
