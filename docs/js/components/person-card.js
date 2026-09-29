@@ -14,11 +14,13 @@ function personNameMarkup(name) {
   return rest.length ? `${first} <strong>${rest.join(" ")}</strong>` : first;
 }
 
+/** `trackColor` (opcional) vira a barra no topo do card, mesmo padrão de --track-color de info-card.js: quem
+ * chama decide a cor (ex.: um tom pra organizador, outro pra voluntário), o card só desenha. */
 function personCardMarkup(person) {
   const photo = avatarMarkup(person.name, person.photo, "person-photo");
   const socials = (person.social || []).map(socialIconMarkup).join("");
   return `
-    <div class="person-card">
+    <div class="person-card" style="--track-color:${person.trackColor ?? "transparent"}">
       <div class="person-photo-wrap">
         ${photo}
         ${socials ? `<div class="person-social">${socials}</div>` : ""}

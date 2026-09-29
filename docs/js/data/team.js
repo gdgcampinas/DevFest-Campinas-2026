@@ -16,12 +16,17 @@
 const TEAM_PHOTO_VERSION = 1;
 const teamPhoto = slug => `assets/img/team/${slug}.webp?v=${TEAM_PHOTO_VERSION}`;
 
+/** Cor da barra do card por grupo (components/person-card.js), pra separar organizador de voluntário no
+ * grid sem precisar de card diferente — mesmas cores da marca, nenhuma nova. */
+const TEAM_TYPE_COLOR = { organizador: "var(--google-blue)", voluntario: "var(--accent)" };
+
 /** Pessoa real (organizador ou voluntário). `photo` e `linkedin` opcionais: sem eles, cai pra iniciais e some o ícone. */
 const person = (type, name, { role = "", photo = "", linkedin = "" } = {}) => ({
   name,
   role,
   type,
   photo,
+  trackColor: TEAM_TYPE_COLOR[type],
   social: linkedin ? [{ name: "linkedin", link: linkedin }] : [],
 });
 

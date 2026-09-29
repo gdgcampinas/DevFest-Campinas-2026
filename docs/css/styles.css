@@ -824,10 +824,14 @@ a.detail-speaker .li-icon{
 
 /* card de pessoa — foto cheia + social flutuando + nome/cargo embaixo */
 .person-card{
+  position:relative;
   background:linear-gradient(180deg,var(--card-a),var(--card-b));
   border:1px solid var(--card-border);border-radius:var(--radius);
   overflow:hidden;
 }
+/* barra no topo (--track-color por card, ver components/person-card.js): separa organizador de
+   voluntário sem precisar de outro componente, mesma linguagem visual do resto do site. */
+.person-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--track-color);z-index:1}
 .person-photo-wrap{position:relative}
 /* aspect-ratio (não altura fixa) porque a maioria das fotos reais é retrato (celular, vertical): uma caixa
    baixa e larga (era height:170px) cortava rosto inteiro pra caber; 4/5 sobra bem menos, e object-position
