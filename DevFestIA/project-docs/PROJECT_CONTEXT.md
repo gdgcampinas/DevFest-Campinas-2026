@@ -650,7 +650,7 @@ out of the menu but in the offline pre-cache (the quiz, linked from a home CTA).
 
 ## Mock content (until real data arrives)
 
-All mock people, companies and links are fictional and live in `data/`: speakers and talks (see "Line-up model"), team (`team.js`, 6 organizers and 8 volunteers with Brazilian names; the Time page has no photo gallery), sponsors (`sponsors.js`, 5 tiers, 12 fictional companies with generated logos), partner communities (4), testimonials (3, with optional `role`). Person photos come from `mockPhoto()` (external stock service, hand-picked numbers; do not add numbers without looking at the image), logos from `mockLogo()`. Replacing mock with real = same shapes, real `photo`/`imageUrl`/`link`.
+All mock people, companies and links are fictional and live in `data/`: speakers and talks (see "Line-up model"), team (`team.js`, 6 organizers still mock; the 24 volunteers are REAL, confirmed 2026-09-29 — name + own LinkedIn, no photo yet so `avatarMarkup()` falls back to initials, `member()`'s `photo` param takes a resolved URL or `""` instead of a mock photo id), sponsors (`sponsors.js`, 5 tiers, 12 fictional companies with generated logos), partner communities (4), testimonials (3, with optional `role`). Person photos come from `mockPhoto()` (external stock service, hand-picked numbers; do not add numbers without looking at the image), logos from `mockLogo()`. Replacing mock with real = same shapes, real `photo`/`imageUrl`/`link`.
 
 ## Usage analytics
 
