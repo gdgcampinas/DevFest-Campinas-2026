@@ -1,6 +1,6 @@
 # Handoff — Current State
 
-**Last updated:** 2026-09-28, sessão 9. Banner "Seja patrocinador" em `patrocinio.html`, cards com ícone em "Sobre"/"GDG" na home, trilha renomeada pra "Carreira em Tecnologia", ordem da home ajustada (Sobre antes dos números, depoimentos depois das fotos, Realização depois de Comunidades parceiras), ideia "álbum ao vivo" registrada no backlog. **ARMADILHA que mordeu nesta sessão: mudei o CONTEÚDO de `schedule.js` sem subir o `?v=` que ele carrega** (`schedule.js?v=22` continuou em todas as páginas mesmo com o texto novo), então o nome da trilha ficou em cache até o commit seguinte corrigir; aproveitei pra alinhar o `checkin-display.html`, que já estava desalinhado (`?v=18` contra `?v=22` do resto) antes disso. Reforça a regra: TODO arquivo cujo conteúdo mudou precisa do `?v=` subido em TODAS as páginas que o referenciam, sem exceção, e conferir se todas já estavam na mesma versão antes de mexer. Antes de confiar neste texto, rode
+**Last updated:** 2026-09-29/30, sessão 9 (contínua, virou longa — recomendado abrir chat novo pra próxima task). Feito desde o marco anterior: banner "Seja patrocinador" em `patrocinio.html`; cards com ícone em "Sobre"/"GDG" na home; trilha renomeada pra "Carreira em Tecnologia"; ordem da home reorganizada (Destaques -> Sobre/GDG -> Trilhas -> Números -> Vídeo -> Fotos -> Depoimentos -> Antes de vir -> teasers de página -> Patrocinadores -> Comunidades -> Realização); teaser "Palestrantes" removido da home; quiz redesenhado (tela inicial e botões de compartilhar do resultado viraram card/botões de verdade, não mais soltos/transparentes); **página Time com gente de verdade**: 4 organizadores reais (Renato Ramos, Bianca Issa, Michel Salomé, Carlos H — só Renato e Michel têm foto/LinkedIn confirmados, ver Pendências) e 18 voluntários reais (nome, LinkedIn próprio, foto de 17 deles em `assets/img/team/`, cargo com gênero certo "Voluntária"/"Voluntário", ordem alternando mulher/homem a pedido do Renato, card com barra azul/verde separando organizador de voluntário); foto do card não corta mais rosto (proporção 4:5, foco no terço de cima); "Quem somos" ganhou card de verdade (tinha ficado sem estilo, bug de sessão anterior corrigido); **travessão ("—") removido de todo texto visível do site** (ficou só em comentário de código, invisível). Ideia "álbum ao vivo" registrada no backlog. **ARMADILHA que mordeu nesta sessão: mudei o CONTEÚDO de `schedule.js` sem subir o `?v=` que ele carrega** (`schedule.js?v=22` continuou em todas as páginas mesmo com o texto novo), então o nome da trilha ficou em cache até o commit seguinte corrigir; aproveitei pra alinhar o `checkin-display.html`, que já estava desalinhado (`?v=18` contra `?v=22` do resto) antes disso. Reforça a regra: TODO arquivo cujo conteúdo mudou precisa do `?v=` subido em TODAS as páginas que o referenciam, sem exceção, e conferir se todas já estavam na mesma versão antes de mexer. Antes de confiar neste texto, rode
 `git status --short --branch` e `git log --oneline --decorate -10` (o git não mente).
 
 ## Status em uma olhada
@@ -34,13 +34,30 @@
 8. **Task anotada:** área administrativa com login (CRUD de moderadores, palestrantes...), análise em `project-docs/IDEAS_BACKLOG.md` (caminho recomendado: admin grava no Firestore + job exporta JSON; começar por moderadores CRUD).
 
 ## PRÓXIMO TRABALHO (decidido com o Renato, fazer nesta ordem, teste primeiro em cada etapa)
-**Motor das perguntas (SIMPLIFICADO na sessão 8, decisão do Renato):** espectador com check-in pergunta (até 3) -> moderador aprova, rejeita, reabre (rejeitada volta a aprovada) ou marca respondida -> espectadores votam -> ordena por votos, maior primeiro. **Sem `current` ("na vez") e sem "devolver"**: foram feitos e revertidos porque complicavam o fluxo (commit `7dacfb8` e o revert). **Sem Blaze** (decidido): tudo tem que caber nas 50 mil leituras/dia do Spark.
-**Plano B sem TV:** página **Sala ao vivo** no celular (`sala.html?trilha=ia`) que descobre a palestra do momento pelo relógio (reusa `resolveRoomBoard`): check-in e perguntar, perguntas autorizadas com votar, "Avaliar a palestra anterior". **Um QR fixo por sala** (4 cartazes + slide de abertura de cada palestrante). Tela **Palco** do moderador (perguntas mais votadas, aviso da fila, "Respondida"). A TV vira extra.
-1. ~~Modelo: `current` e "devolver"~~ DESCARTADO (fluxo simples). Feito: limite de 3 perguntas por pessoa (config, regras e testes). **REGRAS NOVAS: colar `firestore.rules` no console** (`pbcopy < DevFestIA/firebase/firestore.rules`).
-2. ~~Redesenho da leitura~~ FEITO na sessão 8 (ver PROJECT_CONTEXT "Leitura barata"): `talk-boards/<talkKey>` escrito só pela tela do moderador quando a ORDEM muda, plateia e TV com `onSnapshot`, votos contados no servidor, celular sem número de votos (`publishVotes: false`). **REGRAS NOVAS (colar): talk-boards, votos só listados pelo moderador, plateia sem listar aprovadas.** Aviso pro Renato: a ordem só anda com a moderação aberta na palestra.
-3. Página Sala ao vivo (plano B). 4. Tela Palco. 5. Cartazes/QR fixo por sala + slide. 6. Ensaio geral com celular sem TV e depois com TV.
 
-**Aberto agora:** o Renato relatou "não consigo moderar" em `moderacao.html?trilha=ia&palestra=0900.ia`. A moderação agora tem sessão de login própria (precisa entrar com o Google de novo uma vez) e mostra o código do erro de login na tela (`auth/popup-blocked`, "Sem permissão" = e-mail fora da lista ou regras antigas...). Falta ele dizer o que aparece. No emulador o fluxo inteiro funciona (aprovar, rejeitar, respondida, reaprovar, login retomado).
+### 1. Mini-bio dos voluntários/organizadores (pedido do Renato, 2026-09-30) — PRÓXIMA TASK
+Clicar no card (Organizadores ou Voluntários, `time.html`) abre um **modal** "Descubra mais sobre" com
+mais informação da pessoa. **Os cards continuam exatamente como estão** (foto, nome, cargo, barra
+azul/verde, ícone do LinkedIn) — o modal é só uma camada a mais no clique, mesmo padrão do card de
+palestra (`talk-modal.js`: card clicável abre `createModal()` com o detalhe).
+- **Reusar, não duplicar:** `components/modal.js` (`createModal(id).openHTML(html)`) já é genérico e já
+  serve palestra, galeria e guia de instalação — é só mais um consumidor. Não criar modal novo.
+- **Falta o dado:** hoje `TEAM` (`data/team.js`) não tem campo de bio, só nome/cargo/foto/LinkedIn.
+  Precisa de um texto curto por pessoa (1-3 frases: quem é, o que faz, por que ajuda o GDG) — **perguntar
+  ao Renato se ele já tem isso coletado (mesmo grupo do WhatsApp das fotos?) antes de desenhar o campo.**
+  Sem bio pra alguém, o card não fica clicável pra essa pessoa (ou mostra só o que já existe: nome, cargo,
+  LinkedIn) — decidir com ele o comportamento de quem ainda não mandou texto.
+- Forma sugerida: `bio` opcional em `person()`/`organizer()`/`volunteer()` (`data/team.js`), tornar o card
+  clicável só quando `person.bio` existir (`person-card.js`, mesmo `data-item`/clique de `info-card.js`),
+  modal reusa foto (maior), nome, cargo, LinkedIn e o texto da bio.
+
+### Motor das perguntas ao vivo — FEITO E ESTÁVEL desde a sessão 8, sem pendência técnica
+Fluxo simples: espectador com check-in pergunta (até 3) -> moderador aprova/rejeita/reabre/marca
+respondida -> espectadores votam -> ordena por votos. Leitura barata (`talk-boards/<talkKey>`, sem
+Blaze, dentro das 50 mil leituras/dia do Spark). Moderação testada e funcionando (login, aprovar,
+publicar no quadro). **Ainda não feito, decidido mas pausado a pedido do Renato:** página **Sala ao
+vivo** no celular (`sala.html?trilha=ia`, plano B sem TV) e tela **Palco** do moderador — retomar só
+quando ele pedir, não é a próxima prioridade.
 
 **Armadilhas desta sessão:** (a) `?v=` por arquivo precisa ser IGUAL em todas as páginas que o referenciam, senão o cache serve arquivo velho (já houve páginas com número desatualizado); (b) `?ensaio=` fica guardado na aba (sessionStorage): use `?ensaio=0&emulador=0` pra limpar antes de testar outra coisa; (c) o Firebase MCP daqui aponta pra outro projeto e o Firebase CLI não está logado: **regras do Firestore continuam sendo coladas à mão** (`pbcopy < DevFestIA/firebase/firestore.rules`), e o Renato já publicou a versão com a trava de horário desligada; (d) `run-rules-tests.sh` precisa da porta 8085 livre (pare o `start.sh` antes); os testes do emulador NÃO rodam no CI (baixam o emulador); (e) apagar IndexedDB do Firebase com outra aba aberta na mesma origem trava o login (`deleteDatabase` fica bloqueado); (f) testes que gravam no banco de verdade deixam dados: rodar 🧹 Limpar dados de teste (agora inclui `talk-questions` e `talk-question-votes`) antes do evento.
 
@@ -121,6 +138,17 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
 ## Pendências
 
 **A. Só o Renato/organização pode fazer**
+0. **Dados de time em aberto (sessão 9/30):**
+   - **Cargo dos 4 organizadores reais** (Renato Ramos, Bianca Issa, Michel Salomé, Carlos H): nenhum tem
+     cargo confirmado ainda, o card mostra só o nome.
+   - **Foto e LinkedIn de Bianca Issa e Carlos H:** faltam os dois.
+   - **Foto de Michel Salomé:** só veio colada na conversa, não como arquivo — precisa do arquivo pra
+     rodar `DevFestIA/design/build-team-photos.sh`.
+   - **LinkedIn de Laydianne Naira:** o link colado no grupo veio cortado (`.../in/naira-ferreira-`, sem
+     o resto) — confirmar com ela.
+   - **LinkedIn de Davi Andrade:** ele mandou por PV no grupo, nunca confirmado aqui; o site usa o link
+     da leva anterior (`davi-lima-4695b3211`), assumindo que é a mesma pessoa — confirmar.
+   - **Mini-bio de todo mundo** (organizadores e voluntários), pra task acima ("PRÓXIMO TRABALHO").
 1. **Dados reais:** local (`EVENT.venue`, `venueConfirmed`), salas/MCs, line-up e palestrantes reais
    (mesmo formato de `mock-talks.js`/`mock-speakers.js`), patrocinadores/comunidades, time, depoimentos,
    valores dos ingressos, vídeo de recap 2025 (`data/video.js` ainda tem o de 2017). Com o line-up real:
