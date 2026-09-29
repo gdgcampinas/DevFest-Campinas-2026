@@ -30,7 +30,7 @@ const person = (type, name, { role = "", photo = "", linkedin = "" } = {}) => ({
  * primeira leva tinha gente fora da lista oficial, foi substituída inteira por esta), ver
  * DevFestIA/project-docs/PROJECT_CONTEXT.md "Time".
  */
-const volunteer = (name, linkedin, photo = "") => person("voluntario", name, { role: "Voluntário(a)", photo, linkedin });
+const volunteer = (name, linkedin, gender, photo = "") => person("voluntario", name, { role: gender === "f" ? "Voluntária" : "Voluntário", photo, linkedin });
 /** Organizador: mesmo `person()`, só fixando o `type`. */
 const organizer = (name, { role = "", photo = "", linkedin = "" } = {}) => person("organizador", name, { role, photo, linkedin });
 
@@ -41,27 +41,27 @@ const TEAM = [
   organizer("Bianca Issa"),
   organizer("Michel Salomé", { linkedin: "https://www.linkedin.com/in/michel-luis-salome-de-barros" }),
   organizer("Carlos H"),
-  volunteer("Paula Santos", "https://www.linkedin.com/in/paula-santos-", teamPhoto("paula-santos")),
-  volunteer("João Estevão Camilo", "https://www.linkedin.com/in/joãoestevaocamilo", teamPhoto("joao-estevao-camilo")),
-  volunteer("Ricardo Koiti Matsushita", "https://www.linkedin.com/in/ricardo-koiti-matsushita-545006225", teamPhoto("ricardo-koiti-matsushita")),
+  volunteer("Paula Santos", "https://www.linkedin.com/in/paula-santos-", "f", teamPhoto("paula-santos")),
+  volunteer("João Estevão Camilo", "https://www.linkedin.com/in/joãoestevaocamilo", "m", teamPhoto("joao-estevao-camilo")),
+  volunteer("Ricardo Koiti Matsushita", "https://www.linkedin.com/in/ricardo-koiti-matsushita-545006225", "m", teamPhoto("ricardo-koiti-matsushita")),
   // Real (2026-09-29): LinkedIn dele não veio no trecho do grupo (mandou por PV); mantido o da leva anterior, mesma pessoa.
-  volunteer("Davi Andrade", "https://www.linkedin.com/in/davi-lima-4695b3211", teamPhoto("davi-andrade")),
+  volunteer("Davi Andrade", "https://www.linkedin.com/in/davi-lima-4695b3211", "m", teamPhoto("davi-andrade")),
   // Renato pediu pra deixar sem foto de propósito (2026-09-29).
-  volunteer("Gustavo Costa", "https://www.linkedin.com/in/guscosta7"),
-  volunteer("Leonardo Araújo", "https://www.linkedin.com/in/leonardo-am", teamPhoto("leonardo-araujo")),
-  volunteer("Henrique Ferreira Rodrigues da Silva", "https://www.linkedin.com/in/henrique-ferreira-rodrigues-da-silva-302a91289", teamPhoto("henrique-ferreira-rodrigues-da-silva")),
-  volunteer("Pedro Escobar Missola", "https://www.linkedin.com/in/pedromissola", teamPhoto("pedro-escobar-missola")),
-  volunteer("Lorenzo da Cunha", "https://www.linkedin.com/in/lorenzodacunha", teamPhoto("lorenzo-da-cunha")),
-  volunteer("Camila Fernanda Ignacio", "https://www.linkedin.com/in/camila-fernanda-ignácio-379253103", teamPhoto("camila-fernanda-ignacio")),
-  volunteer("Débora Nortes", "https://www.linkedin.com/in/deboranortes", teamPhoto("debora-nortes")),
-  volunteer("Felipe de Oliveira", "https://www.linkedin.com/in/felipeoliveira8", teamPhoto("felipe-de-oliveira")),
-  volunteer("Mayne Gabriele da Silva", "https://www.linkedin.com/in/mayne-silva-99949428b", teamPhoto("mayne-gabriele-da-silva")),
-  volunteer("Vânia Gomes Marinelli", "https://www.linkedin.com/in/vania-marinelli", teamPhoto("vania-gomes-marinelli")),
-  volunteer("Henrique Ribeiro Medeiros da Silva", "https://www.linkedin.com/in/henriquermdsilva", teamPhoto("henrique-ribeiro-medeiros-da-silva")),
+  volunteer("Gustavo Costa", "https://www.linkedin.com/in/guscosta7", "m"),
+  volunteer("Leonardo Araújo", "https://www.linkedin.com/in/leonardo-am", "m", teamPhoto("leonardo-araujo")),
+  volunteer("Henrique Ferreira Rodrigues da Silva", "https://www.linkedin.com/in/henrique-ferreira-rodrigues-da-silva-302a91289", "m", teamPhoto("henrique-ferreira-rodrigues-da-silva")),
+  volunteer("Pedro Escobar Missola", "https://www.linkedin.com/in/pedromissola", "m", teamPhoto("pedro-escobar-missola")),
+  volunteer("Lorenzo da Cunha", "https://www.linkedin.com/in/lorenzodacunha", "m", teamPhoto("lorenzo-da-cunha")),
+  volunteer("Camila Fernanda Ignacio", "https://www.linkedin.com/in/camila-fernanda-ignácio-379253103", "f", teamPhoto("camila-fernanda-ignacio")),
+  volunteer("Débora Nortes", "https://www.linkedin.com/in/deboranortes", "f", teamPhoto("debora-nortes")),
+  volunteer("Felipe de Oliveira", "https://www.linkedin.com/in/felipeoliveira8", "m", teamPhoto("felipe-de-oliveira")),
+  volunteer("Mayne Gabriele da Silva", "https://www.linkedin.com/in/mayne-silva-99949428b", "f", teamPhoto("mayne-gabriele-da-silva")),
+  volunteer("Vânia Gomes Marinelli", "https://www.linkedin.com/in/vania-marinelli", "f", teamPhoto("vania-gomes-marinelli")),
+  volunteer("Henrique Ribeiro Medeiros da Silva", "https://www.linkedin.com/in/henriquermdsilva", "m", teamPhoto("henrique-ribeiro-medeiros-da-silva")),
   // Real (2026-09-29): link colado no grupo veio cortado ("naira-ferreira-", sem o resto) — conferir com ela antes do evento.
-  volunteer("Laydianne Naira", "https://www.linkedin.com/in/naira-ferreira-", teamPhoto("laydianne-naira")),
-  volunteer("Joao Paulo Gomes Lima", "https://www.linkedin.com/in/joao-paulo-gomes-lima-008", teamPhoto("joao-paulo-gomes-lima")),
-  volunteer("Letícia Fernandes Camargo de Campos", "https://www.linkedin.com/in/leticiafccampos", teamPhoto("leticia-fernandes-campos")),
+  volunteer("Laydianne Naira", "https://www.linkedin.com/in/naira-ferreira-", "f", teamPhoto("laydianne-naira")),
+  volunteer("Joao Paulo Gomes Lima", "https://www.linkedin.com/in/joao-paulo-gomes-lima-008", "m", teamPhoto("joao-paulo-gomes-lima")),
+  volunteer("Letícia Fernandes Camargo de Campos", "https://www.linkedin.com/in/leticiafccampos", "f", teamPhoto("leticia-fernandes-campos")),
 ];
 
 const teamRepository = createRepository(TEAM, {

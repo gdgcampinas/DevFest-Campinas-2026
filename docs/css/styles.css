@@ -820,9 +820,12 @@ a.detail-speaker .li-icon{
   overflow:hidden;
 }
 .person-photo-wrap{position:relative}
-.person-photo{width:100%;height:170px;object-fit:cover;display:block;background:var(--card-b)}
+/* aspect-ratio (não altura fixa) porque a maioria das fotos reais é retrato (celular, vertical): uma caixa
+   baixa e larga (era height:170px) cortava rosto inteiro pra caber; 4/5 sobra bem menos, e object-position
+   joga o foco pro terço de cima (onde o rosto fica) em vez do centro, que cortava testa e queixo junto. */
+.person-photo{width:100%;aspect-ratio:4/5;object-fit:cover;object-position:50% 22%;display:block;background:var(--card-b)}
 .person-photo--fallback{
-  width:100%;height:170px;display:flex;align-items:center;justify-content:center;
+  width:100%;aspect-ratio:4/5;display:flex;align-items:center;justify-content:center;
   font:700 30px var(--font-display);color:var(--muted);
 }
 /* .social-icon é o badge em si (usado sozinho ou dentro de um wrapper);
