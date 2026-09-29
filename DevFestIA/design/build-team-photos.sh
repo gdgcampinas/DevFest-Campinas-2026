@@ -15,7 +15,8 @@ mkdir -p "$OUT"
 
 # "Nome do arquivo" -> slug usado em teamPhoto(). Precisa bater com o nome em team.js; nem sempre é
 # a mesma grafia do arquivo (ex.: apelido no arquivo, nome completo no site) — por isso a lista
-# explícita, em vez de derivar o slug automaticamente do nome do arquivo.
+# explícita, em vez de derivar o slug automaticamente do nome do arquivo. Terceiro campo opcional
+# "altura,largura,offsetY,offsetX" recorta antes de redimensionar (foto de corpo inteiro, por ex.).
 declare -a PHOTOS=(
   "Camila Fernanda Ignacio .jpeg|camila-fernanda-ignacio"
   "Davi Andrade.jpeg|davi-andrade"
@@ -31,6 +32,7 @@ declare -a PHOTOS=(
   "Letícia Fernandes Camargo de Campos .jpeg|leticia-fernandes-campos"
   "Lorenzo da Cunha.jpeg|lorenzo-da-cunha"
   "Mayne Gabriele da Silva.jpeg|mayne-gabriele-da-silva"
+  "Michel Salomé.png|michel-salome|300,240,0,50"
   "Paula Santos.jpeg|paula-santos"
   "Pedro Missola.jpeg|pedro-escobar-missola"
   "Renato Ramos.jpeg|renato-ramos"
@@ -39,11 +41,15 @@ declare -a PHOTOS=(
 )
 
 for entry in "${PHOTOS[@]}"; do
-  file="${entry%%|*}"
-  slug="${entry##*|}"
+  IFS='|' read -r file slug crop <<< "$entry"
   in="$SRC/$file"
   [ -f "$in" ] || { echo "faltando: $file"; continue; }
-  sips -Z 480 "$in" --out "$TMP/$slug.jpg" >/dev/null
+  if [ -n "$crop" ]; then
+    IFS=',' read -r ch cw coy cox <<< "$crop"
+    sips -c "$ch" "$cw" --cropOffset "$coy" "$cox" -s format jpeg "$in" --out "$TMP/$slug.crop.jpg" >/dev/null
+    in="$TMP/$slug.crop.jpg"
+  fi
+  sips -Z 480 -s format jpeg "$in" --out "$TMP/$slug.jpg" >/dev/null
   cwebp -q 78 "$TMP/$slug.jpg" -o "$OUT/$slug.webp" >/dev/null 2>&1
   echo "$slug.webp"
 done
