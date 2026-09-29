@@ -851,9 +851,22 @@ a.detail-speaker .li-icon{
 }
 .social-icon:hover{background:rgba(3,4,8,.85)}
 .person-info{padding:12px 14px 14px}
+.person-card.clickable{cursor:pointer;transition:transform .12s ease}
+.person-card.clickable:hover{transform:translateY(-2px);border-color:var(--track-color)}
 .person-name{font:700 13.5px var(--font-body);color:oklch(92% 0.006 260);text-transform:uppercase;letter-spacing:.2px}
 .person-name strong{font-weight:800}
 .person-role{margin-top:3px;font:500 12px var(--font-body);color:var(--muted-dim)}
+
+/* modal "Descubra mais sobre" (components/person-detail.js) */
+.person-detail{display:flex;flex-direction:column;gap:12px;text-align:center;align-items:center}
+.person-detail-heading{margin:0;padding-right:calc(var(--modal-close-size) + var(--modal-close-inset));font:700 12px var(--font-body);text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+.person-detail-photo{width:160px;aspect-ratio:4/5;border-radius:14px;object-fit:cover;object-position:50% 22%;border:1px solid var(--card-border)}
+.person-detail-photo--fallback{display:flex;align-items:center;justify-content:center;font:700 40px var(--font-display);color:var(--muted);background:var(--card-b)}
+.person-detail-name{margin:0;font:700 22px var(--font-display);color:oklch(97% 0.005 260)}
+.person-detail-role{margin:-6px 0 0;font:500 13px var(--font-body);color:var(--muted-dim)}
+.person-detail-bio{margin:0;font:400 15px/1.55 var(--font-body);color:var(--text);text-align:left}
+.person-detail-link{font:600 13px var(--font-body);color:var(--google-blue);text-decoration:none}
+.person-detail-link:hover{text-decoration:underline}
 
 /* padding-right reserva o canto do botão X do modal, pra estrela nunca ficar por baixo dele */
 .detail-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;padding-right:calc(var(--modal-close-size) + var(--modal-close-inset))}

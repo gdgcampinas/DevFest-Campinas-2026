@@ -35,7 +35,8 @@
 
 ## PRÓXIMO TRABALHO (decidido com o Renato, fazer nesta ordem, teste primeiro em cada etapa)
 
-### 1. Mini-bio dos voluntários/organizadores (pedido do Renato, 2026-09-30) — PRÓXIMA TASK
+### 1. Mini-bio dos voluntários/organizadores (2026-09-30) — CÓDIGO PRONTO, FALTAM OS TEXTOS
+**Feito:** campo `bio` opcional em `data/team.js`, card clicável só com bio, modal "Descubra mais sobre" (`components/person-detail.js` + `createPersonModal()` em `features/team.js`), EN pronto, testado no navegador com bio temporária. **Falta só o Renato mandar os textos** (1-3 frases por pessoa, organizadores e voluntários): é preencher `bio` em `team.js` (5º parâmetro de `volunteer()`, `{ bio }` em `organizer()`), subir `team.js?v=` em `time.html`. Foto do Michel Salomé entrou (recorte do corpo inteiro). Abaixo, o desenho original da task:
 Clicar no card (Organizadores ou Voluntários, `time.html`) abre um **modal** "Descubra mais sobre" com
 mais informação da pessoa. **Os cards continuam exatamente como estão** (foto, nome, cargo, barra
 azul/verde, ícone do LinkedIn) — o modal é só uma camada a mais no clique, mesmo padrão do card de
@@ -141,9 +142,7 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
 0. **Dados de time em aberto (sessão 9/30):**
    - **Cargo dos 4 organizadores reais** (Renato Ramos, Bianca Issa, Michel Salomé, Carlos H): nenhum tem
      cargo confirmado ainda, o card mostra só o nome.
-   - **Foto e LinkedIn de Bianca Issa e Carlos H:** faltam os dois.
-   - **Foto de Michel Salomé:** só veio colada na conversa, não como arquivo — precisa do arquivo pra
-     rodar `DevFestIA/design/build-team-photos.sh`.
+   - **Foto e LinkedIn de Bianca Issa e Carlos H:** faltam os dois. (Michel Salomé: foto e LinkedIn OK.)
    - **LinkedIn de Laydianne Naira:** o link colado no grupo veio cortado (`.../in/naira-ferreira-`, sem
      o resto) — confirmar com ela.
    - **LinkedIn de Davi Andrade:** ele mandou por PV no grupo, nunca confirmado aqui; o site usa o link

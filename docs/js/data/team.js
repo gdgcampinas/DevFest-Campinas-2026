@@ -20,12 +20,14 @@ const teamPhoto = slug => `assets/img/team/${slug}.webp?v=${TEAM_PHOTO_VERSION}`
  * grid sem precisar de card diferente — mesmas cores da marca, nenhuma nova. */
 const TEAM_TYPE_COLOR = { organizador: "var(--google-blue)", voluntario: "var(--accent)" };
 
-/** Pessoa real (organizador ou voluntário). `photo` e `linkedin` opcionais: sem eles, cai pra iniciais e some o ícone. */
-const person = (type, name, { role = "", photo = "", linkedin = "" } = {}) => ({
+/** Pessoa real (organizador ou voluntário). `photo` e `linkedin` opcionais: sem eles, cai pra iniciais e some o ícone.
+ * `bio` (mini-bio, 1 a 3 frases) também opcional: só quem tem vira card clicável e abre o modal "Descubra mais sobre". */
+const person = (type, name, { role = "", photo = "", linkedin = "", bio = "" } = {}) => ({
   name,
   role,
   type,
   photo,
+  bio,
   trackColor: TEAM_TYPE_COLOR[type],
   social: linkedin ? [{ name: "linkedin", link: linkedin }] : [],
 });
@@ -35,16 +37,15 @@ const person = (type, name, { role = "", photo = "", linkedin = "" } = {}) => ({
  * primeira leva tinha gente fora da lista oficial, foi substituída inteira por esta), ver
  * DevFestIA/project-docs/PROJECT_CONTEXT.md "Time".
  */
-const volunteer = (name, linkedin, gender, photo = "") => person("voluntario", name, { role: gender === "f" ? "Voluntária" : "Voluntário", photo, linkedin });
+const volunteer = (name, linkedin, gender, photo = "", bio = "") => person("voluntario", name, { role: gender === "f" ? "Voluntária" : "Voluntário", photo, linkedin, bio });
 /** Organizador: mesmo `person()`, só fixando o `type`. */
-const organizer = (name, { role = "", photo = "", linkedin = "" } = {}) => person("organizador", name, { role, photo, linkedin });
+const organizer = (name, { role = "", photo = "", linkedin = "", bio = "" } = {}) => person("organizador", name, { role, photo, linkedin, bio });
 
 const TEAM = [
   // Organizadores reais (2026-09-30): só 4, a leva mock inteira saiu. Cargo ainda não confirmado pelo Renato.
   organizer("Renato Ramos", { linkedin: "https://www.linkedin.com/in/renato-ramos-95885a38", photo: teamPhoto("renato-ramos") }),
-  // Foto ainda não recebida como arquivo (só colada na conversa) — falta rodar build-team-photos.sh com ela.
   organizer("Bianca Issa"),
-  organizer("Michel Salomé", { linkedin: "https://www.linkedin.com/in/michel-luis-salome-de-barros" }),
+  organizer("Michel Salomé", { linkedin: "https://www.linkedin.com/in/michel-luis-salome-de-barros", photo: teamPhoto("michel-salome") }),
   organizer("Carlos H"),
   // Ordem pedida pelo Renato (2026-09-30): mulher, homem, alternando; os homens que sobrarem vão pro fim.
   volunteer("Paula Santos", "https://www.linkedin.com/in/paula-santos-", "f", teamPhoto("paula-santos")),

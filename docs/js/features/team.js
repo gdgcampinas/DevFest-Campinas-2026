@@ -8,9 +8,17 @@ function renderTeamIntro(intro, mountEl) {
   mountEl.innerHTML = `<div class="team-intro-card"><h2>${intro.title}</h2><p>${intro.body}</p></div>`;
 }
 
-function renderTeamGroup(team, type, sectionEl, gridEl) {
+/**
+ * Modal "Descubra mais sobre" de uma pessoa do time, sobre o modal genérico (components/modal.js).
+ */
+function createPersonModal() {
+  const modal = createModal("personModal", { label: t("team.detail", "Sobre a pessoa") });
+  return { ...modal, open: person => modal.openHTML(personDetailMarkup(person, { heading: t("team.discover", "Descubra mais sobre") })) };
+}
+
+function renderTeamGroup(team, type, sectionEl, gridEl, { onSelect = null } = {}) {
   const people = team.filter(person => person.type === type);
   sectionEl.hidden = people.length === 0;
   if (people.length === 0) return;
-  renderPersonGrid(people, gridEl);
+  renderPersonGrid(people, gridEl, { onSelect });
 }

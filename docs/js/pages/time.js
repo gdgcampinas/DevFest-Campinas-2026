@@ -6,12 +6,14 @@ function initTime() {
   const reveal = initShell("time");
 
   const team = teamRepository.getAll();
+  const personModal = createPersonModal();
+  const onSelect = person => personModal.open(person);
   renderTeamIntro(teamIntroRepository.getAll(), document.getElementById("teamIntroSection"));
   renderOrConstruction(reveal, document.getElementById("organizadoresSection"),
-    () => renderTeamGroup(team, "organizador", document.getElementById("organizadoresSection"), document.querySelector("#organizadoresSection .team-grid")),
+    () => renderTeamGroup(team, "organizador", document.getElementById("organizadoresSection"), document.querySelector("#organizadoresSection .team-grid"), { onSelect }),
     t("time.organizersSoon", "Organizadores serão revelados em breve."));
   renderOrConstruction(reveal, document.getElementById("voluntariosSection"),
-    () => renderTeamGroup(team, "voluntario", document.getElementById("voluntariosSection"), document.querySelector("#voluntariosSection .team-grid")),
+    () => renderTeamGroup(team, "voluntario", document.getElementById("voluntariosSection"), document.querySelector("#voluntariosSection .team-grid"), { onSelect }),
     t("time.volunteersSoon", "Voluntários serão revelados em breve."));
 }
 
