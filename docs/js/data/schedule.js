@@ -67,13 +67,13 @@ const roomFor = place => `Sala ${place}`;
 
 const TRACKS = [
   { id: "ia", label: "IA", shortLabel: "IA", room: roomFor("Observatório"), mc: "MC a definir", color: "var(--ia)", icon: "sparkles",
-    description: "Modelos, agentes e aplicações de inteligência artificial na prática — do fundamento ao que já roda em produção." },
+    description: "Modelos, agentes e aplicações de inteligência artificial na prática, do fundamento ao que já roda em produção." },
   { id: "webdata", label: "Front-end / Back-end / Data", shortLabel: "Front/Back/Data", room: roomFor("Estação"), mc: "MC a definir", color: "var(--webdata)", icon: "code",
-    description: "Arquitetura, engenharia de dados e desenvolvimento web — as bases que sustentam qualquer produto digital." },
+    description: "Arquitetura, engenharia de dados e desenvolvimento web: as bases que sustentam qualquer produto digital." },
   { id: "mobile", label: "Mobile / Agile", shortLabel: "Mobile/Agile", room: roomFor("Lagoa do Taquaral"), mc: "MC a definir", color: "var(--mobile)", icon: "phone",
     description: "Apps nativos e multiplataforma, e os métodos ágeis que fazem times entregarem rápido e com qualidade." },
   { id: "mentoring", label: "Carreira em Tecnologia", shortLabel: "Carreira", room: roomFor("Mercadão Central"), mc: "MC a definir", color: "var(--mentoring)", icon: "rocket",
-    description: "Trajetórias, mentoria e como crescer na área — de quem já passou pelos mesmos desafios." },
+    description: "Trajetórias, mentoria e como crescer na área, com quem já passou pelos mesmos desafios." },
 ];
 
 function eventTime(hhmm) {
@@ -88,7 +88,7 @@ function eventTime(hhmm) {
  */
 const DAY_PLAN = [
   { banner: "Credenciamento", room: "Recepção", start: "08:00", end: "08:30" },
-  { banner: "Abertura — GDG Campinas", room: roomFor("Calçadão Central"), start: "08:30", end: "08:55" },
+  { banner: "Abertura: GDG Campinas", room: roomFor("Calçadão Central"), start: "08:30", end: "08:55" },
   { talks: talkWindows("09:00", 4) },
   { banner: "Almoço", start: "12:00", end: "13:20" },
   { banner: "Retorno para a sala", start: "13:20", end: "13:30" },

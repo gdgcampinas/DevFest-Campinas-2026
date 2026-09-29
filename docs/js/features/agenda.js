@@ -23,7 +23,7 @@ function durationLabel(slot) {
 }
 
 function timeRangeLabel(slot, timezone) {
-  return `${formatEventTime(slot.start, timezone)} — ${formatEventTime(slot.end, timezone)}`;
+  return `${formatEventTime(slot.start, timezone)}–${formatEventTime(slot.end, timezone)}`;
 }
 
 /** "28 de novembro de 2026" — usado no header e no ticker (app.js/ticker.js), 1 lugar só. */

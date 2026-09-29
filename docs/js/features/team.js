@@ -5,7 +5,7 @@
  * renderPersonGrid, só filtra por `type`.
  */
 function renderTeamIntro(intro, mountEl) {
-  mountEl.innerHTML = `<div class="about-block"><h3>${intro.title}</h3><p>${intro.body}</p></div>`;
+  mountEl.innerHTML = `<div class="team-intro-card"><h2>${intro.title}</h2><p>${intro.body}</p></div>`;
 }
 
 function renderTeamGroup(team, type, sectionEl, gridEl) {

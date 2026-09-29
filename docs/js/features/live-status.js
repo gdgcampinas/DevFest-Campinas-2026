@@ -129,9 +129,9 @@ function createLiveStatus({ schedule, tracks, event, elements = {}, now = () => 
       hero.innerHTML = `
         <div class="hero-card live">
           <div class="hero-label"><span class="dot"></span>${happeningNowLabel()}</div>
-          <div class="hero-hint">${t("live.breakLong", "Intervalo entre sessões")}${next ? ` — ${nextBlockLabel(next)}` : ""}</div>
+          <div class="hero-hint">${t("live.breakLong", "Intervalo entre sessões")}${next ? ` · ${nextBlockLabel(next)}` : ""}</div>
         </div>`;
-      stickyTxt.textContent = next ? `${t("live.break", "Intervalo")} — ${nextBlockLabel(next)}` : t("live.break", "Intervalo");
+      stickyTxt.textContent = next ? `${t("live.break", "Intervalo")} · ${nextBlockLabel(next)}` : t("live.break", "Intervalo");
       stickyPulse.style.display = "inline-block";
       return;
     }

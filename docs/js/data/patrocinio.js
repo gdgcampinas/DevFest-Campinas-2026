@@ -29,7 +29,7 @@ const ICON_HANDSHAKE = `<svg width="22" height="22" viewBox="0 0 24 24" fill="no
 const PATROCINIO_BENEFITS = [
   { id: "audiencia", trackColor: "var(--ia)", icon: ICON_AUDIENCE, title: "Audiência qualificada", body: "Acesso direto a desenvolvedores, arquitetos e lideranças de tecnologia de Campinas e região." },
   { id: "marca", trackColor: "var(--webdata)", icon: ICON_MEGAPHONE, title: "Visibilidade de marca", body: "Logo na agenda, no site e nos materiais do evento, durante toda a organização e no dia." },
-  { id: "conexao", trackColor: "var(--mentoring)", icon: ICON_HANDSHAKE, title: "Conexão com a comunidade", body: "Presença ativa numa comunidade que cresce ano após ano — mais do que patrocínio, parceria de longo prazo." },
+  { id: "conexao", trackColor: "var(--mentoring)", icon: ICON_HANDSHAKE, title: "Conexão com a comunidade", body: "Presença ativa numa comunidade que cresce ano após ano: mais do que patrocínio, parceria de longo prazo." },
 ];
 
 const patrocinioBenefitsRepository = createRepository(PATROCINIO_BENEFITS);

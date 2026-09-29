@@ -4,7 +4,7 @@
  */
 const CODE_OF_CONDUCT = {
   title: "Código de conduta",
-  intro: "O DevFest Campinas é um evento aberto, respeitoso e inclusivo. Não toleramos assédio de nenhum tipo — isso vale pra todo mundo: participantes, palestrantes, organizadores e patrocinadores.",
+  intro: "O DevFest Campinas é um evento aberto, respeitoso e inclusivo. Não toleramos assédio de nenhum tipo. Isso vale pra todo mundo: participantes, palestrantes, organizadores e patrocinadores.",
   rules: [
     "Piadas ou comentários ofensivos sobre gênero, orientação sexual, raça, religião, nacionalidade ou corpo não são bem-vindos.",
     "Contato físico não solicitado não é permitido.",
