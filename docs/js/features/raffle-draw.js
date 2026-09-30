@@ -21,6 +21,10 @@
  * Som: sintetizado (Web Audio), sem depender de arquivo externo — troca fácil por um efeito de verdade depois
  * (só mudar `raffleTick`/`raffleChime`).
  */
+const RAFFLE_SPIN_TURNS = 6; // voltas inteiras de cada giro, só efeito visual
+const RAFFLE_QR_SIZE = 176;
+const RAFFLE_TELAO_QR_SIZE = 320; // no telão o QR é lido de longe
+
 function raffleTick(ctx) {
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
@@ -101,13 +105,39 @@ function defaultRaffleDrawDeps() {
 
 /** Aplica o ângulo final direto no elemento já existente na tela (sem recriar o HTML), pra a transição CSS
  * do `.raffle-wheel` (`styles.css`) ter um "antes" pra animar a partir dele — recriar o elemento inteiro
- * (como um re-render normal faz) já nasce no ângulo final e pula direto pra lá, sem girar visualmente. */
+ * (como um re-render normal faz) já nasce no ângulo final e pula direto pra lá, sem girar visualmente.
+ * Ler a geometria força o navegador a fechar o estilo de ANTES; sem depender de requestAnimationFrame, que
+ * não dispara com a aba oculta/minimizada (o ângulo nunca era aplicado e o sorteio era revelado com a roda parada). */
 function applyWheelRotation(rootEl, deg) {
   const wheelEl = rootEl.querySelector(".raffle-wheel");
-  if (wheelEl) wheelEl.style.transform = `rotate(${deg}deg)`;
+  if (!wheelEl) return;
+  wheelEl.getBoundingClientRect();
+  wheelEl.style.transform = `rotate(${deg}deg)`;
 }
 
-function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], audio = () => new (window.AudioContext || window.webkitAudioContext)(), whenReady = runAfterModules, spinTimer = createRaffleSpinTimer(), drawQrCode = defaultDrawQrCode, raf = (window.requestAnimationFrame || (fn => setTimeout(fn, 16))).bind(window) } = {}) {
+/** Tela cheia do navegador (modo telão). Isolada pra trocar em teste: jsdom não tem a API. */
+function defaultFullscreen() {
+  return {
+    enter: () => Promise.resolve(document.documentElement.requestFullscreen?.()).catch(() => {}),
+    exit: () => (document.fullscreenElement ? Promise.resolve(document.exitFullscreen?.()).catch(() => {}) : undefined),
+    isActive: () => Boolean(document.fullscreenElement),
+  };
+}
+
+function initRaffleDraw(rootEl, {
+  deps = defaultRaffleDrawDeps,
+  devSeed = [],
+  audio = () => new (window.AudioContext || window.webkitAudioContext)(),
+  whenReady = runAfterModules,
+  spinTimer = createRaffleSpinTimer(),
+  drawQrCode = defaultDrawQrCode,
+  random = Math.random,
+  maxSlices = RAFFLE_WHEEL_MAX_SLICES,
+  revealHoldMs = 25000, // tempo do MC anunciar o ganhador com a roda parada sob o ponteiro
+  schedule = (fn, ms) => setTimeout(fn, ms),
+  fullscreen = defaultFullscreen(),
+  startInTelao = false,
+} = {}) {
   let email = "";
   let entries = [];
   let draws = [];
@@ -117,7 +147,7 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], au
   let spinning = false;
   let winner = null;
   let muted = false;
-  let showQr = false;
+  let showQr = startInTelao;
   let entriesError = "";
   let drawsError = "";
   let audioCtx = null;
@@ -129,22 +159,38 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], au
   // mudaria o tamanho/posição de toda fatia e o ponteiro passaria a apontar pra outro nome. Só o próximo
   // clique em "Girar" congela uma arrumação nova (com o vencedor de fato fora).
   let displayEntries = [];
+  let holding = false; // ganhador recém-revelado: a roda segue igual por `revealHoldMs`, depois se renova
+  let holdToken = 0;
+  let telao = startInTelao; // modo telão: tela cheia só com a roda, o contador e as chegadas (ver .raffle-telao)
+  let enteredFullscreen = false;
+  let seenArrivalIds = null; // null até a 1ª lista chegar: quem já estava lá não ganha a animação de "acabou de entrar"
 
   const usingDevSeed = () => entries.length === 0 && devSeed.length > 0;
   const activeEntries = () => (usingDevSeed() ? devSeed : entries);
   const activeDraws = () => (usingDevSeed() ? devDraws : draws);
 
   /** Só re-trava a arrumação da roda com o pool atual quando NADA está em exibição que dependa da
-   * arrumação anterior (sem giro em andamento, sem vencedor mostrado) — ex.: gente nova se cadastrando
-   * enquanto a tela está parada entre um prêmio e outro já deve aparecer na roda antes do próximo giro. */
+   * arrumação anterior (sem giro em andamento, sem ganhador recém-revelado sob o ponteiro) — assim gente
+   * nova se cadastrando enquanto a tela está parada já vai enchendo a roda (as mais recentes, até o máximo). */
   function refreshDisplayWhenIdle() {
-    if (!spinning && winner === null) displayEntries = pool();
+    if (!spinning && !holding) displayEntries = idleWheelEntries(pool(), maxSlices);
+  }
+
+  /** Acabou o tempo do ganhador sob o ponteiro: a roda volta a acompanhar quem chega (já sem o ganhador) e o
+   * cartão dele some — com a roda renovada a seta já não aponta pra ele, e o histórico segue em "Já sorteados". */
+  function releaseReveal(token) {
+    if (token !== holdToken || spinning) return;
+    holding = false;
+    winner = null;
+    wheelDeg = 0;
+    refreshDisplayWhenIdle();
+    if (email) drawReady();
   }
 
   const draw = data => {
     const loadError = entriesError || drawsError;
-    rootEl.innerHTML = raffleWheelMarkup({ email, showQr, loadError, ...data });
-    if (showQr && data.phase !== "signin") drawQrCode(document.getElementById("raffleQr"), raffleCheckinUrl(location.href));
+    rootEl.innerHTML = raffleWheelMarkup({ email, showQr, telao, loadError, ...data });
+    if (showQr && data.phase !== "signin") drawQrCode(document.getElementById("raffleQr"), raffleCheckinUrl(location.href), telao ? RAFFLE_TELAO_QR_SIZE : RAFFLE_QR_SIZE);
   };
 
   function drawnEntryIds() {
@@ -159,10 +205,16 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], au
   function drawReady() {
     const livePool = pool(); // quem pode legitimamente ser sorteado agora (decide o botão, não o desenho)
     const drawnList = activeDraws().slice().sort((a, b) => a.prize - b.prize);
+    const arrivals = usingDevSeed() ? [] : recentArrivals(entries);
+    const newArrivalIds = new Set(seenArrivalIds === null ? [] : arrivals.filter(person => !seenArrivalIds.has(person.id)).map(person => person.id));
+    if (seenArrivalIds !== null) arrivals.forEach(person => seenArrivalIds.add(person.id));
     draw({
       phase: "ready",
       remaining: displayEntries, // o que a roda DESENHA — travado por refreshDisplayWhenIdle()/spin()
+      remainingCount: livePool.length, // quantos ainda podem ser sorteados (a roda mostra só uma amostra)
       poolCount: activeEntries().length,
+      arrivals,
+      newArrivalIds,
       drawnList,
       spinning,
       winner,
@@ -182,7 +234,13 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], au
     stopDraws?.();
     stopEntries = deps().entries.listen(
       {},
-      list => { entries = list; entriesError = ""; refreshDisplayWhenIdle(); drawReady(); },
+      list => {
+        entries = list;
+        entriesError = "";
+        if (seenArrivalIds === null) seenArrivalIds = new Set(recentArrivals(list).map(person => person.id));
+        refreshDisplayWhenIdle();
+        drawReady();
+      },
       () => { entriesError = t("raffle.loadEntriesError", "Não foi possível carregar a lista agora. Tentando de novo em instantes."); refreshDisplayWhenIdle(); drawReady(); }
     );
     stopDraws = deps().draws.listen(
@@ -193,26 +251,26 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], au
   }
 
   async function spin() {
-    const remaining = pool();
-    if (spinning || !remaining.length) return;
-    const chosenIndex = Math.floor(Math.random() * remaining.length);
-    const chosen = remaining[chosenIndex];
-    // Gira sempre pra frente (soma voltas inteiras) e para exatamente com a fatia sorteada sob o ponteiro
-    // (fixo no topo, 0deg): a fatia i vai de i*seg a (i+1)*seg a partir do topo, sentido horário, igual o
-    // conic-gradient; girar o disco por R graus põe o ângulo "a" na tela em (a+R) mod 360 — o R certo pra
-    // o centro da fatia sorteada terminar em 0deg (debaixo do ponteiro) é 360 - centro.
-    const seg = 360 / remaining.length;
-    const winnerCenter = chosenIndex * seg + seg / 2;
-    spinCount += 1;
-    const targetDeg = spinCount * 2160 + ((360 - winnerCenter) % 360); // 2160 = 6 voltas inteiras, só efeito visual
+    const fullPool = pool();
+    if (spinning || !fullPool.length) return;
+    const chosen = pickRaffleWinner(fullPool, random); // sai SEMPRE da lista inteira, não da amostra da roda
+    const wheel = buildSpinWheel(fullPool, chosen, maxSlices, random);
+    // Gira sempre pra frente (seis voltas inteiras + o resto) e para exatamente com a fatia sorteada sob o
+    // ponteiro (fixo no topo, 0deg): a fatia i vai de i*seg a (i+1)*seg a partir do topo, sentido horário, igual
+    // o conic-gradient; estando a roda em `current` graus, o giro que põe o centro da fatia sorteada em 0deg
+    // soma `(360 - centro - current) mod 360` às voltas inteiras.
+    const seg = 360 / wheel.entries.length;
+    const winnerCenter = wheel.winnerIndex * seg + seg / 2;
+    const current = ((wheelDeg % 360) + 360) % 360;
+    const targetDeg = wheelDeg + RAFFLE_SPIN_TURNS * 360 + ((((360 - winnerCenter - current) % 360) + 360) % 360);
+    holding = false;
+    holdToken += 1;
     spinning = true;
     winner = null;
-    displayEntries = remaining; // trava a MESMA arrumação usada pro cálculo do ângulo acima
+    displayEntries = wheel.entries; // trava a MESMA arrumação usada pro cálculo do ângulo acima
     drawReady(); // primeiro render ainda no ângulo antigo: o elemento nasce parado, pronto pra animar
-    raf(() => {
-      wheelDeg = targetDeg;
-      applyWheelRotation(rootEl, wheelDeg); // muta o elemento que já está na tela, não recria: a transição roda
-    });
+    wheelDeg = targetDeg;
+    applyWheelRotation(rootEl, wheelDeg); // muta o elemento que já está na tela, não recria: a transição roda
     const ctx = muted ? null : ensureAudio();
     const dev = usingDevSeed();
     spinTimer.run(
@@ -235,9 +293,34 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], au
           }
         }
         spinning = false;
+        holding = true;
+        const token = (holdToken += 1);
+        schedule(() => releaseReveal(token), revealHoldMs);
         drawReady();
       }
     );
+  }
+
+  /** Liga/desliga o modo telão: a própria área da organização vira uma tela cheia (classe `raffle-telao`). */
+  function applyTelao() {
+    rootEl.classList.toggle("raffle-telao", telao);
+    document.body.classList.toggle("raffle-telao-open", telao);
+  }
+
+  function setTelao(on) {
+    if (telao === on) return;
+    telao = on;
+    showQr = on || showQr;
+    applyTelao();
+    if (on) {
+      enteredFullscreen = true;
+      fullscreen.enter();
+    } else {
+      enteredFullscreen = false;
+      fullscreen.exit();
+    }
+    if (email) drawReady();
+    else draw({ phase: "signin" });
   }
 
   rootEl.addEventListener("click", async event => {
@@ -258,6 +341,9 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], au
       draws = [];
       devDraws = [];
       displayEntries = [];
+      seenArrivalIds = null;
+      holding = false;
+      holdToken += 1;
       entriesError = "";
       drawsError = "";
       draw({ phase: "signin" });
@@ -269,9 +355,18 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], au
       drawReady();
       return;
     }
+    if (event.target.closest("[data-raffle-telao-toggle]")) return setTelao(!telao);
     if (event.target.closest("[data-raffle-spin]")) return spin();
   });
 
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && telao) setTelao(false);
+  });
+  document.addEventListener("fullscreenchange", () => {
+    if (enteredFullscreen && telao && !fullscreen.isActive()) setTelao(false); // saiu da tela cheia pelo navegador
+  });
+
+  applyTelao();
   draw({ phase: "signin" });
   whenReady(async () => {
     email = (await deps().restore().catch(() => null)) ?? "";
@@ -303,7 +398,7 @@ function loadQrcodejs() {
 
 /** Desenha o QR no elemento, só se ainda não tiver (evita regerar a cada re-render enquanto "Mostrar QR"
  * está ligado). Isolado em função própria pra dar pra trocar em teste (sem window.QRCode em jsdom). */
-async function defaultDrawQrCode(el, text) {
+async function defaultDrawQrCode(el, text, size = RAFFLE_QR_SIZE) {
   if (!el || el.childElementCount > 0) return;
   try {
     await loadQrcodejs();
@@ -311,5 +406,5 @@ async function defaultDrawQrCode(el, text) {
     return; // sem internet pro CDN: o botão continua lá, tenta de novo no próximo "Mostrar QR"
   }
   if (!el.isConnected || el.childElementCount > 0) return; // a tela pode ter mudado enquanto a lib carregava
-  new window.QRCode(el, { text, width: 176, height: 176, colorDark: "#05060a", colorLight: "#ffffff" });
+  new window.QRCode(el, { text, width: size, height: size, colorDark: "#05060a", colorLight: "#ffffff" });
 }

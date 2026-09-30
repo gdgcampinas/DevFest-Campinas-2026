@@ -11,7 +11,7 @@ function initSorteio() {
       const signupEl = document.getElementById("raffleSignup");
       const { render } = initRaffleSignup(signupEl, { myRaffle: myRaffleRepository, myRaffleCheckin: myRaffleCheckinRepository });
       render(signupEl);
-      initRaffleDraw(document.getElementById("raffleMod"), { devSeed: reveal ? buildRaffleDevSeed(teamRepository.getAll()) : [] });
+      initRaffleDraw(document.getElementById("raffleMod"), { devSeed: reveal ? buildRaffleDevSeed(teamRepository.getAll()) : [], startInTelao: Boolean(getParam("telao")) });
     },
     t("raffle.soon", "O sorteio será liberado em breve."));
 }

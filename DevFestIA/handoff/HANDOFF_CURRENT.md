@@ -163,6 +163,16 @@ em `PROJECT_CONTEXT.md` ("Sorteio").
 rótulo aponta pras 3h, gradiente começa às 12h). Corrigido em `raffleWheelLabelsMarkup` (`rotate(center - 90)`),
 mais o vão do degradê da linha divisória. Detalhes em `PROJECT_CONTEXT.md` ("Sorteio").
 
+**FASE 1 do plano de fechamento do Sorteio FEITA (2026-10-01):** modo telão (`?telao=1` ou botão), contador ao
+vivo, faixa "acabaram de entrar", roda com amostra de 24 (sorteio da lista inteira), tempo do ganhador de 25 s e
+giro sem `requestAnimationFrame` (bug real: com a aba oculta a roda não girava). Detalhes em `PROJECT_CONTEXT.md`
+("Sorteio"). **Faltam as Fases 2 e 3 (autorizadas pelo Renato em 2026-10-01):** (2) teste de carga com 300 a 1.000
+cadastros falsos no banco real ANTES de trancar as regras; (3) regras novas: "Ausente, sortear outro" (ausente sai
+de vez, não gasta o número do prêmio; o botão vai na lista "Já sorteados"), 1 ingresso = 1 cadastro (hash do e-mail
+do Sympla como chave, interruptor nas regras e na tela), QR que muda a cada ~60 s (código em doc do banco), aviso
+de nomes repetidos (só aviso, sem excluir), testes das regras no emulador (precisa Java 21, autorizado
+`brew install openjdk@21`). Fase 4 (tirar `devOnly`, revisão do inglês, checklist do dia) só quando o Renato mandar.
+
 **Nome + sobrenome na fatia e escala (2026-10-01):** a fatia mostra nome + último sobrenome. Medido com 1.000 cadastros falsos: custo de tela e de banco OK, mas a roda fica ilegível. Proposta aguardando o Renato: roda com amostra de ~24 nomes (sempre com o sorteado), sorteio sobre a lista inteira, contador ao vivo "N cadastrados". Detalhes em `PROJECT_CONTEXT.md` ("Sorteio").
 
 **Renato testou de novo e achou mais 2 (corrigidos na mesma sessão):**

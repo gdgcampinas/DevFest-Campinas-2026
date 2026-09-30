@@ -107,6 +107,7 @@ docs/
       about.js                    "about the event" copy
       team.js, team-intro.js   organizers (Time page)
       cod.js                      code of conduct text (intro + 4 rules with icon/color, contact block)
+      raffle-pool.js             regras PURAS da roleta (dual, testado em Node): nome da fatia, chegadas, amostra da roda, montagem do giro
       contact.js                   CONTACT (e-mail, Meetup, Instagram, LinkedIn, Linktree) — única fonte, reusada por footer.js e cod.js
       footer.js                   footer columns
       testimonials.js             testimonial quotes
@@ -137,6 +138,7 @@ docs/
       sponsor-card.js               sponsor/community item (logo box + name + optional description)
       person-card.js                 person card (team/speakers); clickable when the person has `bio`
       person-detail.js               modal content "Descubra mais sobre" (photo, name, role, bio, LinkedIn)
+      raffle-arrivals.js             contador ao vivo + faixa "acabaram de entrar" do sorteio (modo telão)
     features/                data + template + behavior, one section each
       agenda.js, track-filter.js, a11y.js, pwa.js, install-platform.js, starfield.js, talk-feedback.js, event-feedback.js, my-talks.js, feedback-nudge.js, feedback-flow.js, hero-galaxy.js, share-card.js, registration-gate.js, registration-counter.js, reveal-gate.js, checkin-display.js, analytics.js, calendar.js, talk-index.js, calendar-actions.js, agenda-share.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
       featured-speakers.js, sponsors.js, partner-communities.js,
@@ -491,6 +493,13 @@ e `flip` (texto de ponta-cabeça) quando `center` está entre 180° e 360°. A l
 vão de meio grau por fronteira (o navegador borrava o trecho em degradê); agora cada fatia é cor + linha no
 fim, sem vão. Teste jsdom novo trava a rotação dos rótulos; conferido ao vivo: nome do ganhador escrito na
 fatia sob a seta. `raffle-wheel.js?v=6`.
+
+**Modo telão, roda com amostra, contador e chegadas (Fase 1 do plano de fechamento, 2026-10-01):**
+- **Amostra (`features/raffle-pool.js`, dual, `DevFestIA/tools/raffle/raffle-pool.test.js`):** a roda nunca tem mais de `RAFFLE_WHEEL_MAX_SLICES` (24) fatias; com ~1.000 cadastros 1.000 fatias viram borrão (medido). O sorteio sai SEMPRE da lista inteira (`pickRaffleWinner`), e `buildSpinWheel` monta a roda do giro com o sorteado + 23 outras ao acaso, em ordem embaralhada (cai numa fatia aleatória). Parada, a roda mostra até 24 pessoas em ordem de chegada; acima disso, as 24 mais recentes (`idleWheelEntries`), então continua "enchendo" com quem acaba de entrar. `raffleDisplayName` é a ÚNICA fonte do nome da fatia e da faixa de chegadas (nome + último sobrenome).
+- **Tempo do ganhador (`revealHoldMs`, 25 s):** depois do sorteio a roda fica parada sob o ponteiro (o MC anuncia); passado o tempo, `releaseReveal` renova a roda (já sem o ganhador, com quem chegou no meio), zera o ângulo e some o cartão do ganhador, porque com a roda renovada a seta já não aponta pra ele (o histórico segue em "Já sorteados"). Um novo giro cancela o tempo (`holdToken`). O giro agora soma `6 voltas + resto` a partir do ângulo atual (`current`), então todo giro dura e gira igual (antes crescia por `spinCount * 2160`).
+- **Bug achado no teste ao vivo: o giro dependia de `requestAnimationFrame`,** que NÃO dispara com a aba oculta/minimizada: o ângulo final nunca era aplicado e o sorteio era revelado com a roda parada (nome do ganhador != fatia sob a seta). `applyWheelRotation` agora força o reflow (`getBoundingClientRect()`) e aplica na hora; o parâmetro `raf` saiu.
+- **Modo telão (`setTelao` em `features/raffle-draw.js`, CSS `.raffle-telao` em `styles.css`):** botão "Modo telão" (ou `sorteio.html?telao=1`, abre já em telão, inclusive na tela de login) transforma a própria `.raffle-mod` numa tela cheia (`position:fixed`, `body.raffle-telao-open`): roda grande (`--raffle-wheel-size: min(82vh,56vw)`, fontes por `vmin`), contador enorme ao vivo (`raffleCounterMarkup`), faixa "Acabaram de entrar" com os 4 últimos nomes (o recém-chegado ganha animação, só depois da 1ª lista: `seenArrivalIds`), QR maior (320 px, reduzido por CSS à altura da tela) e ganhadores. Pede tela cheia do navegador (`fullscreen` injetável, `defaultFullscreen`); Esc ou sair da tela cheia saem do telão. Pensado pro notebook no HDMI do telão do palco; o moderador entra com Google no próprio notebook. A roda, o ponteiro e o botão escalam pela variável `--raffle-wheel-size`.
+- Testes: 9 de regras puras + 8 de tela novos (amostra, contador, chegadas, tempo do ganhador, velocidade constante, telão, `?telao=1`).
 
 **Texto da fatia (pedido do Renato, 2026-10-01):** nome + ÚLTIMO sobrenome (`raffleWheelLabelText` em `components/raffle-wheel.js`; "Henrique Ferreira Rodrigues da Silva" vira "Henrique Silva"), pra caber na fatia; o nome completo segue no bloco do ganhador. `raffle-wheel.js?v=7`.
 

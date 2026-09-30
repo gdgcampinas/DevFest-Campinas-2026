@@ -9,7 +9,7 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, settle, textOf } = require("../lib/dom-harness.js");
 const { createFakeQuestions, denied } = require("../lib/fake-question-world.js");
 
-const SCRIPTS = [...SITE_BASE, "components/moderator-login.js", "components/raffle-wheel.js", "features/moderator-login.js", "features/raffle-draw.js"];
+const SCRIPTS = [...SITE_BASE, "components/moderator-login.js", "features/raffle-pool.js", "components/raffle-arrivals.js", "components/raffle-wheel.js", "features/moderator-login.js", "features/raffle-draw.js"];
 
 const windows = [];
 test.after(() => windows.forEach(window => window.close()));
@@ -21,13 +21,22 @@ const fakeAudioCtx = () => {
   return { createOscillator: node, createGain: node, destination: {}, currentTime: 0 };
 };
 
-function setup({ signedIn = false, devSeed = [], entries = createFakeQuestions(), draws = createFakeQuestions() } = {}) {
+/** Modo telão sem tela cheia de verdade (jsdom não tem a API): só registra as chamadas. */
+const fakeFullscreen = () => {
+  const calls = { enter: 0, exit: 0 };
+  let active = false;
+  return { calls, enter: () => { calls.enter++; active = true; }, exit: () => { calls.exit++; active = false; }, isActive: () => active, setActive: value => { active = value; } };
+};
+
+function setup({ signedIn = false, devSeed = [], entries = createFakeQuestions(), draws = createFakeQuestions(), startInTelao = false, random } = {}) {
   const site = loadSite({ scripts: SCRIPTS });
   const { document, window } = site;
   windows.push(window);
   const auth = { email: signedIn ? "mod@gdg.dev" : null, signInError: null };
   document.body.innerHTML = `<div id="mod"></div>`;
   const rootEl = document.getElementById("mod");
+  const fullscreen = fakeFullscreen();
+  const scheduled = []; // tempo de exibição do ganhador: só roda quando o teste manda (`releaseReveal`)
   site.get("initRaffleDraw")(rootEl, {
     deps: () => ({
       entries, draws,
@@ -39,12 +48,16 @@ function setup({ signedIn = false, devSeed = [], entries = createFakeQuestions()
     whenReady: task => task(),
     spinTimer: instantSpinTimer(),
     audio: fakeAudioCtx,
-    raf: fn => fn(), // roda na hora, sem esperar frame: os testes conferem o ângulo logo depois do giro
+    schedule: fn => scheduled.push(fn),
+    fullscreen,
+    startInTelao,
+    ...(random ? { random } : {}),
   });
   const seedEntry = (id, firstName, lastName) => entries.seed({ id, firstName, lastName });
+  const releaseReveal = async () => { scheduled.splice(0).forEach(fn => fn()); await settle(); };
   const signIn = async () => { rootEl.querySelector("[data-mod-signin]").click(); await settle(); };
   const spin = async () => { rootEl.querySelector("[data-raffle-spin]").click(); await settle(); };
-  return { rootEl, entries, draws, auth, seedEntry, signIn, spin };
+  return { rootEl, document, window, entries, draws, auth, seedEntry, signIn, spin, fullscreen, releaseReveal };
 }
 
 test("sem login: pede a conta de moderador e não lê nada do banco", async () => {
@@ -219,4 +232,116 @@ test("mostrar/esconder o QR do sorteio", async () => {
   assert.ok(world.rootEl.querySelector("#raffleQr"));
   world.rootEl.querySelector("[data-raffle-qr-toggle]").click();
   assert.equal(world.rootEl.querySelector("#raffleQr"), null);
+});
+
+const labelsOf = rootEl => [...rootEl.querySelectorAll(".raffle-wheel-label span")].map(el => el.textContent);
+const manyEntries = (world, count) => { for (let i = 1; i <= count; i++) world.seedEntry(`u${i}_raffle`, `P${i}`, `S${i}`); };
+
+test("roda com muita gente: mostra só uma amostra (as mais recentes) e o contador traz o total", async () => {
+  const world = setup({ signedIn: true });
+  manyEntries(world, 100);
+  await world.signIn();
+  const labels = labelsOf(world.rootEl);
+  assert.equal(labels.length, 24);
+  assert.ok(labels.includes("P100 S100") && !labels.includes("P1 S1"), "parada, a roda mostra quem chegou por último");
+  assert.equal(world.rootEl.querySelector(".raffle-counter-value").textContent, "100");
+});
+
+test("giro com muita gente: o ganhador sai da lista inteira e está numa das 24 fatias", async () => {
+  const world = setup({ signedIn: true, random: () => 0.5 });
+  manyEntries(world, 100);
+  await world.signIn();
+  await world.spin();
+  assert.equal(world.draws.docs.length, 1);
+  const winnerLabel = world.draws.docs[0].name.split(" ");
+  assert.ok(labelsOf(world.rootEl).includes(`${winnerLabel[0]} ${winnerLabel.at(-1)}`), "o sorteado está na roda");
+  assert.equal(labelsOf(world.rootEl).length, 24);
+  assert.match(textOf(world.rootEl.querySelector(".raffle-stats")), /99\s*Na lista/);
+});
+
+test("contador ao vivo e faixa de chegadas: o mais recente primeiro, só o recém-chegado ganha a animação", async () => {
+  const world = setup({ signedIn: true });
+  manyEntries(world, 3);
+  await world.signIn();
+  assert.deepEqual([...world.rootEl.querySelectorAll(".raffle-arrival")].map(el => el.textContent), ["P3 S3", "P2 S2", "P1 S1"]);
+  assert.equal(world.rootEl.querySelectorAll(".raffle-arrival.is-new").length, 0, "quem já estava lá não anima");
+  world.seedEntry("u4_raffle", "Maria", "Silva");
+  await settle();
+  assert.equal(world.rootEl.querySelector(".raffle-counter-value").textContent, "4");
+  const first = world.rootEl.querySelector(".raffle-arrival");
+  assert.equal(first.textContent, "Maria Silva");
+  assert.ok(first.classList.contains("is-new"));
+  assert.equal(world.rootEl.querySelectorAll(".raffle-arrival.is-new").length, 1);
+});
+
+test("ganhador recém-revelado: a roda não muda até acabar o tempo, depois se renova sem ele", async () => {
+  const world = setup({ signedIn: true });
+  manyEntries(world, 3);
+  await world.signIn();
+  await world.spin();
+  assert.equal(labelsOf(world.rootEl).length, 3, "durante o tempo do ganhador a roda segue igual");
+  world.seedEntry("u4_raffle", "Nova", "Pessoa");
+  await settle();
+  assert.equal(labelsOf(world.rootEl).length, 3, "gente nova não mexe na roda enquanto o ganhador está sob o ponteiro");
+  assert.ok(world.rootEl.querySelector(".raffle-winner"), "o cartão do ganhador fica enquanto a roda está parada");
+  await world.releaseReveal();
+  assert.equal(world.rootEl.querySelector(".raffle-winner"), null, "a roda renovada não aponta mais pra ele: o cartão some");
+  assert.equal(labelsOf(world.rootEl).length, 3, "3 restantes = 4 cadastrados menos o ganhador");
+  assert.ok(labelsOf(world.rootEl).includes("Nova Pessoa"), "quem chegou no meio entra na roda renovada");
+});
+
+test("giros seguidos têm sempre a mesma duração visual (voltas inteiras a mais, não crescem)", async () => {
+  const world = setup({ signedIn: true });
+  manyEntries(world, 6);
+  await world.signIn();
+  const degOf = () => parseFloat(world.rootEl.querySelector(".raffle-wheel").style.transform.match(/rotate\(([-\d.]+)deg\)/)[1]);
+  const gaps = [];
+  let previous = 0;
+  for (let i = 0; i < 4; i++) {
+    await world.spin();
+    gaps.push(degOf() - previous);
+    await world.releaseReveal();
+    previous = degOf();
+  }
+  gaps.forEach(gap => assert.ok(gap >= 2160 && gap < 2160 + 360, `giro de ${gap}°`));
+});
+
+test("modo telão: liga e desliga, pede tela cheia, mostra o QR e sai com Esc", async () => {
+  const world = setup({ signedIn: true });
+  manyEntries(world, 3);
+  await world.signIn();
+  assert.equal(world.rootEl.classList.contains("raffle-telao"), false);
+  world.rootEl.querySelector("[data-raffle-telao-toggle]").click();
+  await settle();
+  assert.equal(world.rootEl.classList.contains("raffle-telao"), true);
+  assert.equal(world.document.body.classList.contains("raffle-telao-open"), true);
+  assert.equal(world.fullscreen.calls.enter, 1);
+  assert.ok(world.rootEl.querySelector("#raffleQr"), "no telão o QR já aparece");
+  assert.match(textOf(world.rootEl.querySelector("[data-raffle-telao-toggle]")), /Sair do modo telão/);
+  world.document.dispatchEvent(new world.window.KeyboardEvent("keydown", { key: "Escape" }));
+  await settle();
+  assert.equal(world.rootEl.classList.contains("raffle-telao"), false);
+  assert.equal(world.document.body.classList.contains("raffle-telao-open"), false);
+  assert.equal(world.fullscreen.calls.exit, 1);
+});
+
+test("modo telão: sair da tela cheia pelo navegador também sai do telão", async () => {
+  const world = setup({ signedIn: true });
+  await world.signIn();
+  world.rootEl.querySelector("[data-raffle-telao-toggle]").click();
+  await settle();
+  world.fullscreen.setActive(false);
+  world.document.dispatchEvent(new world.window.Event("fullscreenchange"));
+  await settle();
+  assert.equal(world.rootEl.classList.contains("raffle-telao"), false);
+});
+
+test("?telao=1 (startInTelao): já abre em modo telão, até na tela de login, e dá pra sair dela", async () => {
+  const world = setup({ startInTelao: true });
+  await settle();
+  assert.equal(world.rootEl.classList.contains("raffle-telao"), true);
+  assert.ok(world.rootEl.querySelector("[data-raffle-telao-toggle]"), "na tela de login também tem o botão de sair do telão");
+  await world.signIn();
+  assert.equal(world.rootEl.classList.contains("raffle-telao"), true);
+  assert.ok(world.rootEl.querySelector("#raffleQr"));
 });

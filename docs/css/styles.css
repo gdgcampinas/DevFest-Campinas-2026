@@ -1170,14 +1170,14 @@ body:has(.modal:not([hidden])) .feedback-nudge{display:none}
 .raffle-done-title{margin:0;font:800 16px var(--font-display);color:oklch(96% 0.006 260)}
 .raffle-done-hint{margin:0;font:500 13px/1.5 var(--font-body);color:var(--muted)}
 
-.raffle-mod{padding:20px;border-radius:16px;background:linear-gradient(180deg,var(--card-a),var(--card-b));border:1px solid var(--card-border)}
+.raffle-mod{--raffle-wheel-size:min(88vw,460px);--raffle-label-size:12px;padding:20px;border-radius:16px;background:linear-gradient(180deg,var(--card-a),var(--card-b));border:1px solid var(--card-border)}
 .raffle-mod-title{margin:0 0 6px;font:800 18px var(--font-display);color:oklch(96% 0.006 260)}
 
 .raffle-wheel-stage{display:flex;flex-direction:column;align-items:center;gap:16px;padding:10px 0 20px}
-.raffle-wheel-wrap{position:relative;width:min(88vw,460px);height:min(88vw,460px);display:flex;align-items:center;justify-content:center}
+.raffle-wheel-wrap{position:relative;width:var(--raffle-wheel-size);height:var(--raffle-wheel-size);display:flex;align-items:center;justify-content:center}
 .raffle-wheel-pointer{
-  position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:0;height:0;z-index:3;
-  border-left:15px solid transparent;border-right:15px solid transparent;border-top:24px solid var(--google-yellow);
+  position:absolute;top:calc(var(--raffle-wheel-size) * -.03);left:50%;transform:translateX(-50%);width:0;height:0;z-index:3;
+  border-left:calc(var(--raffle-wheel-size) * .033) solid transparent;border-right:calc(var(--raffle-wheel-size) * .033) solid transparent;border-top:calc(var(--raffle-wheel-size) * .052) solid var(--google-yellow);
   filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));
 }
 .raffle-wheel{
@@ -1190,12 +1190,12 @@ body:has(.modal:not([hidden])) .feedback-nudge{display:none}
 /* rótulo de cada fatia: linha de altura 0 presa no centro da roda, rodada até o meio da fatia — o nome
    "anda" pra fora nessa linha (mesmo truque de sempre pra texto radial em CSS puro, sem canvas/SVG). Gira
    junto com .raffle-wheel (é filho dela), então acompanha o giro sem cálculo extra. */
-.raffle-wheel-label{position:absolute;top:50%;left:50%;width:50%;height:0;transform-origin:0 0;display:flex;align-items:center;justify-content:flex-end;padding-right:16px;pointer-events:none}
-.raffle-wheel-label span{display:inline-block;font:800 12px var(--font-body);color:oklch(14% 0.01 260);white-space:nowrap;max-width:calc(min(88vw,460px)/2 - 34px);overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 0 rgba(255,255,255,.15)}
+.raffle-wheel-label{position:absolute;top:50%;left:50%;width:50%;height:0;transform-origin:0 0;display:flex;align-items:center;justify-content:flex-end;padding-right:calc(var(--raffle-wheel-size) * .035);pointer-events:none}
+.raffle-wheel-label span{display:inline-block;font:800 var(--raffle-label-size) var(--font-body);color:oklch(14% 0.01 260);white-space:nowrap;max-width:calc(var(--raffle-wheel-size)/2 - var(--raffle-wheel-size) * .074);overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 0 rgba(255,255,255,.15)}
 .raffle-spin-btn{
-  position:absolute;width:108px;height:108px;border-radius:50%;border:5px solid oklch(4% 0 0);
+  position:absolute;width:calc(var(--raffle-wheel-size) * .235);height:calc(var(--raffle-wheel-size) * .235);border-radius:50%;border:5px solid oklch(4% 0 0);
   background:linear-gradient(135deg,var(--google-blue),var(--google-green));color:oklch(14% 0.01 260);
-  font:800 15px var(--font-body);cursor:pointer;box-shadow:0 10px 24px rgba(0,0,0,.55);z-index:2;
+  font:800 calc(var(--raffle-wheel-size) * .033) var(--font-body);cursor:pointer;box-shadow:0 10px 24px rgba(0,0,0,.55);z-index:2;
 }
 .raffle-spin-btn[disabled]{opacity:.5;cursor:not-allowed}
 
@@ -1225,7 +1225,53 @@ body:has(.modal:not([hidden])) .feedback-nudge{display:none}
 
 .raffle-load-error{margin-bottom:14px}
 .raffle-dev-badge{margin:0 0 14px;padding:9px 12px;border-radius:10px;font:600 12px/1.5 var(--font-body);color:var(--google-blue);background:color-mix(in oklch, var(--google-blue) 12%, transparent);border:1px solid color-mix(in oklch, var(--google-blue) 30%, transparent)}
-.raffle-qr-block{margin-bottom:16px}
-.raffle-qr-wrap{margin-top:10px;padding:16px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--card-border);display:flex;flex-direction:column;align-items:center;gap:8px}
+.raffle-controls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.raffle-qr-wrap{margin:0 0 16px;padding:16px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--card-border);display:flex;flex-direction:column;align-items:center;gap:8px}
 .raffle-qr-wrap :where(img,canvas,table){border-radius:8px;background:#fff;padding:8px}
 .raffle-qr-hint{margin:0;font:500 11.5px var(--font-body);color:var(--muted);text-align:center}
+
+/* Contador ao vivo e faixa "acabaram de entrar": só aparecem no modo telão */
+.raffle-counter,.raffle-arrivals{display:none}
+@keyframes raffle-arrival-in{from{opacity:0;transform:translateX(-18px) scale(.96)}to{opacity:1;transform:none}}
+
+/* MODO TELÃO (notebook no HDMI, telão grande): a própria área da organização (.raffle-mod) vira uma tela cheia
+   só com a roda, o ganhador, o contador, quem acabou de entrar, o QR e os já sorteados. Tudo dimensionado por
+   vh/vmin, então escala do notebook ao telão. A roda e as fontes vêm das variáveis --raffle-*. */
+body.raffle-telao-open{overflow:hidden}
+.raffle-mod.raffle-telao{
+  --raffle-wheel-size:min(82vh,56vw);--raffle-label-size:clamp(11px,1.7vmin,24px);
+  position:fixed;inset:0;z-index:2000;margin:0;padding:3.2vmin 3vmin 2vmin;border-radius:0;border:0;overflow:hidden;
+  background:radial-gradient(circle at 28% 45%, color-mix(in oklch, var(--google-blue) 11%, var(--bg)), var(--bg) 72%);
+  display:flex;flex-direction:column;
+}
+.raffle-telao :where(.raffle-mod-title,.mod-account,.raffle-wheel-hint,.raffle-rounds-hint,.raffle-stats,.raffle-qr-toggle,.raffle-dev-badge){display:none}
+.raffle-telao .raffle-controls{position:absolute;top:1.2vmin;right:1.6vmin;margin:0;z-index:5;opacity:.4;transition:opacity .2s}
+.raffle-telao .raffle-controls:hover,.raffle-telao .raffle-controls:focus-within{opacity:1}
+.raffle-telao .raffle-layout{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,30vw);gap:3vmin;align-items:center}
+.raffle-telao .raffle-wheel-stage{padding:0;gap:2.4vmin}
+.raffle-telao .raffle-winner{padding:1.6vmin 3vmin;min-width:0;max-width:100%}
+.raffle-telao .raffle-winner-label{font-size:clamp(11px,1.6vmin,20px)}
+.raffle-telao .raffle-winner-name{font-size:clamp(26px,5.4vmin,68px);line-height:1.1}
+.raffle-telao .raffle-winner-hint{font-size:clamp(11px,1.6vmin,20px)}
+.raffle-telao .raffle-mod-side{display:flex;flex-direction:column;gap:2.4vmin;min-height:0;max-height:100%;overflow:hidden}
+.raffle-telao .raffle-counter{display:flex;flex-direction:column;align-items:center;line-height:1}
+.raffle-telao .raffle-counter-value{font:800 clamp(56px,17vmin,200px) var(--font-display);color:var(--google-yellow);text-shadow:0 0 40px color-mix(in oklch, var(--google-yellow) 35%, transparent)}
+.raffle-telao .raffle-counter-label{margin-top:.8vmin;font:700 clamp(13px,2.4vmin,30px) var(--font-body);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.raffle-telao .raffle-arrivals{display:block}
+.raffle-telao .raffle-arrivals-title{display:block;margin-bottom:1vmin;font:700 clamp(11px,1.7vmin,22px) var(--font-body);color:var(--google-green);text-transform:uppercase;letter-spacing:.08em}
+.raffle-telao .raffle-arrivals-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.9vmin}
+.raffle-telao .raffle-arrival{padding:.9vmin 1.6vmin;border-radius:1.2vmin;background:rgba(255,255,255,.05);border:1px solid var(--card-border);font:700 clamp(15px,2.8vmin,36px) var(--font-body);color:oklch(96% 0.006 260);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.raffle-telao .raffle-arrival.is-new{animation:raffle-arrival-in .55s ease-out;border-color:var(--google-green);background:color-mix(in oklch, var(--google-green) 16%, transparent)}
+.raffle-telao .raffle-qr-wrap{margin:0;align-self:center;padding:1.2vmin}
+.raffle-telao .raffle-qr-wrap :where(img,canvas){width:min(27vh,24vw) !important;height:auto !important} /* o QR escala com a tela (desenhado em 320px, reduzido por CSS) */
+.raffle-telao .raffle-arrival:nth-child(n+5){display:none}
+.raffle-telao .raffle-qr-hint{font-size:clamp(11px,1.6vmin,20px)}
+.raffle-telao .raffle-drawn{min-height:0;overflow:hidden}
+.raffle-telao .raffle-drawn-title{font-size:clamp(11px,1.6vmin,20px)}
+.raffle-telao .raffle-drawn-list{max-height:none;overflow:hidden}
+.raffle-telao .raffle-drawn-name{font-size:clamp(14px,2.3vmin,30px)}
+.raffle-telao .raffle-drawn-prize{width:clamp(22px,3.2vmin,40px);height:clamp(22px,3.2vmin,40px);font-size:clamp(11px,1.7vmin,22px)}
+@media(max-aspect-ratio:1/1){
+  .raffle-mod.raffle-telao{--raffle-wheel-size:min(58vh,90vw)}
+  .raffle-telao .raffle-layout{grid-template-columns:1fr;grid-template-rows:auto 1fr;align-items:start}
+}
