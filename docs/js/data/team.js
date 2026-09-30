@@ -53,12 +53,12 @@ const TEAM = [
   organizer("Carlos H"),
   // Ordem pedida pelo Renato (2026-09-30): mulher, homem, alternando; os homens que sobrarem vão pro fim.
   volunteer("Paula Santos", "https://www.linkedin.com/in/paula-santos-", "f", teamPhoto("paula-santos")),
-  volunteer("João Estevão Camilo", "https://www.linkedin.com/in/joãoestevaocamilo", "m", teamPhoto("joao-estevao-camilo")),
+  volunteer("João Estevão Camilo", "https://www.linkedin.com/in/joãoestevaocamilo", "m", teamPhoto("joao-estevao-camilo"), "Apaixonado por tecnologia e por entender como as coisas funcionam, começou essa jornada pela eletrônica e pela prototipagem. Foi explorando circuitos, criando projetos e resolvendo problemas que descobriu o quanto gosta de transformar ideias em soluções. Hoje segue essa trajetória como Backend Java no Agibank, desenvolvendo sistemas e tecnologias que o desafiam a aprender algo novo todos os dias."),
   volunteer("Camila Fernanda Ignacio", "https://www.linkedin.com/in/camila-fernanda-ignácio-379253103", "f", teamPhoto("camila-fernanda-ignacio")),
   volunteer("Ricardo Koiti Matsushita", "https://www.linkedin.com/in/ricardo-koiti-matsushita-545006225", "m", teamPhoto("ricardo-koiti-matsushita"), "Ricardo Koiti Matsushita é estudante de Análise e Desenvolvimento de Sistemas na FATEC Americana e acredita no poder da comunidade, das conexões e da troca de conhecimento. Atualmente trabalha como estagiário."),
   volunteer("Débora Nortes", "https://www.linkedin.com/in/deboranortes", "f", teamPhoto("debora-nortes")),
   // Real (2026-09-29): LinkedIn dele não veio no trecho do grupo (mandou por PV); mantido o da leva anterior, mesma pessoa.
-  volunteer("Davi Andrade", "https://www.linkedin.com/in/davi-lima-4695b3211", "m", teamPhoto("davi-andrade")),
+  volunteer("Davi Andrade", "https://www.linkedin.com/in/davi-lima-4695b3211", "m", teamPhoto("davi-andrade"), "Trabalha como ML Engineer na Bosch, treinando modelos de inteligência artificial no dia a dia. Gosta de tecnologia porque sente que está mexendo com o futuro na prática, e é essa curiosidade que o trouxe para ser voluntário no GDG."),
   volunteer("Mayne Gabriele da Silva", "https://www.linkedin.com/in/mayne-silva-99949428b", "f", teamPhoto("mayne-gabriele-da-silva")),
   volunteer("Gustavo Costa", "https://www.linkedin.com/in/guscosta7", "m", teamPhoto("gustavo-costa")),
   volunteer("Vânia Gomes Marinelli", "https://www.linkedin.com/in/vania-marinelli", "f", teamPhoto("vania-gomes-marinelli")),
@@ -66,8 +66,8 @@ const TEAM = [
   // Real (2026-09-29): link colado no grupo veio cortado ("naira-ferreira-", sem o resto) — conferir com ela antes do evento.
   volunteer("Laydianne Naira", "https://www.linkedin.com/in/naira-ferreira-", "f", teamPhoto("laydianne-naira")),
   volunteer("Henrique Ferreira Rodrigues da Silva", "https://www.linkedin.com/in/henrique-ferreira-rodrigues-da-silva-302a91289", "m", teamPhoto("henrique-ferreira-rodrigues-da-silva")),
-  volunteer("Letícia Fernandes Camargo de Campos", "https://www.linkedin.com/in/leticiafccampos", "f", teamPhoto("leticia-fernandes-campos")),
-  volunteer("Pedro Escobar Missola", "https://www.linkedin.com/in/pedromissola", "m", teamPhoto("pedro-escobar-missola")),
+  volunteer("Letícia Fernandes Camargo de Campos", "https://www.linkedin.com/in/leticiafccampos", "f", teamPhoto("leticia-fernandes-campos"), "Veio de operações para a tecnologia, com foco em Tech Ops e Dados. Formada em Engenharia e estudante na UNICAMP, acredita que sistemas precisam resolver problemas reais. Decidiu ser voluntária no GDG para colocar sua comunicação em jogo, trocar ideias e construir uma rede de contatos nessa transição."),
+  volunteer("Pedro Escobar Missola", "https://www.linkedin.com/in/pedromissola", "m", teamPhoto("pedro-escobar-missola"), "Estudante de Gestão de TI na Fatec Campinas, atua na área de Qualidade. Estuda Gestão de Projetos e também trabalha com programação, usando Node.js e JavaScript para criar websites, APIs, automações e aplicações. Gosta de unir tecnologia e gestão para transformar problemas em soluções reais."),
   volunteer("Lorenzo da Cunha", "https://www.linkedin.com/in/lorenzodacunha", "m", teamPhoto("lorenzo-da-cunha")),
   volunteer("Felipe de Oliveira", "https://www.linkedin.com/in/felipeoliveira8", "m", teamPhoto("felipe-de-oliveira")),
   volunteer("Henrique Ribeiro Medeiros da Silva", "https://www.linkedin.com/in/henriquermdsilva", "m", teamPhoto("henrique-ribeiro-medeiros-da-silva")),

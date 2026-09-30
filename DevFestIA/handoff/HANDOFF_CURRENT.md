@@ -36,7 +36,7 @@
 ## PRÓXIMO TRABALHO (decidido com o Renato, fazer nesta ordem, teste primeiro em cada etapa)
 
 ### 1. Mini-bio dos voluntários/organizadores (2026-09-30) — CÓDIGO PRONTO, FALTAM OS TEXTOS
-**Feito:** campo `bio` opcional em `data/team.js`, card clicável só com bio, modal "Descubra mais sobre" (`components/person-detail.js` + `createPersonModal()` em `features/team.js`), EN pronto, testado no navegador com bio temporária. **Renato Ramos já tem bio (exemplo real, aceita parágrafos com \n\n). Falta o Renato mandar os textos dos outros 21** (1-3 frases por pessoa): é preencher `bio` em `team.js` (5º parâmetro de `volunteer()`, `{ bio }` em `organizer()`), subir `team.js?v=` em `time.html`. Foto do Michel Salomé entrou (recorte do corpo inteiro). Abaixo, o desenho original da task:
+**Feito:** campo `bio` opcional em `data/team.js`, card clicável só com bio, modal "Descubra mais sobre" (`components/person-detail.js` + `createPersonModal()` em `features/team.js`), EN pronto, testado no navegador com bio temporária. 6 pessoas já têm bio: Renato Ramos, Ricardo Koiti Matsushita, Davi Andrade, Letícia Fernandes Camargo de Campos, Pedro Escobar Missola e João Estevão Camilo. **Faltam os outros 16** (1-3 frases por pessoa): é preencher `bio` em `team.js` (5º parâmetro de `volunteer()`, `{ bio }` em `organizer()`), subir `team.js?v=` em `time.html`. Foto do Michel Salomé entrou (recorte do corpo inteiro). Abaixo, o desenho original da task:
 Clicar no card (Organizadores ou Voluntários, `time.html`) abre um **modal** "Descubra mais sobre" com
 mais informação da pessoa. **Os cards continuam exatamente como estão** (foto, nome, cargo, barra
 azul/verde, ícone do LinkedIn) — o modal é só uma camada a mais no clique, mesmo padrão do card de
@@ -189,8 +189,14 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
 11. **Mural eletrônico do telão de LED:** página interna em tela cheia com cenas em rodízio (agora/próximas,
     álbum, fênix, patrocinadores, QR, números ao vivo, dicas, avisos, a galáxia). PERGUNTE ao Renato antes
     de desenhar: tamanho e proporção do painel, entrada (HDMI de notebook ou navegador), origem das fotos
-    ao vivo, arquivo da fênix (mascote em criação: vídeo, sprites ou animação, com som?), quem opera.
+    ao vivo, arquivo da fênix (vídeo, sprites ou animação, com som?), quem opera.
     Já dá pra começar pelas cenas que não dependem disso (agora/próximas, QR, números, galáxia).
+    **Mascote (fênix) aprovada e recebida (2026-09-30):** 3 arquivos estáticos em
+    `~/Downloads/mascote-gdg-campinas/aprovado/` (fora do repo, não comitados) — `icone-grupo-mascote.png`
+    (1024x1024, com o logo GDG Campinas embaixo), `icone-grupo-mascote-previa-circulo.png` (512x512,
+    recorte circular) e `mascote-fonte-gpt.webp` (1122x1402, só a arte, sem logo). Ainda estático, sem
+    vídeo/sprite/animação. **Onde usar (favicon, home, og:image, ou só guardar pro mural) ainda em aberto
+    — perguntar ao Renato antes de aplicar em qualquer lugar do site.**
 11b. **Área administrativa com login** (CRUD de moderadores, palestrantes, patrocinadores...; análise e caminho recomendado em `IDEAS_BACKLOG.md`): começar por moderadores CRUD; depois de fechar perguntas e quadro da sala.
 12. **Internacionalização (PT/EN/ES/FR):** grande, precisa ser desenhada.
 13. Ideias em `IDEAS_BACKLOG.md`: quiz "Monte sua trilha", enquetes/perguntas ao vivo, passaporte com
