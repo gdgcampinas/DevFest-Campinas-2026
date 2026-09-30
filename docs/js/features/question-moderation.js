@@ -24,18 +24,6 @@ function pickModerationTalk({ schedule, track, now, pinnedSlot = null }) {
   return slot ? { key: talkKey(slot, track.id), title: slot.talks[track.id].title } : null;
 }
 
-/** Explicação de cada erro de login com Google que o moderador pode ver (o código do Firebase vai junto, pra diagnóstico). */
-const SIGNIN_ERROR_HINTS = {
-  "auth/popup-blocked": "O navegador bloqueou a janela do Google. Libere os pop-ups deste site e tente de novo.",
-  "auth/popup-closed-by-user": "A janela do Google foi fechada antes de terminar. Tente de novo.",
-  "auth/cancelled-popup-request": "Já havia uma janela de login aberta. Feche as janelas do Google e tente de novo.",
-  "auth/unauthorized-domain": "Este endereço não está autorizado no Firebase (Authentication > Configurações > Domínios autorizados).",
-  "auth/operation-not-allowed": "O login com Google não está ativado no Firebase (Authentication > Método de login).",
-  "auth/network-request-failed": "Sem conexão com o Firebase. Confira a internet.",
-};
-
-const signInErrorMessage = error => `${SIGNIN_ERROR_HINTS[error?.code] ?? "Não foi possível entrar. Tente de novo."} (${error?.code ?? "erro desconhecido"})`;
-
 function initQuestionModeration(rootEl, { schedule, track, config, now = () => new Date(), pinnedCode = null, codeOf, deps = defaultModerationDeps, whenReady = runAfterModules }) {
   let email = "";
   let watch = null; // { talk, publisher, stopListening, timer } da palestra que está sendo moderada
@@ -142,8 +130,6 @@ function defaultModerationDeps() {
     questions: window.moderationQuestionsRepository,
     votes: window.moderationVotesRepository,
     boards: window.moderationBoardsRepository,
-    signIn: () => window.moderatorClient.signInWithGoogle(),
-    restore: () => window.moderatorClient.restoreModerator(),
-    signOut: () => window.moderatorClient.signOutModerator(),
+    ...defaultModeratorLoginDeps(),
   };
 }

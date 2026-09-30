@@ -342,7 +342,7 @@ function initShell(activePageId) {
   renderBrand(EVENT.hosts, document.getElementById("brand"));
   renderWordmark(EVENT, document.getElementById("wordmark"));
   renderHeaderMeta(EVENT, SCHEDULE, document.getElementById("headerMeta"));
-  renderSiteNav(activePageId, document.getElementById("siteNav"));
+  renderSiteNav(activePageId, document.getElementById("siteNav"), { reveal });
   renderFooterColumns(FOOTER_COLUMNS, document.querySelector(".footer-columns"));
   const tickerEl = document.getElementById("ticker");
   if (tickerEl) renderTicker(EVENT, SCHEDULE, tickerEl);

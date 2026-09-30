@@ -47,7 +47,7 @@ function talkQuestionsMarkup({ phase, entryKey, approved = [], mine = [], canAsk
   const wrap = body => `<div class="talk-feedback">${title}${body}</div>`;
   if (phase === "locked") return wrap(`<p class="talk-feedback-hint">${t("q.locked", "Faça o check-in nessa palestra pra enviar e votar perguntas.")}</p>`);
   if (phase === "loading") return `<div class="talk-feedback talk-feedback--loading">${title}${t("q.loading", "Carregando perguntas…")}</div>`;
-  if (phase === "error") return wrap(`<p class="talk-feedback-error" role="alert">${message}</p>`);
+  if (phase === "error") return wrap(`<p class="form-error" role="alert">${message}</p>`);
   if (phase === "waiting") return wrap(`<p class="talk-feedback-hint">${t("q.waiting", "As perguntas abrem quando a palestra começar e fecham quando ela terminar.")}</p>`);
 
   const open = phase === "open";
@@ -57,7 +57,7 @@ function talkQuestionsMarkup({ phase, entryKey, approved = [], mine = [], canAsk
         <form class="feedback-form question-form" data-question-form data-entry-key="${entryKey}">
           <textarea class="feedback-input" name="text" placeholder="${t("q.placeholder", "Sua pergunta")}" maxlength="${maxLength - 1}" rows="2" required></textarea>
           <input type="text" class="feedback-input" name="name" value="${escapeHtml(name)}" placeholder="${t("fb.name", "Seu nome")}" maxlength="79" autocomplete="name" required>
-          ${message ? `<p class="talk-feedback-error" role="alert">${message}</p>` : ""}
+          ${message ? `<p class="form-error" role="alert">${message}</p>` : ""}
           <button type="submit" class="chip-btn chip-btn--primary" data-track-event="question_send" data-track-target="${entryKey}">${iconMarkup("check")}${t("q.send", "Enviar pergunta")}</button>
           <span class="talk-feedback-hint">${tn("q.remaining", remaining, "Você pode enviar mais {count} pergunta.", "Você pode enviar mais {count} perguntas.")}</span>
         </form>`

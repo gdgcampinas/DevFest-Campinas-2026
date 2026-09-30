@@ -231,6 +231,38 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // ---- Sorteio ----
+    // Cadastro no sorteio: um registro por pessoa, chave sempre "raffle" (features/raffle-signup.js). Nome e
+    // sobrenome obrigatórios. Ninguém lista (nem o dono lê a lista de outras pessoas) exceto o moderador, que
+    // precisa da lista completa pra girar a roleta.
+    match /raffle-entries/{docId} {
+      allow get: if isOwnDoc(docId);
+      allow list: if isModerator();
+      allow create: if isOwnDoc(docId) && idMatchesEntry(docId) && hasValidBaseFields()
+        && request.resource.data.entryKey == 'raffle'
+        && request.resource.data.keys().hasOnly(['edition', 'entryKey', 'createdAt', 'firstName', 'lastName'])
+        && requiredText(request.resource.data, 'firstName', 60)
+        && requiredText(request.resource.data, 'lastName', 80);
+      allow update, delete: if false;
+    }
+
+    // Sorteios já feitos (um documento por prêmio): só o moderador cria e lista (features/raffle-draw.js). O id
+    // do documento É o id do cadastro sorteado + "_draw" — a mesma pessoa nunca é sorteada 2x porque o create
+    // de um documento que já existe é recusado (mesmo truque de dedupe dos checkins), não uma checagem no
+    // cliente. `entryId` precisa apontar pra um cadastro real.
+    match /raffle-draws/{docId} {
+      allow get, list: if isModerator();
+      allow create: if isModerator() && hasValidBaseFields()
+        && request.resource.data.entryKey == 'draw'
+        && docId == request.resource.data.entryId + '_draw'
+        && exists(/databases/$(database)/documents/raffle-entries/$(request.resource.data.entryId))
+        && request.resource.data.keys().hasOnly(['edition', 'entryKey', 'createdAt', 'entryId', 'name', 'prize'])
+        && requiredText(request.resource.data, 'entryId', 200)
+        && requiredText(request.resource.data, 'name', 140)
+        && request.resource.data.prize is int && request.resource.data.prize >= 1 && request.resource.data.prize <= 200;
+      allow update, delete: if false;
+    }
+
     // Inscritos do Sympla e total público: escritos SÓ pelo job (DevFestIA/tools/sympla-sync)
     // com conta de serviço, que ignora estas regras. O site só consulta por id conhecido
     // (registrations: "<edição>_<sha256 do e-mail>"; event-stats: a edição). Ninguém lista, ninguém grava.

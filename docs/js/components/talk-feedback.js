@@ -12,7 +12,7 @@
  * `name` pré-preenche o nome (obrigatório) com o da última avaliação.
  */
 function talkFeedbackMarkup({ phase, entryKey, title = "", message = "", name = "" }) {
-  const note = message ? `<p class="talk-feedback-error" role="alert">${message}</p>` : "";
+  const note = message ? `<p class="form-error" role="alert">${message}</p>` : "";
 
   if (phase === "checkin") {
     return `<div class="talk-feedback">

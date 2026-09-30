@@ -1,0 +1,119 @@
+/**
+ * Testes de TELA da roleta do sorteio (docs/js/features/raffle-draw.js + components/raffle-wheel.js) em
+ * jsdom, repositories de mentira (mesmas de fake-question-world.js, mesmo contrato create-only/listen):
+ * login, quem entra no sorteio, modo único x por rodadas, e que a mesma pessoa nunca é sorteada 2x.
+ *   node --test DevFestIA/tools/dom/raffle-draw.dom.test.js
+ */
+const test = require("node:test");
+const assert = require("node:assert/strict");
+const { loadSite, SITE_BASE, settle, textOf } = require("../lib/dom-harness.js");
+const { createFakeQuestions, denied } = require("../lib/fake-question-world.js");
+
+const SCRIPTS = [...SITE_BASE, "components/moderator-login.js", "components/raffle-wheel.js", "features/moderator-login.js", "features/raffle-draw.js"];
+
+const windows = [];
+test.after(() => windows.forEach(window => window.close()));
+
+/** Roleta girando "instantânea" nos testes: sem tique nem espera de 4s, revela na hora. */
+const instantSpinTimer = () => ({ run: (onTick, onReveal) => onReveal(), cancel() {} });
+const fakeAudioCtx = () => {
+  const node = () => ({ connect: () => node(), start() {}, stop() {}, frequency: { value: 0 }, gain: { value: 0, exponentialRampToValueAtTime() {}, linearRampToValueAtTime() {} } });
+  return { createOscillator: node, createGain: node, destination: {}, currentTime: 0 };
+};
+
+function setup({ signedIn = false } = {}) {
+  const site = loadSite({ scripts: SCRIPTS });
+  const { document, window } = site;
+  windows.push(window);
+  const entries = createFakeQuestions();
+  const draws = createFakeQuestions();
+  const auth = { email: signedIn ? "mod@gdg.dev" : null, signInError: null };
+  document.body.innerHTML = `<div id="mod"></div>`;
+  const rootEl = document.getElementById("mod");
+  site.get("initRaffleDraw")(rootEl, {
+    deps: () => ({
+      entries, draws,
+      signIn: async () => { if (auth.signInError) throw auth.signInError; auth.email = "mod@gdg.dev"; return auth.email; },
+      restore: async () => auth.email,
+      signOut: async () => { auth.email = null; },
+    }),
+    whenReady: task => task(),
+    spinTimer: instantSpinTimer(),
+    audio: fakeAudioCtx,
+  });
+  const seedEntry = (id, firstName, lastName) => entries.seed({ id, firstName, lastName });
+  const signIn = async () => { rootEl.querySelector("[data-mod-signin]").click(); await settle(); };
+  const spin = async () => { rootEl.querySelector("[data-raffle-spin]").click(); await settle(); };
+  const setMode = async mode => { rootEl.querySelector(`[data-raffle-mode="${mode}"]`).click(); await settle(); };
+  return { rootEl, entries, draws, auth, seedEntry, signIn, spin, setMode };
+}
+
+test("sem login: pede a conta de moderador e não lê nada do banco", async () => {
+  const world = setup();
+  await settle();
+  assert.match(textOf(world.rootEl), /Entrar com Google/);
+  assert.equal(world.entries.listenCount(), 0);
+});
+
+test("logado: mostra quantas pessoas estão na lista", async () => {
+  const world = setup({ signedIn: true });
+  world.seedEntry("u1_raffle", "Ana", "Souza");
+  world.seedEntry("u2_raffle", "Beto", "Lima");
+  await world.signIn();
+  assert.match(textOf(world.rootEl), /2 pessoas cadastradas/);
+});
+
+test("girar sorteia alguém da lista, grava em raffle-draws com prêmio 1 e mostra o nome", async () => {
+  const world = setup({ signedIn: true });
+  world.seedEntry("u1_raffle", "Ana", "Souza");
+  await world.signIn();
+  await world.spin();
+  assert.equal(world.draws.docs.length, 1);
+  assert.equal(world.draws.docs[0].entryId, "u1_raffle");
+  assert.equal(world.draws.docs[0].prize, 1);
+  assert.equal(world.draws.docs[0].name, "Ana Souza");
+  assert.match(textOf(world.rootEl), /Ana Souza/);
+});
+
+test("quem já ganhou não entra mais no sorteio nem na lista de 'na lista'", async () => {
+  const world = setup({ signedIn: true });
+  world.seedEntry("u1_raffle", "Ana", "Souza");
+  world.seedEntry("u2_raffle", "Beto", "Lima");
+  await world.signIn();
+  await world.spin();
+  const firstWinner = world.draws.docs[0].entryId;
+  assert.match(textOf(world.rootEl), /1[\s\S]*Na lista/);
+  await world.spin();
+  assert.equal(world.draws.docs.length, 2);
+  assert.notEqual(world.draws.docs[1].entryId, firstWinner);
+  assert.equal(world.draws.docs[1].prize, 2);
+});
+
+test("modo sorteio único: trava o botão depois do 1º prêmio", async () => {
+  const world = setup({ signedIn: true });
+  world.seedEntry("u1_raffle", "Ana", "Souza");
+  world.seedEntry("u2_raffle", "Beto", "Lima");
+  await world.signIn();
+  await world.setMode("single");
+  await world.spin();
+  assert.equal(world.draws.docs.length, 1);
+  assert.equal(world.rootEl.querySelector("[data-raffle-spin]").disabled, true);
+  await world.spin(); // clique não faz nada: já travado
+  assert.equal(world.draws.docs.length, 1);
+});
+
+test("ninguém cadastrado: o botão de girar fica desabilitado", async () => {
+  const world = setup({ signedIn: true });
+  await world.signIn();
+  assert.equal(world.rootEl.querySelector("[data-raffle-spin]").disabled, true);
+});
+
+test("2 telas de moderador giram ao mesmo tempo: a regra recusa a gravação duplicada e a tela não quebra", async () => {
+  const world = setup({ signedIn: true });
+  world.seedEntry("u1_raffle", "Ana", "Souza");
+  await world.signIn();
+  world.draws.add = async () => { throw denied(); }; // simula a outra tela já tendo sorteado essa pessoa
+  await world.spin();
+  assert.equal(world.draws.docs.length, 0);
+  assert.doesNotMatch(textOf(world.rootEl), /undefined/);
+});

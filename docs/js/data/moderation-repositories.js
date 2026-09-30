@@ -1,7 +1,7 @@
 /**
- * Repositories da tela do moderador (moderacao.html): as mesmas coleções da plateia, mas sobre o app do MODERADOR
- * (window.moderatorClient.db), que tem o login Google dele, separado do da plateia. Mesmo padrão de
- * talk-questions-repository.js.
+ * Repositories da tela do moderador (moderacao.html, sorteio.html): as mesmas coleções da plateia, mas sobre
+ * o app do MODERADOR (window.moderatorClient.db), que tem o login Google dele, separado do da plateia. Mesmo
+ * padrão de firestore-repository.js.
  */
 const moderationQuestionsRepository = window.createFirestoreRepository({
   db: window.moderatorClient.db,
@@ -20,6 +20,21 @@ const moderationBoardsRepository = window.createFirestoreDocumentRepository({
   edition: CURRENT_EDITION,
 });
 
+/** Cadastros do sorteio, do lado do moderador: só ele lista (ver firestore.rules), a plateia nunca. */
+const moderationRaffleEntriesRepository = window.createFirestoreRepository({
+  db: window.moderatorClient.db,
+  collectionName: "raffle-entries",
+  edition: CURRENT_EDITION,
+});
+/** Sorteios já feitos (um por prêmio): só o moderador cria e lista. */
+const moderationRaffleDrawsRepository = window.createFirestoreRepository({
+  db: window.moderatorClient.db,
+  collectionName: "raffle-draws",
+  edition: CURRENT_EDITION,
+});
+
 window.moderationQuestionsRepository = moderationQuestionsRepository;
 window.moderationBoardsRepository = moderationBoardsRepository;
 window.moderationVotesRepository = moderationVotesRepository;
+window.moderationRaffleEntriesRepository = moderationRaffleEntriesRepository;
+window.moderationRaffleDrawsRepository = moderationRaffleDrawsRepository;

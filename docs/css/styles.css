@@ -967,7 +967,7 @@ textarea.feedback-input{resize:vertical;min-height:44px}
 .nps-option:has(input:checked) span{background:var(--accent);border-color:var(--accent);color:oklch(14% 0.01 260)}
 .nps-option:has(input:focus-visible) span{outline:2px solid var(--text);outline-offset:2px}
 .nps-labels{display:flex;justify-content:space-between;font:500 12px var(--font-body);color:var(--muted-dim)}
-.talk-feedback-error{margin:0;font:500 13px/1.5 var(--font-body);color:var(--amber)}
+.form-error{margin:0;font:500 13px/1.5 var(--font-body);color:var(--amber)}
 .header-feedback-btn{margin-left:auto}
 .my-talks{display:flex;flex-direction:column;gap:12px}
 .my-talks-title{display:flex;align-items:center;gap:8px;margin:0;font:700 19px var(--font-display);color:oklch(97% 0.005 260);padding-right:calc(var(--modal-close-size) + var(--modal-close-inset))}
@@ -1132,3 +1132,85 @@ body:has(.modal:not([hidden])) .feedback-nudge{display:none}
 .mod-section{margin:22px 0 0}
 .mod-section-title{margin:0 0 10px;font:700 16px var(--font-display);color:oklch(95% 0.006 260)}
 .mod-count{margin-left:6px;font:700 13px var(--font-body);color:var(--accent)}
+
+/* Sorteio (sorteio.html): cadastro público (todo mundo) + área da organização (só moderador), lado a lado
+   no desktop. Cards reusam o mesmo idioma visual do resto do site (gradiente card-a/card-b, borda,
+   .feedback-input, .chip-btn, .mod-*), nada de estilo novo pra coisa que já existe. */
+.raffle{max-width:1180px;margin:36px auto 0;padding:0 24px;display:grid;gap:20px;grid-template-columns:1fr}
+@media(min-width:900px){.raffle{grid-template-columns:minmax(0,380px) minmax(0,1fr);align-items:start}}
+
+.raffle-hero{
+  position:relative;overflow:hidden;padding:16px 16px 14px;margin-bottom:16px;border-radius:14px;
+  background:linear-gradient(180deg, color-mix(in oklch, var(--google-blue) 14%, transparent), color-mix(in oklch, var(--google-blue) 3%, transparent));
+  border:1px solid color-mix(in oklch, var(--google-blue) 35%, transparent);
+  display:flex;align-items:flex-start;gap:10px;
+}
+.raffle-hero-icon{flex:0 0 auto;width:26px;height:26px;color:var(--google-blue)}
+.raffle-hero-icon .icon{width:100%;height:100%}
+.raffle-hero p{margin:0;font:500 13.5px/1.55 var(--font-body);color:var(--muted)}
+
+.raffle-form,.raffle-done{
+  padding:18px;border-radius:16px;
+  background:linear-gradient(180deg,var(--card-a),var(--card-b));border:1px solid var(--card-border);
+}
+.raffle-form-title{margin:0 0 12px;font:800 15px var(--font-display);color:oklch(96% 0.006 260)}
+.raffle-field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.raffle-field label{font:700 11.5px var(--font-body);color:var(--muted);text-transform:uppercase;letter-spacing:.3px}
+.raffle-consent{display:flex;align-items:flex-start;gap:9px;margin:2px 0 14px;cursor:pointer}
+.raffle-consent input{margin-top:3px;accent-color:var(--google-blue);flex:0 0 auto}
+.raffle-consent span{font:500 12px/1.5 var(--font-body);color:var(--muted)}
+.raffle-submit{width:100%;justify-content:center;padding:12px}
+
+.raffle-done{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:26px 18px}
+.raffle-done-icon{width:42px;height:42px;border-radius:50%;background:color-mix(in oklch, var(--google-green) 18%, transparent);color:var(--google-green);display:flex;align-items:center;justify-content:center}
+.raffle-done-icon .icon{width:22px;height:22px}
+.raffle-done-title{margin:0;font:800 16px var(--font-display);color:oklch(96% 0.006 260)}
+.raffle-done-hint{margin:0;font:500 13px/1.5 var(--font-body);color:var(--muted)}
+
+.raffle-mod{padding:20px;border-radius:16px;background:linear-gradient(180deg,var(--card-a),var(--card-b));border:1px solid var(--card-border)}
+.raffle-mod-title{margin:0 0 6px;font:800 18px var(--font-display);color:oklch(96% 0.006 260)}
+
+.raffle-wheel-stage{display:flex;flex-direction:column;align-items:center;gap:16px;padding:10px 0 20px}
+.raffle-wheel-wrap{position:relative;width:min(70vw,280px);height:min(70vw,280px);display:flex;align-items:center;justify-content:center}
+.raffle-wheel-pointer{
+  position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:0;height:0;z-index:3;
+  border-left:11px solid transparent;border-right:11px solid transparent;border-top:18px solid var(--google-yellow);
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));
+}
+.raffle-wheel{
+  width:100%;height:100%;border-radius:50%;border:5px solid oklch(14% 0.01 260);
+  box-shadow:0 0 0 2px var(--card-border), 0 16px 40px rgba(0,0,0,.5);
+}
+.raffle-spin-btn{
+  position:absolute;width:84px;height:84px;border-radius:50%;border:4px solid oklch(4% 0 0);
+  background:linear-gradient(135deg,var(--google-blue),var(--google-green));color:oklch(14% 0.01 260);
+  font:800 13px var(--font-body);cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.5);z-index:2;
+}
+.raffle-spin-btn[disabled]{opacity:.5;cursor:not-allowed}
+
+@keyframes raffle-pulse{0%{box-shadow:0 0 0 0 color-mix(in oklch, var(--google-green) 45%, transparent)}100%{box-shadow:0 0 0 18px transparent}}
+.raffle-winner{
+  animation:raffle-pulse 1.6s ease-out infinite;
+  padding:14px 24px;border-radius:14px;text-align:center;display:flex;flex-direction:column;gap:4px;min-width:260px;
+  background:color-mix(in oklch, var(--google-green) 14%, transparent);border:1px solid color-mix(in oklch, var(--google-green) 40%, transparent);
+}
+.raffle-winner-label{font:700 10.5px var(--font-body);letter-spacing:.4px;text-transform:uppercase;color:var(--google-green)}
+.raffle-winner-name{font:800 21px var(--font-display);color:oklch(97% 0.005 260)}
+.raffle-winner-hint{font:500 11.5px var(--font-body);color:var(--muted)}
+.raffle-wheel-hint{margin:0;font:500 12.5px var(--font-body);color:var(--muted);text-align:center;max-width:260px}
+
+.raffle-mode-toggle{display:flex;gap:8px}
+.raffle-mode-btn{flex:1;padding:9px 10px;border-radius:10px;border:1px solid var(--card-border);background:transparent;color:var(--muted);font:700 12px var(--font-body);cursor:pointer}
+.raffle-mode-btn.is-active{border-color:var(--google-blue);background:color-mix(in oklch, var(--google-blue) 16%, transparent);color:oklch(85% 0.05 258)}
+.raffle-mode-hint{margin:6px 0 16px;font:500 11.5px/1.5 var(--font-body);color:var(--muted-dim)}
+
+.raffle-stats{display:flex;gap:10px;margin-bottom:16px}
+.raffle-stat{flex:1;padding:12px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--card-border)}
+.raffle-stat-value{display:block;font:800 20px var(--font-display);color:oklch(96% 0.006 260)}
+.raffle-stat-label{font:700 10.5px var(--font-body);color:var(--muted);text-transform:uppercase;letter-spacing:.3px}
+
+.raffle-drawn-title{display:block;margin-bottom:8px;font:700 11px var(--font-body);color:var(--muted);text-transform:uppercase;letter-spacing:.3px}
+.raffle-drawn-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto}
+.raffle-drawn-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--card-border)}
+.raffle-drawn-prize{flex:0 0 auto;width:22px;height:22px;border-radius:7px;background:color-mix(in oklch, var(--google-green) 18%, transparent);color:var(--google-green);font:800 11px var(--font-body);display:flex;align-items:center;justify-content:center}
+.raffle-drawn-name{font:600 13px var(--font-body);color:oklch(92% 0.006 260)}

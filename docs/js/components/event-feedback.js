@@ -30,7 +30,7 @@ function eventFeedbackMarkup({ phase, form, message = "", name = "" }) {
       <input type="text" class="feedback-input" name="name" value="${escapeHtml(name)}" placeholder="${t("fb.name", "Seu nome")}" maxlength="79" autocomplete="name" required>
       <textarea class="feedback-input" name="highlight" placeholder="${t("fb.highlight", "O que mais gostou? (opcional)")}" maxlength="399" rows="2"></textarea>
       <textarea class="feedback-input" name="improve" placeholder="${t("fb.improve", "O que poderia melhorar? (opcional)")}" maxlength="399" rows="2"></textarea>
-      ${message ? `<p class="talk-feedback-error" role="alert">${message}</p>` : ""}
+      ${message ? `<p class="form-error" role="alert">${message}</p>` : ""}
       <button type="submit" class="chip-btn chip-btn--primary" data-track-event="event_feedback">${iconMarkup("check")}${t("fb.send", "Enviar avaliação")}</button>
     </form>`;
   }

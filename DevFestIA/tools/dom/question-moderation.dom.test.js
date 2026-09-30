@@ -11,7 +11,8 @@ const { createFakeQuestions, createFakeVotes, createFakeBoards, denied } = requi
 
 const site = loadSite({
   scripts: [...SITE_BASE, "data/talk-questions.js", "data/favorites.js", "features/live-status.js", "features/room-board.js", "features/question-ranking.js",
-    "features/board-snapshot.js", "features/board-publisher.js", "components/talk-questions.js", "components/question-moderation.js", "features/question-moderation.js"],
+    "features/board-snapshot.js", "features/board-publisher.js", "components/talk-questions.js", "components/moderator-login.js", "components/question-moderation.js",
+    "features/moderator-login.js", "features/question-moderation.js"],
 });
 const { window, document } = site;
 test.after(() => window.close());

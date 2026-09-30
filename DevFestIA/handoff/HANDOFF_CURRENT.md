@@ -7,8 +7,9 @@
 
 - **Mascote e comunicação:** Gumbleton (Gumble), a fênix do GDG Campinas, foi consolidado em `../../../Design/mascote-gumbleton-2026/`. O inventário e as regras de uso estão em `../../../docs/Marca_e_Mascote_2026.md`. Nenhum arquivo do site, deploy, Firebase ou workflow foi alterado por essa consolidação; aplicar o mascote no site requer autorização explícita do Renato.
 
-- Site estático de **7 páginas** (Principal, Grade, Palestrantes, Ingressos, Time, Patrocínio,
-  Código de Conduta) mais 2 ferramentas internas (`checkin-display.html`, `reset-teste.html`),
+- Site estático de **8 páginas** (Principal, Grade, Palestrantes, Ingressos, Time, Patrocínio, Sorteio,
+  Código de Conduta — Sorteio ainda só em modo DEV, ver "Sorteio" abaixo) mais 2 ferramentas internas
+  (`checkin-display.html`, `reset-teste.html`),
   sem build. Publicado por GitHub Pages a partir de `docs/` no `main`; trabalho no
   `development`, o CI valida e promove sozinho (push no `development` = vai pro ar em minutos).
 - **Backend mínimo, todo grátis (plano Spark, sem Blaze, sem servidor nosso):** Firebase
@@ -53,6 +54,22 @@ palestra (`talk-modal.js`: card clicável abre `createModal()` com o detalhe).
 - Forma sugerida: `bio` opcional em `person()`/`organizer()`/`volunteer()` (`data/team.js`), tornar o card
   clicável só quando `person.bio` existir (`person-card.js`, mesmo `data-item`/clique de `info-card.js`),
   modal reusa foto (maior), nome, cargo, LinkedIn e o texto da bio.
+
+### 2. Sorteio (2026-09-30) — CÓDIGO PRONTO E TESTADO, SÓ EM MODO DEV
+Aba nova `sorteio.html`: cadastro público (nome/sobrenome, opt-in explícito) + roleta (área da
+organização, só quem loga como moderador). Elegibilidade decidida com o Renato: a lista é todo mundo
+que já fez check-in em qualquer palestra do dia (não só quem está na sala na hora do sorteio); se a
+pessoa sorteada não estiver presente, o MC gira de novo — isso é manual, sem lógica no site. Dois modos
+na roleta: por rodadas (não repete ganhador) ou sorteio único (trava depois do 1º prêmio). Detalhes
+técnicos completos em `PROJECT_CONTEXT.md` ("Sorteio"): 2 coleções novas no Firestore
+(`raffle-entries`/`raffle-draws`, regras coladas — **falta o Renato publicar as regras novas no
+console, `pbcopy < DevFestIA/firebase/firestore.rules`**), login/erro do Google extraídos pra
+`features/moderator-login.js`/`components/moderator-login.js` (reusado pela moderação de perguntas
+também), som sintetizado (trocar por efeito de verdade é opcional, decidir depois), 14 testes jsdom
+novos. Testado no navegador desktop e mobile com repositories falsos (sem Firebase de verdade ainda —
+**falta testar com o Firestore real depois que o Renato publicar as regras**). Fica **atrás de
+`devOnly`** (não aparece no menu nem mostra conteúdo real fora do modo DEV/`?lineup=1`, a pedido do
+Renato) até decidir abrir pro público — ver Pendências.
 
 ### Motor das perguntas ao vivo — FEITO E ESTÁVEL desde a sessão 8, sem pendência técnica
 Fluxo simples: espectador com check-in pergunta (até 3) -> moderador aprova/rejeita/reabre/marca
@@ -141,7 +158,12 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
 ## Pendências
 
 **A. Só o Renato/organização pode fazer**
-0. **Dados de time em aberto (sessão 9/30):**
+0. **Sorteio (sessão 9/30):** publicar as regras novas do Firestore no console
+   (`pbcopy < DevFestIA/firebase/firestore.rules`, tem `raffle-entries`/`raffle-draws` juntas com as de
+   sempre); decidir quando tirar do `devOnly` e abrir pro público; decidir se troca o som sintetizado por
+   um efeito de verdade (grátis, simples, a pedido do Renato) e por qual; decidir quantos prêmios/como
+   funciona no dia (a roleta já aceita "por rodadas" ou "sorteio único", só falta a operação combinar).
+0b. **Dados de time em aberto (sessão 9/30):**
    - **Cargo dos 4 organizadores reais** (Renato Ramos, Bianca Issa, Michel Salomé, Carlos H): nenhum tem
      cargo confirmado ainda, o card mostra só o nome.
    - **Foto e LinkedIn de Bianca Issa e Carlos H:** faltam os dois. (Michel Salomé: foto e LinkedIn OK.)

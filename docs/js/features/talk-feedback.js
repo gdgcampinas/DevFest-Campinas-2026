@@ -31,10 +31,11 @@ function rememberName(repository, name) {
   });
 }
 
-/** Aviso de erro logo acima do botão de envio (troca o anterior). Reusado pelos formulários de palestra e do evento. */
+/** Aviso de erro logo acima do botão de envio (troca o anterior). Reusado por qualquer formulário do site
+ * (palestra, evento, sorteio). */
 function showFormError(formEl, submitBtn, message) {
-  formEl.querySelector(".talk-feedback-error")?.remove();
-  submitBtn.insertAdjacentHTML("beforebegin", `<p class="talk-feedback-error" role="alert">${message}</p>`);
+  formEl.querySelector(".form-error")?.remove();
+  submitBtn.insertAdjacentHTML("beforebegin", `<p class="form-error" role="alert">${message}</p>`);
 }
 
 function initTalkFeedback(rootEl, { index, reveal = true, now = () => new Date(), myCheckins, myRatings, myName }) {

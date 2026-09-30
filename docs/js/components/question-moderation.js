@@ -41,12 +41,9 @@ function moderationSectionMarkup(section, questions) {
  */
 function questionModerationMarkup({ phase, trackLabel, talkTitle = "", questions = [], email = "", message = "" }) {
   const head = `<h1 class="mod-title">${escapeHtml(trackLabel)}</h1>`;
-  if (phase === "signin") {
-    return `${head}<p class="mod-hint">${message || "Entre com a conta de moderador pra aprovar as perguntas."}</p>
-      <button type="button" class="chip-btn chip-btn--primary" data-mod-signin>Entrar com Google</button>`;
-  }
-  const account = `<p class="mod-account">${escapeHtml(email)} <button type="button" class="chip-btn" data-mod-signout>Sair</button></p>`;
+  if (phase === "signin") return `${head}${moderatorSignInMarkup({ hint: message || "Entre com a conta de moderador pra aprovar as perguntas." })}`;
+  const account = moderatorAccountMarkup(email);
   if (phase === "empty") return `${head}${account}<p class="mod-hint">${message}</p>`;
-  if (phase === "error") return `${head}${account}<p class="talk-feedback-error" role="alert">${message}</p>`;
-  return `${head}${account}<h2 class="mod-talk">${escapeHtml(talkTitle)}</h2>${message ? `<p class="talk-feedback-error" role="alert">${message}</p>` : ""}${MODERATION_SECTIONS.map(section => moderationSectionMarkup(section, questions)).join("")}`;
+  if (phase === "error") return `${head}${account}<p class="form-error" role="alert">${message}</p>`;
+  return `${head}${account}<h2 class="mod-talk">${escapeHtml(talkTitle)}</h2>${message ? `<p class="form-error" role="alert">${message}</p>` : ""}${MODERATION_SECTIONS.map(section => moderationSectionMarkup(section, questions)).join("")}`;
 }

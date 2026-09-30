@@ -21,7 +21,7 @@ Regra permanente pra qualquer código escrito neste repo, não só sugestão de 
 
 ## Pages
 
-Seven pages, all zero-build HTML that share most of the same `<script>`
+Eight pages, all zero-build HTML that share most of the same `<script>`
 block (see `initShell()` below) and only differ in their last `<script>`
 (`js/pages/*.js`) — a page with a lighter feature set (e.g. Ingressos)
 also trims the shared block to what it actually uses, see the note below:
@@ -34,6 +34,7 @@ also trims the shared block to what it actually uses, see the note below:
 | Ingressos | `ingressos.html` | `js/pages/ingressos.js` |
 | Time | `time.html` | `js/pages/time.js` |
 | Patrocínio | `patrocinio.html` | `js/pages/patrocinio.js` |
+| Sorteio | `sorteio.html` | `js/pages/sorteio.js` |
 | Código de conduta | `codigo-de-conduta.html` | `js/pages/cod.js` |
 
 **Nota sobre o `<script>` block de uma página nova e enxuta:** `initShell()`
@@ -362,6 +363,46 @@ Um fluxo só, da pergunta ao quadro. Regras do jogo (as do banco, espelhadas na 
 - Regras no emulador do Firestore, sem tocar o banco real: `DevFestIA/tools/questions/run-rules-tests.sh` (Java 21 + Firebase CLI; 21 casos: janela, limites, id trocado, moderador, votos). Cliente em `DevFestIA/tools/lib/firestore-emulator.js` (só `node:`). Palestras de teste com horário relativo a agora. Fora do CI (baixa o emulador); rodar sempre que mexer nas regras.
 - Lógica pura no CI: `DevFestIA/tools/questions/questions.test.js`, `DevFestIA/tools/room/*.test.js`.
 
+## Sorteio (sessão 9, 2026-09-30) — atrás de `devOnly`, ainda não em PROD
+
+`sorteio.html`: cadastro público (todo mundo) + roleta (só moderador), mesma aba. Elegibilidade decidida com o
+Renato: a lista é **todo mundo que já fez check-in em qualquer palestra do dia** (não só quem está presente na
+hora do sorteio — sorteia da lista inteira, se a pessoa sorteada não estiver na sala o MC gira de nova, isso é
+manual, não tem lógica no site pra isso), então o cadastro de nome fica disponível o dia todo, sem depender de
+check-in específico (as regras do Firestore não conseguem checar "fez check-in em algum lugar" sem listar tudo,
+então o cadastro é em confiança, como o resto do site).
+
+**Dados (Firestore), 2 coleções create-only, mesmo padrão das outras 5:**
+- `raffle-entries`: um documento por pessoa (`<uid>_raffle`, `RAFFLE_ENTRY_KEY` em `features/raffle-signup.js`),
+  `firstName`/`lastName`. Opt-in explícito e separado do check-in (a pessoa concorda que o nome pode ser
+  sorteado e exibido na tela). `allow list` só pro moderador — ninguém vê a lista de nomes antes da hora.
+- `raffle-draws`: um documento por prêmio sorteado. **O id do documento É o id do cadastro sorteado + `_draw`**
+  (não `<uid do moderador>_<nº do prêmio>`): isso é o que trava a mesma pessoa nunca ser sorteada 2x — o
+  `create` de um documento que já existe é recusado pela regra (mesmo truque de dedupe dos `checkins`), não uma
+  checagem no cliente. Isso também cobre 2 telas de moderador girando ao mesmo tempo. Campos: `entryId`, `name`
+  (denormalizado, pra não precisar de leitura extra), `prize`. Só moderador cria/lê/lista.
+
+**Roleta (`features/raffle-draw.js` + `components/raffle-wheel.js`):** login reaproveitado de
+`window.moderatorClient` — **login e mensagem de erro do Google foram extraídos** de
+`features/question-moderation.js`/`components/question-moderation.js` pra `features/moderator-login.js` +
+`components/moderator-login.js` (`moderatorSignInMarkup`/`moderatorAccountMarkup`, `signInErrorMessage`), os
+dois consomem o compartilhado agora — zero duplicação entre moderação de perguntas e sorteio. `entries`/`draws`
+chegam por `listen()` (pool ao vivo: alguém pode se cadastrar durante o evento e já entra no sorteio sem
+recarregar a tela). Modo **"por rodadas"** (várias rodadas, sem repetir ganhador) x **"sorteio único"** (trava o
+botão depois do 1º prêmio) é só um `mode` em memória da tela, não grava no banco. Som: sintetizado (Web Audio,
+`raffleTick`/`raffleChime`), sem depender de arquivo externo — trocar por um efeito de verdade é só mexer
+nessas duas funções. `createRaffleSpinTimer()` isola o tempo do giro (4.2 s + tiques) pra testar sem esperar.
+
+**`.form-error` (antes `.talk-feedback-error`):** classe renomeada — é o aviso de erro genérico de qualquer
+formulário do site (`showFormError` em `features/talk-feedback.js`, já reusado por palestra/evento/sorteio),
+não só de palestra. Mesma regra de sempre: renomear = `?v=` de tudo que usa sobe junto.
+
+**Ainda só em DEV (`devOnly` no nav + `renderOrConstruction` na página, ver "Site nav"):** falta decidir com o
+Renato quando abrir pro público, e como o PDF/link de doação ou lista de prêmios entra (se entrar). Sem testes
+de regra do Firestore automatizados ainda (só `node --test DevFestIA/tools/dom/raffle-signup.dom.test.js
+DevFestIA/tools/dom/raffle-draw.dom.test.js`, jsdom com repositories falsos, mesmo padrão das perguntas) —
+gap conhecido, adicionar em `DevFestIA/tools/questions/` (ou pasta própria) quando sobrar sessão.
+
 ## Internacionalização (sessão 7): PT padrão, EN pronto
 
 Idioma por `?lang=en|pt` (gravado em localStorage; sem detecção automática do navegador) e seletor "PT | EN" nas ações do cabeçalho
@@ -656,6 +697,11 @@ Each entry in `TRACKS` (schedule.js/.dev.js) has `icon`, a name from `data/icons
 once from `initShell()`. Adding, renaming, or reordering a page is a
 one-line change there — never edit nav HTML per page. `nav: false` keeps a page
 out of the menu but in the offline pre-cache (the quiz, linked from a home CTA).
+`devOnly: true` (Sorteio, 2026-09-30) keeps a page out of the menu unless
+`reveal` is true (`?lineup=1`/DEV mode) — `renderSiteNav` now takes
+`{ reveal }`, passed by `initShell()`; the page itself is a second layer of
+the same gate (`renderOrConstruction`, see "Sorteio" below), so a direct hit
+on the URL in PROD also sees "em breve", not the real page.
 
 ## Mock content (until real data arrives)
 
