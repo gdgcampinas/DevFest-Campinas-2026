@@ -149,6 +149,12 @@ arrumação de antes) passava a apontar pra outra pessoa. Causa e correção com
 ("Sorteio"). Confirmado ao vivo: 2 giros seguidos, ponteiro sempre certo, vencedor anterior só some da roda
 no giro seguinte.
 
+**Roda azul, uma fatia só, quando dá erro de carregar (achado testando contra o Firebase real sem as regras
+publicadas, corrigido 2026-10-01):** regressão da correção anterior — o refresh da roda só rodava no
+callback de sucesso do listener, não no de erro. Causa e correção completas em `PROJECT_CONTEXT.md`
+("Sorteio"). Confirmado ao vivo no cenário exato do print (login OK, banco recusando os dois
+repositories): roda volta a desenhar as 22 fatias do Time.
+
 **Renato testou de novo e achou mais 2 (corrigidos na mesma sessão):**
 - **"Não está rodando" no aparelho dele:** o iPhone do Renato tem "Reduzir movimento" ligado no sistema (já
   documentado aqui pra galáxia) — a regra global do site zerava a `transition-duration` da roleta junto com

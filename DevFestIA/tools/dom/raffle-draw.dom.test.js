@@ -167,6 +167,21 @@ test("erro ao carregar a lista: mostra o aviso mas a roleta continua desenhada (
   assert.equal(world.rootEl.querySelector("[data-raffle-spin]").disabled, true);
 });
 
+test("erro ao carregar (regras do Firestore ainda não publicadas) não trava a roda vazia em modo DEV", async () => {
+  // Bug real (achado pelo Renato em 2026-10-01): o `refreshDisplayWhenIdle()` só era chamado no callback de
+  // SUCESSO do listener — contra o Firestore real sem as regras do sorteio publicadas ainda, só o de ERRO
+  // roda, `displayEntries` nunca era preenchido e a roda ficava azul, uma fatia só, mesmo com a lista de
+  // teste do Time pronta (`poolCount` mostrava 22, mas a roda desenhava 0).
+  const entries = { listen: (filters, onNext, onError) => { onError({ code: "permission-denied" }); return () => {}; } };
+  const draws = { listen: (filters, onNext, onError) => { onError({ code: "permission-denied" }); return () => {}; } };
+  const devSeed = [{ id: "dev_0", firstName: "Renato", lastName: "Ramos" }, { id: "dev_1", firstName: "Bianca", lastName: "Issa" }];
+  const world = setup({ signedIn: true, entries, draws, devSeed });
+  await world.signIn();
+  assert.match(textOf(world.rootEl), /Não foi possível carregar a lista agora/);
+  assert.equal(world.rootEl.querySelectorAll(".raffle-wheel-label").length, 2); // as 2 fatias do devSeed aparecem mesmo com erro
+  assert.equal(world.rootEl.querySelector("[data-raffle-spin]").disabled, false);
+});
+
 test("modo DEV sem ninguém cadastrado: gira com a lista de teste (devSeed), sem gravar no Firestore", async () => {
   const devSeed = [{ id: "dev_0", firstName: "Renato", lastName: "Ramos" }, { id: "dev_1", firstName: "Bianca", lastName: "Issa" }];
   const world = setup({ signedIn: true, devSeed });

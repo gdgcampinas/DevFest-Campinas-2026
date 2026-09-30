@@ -184,12 +184,12 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], au
     stopEntries = deps().entries.listen(
       {},
       list => { entries = list; entriesError = ""; refreshDisplayWhenIdle(); drawReady(); },
-      () => { entriesError = t("raffle.loadEntriesError", "Não foi possível carregar a lista agora. Tentando de novo em instantes."); drawReady(); }
+      () => { entriesError = t("raffle.loadEntriesError", "Não foi possível carregar a lista agora. Tentando de novo em instantes."); refreshDisplayWhenIdle(); drawReady(); }
     );
     stopDraws = deps().draws.listen(
       {},
       list => { draws = list; drawsError = ""; refreshDisplayWhenIdle(); drawReady(); },
-      () => { drawsError = t("raffle.loadDrawsError", "Não foi possível carregar os sorteios agora. Tentando de novo em instantes."); drawReady(); }
+      () => { drawsError = t("raffle.loadDrawsError", "Não foi possível carregar os sorteios agora. Tentando de novo em instantes."); refreshDisplayWhenIdle(); drawReady(); }
     );
   }
 

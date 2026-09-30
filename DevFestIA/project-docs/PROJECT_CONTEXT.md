@@ -457,6 +457,19 @@ revelar o ganhador, a roda continua com as MESMAS fatias do giro") trava a regre
 (lista de teste do Time, 22 pessoas): 2 giros seguidos, ponteiro sempre no nome certo, vencedor anterior
 sai só no giro seguinte. `docs/sorteio.html` subiu `raffle-draw.js?v=6`.
 
+**Roda ficava azul, uma fatia só, com erro de carregar (achado por Renato testando contra o Firebase real
+sem as regras do sorteio publicadas ainda, corrigido 2026-10-01):** o `refreshDisplayWhenIdle()` (função
+acima) só era chamado no callback de SUCESSO de cada listener. Contra o banco real sem regra publicada, só
+o callback de ERRO roda — `displayEntries` nunca era preenchido, mesmo com `devSeed` (lista do Time) pronta
+e `poolCount` correto (22, lido de `activeEntries()`, que não depende de `displayEntries`): por isso o
+aviso mostrava "22 pessoas cadastradas" mas a roda desenhava uma fatia só (`Math.max(0,1)`), tudo azul.
+Corrigido chamando `refreshDisplayWhenIdle()` nos dois callbacks (sucesso E erro) dos dois listeners
+(`entries`/`draws`) em `startWatching()`. Teste jsdom novo ("erro ao carregar... não trava a roda vazia em
+modo DEV") reproduz com os dois repositories falhando e `devSeed` de 2 pessoas, confere que as 2 fatias
+aparecem mesmo com o aviso de erro em cima. Confirmado ao vivo contra o cenário exato do print do Renato
+(login OK, `permission-denied` nos dois repositories, DEV com a lista do Time): a roda agora desenha as 22
+fatias em vez de ficar uma só, azul. `docs/sorteio.html` subiu `raffle-draw.js?v=7`.
+
 **`qrcodejs` carrega sob demanda, não mais fixo no `<head>`:** carregar essa lib externa sempre, em toda
 visita à aba, combinado com a reescrita de documento do `/DEV/` (`document.write`, ver "Site nav"), fazia o
 navegador navegar pra `gdgcampinas.github.io/sorteio.html` (raiz, sem o repo) em vez de ficar na página —
