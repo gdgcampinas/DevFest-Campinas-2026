@@ -262,18 +262,25 @@ service cloud.firestore {
     // Sorteios já feitos (um documento por prêmio): só o moderador cria e lista (features/raffle-draw.js). O id
     // do documento É o id do cadastro sorteado + "_draw" — a mesma pessoa nunca é sorteada 2x porque o create
     // de um documento que já existe é recusado (mesmo truque de dedupe dos checkins), não uma checagem no
-    // cliente. `entryId` precisa apontar pra um cadastro real.
+    // cliente. `entryId` precisa apontar pra um cadastro real. `status`: nasce "winner"; o moderador só pode
+    // mudar pra "absent" (sorteado que não estava na sala: o número do prêmio não é gasto, mas a pessoa NÃO volta
+    // pra roleta, porque o documento continua lá). Documentos antigos sem `status` contam como "winner".
     match /raffle-draws/{docId} {
       allow get, list: if isModerator();
       allow create: if isModerator() && hasValidBaseFields()
         && request.resource.data.entryKey == 'draw'
         && docId == request.resource.data.entryId + '_draw'
         && exists(/databases/$(database)/documents/raffle-entries/$(request.resource.data.entryId))
-        && request.resource.data.keys().hasOnly(['edition', 'entryKey', 'createdAt', 'entryId', 'name', 'prize'])
+        && request.resource.data.keys().hasOnly(['edition', 'entryKey', 'createdAt', 'entryId', 'name', 'prize', 'status'])
+        && request.resource.data.status == 'winner'
         && requiredText(request.resource.data, 'entryId', 200)
         && requiredText(request.resource.data, 'name', 140)
         && request.resource.data.prize is int && request.resource.data.prize >= 1 && request.resource.data.prize <= 200;
-      allow update, delete: if false;
+      allow update: if isModerator()
+        && resource.data.get('status', 'winner') == 'winner'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status == 'absent';
+      allow delete: if false;
     }
 
     // Inscritos do Sympla e total público: escritos SÓ pelo job (DevFestIA/tools/sympla-sync)

@@ -345,3 +345,64 @@ test("?telao=1 (startInTelao): já abre em modo telão, até na tela de login, e
   assert.equal(world.rootEl.classList.contains("raffle-telao"), true);
   assert.ok(world.rootEl.querySelector("#raffleQr"));
 });
+
+test("Ausente no cartão do ganhador: marca no banco, o cartão some, o prêmio não é gasto e a pessoa não volta", async () => {
+  const world = setup({ signedIn: true });
+  manyEntries(world, 3);
+  await world.signIn();
+  await world.spin();
+  const firstDraw = world.draws.docs[0];
+  assert.equal(firstDraw.status, "winner");
+  assert.equal(firstDraw.prize, 1);
+  world.rootEl.querySelector(".raffle-winner [data-raffle-absent]").click();
+  await settle();
+  assert.equal(world.draws.docs[0].status, "absent");
+  assert.equal(world.rootEl.querySelector(".raffle-winner"), null, "o cartão some");
+  assert.equal(world.rootEl.querySelector(".raffle-drawn-badge").textContent, "Ausente");
+  assert.match(textOf(world.rootEl.querySelector(".raffle-stats")), /2\s*Na lista/);
+  assert.match(textOf(world.rootEl.querySelector(".raffle-stats")), /0\s*Já sorteados/, "ausente não conta como prêmio entregue");
+  await world.spin();
+  const second = world.draws.docs[1];
+  assert.equal(second.prize, 1, "o prêmio 1 continua disponível");
+  assert.notEqual(second.entryId, firstDraw.entryId, "o ausente não volta pra roleta");
+  assert.match(textOf(world.rootEl.querySelector(".raffle-winner-label")), /prêmio 1/);
+});
+
+test("Ausente pela lista de sorteados funciona depois que o cartão do ganhador já sumiu", async () => {
+  const world = setup({ signedIn: true });
+  manyEntries(world, 3);
+  await world.signIn();
+  await world.spin();
+  await world.releaseReveal(); // o tempo do ganhador acabou: sem cartão
+  assert.equal(world.rootEl.querySelector(".raffle-winner"), null);
+  world.rootEl.querySelector(".raffle-drawn-list [data-raffle-absent]").click();
+  await settle();
+  assert.equal(world.draws.docs[0].status, "absent");
+  assert.equal(world.rootEl.querySelector(".raffle-drawn-list [data-raffle-absent]"), null, "quem já é ausente não tem mais botão");
+});
+
+test("Ausente: se o banco recusar, avisa e não muda nada na tela", async () => {
+  const world = setup({ signedIn: true });
+  manyEntries(world, 3);
+  await world.signIn();
+  await world.spin();
+  world.draws.update = async () => { throw new Error("offline"); };
+  world.rootEl.querySelector(".raffle-winner [data-raffle-absent]").click();
+  await settle();
+  assert.match(textOf(world.rootEl), /Não foi possível marcar como ausente/);
+  assert.ok(world.rootEl.querySelector(".raffle-winner"), "o ganhador continua no cartão");
+  assert.equal(world.draws.docs[0].status, "winner");
+});
+
+test("Ausente no modo DEV (lista de teste): só em memória, sem gravar", async () => {
+  const devSeed = [{ id: "dev_0", firstName: "Renato", lastName: "Ramos" }, { id: "dev_1", firstName: "Bianca", lastName: "Issa" }];
+  const world = setup({ signedIn: true, devSeed });
+  await world.signIn();
+  await world.spin();
+  world.rootEl.querySelector(".raffle-winner [data-raffle-absent]").click();
+  await settle();
+  assert.equal(world.draws.docs.length, 0);
+  assert.equal(world.rootEl.querySelector(".raffle-drawn-badge").textContent, "Ausente");
+  await world.spin();
+  assert.match(textOf(world.rootEl.querySelector(".raffle-winner-label")), /prêmio 1/);
+});

@@ -385,7 +385,7 @@ conduta).
   `firstName`/`lastName`. Opt-in explícito e separado do check-in (a pessoa concorda que o nome pode ser
   sorteado e exibido na tela); a regra exige `exists()` no `raffle-checkins` da mesma pessoa. `allow list` só
   pro moderador — ninguém vê a lista de nomes antes da hora.
-- `raffle-draws`: um documento por prêmio sorteado. **O id do documento É o id do cadastro sorteado + `_draw`**
+- `raffle-draws`: um documento por prêmio sorteado (com `status` winner/absent, ver "Ausente"). **O id do documento É o id do cadastro sorteado + `_draw`**
   (não `<uid do moderador>_<nº do prêmio>`): isso é o que trava a mesma pessoa nunca ser sorteada 2x — o
   `create` de um documento que já existe é recusado pela regra (mesmo truque de dedupe dos `checkins`), não uma
   checagem no cliente. Isso também cobre 2 telas de moderador girando ao mesmo tempo. Campos: `entryId`, `name`
@@ -500,6 +500,8 @@ fatia sob a seta. `raffle-wheel.js?v=6`.
 - **Bug achado no teste ao vivo: o giro dependia de `requestAnimationFrame`,** que NÃO dispara com a aba oculta/minimizada: o ângulo final nunca era aplicado e o sorteio era revelado com a roda parada (nome do ganhador != fatia sob a seta). `applyWheelRotation` agora força o reflow (`getBoundingClientRect()`) e aplica na hora; o parâmetro `raf` saiu.
 - **Modo telão (`setTelao` em `features/raffle-draw.js`, CSS `.raffle-telao` em `styles.css`):** botão "Modo telão" (ou `sorteio.html?telao=1`, abre já em telão, inclusive na tela de login) transforma a própria `.raffle-mod` numa tela cheia (`position:fixed`, `body.raffle-telao-open`): roda grande (`--raffle-wheel-size: min(82vh,56vw)`, fontes por `vmin`), contador enorme ao vivo (`raffleCounterMarkup`), faixa "Acabaram de entrar" com os 4 últimos nomes (o recém-chegado ganha animação, só depois da 1ª lista: `seenArrivalIds`), QR maior (320 px, reduzido por CSS à altura da tela) e ganhadores. Pede tela cheia do navegador (`fullscreen` injetável, `defaultFullscreen`); Esc ou sair da tela cheia saem do telão. Pensado pro notebook no HDMI do telão do palco; o moderador entra com Google no próprio notebook. A roda, o ponteiro e o botão escalam pela variável `--raffle-wheel-size`.
 - Testes: 9 de regras puras + 8 de tela novos (amostra, contador, chegadas, tempo do ganhador, velocidade constante, telão, `?telao=1`).
+
+**"Ausente, sortear outro" (Fase 3, 2026-10-01; decisão do Renato: o ausente SAI DE VEZ):** cada sorteio em `raffle-draws` ganhou `status` (`winner` na criação, `RAFFLE_DRAW_STATUS`); o moderador só pode mudar `winner` para `absent` (regras: `allow update` só do campo `status`; docs antigos sem `status` contam como winner). Ausente não gasta o número do prêmio (`prize = sorteios não ausentes + 1`) mas continua com o documento, então a pessoa NÃO volta pra roleta. Botão "Ausente, sortear outro" no cartão do ganhador e "Ausente" em cada item de "Já sorteados" (serve depois que o cartão some); ausente aparece riscado e não conta em "Já sorteados". Em DEV (lista de teste) vale em memória.
 
 **Texto da fatia (pedido do Renato, 2026-10-01):** nome + ÚLTIMO sobrenome (`raffleWheelLabelText` em `components/raffle-wheel.js`; "Henrique Ferreira Rodrigues da Silva" vira "Henrique Silva"), pra caber na fatia; o nome completo segue no bloco do ganhador. `raffle-wheel.js?v=7`.
 

@@ -45,8 +45,14 @@ function raffleWheelLabelsMarkup(remaining) {
   }).join("");
 }
 
+/** Um sorteado da lista. Quem não estava na sala ("absent") fica riscado e não tem mais botão; os demais têm o
+ * botão "Ausente", que serve a qualquer hora (o cartão do ganhador some depois de um tempo). */
 function raffleDrawnItemMarkup(item) {
-  return `<li class="raffle-drawn-item"><span class="raffle-drawn-prize">${item.prize}</span><span class="raffle-drawn-name">${escapeHtml(item.name)}</span></li>`;
+  const absent = item.status === "absent";
+  const action = absent
+    ? `<span class="raffle-drawn-badge">${t("raffle.absent", "Ausente")}</span>`
+    : `<button type="button" class="chip-btn raffle-absent-btn" data-raffle-absent="${escapeHtml(item.id)}">${t("raffle.absent", "Ausente")}</button>`;
+  return `<li class="raffle-drawn-item${absent ? " is-absent" : ""}"><span class="raffle-drawn-prize">${item.prize}</span><span class="raffle-drawn-name">${escapeHtml(item.name)}</span>${action}</li>`;
 }
 
 /** QR do check-in do sorteio (`sorteio.html?checkin=1`): escondido por padrão, o moderador mostra quando
@@ -63,11 +69,12 @@ function raffleTelaoToggleMarkup(telao) {
   return `<button type="button" class="chip-btn raffle-telao-toggle" data-raffle-telao-toggle>${telao ? t("raffle.telaoExit", "Sair do modo telão") : t("raffle.telaoEnter", "Modo telão")}</button>`;
 }
 
-function raffleWheelReadyMarkup({ email, remaining, remainingCount, poolCount, drawnList, arrivals, newArrivalIds, spinning, winner, canSpin, loadError, usingDevSeed, showQr, telao, wheelDeg }) {
+function raffleWheelReadyMarkup({ email, remaining, remainingCount, poolCount, drawnList, prizesGiven, arrivals, newArrivalIds, spinning, winner, winnerPrize, winnerDrawId, canSpin, loadError, usingDevSeed, showQr, telao, wheelDeg }) {
   const winnerBlock = winner
-    ? `<div class="raffle-winner"><span class="raffle-winner-label">${t("raffle.winnerLabel", "Ganhador do prêmio {n}", { n: drawnList.length })}</span>
+    ? `<div class="raffle-winner"><span class="raffle-winner-label">${t("raffle.winnerLabel", "Ganhador do prêmio {n}", { n: winnerPrize })}</span>
         <span class="raffle-winner-name">${escapeHtml(winner)}</span>
-        <span class="raffle-winner-hint">${t("raffle.winnerAbsent", "Não está na sala? Gire de novo pra sortear outro nome.")}</span></div>`
+        <span class="raffle-winner-hint">${t("raffle.winnerAbsent", "Não está na sala? Marque como ausente e gire de novo.")}</span>
+        <button type="button" class="chip-btn raffle-absent-btn" data-raffle-absent="${escapeHtml(winnerDrawId)}">${t("raffle.absentDrawAnother", "Ausente, sortear outro")}</button></div>`
     : `<p class="raffle-wheel-hint">${tn("raffle.poolCount", poolCount, "{count} pessoa cadastrada até agora.", "{count} pessoas cadastradas até agora.")}</p>`;
 
   return `${moderatorAccountMarkup(email)}
@@ -90,7 +97,7 @@ function raffleWheelReadyMarkup({ email, remaining, remainingCount, poolCount, d
         <p class="raffle-rounds-hint">${t("raffle.roundsHint", "Gira de novo pra cada prêmio, sem repetir quem já ganhou.")}</p>
         <div class="raffle-stats">
           <div class="raffle-stat"><span class="raffle-stat-value">${remainingCount}</span><span class="raffle-stat-label">${t("raffle.remaining", "Na lista")}</span></div>
-          <div class="raffle-stat"><span class="raffle-stat-value">${drawnList.length}</span><span class="raffle-stat-label">${t("raffle.drawnCount", "Já sorteados")}</span></div>
+          <div class="raffle-stat"><span class="raffle-stat-value">${prizesGiven}</span><span class="raffle-stat-label">${t("raffle.drawnCount", "Já sorteados")}</span></div>
         </div>
         <div class="raffle-drawn">
           <span class="raffle-drawn-title">${t("raffle.drawnTitle", "Já sorteados")}</span>
@@ -100,8 +107,8 @@ function raffleWheelReadyMarkup({ email, remaining, remainingCount, poolCount, d
     </div>`;
 }
 
-function raffleWheelMarkup({ phase, email = "", remaining = [], remainingCount = remaining.length, poolCount = 0, drawnList = [], arrivals = [], newArrivalIds = new Set(), spinning = false, winner = null, canSpin = false, loadError = "", usingDevSeed = false, showQr = false, telao = false, wheelDeg = 0, message = "" }) {
+function raffleWheelMarkup({ phase, email = "", remaining = [], remainingCount = remaining.length, poolCount = 0, drawnList = [], prizesGiven = drawnList.filter(item => item.status !== "absent").length, arrivals = [], newArrivalIds = new Set(), spinning = false, winner = null, winnerPrize = 0, winnerDrawId = "", canSpin = false, loadError = "", usingDevSeed = false, showQr = false, telao = false, wheelDeg = 0, message = "" }) {
   const head = `<h2 class="raffle-mod-title">${t("raffle.modTitle", "Área da organização")}</h2>`;
   if (phase === "signin") return `${head}${telao ? raffleTelaoToggleMarkup(true) : ""}${moderatorSignInMarkup({ hint: message || t("raffle.modHint", "Entre com a conta de moderador pra girar a roleta."), signInLabel: t("raffle.modSignin", "Entrar com Google") })}`;
-  return `${head}${raffleWheelReadyMarkup({ email, remaining, remainingCount, poolCount, drawnList, arrivals, newArrivalIds, spinning, winner, canSpin, loadError, usingDevSeed, showQr, telao, wheelDeg })}`;
+  return `${head}${raffleWheelReadyMarkup({ email, remaining, remainingCount, poolCount, drawnList, prizesGiven, arrivals, newArrivalIds, spinning, winner, winnerPrize, winnerDrawId, canSpin, loadError, usingDevSeed, showQr, telao, wheelDeg })}`;
 }

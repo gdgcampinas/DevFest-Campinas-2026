@@ -21,6 +21,8 @@
  * Som: sintetizado (Web Audio), sem depender de arquivo externo — troca fácil por um efeito de verdade depois
  * (só mudar `raffleTick`/`raffleChime`).
  */
+/** Estados de um sorteio (campo `status` em raffle-draws, o mesmo das regras do Firestore). */
+const RAFFLE_DRAW_STATUS = Object.freeze({ winner: "winner", absent: "absent" });
 const RAFFLE_SPIN_TURNS = 6; // voltas inteiras de cada giro, só efeito visual
 const RAFFLE_QR_SIZE = 176;
 const RAFFLE_TELAO_QR_SIZE = 320; // no telão o QR é lido de longe
@@ -146,6 +148,8 @@ function initRaffleDraw(rootEl, {
   let stopDraws = null;
   let spinning = false;
   let winner = null;
+  let winnerPrize = 0; // número do prêmio do ganhador que está no cartão
+  let winnerDrawId = ""; // id do documento dele em raffle-draws (pro botão "Ausente")
   let muted = false;
   let showQr = startInTelao;
   let entriesError = "";
@@ -165,6 +169,7 @@ function initRaffleDraw(rootEl, {
   let enteredFullscreen = false;
   let seenArrivalIds = null; // null até a 1ª lista chegar: quem já estava lá não ganha a animação de "acabou de entrar"
 
+  const isAbsent = item => item.status === RAFFLE_DRAW_STATUS.absent;
   const usingDevSeed = () => entries.length === 0 && devSeed.length > 0;
   const activeEntries = () => (usingDevSeed() ? devSeed : entries);
   const activeDraws = () => (usingDevSeed() ? devDraws : draws);
@@ -204,7 +209,7 @@ function initRaffleDraw(rootEl, {
 
   function drawReady() {
     const livePool = pool(); // quem pode legitimamente ser sorteado agora (decide o botão, não o desenho)
-    const drawnList = activeDraws().slice().sort((a, b) => a.prize - b.prize);
+    const drawnList = activeDraws().slice().sort((a, b) => a.prize - b.prize || (a.createdAtMs ?? 0) - (b.createdAtMs ?? 0));
     const arrivals = usingDevSeed() ? [] : recentArrivals(entries);
     const newArrivalIds = new Set(seenArrivalIds === null ? [] : arrivals.filter(person => !seenArrivalIds.has(person.id)).map(person => person.id));
     if (seenArrivalIds !== null) arrivals.forEach(person => seenArrivalIds.add(person.id));
@@ -216,8 +221,11 @@ function initRaffleDraw(rootEl, {
       arrivals,
       newArrivalIds,
       drawnList,
+      prizesGiven: drawnList.filter(item => !isAbsent(item)).length,
       spinning,
       winner,
+      winnerPrize,
+      winnerDrawId,
       wheelDeg,
       usingDevSeed: usingDevSeed(),
       canSpin: !spinning && livePool.length > 0,
@@ -276,17 +284,22 @@ function initRaffleDraw(rootEl, {
     spinTimer.run(
       () => ctx && raffleTick(ctx),
       async () => {
-        const prize = activeDraws().length + 1;
+        const prize = activeDraws().filter(item => !isAbsent(item)).length + 1; // ausente não gasta o número do prêmio
         const name = `${chosen.firstName} ${chosen.lastName}`;
+        const drawId = `${chosen.id}_draw`; // o id que o repository dá a add(chosen.id, "draw", ...)
         if (dev) {
-          devDraws = devDraws.concat([{ entryId: chosen.id, name, prize }]);
+          devDraws = devDraws.concat([{ id: drawId, entryId: chosen.id, name, prize, status: RAFFLE_DRAW_STATUS.winner }]);
           if (ctx) raffleChime(ctx);
           winner = name;
+          winnerPrize = prize;
+          winnerDrawId = drawId;
         } else {
           try {
-            await deps().draws.add(chosen.id, "draw", { entryKey: "draw", entryId: chosen.id, name, prize });
+            await deps().draws.add(chosen.id, "draw", { entryKey: "draw", entryId: chosen.id, name, prize, status: RAFFLE_DRAW_STATUS.winner });
             if (ctx) raffleChime(ctx);
             winner = name;
+            winnerPrize = prize;
+            winnerDrawId = drawId;
           } catch {
             // "permission-denied" = alguém já sorteou essa pessoa (2 telas abertas): a lista em tempo real já reflete.
             winner = null;
@@ -299,6 +312,31 @@ function initRaffleDraw(rootEl, {
         drawReady();
       }
     );
+  }
+
+  /** Marca um sorteado como ausente (não estava na sala): o número do prêmio volta a ser dele de novo e a pessoa
+   * continua fora da roleta (o documento do sorteio segue lá). Se era o ganhador do cartão, o cartão some e a roda renova. */
+  async function markAbsent(drawId) {
+    try {
+      if (usingDevSeed()) devDraws = devDraws.map(item => (item.id === drawId ? { ...item, status: RAFFLE_DRAW_STATUS.absent } : item));
+      else {
+        await deps().draws.update(drawId, { status: RAFFLE_DRAW_STATUS.absent });
+        draws = draws.map(item => (item.id === drawId ? { ...item, status: RAFFLE_DRAW_STATUS.absent } : item)); // não espera o listener
+      }
+    } catch {
+      drawsError = t("raffle.absentError", "Não foi possível marcar como ausente agora. Tente de novo.");
+      drawReady();
+      return;
+    }
+    drawsError = "";
+    if (drawId === winnerDrawId) {
+      winner = null;
+      holding = false;
+      holdToken += 1;
+      wheelDeg = 0;
+    }
+    refreshDisplayWhenIdle();
+    drawReady();
   }
 
   /** Liga/desliga o modo telão: a própria área da organização vira uma tela cheia (classe `raffle-telao`). */
@@ -355,6 +393,8 @@ function initRaffleDraw(rootEl, {
       drawReady();
       return;
     }
+    const absentBtn = event.target.closest("[data-raffle-absent]");
+    if (absentBtn && !spinning) return markAbsent(absentBtn.dataset.raffleAbsent);
     if (event.target.closest("[data-raffle-telao-toggle]")) return setTelao(!telao);
     if (event.target.closest("[data-raffle-spin]")) return spin();
   });
