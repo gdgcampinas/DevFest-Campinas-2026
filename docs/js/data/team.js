@@ -13,7 +13,7 @@
  * o `.webp` a partir do arquivo original). `TEAM_PHOTO_VERSION` funciona como o `?v=` dos scripts:
  * trocar o conteúdo de uma foto sem renomear o arquivo não invalida cache de CDN/navegador.
  */
-const TEAM_PHOTO_VERSION = 1;
+const TEAM_PHOTO_VERSION = 2;
 const teamPhoto = slug => `assets/img/team/${slug}.webp?v=${TEAM_PHOTO_VERSION}`;
 
 /** Cor da barra do card por grupo (components/person-card.js), pra separar organizador de voluntário no
