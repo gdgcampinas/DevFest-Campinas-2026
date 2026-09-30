@@ -248,10 +248,35 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], au
   return { spin };
 }
 
+const QRCODEJS_URL = "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js";
+let qrcodejsPromise = null;
+
+/** Carrega o qrcodejs só quando alguém de fato mostra o QR (não em toda visita à aba, como o carregava fixo
+ * no <head> antes) — uma promise só, reusada. Mesma lib do quadro da sala (features/checkin-display.js), CDN
+ * clássica, sem módulo. */
+function loadQrcodejs() {
+  if (window.QRCode) return Promise.resolve();
+  if (!qrcodejsPromise) {
+    qrcodejsPromise = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = QRCODEJS_URL;
+      script.onload = resolve;
+      script.onerror = () => { qrcodejsPromise = null; reject(new Error("qrcodejs failed to load")); };
+      document.head.appendChild(script);
+    });
+  }
+  return qrcodejsPromise;
+}
+
 /** Desenha o QR no elemento, só se ainda não tiver (evita regerar a cada re-render enquanto "Mostrar QR"
- * está ligado). Sobre qrcodejs (já usado no quadro da sala, features/checkin-display.js), CDN clássica, sem
- * módulo. Isolado em função própria pra dar pra trocar em teste (sem window.QRCode em jsdom). */
-function defaultDrawQrCode(el, text) {
-  if (!el || el.childElementCount > 0 || typeof window.QRCode !== "function") return;
+ * está ligado). Isolado em função própria pra dar pra trocar em teste (sem window.QRCode em jsdom). */
+async function defaultDrawQrCode(el, text) {
+  if (!el || el.childElementCount > 0) return;
+  try {
+    await loadQrcodejs();
+  } catch {
+    return; // sem internet pro CDN: o botão continua lá, tenta de novo no próximo "Mostrar QR"
+  }
+  if (!el.isConnected || el.childElementCount > 0) return; // a tela pode ter mudado enquanto a lib carregava
   new window.QRCode(el, { text, width: 176, height: 176, colorDark: "#05060a", colorLight: "#ffffff" });
 }
