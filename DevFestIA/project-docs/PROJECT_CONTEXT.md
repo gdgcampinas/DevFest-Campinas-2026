@@ -374,7 +374,7 @@ sem lógica no site pra isso); "só quem está na sala pode ganhar o prêmio" é
 seção "Regras" da própria aba (`data/raffle-rules.js`, mesmo card com ícone de `info-card.js` do Código de
 conduta).
 
-**Dados (Firestore), 3 coleções create-only, mesmo padrão das outras 5:**
+**Dados (Firestore), 3 coleções create-only, mesmo padrão das outras 5 (as 3 entram na lista fixa `PURGEABLE_COLLECTIONS` da limpeza de teste, `purge-plan.js`; todas gravam `edition`, então a limpeza filtra certo):**
 - `raffle-checkins`: prova de presença, chave sempre "raffle", igual aos `checkins` de palestra — feito via
   `sorteio.html?checkin=1` (mesma ideia do `?checkin=<código>` de palestra em `features/talk-feedback.js`, só
   que com chave fixa, já que o sorteio não é por palestra). **É isso que trava "só durante o evento, só quem
