@@ -95,7 +95,7 @@ sessão 8, sem pendência técnica; página Sala ao vivo/tela Palco decidida mas
 
 PENDÊNCIAS
 Do Renato/organização: publicar as regras do Firestore do Sorteio (ver acima); dados de time em aberto
-(cargo dos 4 organizadores, foto/LinkedIn de Bianca e Carlos H, LinkedIn de Laydianne e Davi, 11 bios);
+(cargo dos 4 organizadores, foto/LinkedIn de Bianca, LinkedIn de Laydianne e Davi, 11 bios);
 dados reais do evento (local, salas/MCs, line-up, patrocinadores, valores); plenárias (A, B ou C, recomendo
 B); mensagens do Sympla com os links `.../ingressos.html?cartao=1` e `.../index.html?avaliar=1` + QR no
 encerramento; quem monta os tablets/TVs das salas; patrocínio FIAP (nota fiscal na 1ª semana de dezembro).

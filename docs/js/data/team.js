@@ -50,7 +50,7 @@ const TEAM = [
   }),
   organizer("Bianca Issa"),
   organizer("Michel Salomé", { linkedin: "https://www.linkedin.com/in/michel-luis-salome-de-barros", photo: teamPhoto("michel-salome") }),
-  organizer("Carlos H"),
+  organizer("Carlos Santos", { linkedin: "https://www.linkedin.com/in/santos-h-carlos", photo: teamPhoto("carlos-santos") }),
   // Ordem pedida pelo Renato (2026-09-30): mulher, homem, alternando; os homens que sobrarem vão pro fim.
   volunteer("Paula Santos", "https://www.linkedin.com/in/paula-santos-", "f", teamPhoto("paula-santos"), "Paula Santos é curiosa por natureza, e foi assim que se encontrou na tecnologia. Atua como Cloud & FinOps Architect na Capgemini, com foco em otimização de custos multicloud, dados e IA.\n\nAdora eventos de tech pela troca de conhecimento e pelas conexões."),
   volunteer("João Estevão Camilo", "https://www.linkedin.com/in/joãoestevaocamilo", "m", teamPhoto("joao-estevao-camilo"), "Apaixonado por tecnologia e por entender como as coisas funcionam, começou essa jornada pela eletrônica e pela prototipagem. Foi explorando circuitos, criando projetos e resolvendo problemas que descobriu o quanto gosta de transformar ideias em soluções. Hoje segue essa trajetória como Backend Java no Agibank, desenvolvendo sistemas e tecnologias que o desafiam a aprender algo novo todos os dias."),

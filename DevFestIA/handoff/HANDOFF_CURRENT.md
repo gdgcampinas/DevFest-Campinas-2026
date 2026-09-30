@@ -268,9 +268,9 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
    um efeito de verdade (grátis, simples, a pedido do Renato) e por qual; decidir quantos prêmios/como
    funciona no dia (a roleta já aceita "por rodadas" ou "sorteio único", só falta a operação combinar).
 0b. **Dados de time em aberto (sessão 9/30):**
-   - **Cargo dos 4 organizadores reais** (Renato Ramos, Bianca Issa, Michel Salomé, Carlos H): nenhum tem
+   - **Cargo dos 4 organizadores reais** (Renato Ramos, Bianca Issa, Michel Salomé, Carlos Santos): nenhum tem
      cargo confirmado ainda, o card mostra só o nome.
-   - **Foto e LinkedIn de Bianca Issa e Carlos H:** faltam os dois. (Michel Salomé: foto e LinkedIn OK.)
+   - **Foto e LinkedIn de Bianca Issa:** faltam. (Michel Salomé e Carlos Santos, antes "Carlos H": foto e LinkedIn OK desde 2026-10-01.)
    - **LinkedIn de Laydianne Naira:** o link colado no grupo veio cortado (`.../in/naira-ferreira-`, sem
      o resto) — confirmar com ela.
    - **LinkedIn de Davi Andrade:** ele mandou por PV no grupo, nunca confirmado aqui; o site usa o link
