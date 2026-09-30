@@ -21,7 +21,11 @@ function raffleWheelLabelsMarkup(remaining) {
   const seg = 360 / Math.max(remaining.length, 1);
   return remaining.map((person, i) => {
     const center = i * seg + seg / 2;
-    return `<div class="raffle-wheel-label" style="transform:rotate(${center.toFixed(2)}deg)"><span>${escapeHtml(person.firstName)}</span></div>`;
+    // A metade esquerda da roda (90°-270°) fica de cabeça pra baixo com esse truque (o texto gira junto
+    // com a fatia, e nessa faixa isso passa de 90°): rotaciona só o texto (não a posição) mais 180° de
+    // volta, então ele continua no lugar certo, só lendo do jeito certo.
+    const flip = center > 90 && center < 270;
+    return `<div class="raffle-wheel-label" style="transform:rotate(${center.toFixed(2)}deg)"><span${flip ? ' style="transform:rotate(180deg)"' : ""}>${escapeHtml(person.firstName)}</span></div>`;
   }).join("");
 }
 

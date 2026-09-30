@@ -411,6 +411,19 @@ próprio `.raffle-wheel`, então giram junto sem cálculo à parte. Roda também
 (`min(88vw,460px)`, era 280px) pra caber os nomes. `raffleWheelMarkup`/`raffleWheelReadyMarkup` agora
 recebem `remaining` (o array, não só a contagem) pra desenhar os rótulos.
 
+**2 bugs achados pelo Renato no teste seguinte, os dois corrigidos:**
+- **Não animava no aparelho dele:** a regra global de "Reduzir movimento" (topo do `styles.css`, liga sozinha
+  quando o sistema operacional pede) zera TODA `transition-duration` do site — inclusive o giro de 4.2s da
+  roleta, que virava um salto instantâneo. `.raffle-wheel` ganhou `transition-duration:4200ms !important`
+  fora da media query: `!important` + seletor de classe bate o `!important` do seletor universal por
+  especificidade, então o giro ignora a preferência de movimento reduzido de propósito — mesma exceção que
+  a galáxia do hero já tem (ela gira mais devagar, mas nunca para): o giro É o recurso, não é decoração.
+- **Metade dos nomes de cabeça pra baixo:** o truque de rótulo radial (linha de 0 de altura rodada até o
+  meio da fatia) deixa o texto invertido sempre que o ângulo cai entre 90° e 270° (a metade esquerda do
+  círculo) — rotacionar 180° só a posição não resolve, precisa rotacionar só o TEXTO de volta.
+  `raffleWheelLabelsMarkup` agora detecta essa faixa e aplica `transform:rotate(180deg)` só no `<span>`
+  interno (a posição do rótulo, herdada do container, não muda) pra ele ficar legível dos dois lados.
+
 **`qrcodejs` carrega sob demanda, não mais fixo no `<head>`:** carregar essa lib externa sempre, em toda
 visita à aba, combinado com a reescrita de documento do `/DEV/` (`document.write`, ver "Site nav"), fazia o
 navegador navegar pra `gdgcampinas.github.io/sorteio.html` (raiz, sem o repo) em vez de ficar na página —

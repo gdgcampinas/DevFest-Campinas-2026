@@ -114,6 +114,17 @@ fatia, girando junto (texto radial em CSS puro, mesmo truque de sempre, sem canv
 com a lista de teste do Time (22 pessoas): gira, anima, nomes legíveis, revela o ganhador certo. 2 testes
 jsdom novos travam essa correção (24 no total pro sorteio).
 
+**Renato testou de novo e achou mais 2 (corrigidos na mesma sessão):**
+- **"Não está rodando" no aparelho dele:** o iPhone do Renato tem "Reduzir movimento" ligado no sistema (já
+  documentado aqui pra galáxia) — a regra global do site zerava a `transition-duration` da roleta junto com
+  tudo, então o giro virava um salto instantâneo pro ângulo final. `.raffle-wheel` ganhou uma exceção
+  (`transition-duration:4200ms !important`, bate a regra global por especificidade) — mesmo tratamento que
+  a galáxia já tinha, o giro é o recurso, não decoração.
+- **Nomes de cabeça pra baixo:** a metade esquerda da roda (ângulo 90°-270°) saía invertida — bug clássico
+  do truque de texto radial em CSS. Corrigido rotacionando só o `<span>` do nome (não a posição) mais 180°
+  nessa faixa. Confirmado nas 2 capturas que o Renato mandou: os nomes que apareciam de cabeça pra baixo
+  agora leem normal.
+
 ### Motor das perguntas ao vivo — FEITO E ESTÁVEL desde a sessão 8, sem pendência técnica
 Fluxo simples: espectador com check-in pergunta (até 3) -> moderador aprova/rejeita/reabre/marca
 respondida -> espectadores votam -> ordena por votos. Leitura barata (`talk-boards/<talkKey>`, sem
