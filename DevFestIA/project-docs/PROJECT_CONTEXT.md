@@ -400,6 +400,24 @@ botão depois do 1º prêmio) é só um `mode` em memória da tela, não grava n
 `raffleTick`/`raffleChime`), sem depender de arquivo externo — trocar por um efeito de verdade é só mexer
 nessas duas funções. `createRaffleSpinTimer()` isola o tempo do giro (4.2 s + tiques) pra testar sem esperar.
 
+**Giro/rótulos (correção 2026-09-30, faltava no 1º corte):** a roda agora GIRA de verdade —
+`wheelDeg`/`spinCount` em `features/raffle-draw.js`, `spin()` calcula o ângulo pelo índice do sorteado
+dentro de `remaining` (mesma matemática do protótipo: `seg = 360/tamanho`, `centro = índice*seg + seg/2`,
+`ângulo = voltas fechadas + (360 - centro)`, sempre crescente pra nunca "voltar"), `.raffle-wheel` tem
+`transition:transform 4200ms` e ganha `style="transform:rotate(...)"` no markup (`raffle-wheel.js`). Cada
+pessoa vira um `.raffle-wheel-label` (primeiro nome, mesmo truque CSS de texto radial de sempre: linha de
+altura 0 presa no centro, rodada até o meio da fatia, texto alinhado na ponta externa) — são filhos do
+próprio `.raffle-wheel`, então giram junto sem cálculo à parte. Roda também ficou bem maior
+(`min(88vw,460px)`, era 280px) pra caber os nomes. `raffleWheelMarkup`/`raffleWheelReadyMarkup` agora
+recebem `remaining` (o array, não só a contagem) pra desenhar os rótulos.
+
+**`qrcodejs` carrega sob demanda, não mais fixo no `<head>`:** carregar essa lib externa sempre, em toda
+visita à aba, combinado com a reescrita de documento do `/DEV/` (`document.write`, ver "Site nav"), fazia o
+navegador navegar pra `gdgcampinas.github.io/sorteio.html` (raiz, sem o repo) em vez de ficar na página —
+bug reproduzido e confirmado ao vivo. `loadQrcodejs()` em `features/raffle-draw.js` injeta o `<script>` só
+quando o moderador clica em "Mostrar QR do sorteio" (promise única, reusada; erro de rede não quebra nada,
+só o botão continua lá pra tentar de novo).
+
 **Check-in do sorteio (revisão no mesmo dia):** `raffle-entries` agora exige `exists()` num
 `raffle-checkins/<uid>_raffle`, feito por `sorteio.html?checkin=1` (mesma ideia do `?checkin=<código>` de
 palestra, chave fixa, sem código por palestra). É a regra do Firestore que trava "só durante o evento, só

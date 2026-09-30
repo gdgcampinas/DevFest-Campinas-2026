@@ -114,6 +114,8 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], au
   let entriesError = "";
   let drawsError = "";
   let audioCtx = null;
+  let wheelDeg = 0; // ângulo acumulado (graus), sempre crescente: o giro nunca "volta", só soma voltas
+  let spinCount = 0;
 
   const usingDevSeed = () => entries.length === 0 && devSeed.length > 0;
   const activeEntries = () => (usingDevSeed() ? devSeed : entries);
@@ -139,11 +141,12 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], au
     const drawnList = activeDraws().slice().sort((a, b) => a.prize - b.prize);
     draw({
       phase: "ready",
+      remaining,
       poolCount: activeEntries().length,
-      remainingCount: remaining.length,
       drawnList,
       spinning,
       winner,
+      wheelDeg,
       usingDevSeed: usingDevSeed(),
       canSpin: !spinning && remaining.length > 0 && !(mode === "single" && drawnList.length >= 1),
     });
@@ -172,7 +175,16 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], au
   async function spin() {
     const remaining = pool();
     if (spinning || !remaining.length || (mode === "single" && activeDraws().length >= 1)) return;
-    const chosen = remaining[Math.floor(Math.random() * remaining.length)];
+    const chosenIndex = Math.floor(Math.random() * remaining.length);
+    const chosen = remaining[chosenIndex];
+    // Gira sempre pra frente (soma voltas inteiras) e para exatamente com a fatia sorteada sob o ponteiro
+    // (fixo no topo, 0deg): a fatia i vai de i*seg a (i+1)*seg a partir do topo, sentido horário, igual o
+    // conic-gradient; girar o disco por R graus põe o ângulo "a" na tela em (a+R) mod 360 — o R certo pra
+    // o centro da fatia sorteada terminar em 0deg (debaixo do ponteiro) é 360 - centro.
+    const seg = 360 / remaining.length;
+    const winnerCenter = chosenIndex * seg + seg / 2;
+    spinCount += 1;
+    wheelDeg = spinCount * 2160 + ((360 - winnerCenter) % 360); // 2160 = 6 voltas inteiras, só efeito visual
     spinning = true;
     winner = null;
     drawReady();

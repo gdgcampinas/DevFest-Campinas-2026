@@ -98,6 +98,22 @@ desenhar.
 - Travessão removido do texto da regra "Só no dia do evento" (tinha escapado).
 - 22 testes jsdom no total pro sorteio agora (11 cadastro + 11 roleta).
 
+**Bug do link errado em `/DEV/sorteio.html` (achado e corrigido, 2026-09-30):** o Renato reproduziu — clicar
+em "Sorteio" dentro do `/DEV/` caía em `gdgcampinas.github.io/sorteio.html` (raiz do domínio, 404). Causa:
+`sorteio.html` era a única página carregando um script externo (`qrcodejs`) fixo no `<head>`, e a única nova
+passando pelo `document.write` do `/DEV/` — essa combinação fazia o navegador pular pra fora. Corrigido:
+`qrcodejs` agora carrega só quando o moderador clica em "Mostrar QR do sorteio" (`loadQrcodejs()` em
+`features/raffle-draw.js`), nunca mais fixo em nenhum `<head>`. Reproduzido e confirmado corrigido no
+navegador de verdade contra o site publicado.
+
+**A roleta não girava de verdade (achado no mesmo teste do Renato):** o 1º corte só trocava o texto do botão
+pra "Girando…", sem nenhuma animação — faltou portar o cálculo de ângulo do protótipo (Artifact) pro código
+de verdade. Corrigido: `wheelDeg` calculado em `spin()` pelo índice de quem foi sorteado, `.raffle-wheel`
+com `transition:transform`, disco bem maior (`min(88vw,460px)`, era 280px) e um nome (primeiro nome) em cada
+fatia, girando junto (texto radial em CSS puro, mesmo truque de sempre, sem canvas nem SVG). Testado ao vivo
+com a lista de teste do Time (22 pessoas): gira, anima, nomes legíveis, revela o ganhador certo. 2 testes
+jsdom novos travam essa correção (24 no total pro sorteio).
+
 ### Motor das perguntas ao vivo — FEITO E ESTÁVEL desde a sessão 8, sem pendência técnica
 Fluxo simples: espectador com check-in pergunta (até 3) -> moderador aprova/rejeita/reabre/marca
 respondida -> espectadores votam -> ordena por votos. Leitura barata (`talk-boards/<talkKey>`, sem

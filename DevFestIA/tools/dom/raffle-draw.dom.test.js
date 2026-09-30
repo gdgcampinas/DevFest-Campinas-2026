@@ -74,6 +74,29 @@ test("girar sorteia alguém da lista, grava em raffle-draws com prêmio 1 e most
   assert.match(textOf(world.rootEl), /Ana Souza/);
 });
 
+test("girar de verdade roda o disco (transform muda a cada giro, nunca fica parado em 0)", async () => {
+  const world = setup({ signedIn: true });
+  world.seedEntry("u1_raffle", "Ana", "Souza");
+  world.seedEntry("u2_raffle", "Beto", "Lima");
+  await world.signIn();
+  await world.spin();
+  const firstTransform = world.rootEl.querySelector(".raffle-wheel").style.transform;
+  assert.match(firstTransform, /rotate\(\d/);
+  assert.notEqual(firstTransform, "rotate(0deg)");
+  await world.spin();
+  const secondTransform = world.rootEl.querySelector(".raffle-wheel").style.transform;
+  assert.notEqual(secondTransform, firstTransform); // cada giro soma ângulo, nunca repete o anterior
+});
+
+test("mostra o primeiro nome de cada pessoa na fatia da roda", async () => {
+  const world = setup({ signedIn: true });
+  world.seedEntry("u1_raffle", "Ana", "Souza");
+  world.seedEntry("u2_raffle", "Beto", "Lima");
+  await world.signIn();
+  const labels = [...world.rootEl.querySelectorAll(".raffle-wheel-label span")].map(el => el.textContent);
+  assert.deepEqual(labels.sort(), ["Ana", "Beto"]);
+});
+
 test("quem já ganhou não entra mais no sorteio nem na lista de 'na lista'", async () => {
   const world = setup({ signedIn: true });
   world.seedEntry("u1_raffle", "Ana", "Souza");
