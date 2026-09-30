@@ -18,6 +18,7 @@ mkdir -p "$OUT"
 # explícita, em vez de derivar o slug automaticamente do nome do arquivo. Terceiro campo opcional
 # "altura,largura,offsetY,offsetX" recorta antes de redimensionar (foto de corpo inteiro, por ex.).
 declare -a PHOTOS=(
+  "Bianca Issa.webp|bianca-issa"
   "Carlos Santos.png|carlos-santos"
   "Camila Fernanda Ignacio .jpeg|camila-fernanda-ignacio"
   "Davi Andrade.jpeg|davi-andrade"
