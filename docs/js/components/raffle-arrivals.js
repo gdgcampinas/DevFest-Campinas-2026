@@ -10,8 +10,8 @@ function raffleCounterMarkup(count) {
 /** Aviso ao moderador (não aparece no telão): nomes repetidos na lista, pra conferir o ingresso no palco. */
 function raffleRepeatedNamesMarkup(repeated, shown = 4) {
   if (!repeated.length) return "";
-  const names = repeated.slice(0, shown).map(item => `${escapeHtml(item.name)} (${item.count})`).join(", ") + (repeated.length > shown ? "…" : "");
-  return `<p class="raffle-repeated">${tn("raffle.repeatedTitle", repeated.length, "{count} nome repetido na lista", "{count} nomes repetidos na lista")}: ${names}. ${t("raffle.repeatedHint", "Se um deles ganhar, confira o ingresso no palco.")}</p>`;
+  const names = repeated.slice(0, shown).map(item => `${escapeHtml(item.name)} (${item.count})`).join(", ");
+  return `<p class="raffle-repeated">${tn("raffle.repeatedTitle", repeated.length, "{count} nome repetido na lista", "{count} nomes repetidos na lista")}: ${names}${repeated.length > shown ? "…" : "."} ${t("raffle.repeatedHint", "Se um deles ganhar, confira o ingresso no palco.")}</p>
 }
 
 function raffleArrivalsMarkup(arrivals, newIds = new Set()) {
