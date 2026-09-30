@@ -3,8 +3,9 @@
  * (myRaffleCheckin/myRaffle, data/my-raffle.js: o uid anônimo é por navegador, então é equivalente ao
  * Firestore sem gastar leitura):
  *   1) "locked" — sem o check-in do sorteio (QR mostrado pela organização NO evento): sem formulário.
- *      `?checkin=1` na URL faz o check-in (mesma ideia do `?checkin=<código>` de palestra, só que com chave
- *      fixa — o sorteio não é por palestra) e limpa o parâmetro.
+ *      `?checkin=<código>` na URL faz o check-in (o código é o do QR, que muda a cada minuto, ver
+ *      features/raffle-session.js) e limpa o parâmetro. Se o banco recusar, a tela diz por quê: o código
+ *      expirou (escaneie de novo) ou faltou internet.
  *   2) "signup" — com check-in, ainda não cadastrado: formulário.
  *   3) "done" — já cadastrado: confirmação.
  * A regra do Firestore (raffle-entries) EXIGE o check-in do sorteio pra criar o cadastro — é isso que garante
@@ -18,31 +19,35 @@ function initRaffleSignup(rootEl, { myRaffle, myRaffleCheckin, whenReady = runAf
     return myRaffleCheckin.has(RAFFLE_ENTRY_KEY) ? "signup" : "locked";
   };
 
-  function render(containerEl) {
+  function render(containerEl, notice = "") {
     if (!containerEl) return;
     containerEl.dataset.raffleSignupContainer = "";
-    containerEl.innerHTML = raffleSignupMarkup({ phase: phaseNow() });
+    containerEl.innerHTML = raffleSignupMarkup({ phase: phaseNow(), notice });
     renderInfoCards(raffleRulesRepository.getAll().map(rule => ({ ...rule, id: rule.title, icon: iconMarkup(rule.icon) })), document.getElementById("raffleRules"));
   }
 
-  /** Grava o check-in do sorteio. "permission-denied" = já existia (a regra recusa o segundo): trata como feito. */
-  async function doCheckin() {
+  /** Grava o check-in do sorteio com o código do QR. "permission-denied" tem duas causas: o check-in já existia
+   * (a regra recusa o segundo, e só o próprio documento da pessoa diz isso) ou o código expirou/é inválido. */
+  async function doCheckin(code) {
     const uid = await window.firebaseClient.ensureAnonymousUid();
     try {
-      await window.raffleCheckinsRepository.add(uid, RAFFLE_ENTRY_KEY, { entryKey: RAFFLE_ENTRY_KEY });
+      await window.raffleCheckinsRepository.add(uid, RAFFLE_ENTRY_KEY, { entryKey: RAFFLE_ENTRY_KEY, code });
     } catch (error) {
       if (error.code !== "permission-denied") throw error;
+      if (!(await window.raffleCheckinsRepository.has(uid, RAFFLE_ENTRY_KEY))) return "expired";
     }
     myRaffleCheckin.addAll([RAFFLE_ENTRY_KEY]);
+    return "";
   }
 
   async function handleCheckinParam(containerEl) {
-    if (!getParam("checkin")) return;
+    const code = getParam("checkin");
+    if (!code) return;
     const url = new URL(location.href);
     url.searchParams.delete("checkin");
     history.replaceState(null, "", url);
-    await doCheckin().catch(() => {}); // sem internet: fica em "locked", a pessoa tenta o QR de novo
-    render(containerEl);
+    const notice = await doCheckin(code).catch(() => "offline"); // sem internet: fica em "locked", a pessoa tenta o QR de novo
+    render(containerEl, notice);
   }
 
   rootEl.addEventListener("submit", async event => {

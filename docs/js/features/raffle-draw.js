@@ -78,15 +78,6 @@ function createRaffleSpinTimer({ spinMs = 4200, maxTicks = 26 } = {}) {
   };
 }
 
-/** Link que o QR do sorteio abre: a própria página, só com `?checkin=1` (limpa qualquer outro parâmetro,
- * ex.: `?lineup=1`). Dual (sem `location`, em Node testa string simples) — quem chama passa a URL atual. */
-function raffleCheckinUrl(href) {
-  const url = new URL(href);
-  url.search = "";
-  url.searchParams.set("checkin", "1");
-  return url.toString();
-}
-
 /** Transforma TEAM (data/team.js) numa lista de teste pro `devSeed` — só nome/sobrenome e um id que nunca
  * bate com um cadastro de verdade (`dev_<índice>`), pra girar a roleta antes de ter gente cadastrada. Só
  * quem chama (pages/sorteio.js) decide SE isso é usado (passa `[]` fora do modo DEV). */
@@ -101,6 +92,7 @@ function defaultRaffleDrawDeps() {
   return {
     entries: window.moderationRaffleEntriesRepository,
     draws: window.moderationRaffleDrawsRepository,
+    session: window.moderationRaffleSessionRepository,
     ...defaultModeratorLoginDeps(),
   };
 }
@@ -139,6 +131,8 @@ function initRaffleDraw(rootEl, {
   schedule = (fn, ms) => setTimeout(fn, ms),
   fullscreen = defaultFullscreen(),
   startInTelao = false,
+  every = (fn, ms) => { const id = setInterval(fn, ms); return () => clearInterval(id); },
+  generateCode = generateRaffleCode,
 } = {}) {
   let email = "";
   let entries = [];
@@ -167,6 +161,9 @@ function initRaffleDraw(rootEl, {
   let holdToken = 0;
   let telao = startInTelao; // modo telão: tela cheia só com a roda, o contador e as chegadas (ver .raffle-telao)
   let enteredFullscreen = false;
+  let qrSession = null; // { code, previous } do QR que está na tela (o mesmo que foi gravado em raffle-session)
+  let stopRotation = null; // desliga a virada do código (intervalo)
+  let sessionError = "";
   let seenArrivalIds = null; // null até a 1ª lista chegar: quem já estava lá não ganha a animação de "acabou de entrar"
 
   const isAbsent = item => item.status === RAFFLE_DRAW_STATUS.absent;
@@ -194,9 +191,49 @@ function initRaffleDraw(rootEl, {
 
   const draw = data => {
     const loadError = entriesError || drawsError;
-    rootEl.innerHTML = raffleWheelMarkup({ email, showQr, telao, loadError, ...data });
-    if (showQr && data.phase !== "signin") drawQrCode(document.getElementById("raffleQr"), raffleCheckinUrl(location.href), telao ? RAFFLE_TELAO_QR_SIZE : RAFFLE_QR_SIZE);
+    rootEl.innerHTML = raffleWheelMarkup({ email, showQr, telao, loadError, sessionError, ...data });
+    drawQr(data.phase);
   };
+
+  /** Desenha o QR com o código atual no painel (só se o painel está na tela e já há código). */
+  function drawQr(phase = "ready") {
+    if (!showQr || phase === "signin" || !qrSession) return;
+    drawQrCode(document.getElementById("raffleQr"), raffleCheckinUrl(location.href, qrSession.code), telao ? RAFFLE_TELAO_QR_SIZE : RAFFLE_QR_SIZE);
+  }
+
+  /** Nova virada do código: grava no banco (atual + anterior) e troca o QR na tela SEM redesenhar a roleta (um
+   * redesenho no meio de um giro cortaria a animação). Falha ao gravar vira aviso: um QR que o banco não conhece não vale. */
+  async function publishCode() {
+    qrSession = nextRaffleSession(qrSession, generateCode());
+    const published = qrSession;
+    const qrEl = document.getElementById("raffleQr");
+    if (qrEl) qrEl.innerHTML = "";
+    drawQr();
+    let failed = false;
+    try {
+      await deps().session.set(RAFFLE_SESSION_ID, published);
+    } catch {
+      failed = true;
+    }
+    const message = failed ? t("raffle.sessionError", "Não consegui publicar o código do QR agora. Tentando de novo em instantes.") : "";
+    if (message !== sessionError) {
+      sessionError = message;
+      if (!spinning) drawReady();
+    }
+  }
+
+  /** O código só vira enquanto o QR está na tela e o moderador está logado: sem isso ninguém precisa dele. */
+  function syncCodeRotation() {
+    const needed = showQr && Boolean(email);
+    if (needed && !stopRotation) {
+      publishCode();
+      stopRotation = every(publishCode, RAFFLE_CODE_PERIOD_MS);
+    } else if (!needed && stopRotation) {
+      stopRotation();
+      stopRotation = null;
+      qrSession = null;
+    }
+  }
 
   function drawnEntryIds() {
     return new Set(activeDraws().map(item => item.entryId));
@@ -357,6 +394,7 @@ function initRaffleDraw(rootEl, {
       enteredFullscreen = false;
       fullscreen.exit();
     }
+    syncCodeRotation();
     if (email) drawReady();
     else draw({ phase: "signin" });
   }
@@ -366,6 +404,7 @@ function initRaffleDraw(rootEl, {
       try {
         email = await deps().signIn();
         startWatching();
+        syncCodeRotation(); // entrou em modo telão (já com o QR na tela): o código começa a virar
       } catch (error) {
         draw({ phase: "signin", message: signInErrorMessage(error) });
       }
@@ -375,6 +414,7 @@ function initRaffleDraw(rootEl, {
       stopEntries?.();
       stopDraws?.();
       email = "";
+      syncCodeRotation();
       entries = [];
       draws = [];
       devDraws = [];
@@ -390,6 +430,7 @@ function initRaffleDraw(rootEl, {
     }
     if (event.target.closest("[data-raffle-qr-toggle]")) {
       showQr = !showQr;
+      syncCodeRotation();
       drawReady();
       return;
     }
@@ -410,7 +451,10 @@ function initRaffleDraw(rootEl, {
   draw({ phase: "signin" });
   whenReady(async () => {
     email = (await deps().restore().catch(() => null)) ?? "";
-    if (email) startWatching();
+    if (email) {
+      startWatching();
+      syncCodeRotation();
+    }
   });
 
   return { spin };

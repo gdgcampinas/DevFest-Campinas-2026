@@ -23,3 +23,15 @@ else
   run off DevFestIA/firebase
 fi
 rm -rf "$TMP"
+
+# Interruptores do sorteio (QR que muda): cópia temporária das regras com o valor trocado, só o arquivo do sorteio.
+raffle() { # $1 = RAFFLE-CODE on|off
+  local dir; dir="$(mktemp -d)"
+  cp DevFestIA/firebase/firebase.json "$dir/firebase.json"
+  sed "s#return false; // RAFFLE-CODE#return $([ "$1" = on ] && echo true || echo false); // RAFFLE-CODE#" DevFestIA/firebase/firestore.rules > "$dir/firestore.rules"
+  echo "== regras do sorteio: QR que muda $1 =="
+  RULES_RAFFLE_CODE="$1" firebase emulators:exec --only firestore --project demo-devfest --config "$dir/firebase.json" \
+    "node --test DevFestIA/tools/questions/raffle-rules.test.js"
+  rm -rf "$dir"
+}
+raffle on

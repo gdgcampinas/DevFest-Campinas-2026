@@ -9,7 +9,7 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, settle, textOf } = require("../lib/dom-harness.js");
 const { createFakeQuestions, denied } = require("../lib/fake-question-world.js");
 
-const SCRIPTS = [...SITE_BASE, "components/moderator-login.js", "features/raffle-pool.js", "components/raffle-arrivals.js", "components/raffle-wheel.js", "features/moderator-login.js", "features/raffle-draw.js"];
+const SCRIPTS = [...SITE_BASE, "components/moderator-login.js", "features/raffle-pool.js", "features/raffle-session.js", "components/raffle-arrivals.js", "components/raffle-wheel.js", "features/moderator-login.js", "features/raffle-draw.js"];
 
 const windows = [];
 test.after(() => windows.forEach(window => window.close()));
@@ -28,6 +28,12 @@ const fakeFullscreen = () => {
   return { calls, enter: () => { calls.enter++; active = true; }, exit: () => { calls.exit++; active = false; }, isActive: () => active, setActive: value => { active = value; } };
 };
 
+/** Repository de mentira do código do QR: guarda as gravações e deixa simular falha. */
+const fakeSession = () => {
+  const world = { writes: [], fail: false, async set(id, data) { if (world.fail) throw new Error("offline"); world.writes.push({ id, ...data }); } };
+  return world;
+};
+
 function setup({ signedIn = false, devSeed = [], entries = createFakeQuestions(), draws = createFakeQuestions(), startInTelao = false, random } = {}) {
   const site = loadSite({ scripts: SCRIPTS });
   const { document, window } = site;
@@ -36,10 +42,14 @@ function setup({ signedIn = false, devSeed = [], entries = createFakeQuestions()
   document.body.innerHTML = `<div id="mod"></div>`;
   const rootEl = document.getElementById("mod");
   const fullscreen = fakeFullscreen();
+  const session = fakeSession();
+  const qrDraws = []; // o que foi desenhado no QR (texto e tamanho)
+  const ticks = []; // virada do código: só roda quando o teste manda (`rotateCode`)
+  let codeNumber = 0;
   const scheduled = []; // tempo de exibição do ganhador: só roda quando o teste manda (`releaseReveal`)
   site.get("initRaffleDraw")(rootEl, {
     deps: () => ({
-      entries, draws,
+      entries, draws, session,
       signIn: async () => { if (auth.signInError) throw auth.signInError; auth.email = "mod@gdg.dev"; return auth.email; },
       restore: async () => auth.email,
       signOut: async () => { auth.email = null; },
@@ -49,15 +59,19 @@ function setup({ signedIn = false, devSeed = [], entries = createFakeQuestions()
     spinTimer: instantSpinTimer(),
     audio: fakeAudioCtx,
     schedule: fn => scheduled.push(fn),
+    drawQrCode: (el, text, size) => { if (el) qrDraws.push({ text, size }); },
+    every: fn => { ticks.push(fn); return () => ticks.splice(ticks.indexOf(fn), 1); },
+    generateCode: () => `CODIGO${++codeNumber}`.padEnd(8, "X"),
     fullscreen,
     startInTelao,
     ...(random ? { random } : {}),
   });
   const seedEntry = (id, firstName, lastName) => entries.seed({ id, firstName, lastName });
   const releaseReveal = async () => { scheduled.splice(0).forEach(fn => fn()); await settle(); };
+  const rotateCode = async () => { ticks.slice().forEach(fn => fn()); await settle(); };
   const signIn = async () => { rootEl.querySelector("[data-mod-signin]").click(); await settle(); };
   const spin = async () => { rootEl.querySelector("[data-raffle-spin]").click(); await settle(); };
-  return { rootEl, document, window, entries, draws, auth, seedEntry, signIn, spin, fullscreen, releaseReveal };
+  return { rootEl, document, window, entries, draws, auth, seedEntry, signIn, spin, fullscreen, releaseReveal, session, ticks, rotateCode, qrDraws };
 }
 
 test("sem login: pede a conta de moderador e não lê nada do banco", async () => {
@@ -405,4 +419,91 @@ test("Ausente no modo DEV (lista de teste): só em memória, sem gravar", async 
   assert.equal(world.rootEl.querySelector(".raffle-drawn-badge").textContent, "Ausente");
   await world.spin();
   assert.match(textOf(world.rootEl.querySelector(".raffle-winner-label")), /prêmio 1/);
+});
+
+// ---------- QR que muda ----------
+test("QR do sorteio: ao mostrar, publica o primeiro código; a cada virada grava o novo com o anterior", async () => {
+  const world = setup({ signedIn: true });
+  await world.signIn();
+  assert.equal(world.session.writes.length, 0, "sem QR na tela, ninguém precisa de código");
+  world.rootEl.querySelector("[data-raffle-qr-toggle]").click();
+  await settle();
+  assert.deepEqual(world.session.writes, [{ id: "current", code: "CODIGO1X" }]);
+  await world.rotateCode();
+  assert.deepEqual(world.session.writes.at(-1), { id: "current", code: "CODIGO2X", previous: "CODIGO1X" });
+  await world.rotateCode();
+  assert.deepEqual(world.session.writes.at(-1), { id: "current", code: "CODIGO3X", previous: "CODIGO2X" });
+});
+
+test("QR do sorteio: esconder o QR para a virada do código; mostrar de novo começa um código novo", async () => {
+  const world = setup({ signedIn: true });
+  await world.signIn();
+  world.rootEl.querySelector("[data-raffle-qr-toggle]").click();
+  await settle();
+  assert.equal(world.ticks.length, 1);
+  world.rootEl.querySelector("[data-raffle-qr-toggle]").click();
+  await settle();
+  assert.equal(world.ticks.length, 0, "a virada parou");
+  world.rootEl.querySelector("[data-raffle-qr-toggle]").click();
+  await settle();
+  assert.equal(world.session.writes.at(-1).code, "CODIGO2X");
+  assert.equal(world.session.writes.at(-1).previous, undefined, "recomeçou sem anterior");
+});
+
+test("QR do sorteio: sair da conta para a virada do código", async () => {
+  const world = setup({ signedIn: true });
+  await world.signIn();
+  world.rootEl.querySelector("[data-raffle-qr-toggle]").click();
+  await settle();
+  world.rootEl.querySelector("[data-mod-signout]").click();
+  await settle();
+  assert.equal(world.ticks.length, 0);
+});
+
+test("QR do sorteio: modo telão liga o QR e a virada do código", async () => {
+  const world = setup({ signedIn: true });
+  await world.signIn();
+  world.rootEl.querySelector("[data-raffle-telao-toggle]").click();
+  await settle();
+  assert.equal(world.session.writes.length, 1);
+  assert.equal(world.ticks.length, 1);
+});
+
+test("QR do sorteio: se o banco recusar gravar o código, avisa e continua tentando na virada seguinte", async () => {
+  const world = setup({ signedIn: true });
+  await world.signIn();
+  world.session.fail = true;
+  world.rootEl.querySelector("[data-raffle-qr-toggle]").click();
+  await settle();
+  assert.match(textOf(world.rootEl), /Não consegui publicar o código do QR/);
+  world.session.fail = false;
+  await world.rotateCode();
+  assert.doesNotMatch(textOf(world.rootEl), /Não consegui publicar o código do QR/);
+  assert.equal(world.session.writes.at(-1).code, "CODIGO2X");
+});
+
+test("QR do sorteio: a virada do código não redesenha a roleta (não corta o giro)", async () => {
+  const world = setup({ signedIn: true });
+  manyEntries(world, 3);
+  await world.signIn();
+  world.rootEl.querySelector("[data-raffle-qr-toggle]").click();
+  await settle();
+  const wheelEl = world.rootEl.querySelector(".raffle-wheel");
+  await world.rotateCode();
+  assert.equal(world.rootEl.querySelector(".raffle-wheel"), wheelEl, "é o mesmo elemento da roda");
+});
+
+test("QR do sorteio: o QR carrega o código atual, troca a cada virada e fica maior no telão", async () => {
+  const world = setup({ signedIn: true });
+  await world.signIn();
+  world.rootEl.querySelector("[data-raffle-qr-toggle]").click();
+  await settle();
+  assert.match(world.qrDraws.at(-1).text, /\?checkin=CODIGO1X$/);
+  assert.equal(world.qrDraws.at(-1).size, 176);
+  await world.rotateCode();
+  assert.match(world.qrDraws.at(-1).text, /\?checkin=CODIGO2X$/);
+  world.rootEl.querySelector("[data-raffle-telao-toggle]").click();
+  await settle();
+  assert.equal(world.qrDraws.at(-1).size, 320);
+  assert.match(world.qrDraws.at(-1).text, /\?checkin=CODIGO2X$/, "entrar no telão não troca o código");
 });

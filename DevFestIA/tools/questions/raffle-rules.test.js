@@ -14,6 +14,9 @@ const onlyFlagsOff = skip || (codeOn || ticketOn ? "só vale com os interruptore
 
 const raffleCheckin = (who, extra = {}) => createDoc(who, "raffle-checkins", `${who.uid}_raffle`, { ...base, entryKey: "raffle", ...extra });
 const raffleEntry = (who, extra = {}, docId = `${who.uid}_raffle`) => createDoc(who, "raffle-entries", docId, { ...base, entryKey: "raffle", firstName: "Ana", lastName: "Souza", ...extra });
+/** O moderador publica o código do QR (atual e, se houver, o anterior): `updatedAt` é o horário do servidor. */
+const publishCode = (who, code, previous) => createDoc(who, "raffle-session", "current", { edition: "2026", code, ...(previous ? { previous } : {}) }, { stamp: "updatedAt" });
+const onlyCodeOn = skip || (codeOn ? false : "só vale com o interruptor do QR que muda ligado");
 const draw = (who, entryId, extra = {}) => createDoc(who, "raffle-draws", `${entryId}_draw`, { ...base, entryKey: "draw", entryId, name: "Ana Souza", prize: 1, status: "winner", ...extra });
 
 /** Um cadastro já existente no banco (gravado como dono), pra o moderador sortear. */
@@ -115,4 +118,72 @@ test("sorteios feitos: só o moderador lê e lista; ninguém apaga", { skip }, a
   denied(await query(person(), "raffle-draws", { edition: "2026" }));
   allowed(await getDoc(mod, "raffle-draws", docId));
   allowed(await query(mod, "raffle-draws", { edition: "2026" }));
+});
+
+// ---------- QR que muda: o documento do código ----------
+test("código do QR: só o moderador grava e lê; formato, campos e id fixos", { skip }, async () => {
+  const mod = moderator();
+  const who = person();
+  denied(await publishCode(who, "ABCD2345"));
+  denied(await publishCode(null, "ABCD2345"));
+  denied(await publishCode(mod, "abc")); // curto e minúsculo
+  denied(await publishCode(mod, "ABCD2345", "x")); // anterior fora do formato
+  denied(await createDoc(mod, "raffle-session", "current", { edition: "2026", code: "ABCD2345", extra: "x" }, { stamp: "updatedAt" }));
+  denied(await createDoc(mod, "raffle-session", "outro", { edition: "2026", code: "ABCD2345" }, { stamp: "updatedAt" }));
+  denied(await createDoc(mod, "raffle-session", "current", { edition: "1999", code: "ABCD2345" }, { stamp: "updatedAt" }));
+  allowed(await publishCode(mod, "ABCD2345"));
+  allowed(await publishCode(mod, "EFGH6789", "ABCD2345")); // a virada regrava o mesmo documento
+  allowed(await getDoc(mod, "raffle-session", "current"));
+  denied(await getDoc(who, "raffle-session", "current")); // a plateia nunca lê o código
+  denied(await query(who, "raffle-session", { edition: "2026" }));
+});
+
+// ---------- QR que muda: interruptor desligado (como está hoje) ----------
+test("check-in do sorteio com o interruptor desligado: aceita com ou sem código, mas o código tem limite de tamanho", { skip: onlyFlagsOff }, async () => {
+  allowed(await raffleCheckin(person(), { code: "1" }));
+  allowed(await raffleCheckin(person(), { code: "qualquer-coisa" }));
+  allowed(await raffleCheckin(person()));
+  denied(await raffleCheckin(person(), { code: "x".repeat(41) }));
+  denied(await raffleCheckin(person(), { code: 123 }));
+});
+
+// ---------- QR que muda: interruptor ligado ----------
+test("check-in do sorteio com o QR que muda: sem código ou com código errado é recusado", { skip: onlyCodeOn }, async () => {
+  const mod = moderator();
+  allowed(await publishCode(mod, "ATUAL234"));
+  denied(await raffleCheckin(person()));
+  denied(await raffleCheckin(person(), { code: "ERRADO23" }));
+  denied(await raffleCheckin(person(), { code: "1" })); // o link antigo ?checkin=1 não vale mais
+  denied(await raffleCheckin(person(), { code: 123 }));
+  allowed(await raffleCheckin(person(), { code: "ATUAL234" }));
+});
+
+test("check-in do sorteio com o QR que muda: o código anterior vale até a virada seguinte, o mais velho não", { skip: onlyCodeOn }, async () => {
+  const mod = moderator();
+  allowed(await publishCode(mod, "PRIMEIRO2"));
+  allowed(await publishCode(mod, "SEGUNDO23", "PRIMEIRO2"));
+  allowed(await raffleCheckin(person(), { code: "PRIMEIRO2" })); // quem escaneou na virada
+  allowed(await raffleCheckin(person(), { code: "SEGUNDO23" }));
+  allowed(await publishCode(mod, "TERCEIRO2", "SEGUNDO23"));
+  denied(await raffleCheckin(person(), { code: "PRIMEIRO2" })); // a foto do QR de 2 viradas atrás não vale
+  allowed(await raffleCheckin(person(), { code: "SEGUNDO23" }));
+  allowed(await raffleCheckin(person(), { code: "TERCEIRO2" }));
+});
+
+test("check-in do sorteio com o QR que muda: a mesma pessoa não faz o check-in duas vezes", { skip: onlyCodeOn }, async () => {
+  const mod = moderator();
+  allowed(await publishCode(mod, "CODIGO234"));
+  const who = person();
+  allowed(await raffleCheckin(who, { code: "CODIGO234" }));
+  denied(await raffleCheckin(who, { code: "CODIGO234" }));
+  allowed(await getDoc(who, "raffle-checkins", `${who.uid}_raffle`)); // e ela consegue ver que já tem (a tela usa isso)
+});
+
+test("cadastro com o QR que muda: o check-in com código válido libera o cadastro", { skip: onlyCodeOn }, async () => {
+  const mod = moderator();
+  allowed(await publishCode(mod, "LIBERA234"));
+  const who = person();
+  denied(await raffleEntry(who));
+  allowed(await raffleCheckin(who, { code: "LIBERA234" }));
+  allowed(await raffleEntry(who));
 });

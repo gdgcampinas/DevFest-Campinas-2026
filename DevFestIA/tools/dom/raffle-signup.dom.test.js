@@ -17,7 +17,7 @@ test.after(() => windows.forEach(window => window.close()));
 function setup({ alreadyIn = false, checkedIn = false, url = "http://localhost/" } = {}) {
   const calls = [];
   const checkinCalls = [];
-  const fail = { add: null, checkinAdd: null };
+  const fail = { add: null, checkinAdd: null, hasCheckin: false };
   const site = loadSite({
     scripts: SCRIPTS,
     url,
@@ -34,6 +34,7 @@ function setup({ alreadyIn = false, checkedIn = false, url = "http://localhost/"
           if (fail.checkinAdd) throw fail.checkinAdd;
           checkinCalls.push({ uid, entryKey, data });
         },
+        async has() { return fail.hasCheckin; }, // o próprio documento do check-in (a regra deixa a pessoa ler o dela)
       },
     },
   });
@@ -76,20 +77,38 @@ test("?checkin=1 na URL: faz o check-in, limpa o parâmetro e libera o formulár
   assert.equal(new URL(world.rootEl.ownerDocument.location.href).searchParams.has("checkin"), false);
 });
 
-test("?checkin=1 recusado por já existir: conta como feito, libera o formulário", async () => {
+test("?checkin=<código>: manda o código do QR junto com o check-in", async () => {
+  const world = setup({ url: "http://localhost/?checkin=ABCD2345" });
+  await settle();
+  assert.equal(world.checkinCalls[0].data.code, "ABCD2345");
+  assert.equal(world.checkinCalls[0].data.entryKey, "raffle");
+});
+
+test("check-in recusado mas a pessoa JÁ tinha o check-in (2º QR, ou limpou o navegador): conta como feito, libera o formulário", async () => {
   const world = setup({ url: "http://localhost/?checkin=1" });
   world.fail.checkinAdd = denied();
+  world.fail.hasCheckin = true;
   await settle();
   assert.ok(world.myRaffleCheckin.has("raffle"));
   assert.ok(world.rootEl.querySelector("[data-raffle-signup-form]"));
 });
 
-test("?checkin=1 sem internet: fica travado, sem quebrar", async () => {
+test("check-in recusado e sem check-in anterior (QR expirado): fica travado e diz que o QR expirou", async () => {
+  const world = setup({ url: "http://localhost/?checkin=VELHO234" });
+  world.fail.checkinAdd = denied();
+  await settle();
+  assert.equal(world.myRaffleCheckin.has("raffle"), false);
+  assert.equal(world.rootEl.querySelector("[data-raffle-signup-form]"), null);
+  assert.match(textOf(world.rootEl), /Esse QR expirou/);
+  assert.match(textOf(world.rootEl), /Escaneie de novo o QR que está no telão/);
+});
+
+test("check-in sem internet: fica travado, avisa da conexão, sem quebrar", async () => {
   const world = setup({ url: "http://localhost/?checkin=1" });
   world.fail.checkinAdd = Object.assign(new Error("offline"), { code: "unavailable" });
   await settle();
   assert.equal(world.myRaffleCheckin.has("raffle"), false);
-  assert.match(textOf(world.rootEl), /Cadastro só durante o evento/);
+  assert.match(textOf(world.rootEl), /Sem conexão agora/);
 });
 
 test("já cadastrado neste navegador: mostra a confirmação direto, sem formulário", () => {

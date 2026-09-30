@@ -10,11 +10,21 @@ function raffleSignupExplainerMarkup() {
   </div>`;
 }
 
-function raffleSignupLockedMarkup() {
+/** Por que o check-in não passou ("expired" = o QR já virou; "offline" = sem conexão): a pessoa sabe o que fazer. */
+const RAFFLE_LOCKED_NOTICES = {
+  expired: () => ({ title: t("raffle.expiredTitle", "Esse QR expirou"), hint: t("raffle.expiredHint", "O QR do sorteio muda a cada minuto. Escaneie de novo o QR que está no telão.") }),
+  offline: () => ({ title: t("raffle.offlineTitle", "Sem conexão agora"), hint: t("raffle.offlineHint", "Confira a internet e escaneie o QR do sorteio de novo.") }),
+};
+
+function raffleSignupLockedMarkup({ notice = "" } = {}) {
+  const { title, hint } = RAFFLE_LOCKED_NOTICES[notice]?.() ?? {
+    title: t("raffle.lockedTitle", "Cadastro só durante o evento"),
+    hint: t("raffle.lockedHint", "Escaneie o QR do sorteio, mostrado pela organização no DevFest, pra liberar o cadastro."),
+  };
   return `<div class="raffle-form raffle-locked">
     <div class="raffle-done-icon">${iconMarkup("shield")}</div>
-    <p class="raffle-done-title">${t("raffle.lockedTitle", "Cadastro só durante o evento")}</p>
-    <p class="raffle-done-hint">${t("raffle.lockedHint", "Escaneie o QR do sorteio, mostrado pela organização no DevFest, pra liberar o cadastro.")}</p>
+    <p class="raffle-done-title">${title}</p>
+    <p class="raffle-done-hint">${hint}</p>
   </div>`;
 }
 
@@ -47,7 +57,7 @@ function raffleSignupDoneMarkup() {
 
 const RAFFLE_SIGNUP_MARKUP = { locked: raffleSignupLockedMarkup, done: raffleSignupDoneMarkup };
 
-function raffleSignupMarkup({ phase }) {
-  const body = (RAFFLE_SIGNUP_MARKUP[phase] ?? raffleSignupFormMarkup)();
+function raffleSignupMarkup({ phase, notice = "" }) {
+  const body = (RAFFLE_SIGNUP_MARKUP[phase] ?? raffleSignupFormMarkup)({ notice });
   return `${raffleSignupExplainerMarkup()}<div class="faq-grid raffle-rules" id="raffleRules"></div>${body}`;
 }

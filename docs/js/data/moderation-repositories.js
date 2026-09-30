@@ -33,8 +33,16 @@ const moderationRaffleDrawsRepository = window.createFirestoreRepository({
   edition: CURRENT_EDITION,
 });
 
+/** Código atual do QR do sorteio (`raffle-session/current`): só o moderador lê e grava, a plateia nunca. */
+const moderationRaffleSessionRepository = window.createFirestoreDocumentRepository({
+  db: window.moderatorClient.db,
+  collectionName: "raffle-session",
+  edition: CURRENT_EDITION,
+});
+
 window.moderationQuestionsRepository = moderationQuestionsRepository;
 window.moderationBoardsRepository = moderationBoardsRepository;
 window.moderationVotesRepository = moderationVotesRepository;
 window.moderationRaffleEntriesRepository = moderationRaffleEntriesRepository;
 window.moderationRaffleDrawsRepository = moderationRaffleDrawsRepository;
+window.moderationRaffleSessionRepository = moderationRaffleSessionRepository;

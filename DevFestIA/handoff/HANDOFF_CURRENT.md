@@ -173,6 +173,13 @@ do Sympla como chave, interruptor nas regras e na tela), QR que muda a cada ~60 
 de nomes repetidos (só aviso, sem excluir), testes das regras no emulador (precisa Java 21, autorizado
 `brew install openjdk@21`). Fase 4 (tirar `devOnly`, revisão do inglês, checklist do dia) só quando o Renato mandar.
 
+**FASE 3 EM ANDAMENTO (2026-10-01):** FEITOS: "Ausente, sortear outro" (commit `81e1117`) e QR que muda a cada minuto
+(regras + tela + testes). **As regras do Firestore mudaram: o Renato precisa publicar de novo**
+(`pbcopy < DevFestIA/firebase/firestore.rules`), com o interruptor `raffleRequiresCode()` AINDA em `false` (nada quebra
+pra quem testa em DEV; o check-in novo aceita qualquer código). Antes do evento: virar `// RAFFLE-CODE` para `true`,
+rodar `DevFestIA/tools/questions/run-rules-tests.sh`, publicar. FALTAM: 1 ingresso = 1 cadastro (hash do e-mail do
+Sympla), aviso de nomes repetidos, revisão final. Testes das regras do sorteio no emulador já existem (Java 21 instalado).
+
 **Nome + sobrenome na fatia e escala (2026-10-01):** a fatia mostra nome + último sobrenome. Medido com 1.000 cadastros falsos: custo de tela e de banco OK, mas a roda fica ilegível. Proposta aguardando o Renato: roda com amostra de ~24 nomes (sempre com o sorteado), sorteio sobre a lista inteira, contador ao vivo "N cadastrados". Detalhes em `PROJECT_CONTEXT.md` ("Sorteio").
 
 **Renato testou de novo e achou mais 2 (corrigidos na mesma sessão):**

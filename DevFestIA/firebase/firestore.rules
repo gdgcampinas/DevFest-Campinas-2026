@@ -232,15 +232,50 @@ service cloud.firestore {
     }
 
     // ---- Sorteio ----
+    // INTERRUPTOR DO QR QUE MUDA: false = o check-in do sorteio aceita qualquer `code` (teste em DEV, antes do evento);
+    // true = só com o código atual ou o anterior de `raffle-session/current` (QR que muda a cada ~60 s, mostrado
+    // pela organização no telão). LIGAR (true) ANTES DO EVENTO. A linha do return tem que ficar como está (os testes
+    // trocam o valor).
+    function raffleRequiresCode() {
+      return false; // RAFFLE-CODE
+    }
+
+    // O código do check-in confere com o que o moderador publicou (atual ou anterior, pra quem escaneou na virada).
+    // `get` dentro da regra funciona mesmo com a leitura do documento fechada pra plateia (abaixo).
+    function raffleCodeOk(data) {
+      return !raffleRequiresCode()
+        || ('code' in data && data.code is string
+          && exists(/databases/$(database)/documents/raffle-session/current)
+          && (data.code == get(/databases/$(database)/documents/raffle-session/current).data.code
+            || data.code == get(/databases/$(database)/documents/raffle-session/current).data.get('previous', '')));
+    }
+
+    // Código atual do QR do sorteio: escrito SÓ pelo moderador (features/raffle-draw.js, a cada ~60 s enquanto o QR
+    // está na tela) e NUNCA lido pela plateia: se ela pudesse ler, buscaria o código direto no banco e furaria o QR.
+    match /raffle-session/{docId} {
+      allow get, list: if isModerator();
+      allow create, update: if isModerator() && docId == 'current'
+        && request.resource.data.keys().hasOnly(['edition', 'code', 'previous', 'updatedAt'])
+        && request.resource.data.edition is string && isKnownEdition(request.resource.data.edition)
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.code is string && request.resource.data.code.matches('^[A-Z0-9]{6,32}$')
+        && (!('previous' in request.resource.data)
+          || (request.resource.data.previous is string && request.resource.data.previous.matches('^[A-Z0-9]{6,32}$')));
+      allow delete: if false;
+    }
+
     // Check-in do sorteio: prova de presença, mesma forma dos checkins de palestra, chave sempre "raffle". Só
-    // dá pra fazer com o QR/link que a organização mostra NO evento (`sorteio.html?checkin=1`) — o cadastro
-    // (abaixo) exige esse check-in, então não dá pra se cadastrar antes do evento nem sem estar lá.
+    // dá pra fazer com o QR/link que a organização mostra NO evento (`sorteio.html?checkin=<código>`) — o cadastro
+    // (abaixo) exige esse check-in, então não dá pra se cadastrar antes do evento nem sem estar lá. `code` é
+    // opcional e só confere com o interruptor `raffleRequiresCode()` ligado.
     match /raffle-checkins/{docId} {
       allow get: if isOwnDoc(docId);
       allow list: if false;
       allow create: if isOwnDoc(docId) && idMatchesEntry(docId) && hasValidBaseFields()
         && request.resource.data.entryKey == 'raffle'
-        && request.resource.data.keys().hasOnly(['edition', 'entryKey', 'createdAt']);
+        && request.resource.data.keys().hasOnly(['edition', 'entryKey', 'createdAt', 'code'])
+        && (!('code' in request.resource.data) || (request.resource.data.code is string && request.resource.data.code.size() < 41))
+        && raffleCodeOk(request.resource.data);
       allow update, delete: if false;
     }
 
