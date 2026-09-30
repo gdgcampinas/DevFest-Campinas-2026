@@ -280,7 +280,14 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
 ## Pendências
 
 **A. Só o Renato/organização pode fazer**
-0. **Sorteio (sessão 9/30):** publicar as regras novas do Firestore no console
+0. **Sorteio (2026-10-01): PUBLICAR DE NOVO AS REGRAS DO FIRESTORE JÁ.** O site no ar já manda `status` no sorteio e `code` no
+   check-in, e as regras publicadas antes recusam esses campos (o sorteio real não grava o ganhador e o check-in do
+   sorteio vira "QR expirado"). `pbcopy < DevFestIA/firebase/firestore.rules`, colar em Firestore > Regras > Publicar.
+   Os interruptores `RAFFLE-CODE` e `RAFFLE-TICKET` saem `false`, então nada mais muda pra quem testa. **Antes do evento:**
+   virar os dois pra `true` (e `requireTicket: true` em `data/raffle-config.js`), testar com o e-mail de um ingresso REAL do
+   Sympla, rodar `DevFestIA/tools/questions/run-rules-tests.sh` e publicar. Pendente de OK do Renato: incluir os testes de
+   `DevFestIA/tools/raffle/*.test.js` no passo de testes do `validate.yml` (hoje só rodam local: `node --test DevFestIA/tools/raffle/*.test.js`).
+   (Texto antigo:) publicar as regras novas do Firestore no console
    (`pbcopy < DevFestIA/firebase/firestore.rules`, tem `raffle-entries`/`raffle-draws` juntas com as de
    sempre); decidir quando tirar do `devOnly` e abrir pro público; decidir se troca o som sintetizado por
    um efeito de verdade (grátis, simples, a pedido do Renato) e por qual; decidir quantos prêmios/como
