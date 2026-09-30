@@ -59,7 +59,7 @@ const TEAM = [
   volunteer("Débora Nortes", "https://www.linkedin.com/in/deboranortes", "f", teamPhoto("debora-nortes")),
   // Real (2026-09-29): LinkedIn dele não veio no trecho do grupo (mandou por PV); mantido o da leva anterior, mesma pessoa.
   volunteer("Davi Andrade", "https://www.linkedin.com/in/davi-lima-4695b3211", "m", teamPhoto("davi-andrade"), "Trabalha como ML Engineer na Bosch, treinando modelos de inteligência artificial no dia a dia. Gosta de tecnologia porque sente que está mexendo com o futuro na prática, e é essa curiosidade que o trouxe para ser voluntário no GDG."),
-  volunteer("Mayne Gabriele da Silva", "https://www.linkedin.com/in/mayne-silva-99949428b", "f", teamPhoto("mayne-gabriele-da-silva")),
+  volunteer("Mayne Gabriele da Silva", "https://www.linkedin.com/in/mayne-silva-99949428b", "f", teamPhoto("mayne-gabriele-da-silva"), "Graduanda em ADS na FATEC, é movida pela curiosidade de entender como as coisas funcionam por trás dos panos, o que a levou a mergulhar em desenvolvimento e segurança de IA. Da pesquisa acadêmica ao voluntariado em eventos tech, está sempre pronta para se conectar com a comunidade e construir coisas novas."),
   volunteer("Gustavo Costa", "https://www.linkedin.com/in/guscosta7", "m", teamPhoto("gustavo-costa")),
   volunteer("Vânia Gomes Marinelli", "https://www.linkedin.com/in/vania-marinelli", "f", teamPhoto("vania-gomes-marinelli")),
   volunteer("Leonardo Araújo", "https://www.linkedin.com/in/leonardo-am", "m", teamPhoto("leonardo-araujo")),
