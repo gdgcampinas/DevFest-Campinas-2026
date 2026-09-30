@@ -20,6 +20,11 @@ function createFirestoreRepository({ db, collectionName, edition }) {
   const docId = (uid, entryKey) => `${uid}_${entryKey}`;
   /** Consulta desta edição por igualdade ({campo: valor}); um valor em array vira "in" (até 30 itens). */
   const filteredQuery = filters => query(col(), where("edition", "==", edition), ...Object.entries(filters).map(([field, value]) => (Array.isArray(value) ? where(field, "in", value) : where(field, "==", value))));
+  async function addWithId(id, data) {
+    const ref = doc(col(), id);
+    await setDoc(ref, { ...data, edition, createdAt: serverTimestamp() });
+    return ref.id;
+  }
   /** Documento do Firestore no formato do site: { id, ...dados, createdAtMs }. */
   const toItem = snapshot => ({ id: snapshot.id, ...snapshot.data(), createdAtMs: snapshot.data().createdAt?.toMillis?.() ?? 0 });
 
@@ -30,10 +35,11 @@ function createFirestoreRepository({ db, collectionName, edition }) {
      * chama trata isso como "já registrado", não como erro de rede).
      */
     async add(uid, entryKey, data) {
-      const ref = doc(col(), docId(uid, entryKey));
-      await setDoc(ref, { ...data, edition, createdAt: serverTimestamp() });
-      return ref.id;
+      return addWithId(docId(uid, entryKey), data);
     },
+    /** Igual a `add`, mas com o id do documento escolhido por quem chama (ex.: o cadastro do sorteio por INGRESSO usa a
+     * chave da inscrição, não o uid). Mesma garantia: se já existe, a regra de segurança recusa e a promise rejeita. */
+    addWithId,
     /** Se a pessoa já tem registro pra essa chave. */
     async has(uid, entryKey) {
       const snap = await getDoc(doc(col(), docId(uid, entryKey)));

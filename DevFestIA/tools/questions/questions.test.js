@@ -103,6 +103,16 @@ test("config x regras: a trava de horário está igual na tela (enforceWindow) e
   assert.equal(config().enforceWindow, rulesValue, "ligue/desligue a trava nos dois lugares: data/talk-questions.js e firestore.rules");
 });
 
+test("config x regras: 1 ingresso = 1 cadastro está igual na tela (requireTicket) e nas regras (raffleRequiresTicket)", () => {
+  const rulesValue = rules.match(/function raffleRequiresTicket\(\) \{\s*return (true|false); \/\/ RAFFLE-TICKET/)[1] === "true";
+  const { RAFFLE_CONFIG } = vm.runInNewContext(`${readFile("docs/js/data/repository.js")}\n${readFile("docs/js/data/raffle-config.js")}\n({ RAFFLE_CONFIG })`);
+  assert.equal(RAFFLE_CONFIG.requireTicket, rulesValue, "ligue/desligue nos dois lugares: data/raffle-config.js e firestore.rules");
+});
+
+test("regras: os interruptores do sorteio existem com a linha que os testes e o runner trocam", () => {
+  ["RAFFLE-CODE", "RAFFLE-TICKET"].forEach(marker => assert.match(rules, new RegExp(`return (true|false); // ${marker}`), `falta a linha "return ...; // ${marker}" nas regras`));
+});
+
 test("config x regras: a duração da palestra nas regras é a da grade (schedule-builder.js)", () => {
   const rulesMinutes = Number(rules.match(/function talkDurationMinutes\(\) \{\s*return (\d+);/)[1]);
   const gridMinutes = Number(readFile("docs/js/data/schedule-builder.js").match(/talkMin = (\d+)/)[1]);

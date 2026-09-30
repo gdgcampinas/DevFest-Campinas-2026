@@ -24,14 +24,20 @@ else
 fi
 rm -rf "$TMP"
 
-# Interruptores do sorteio (QR que muda): cópia temporária das regras com o valor trocado, só o arquivo do sorteio.
-raffle() { # $1 = RAFFLE-CODE on|off
+# Interruptores do sorteio (QR que muda e 1 ingresso = 1 cadastro): cópia temporária das regras com os valores
+# trocados, só o arquivo de testes do sorteio. Rodam os 3 cenários de ligado.
+raffle() { # $1 = RAFFLE-CODE on|off, $2 = RAFFLE-TICKET on|off
   local dir; dir="$(mktemp -d)"
+  local code=false ticket=false
+  [ "$1" = on ] && code=true
+  [ "$2" = on ] && ticket=true
   cp DevFestIA/firebase/firebase.json "$dir/firebase.json"
-  sed "s#return false; // RAFFLE-CODE#return $([ "$1" = on ] && echo true || echo false); // RAFFLE-CODE#" DevFestIA/firebase/firestore.rules > "$dir/firestore.rules"
-  echo "== regras do sorteio: QR que muda $1 =="
-  RULES_RAFFLE_CODE="$1" firebase emulators:exec --only firestore --project demo-devfest --config "$dir/firebase.json" \
+  sed -e "s#return false; // RAFFLE-CODE#return $code; // RAFFLE-CODE#" -e "s#return false; // RAFFLE-TICKET#return $ticket; // RAFFLE-TICKET#" DevFestIA/firebase/firestore.rules > "$dir/firestore.rules"
+  echo "== regras do sorteio: QR que muda $1, 1 ingresso = 1 cadastro $2 =="
+  RULES_RAFFLE_CODE="$1" RULES_RAFFLE_TICKET="$2" firebase emulators:exec --only firestore --project demo-devfest --config "$dir/firebase.json" \
     "node --test DevFestIA/tools/questions/raffle-rules.test.js"
   rm -rf "$dir"
 }
-raffle on
+raffle on off
+raffle off on
+raffle on on

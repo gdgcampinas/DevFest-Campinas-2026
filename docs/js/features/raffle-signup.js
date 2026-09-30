@@ -13,7 +13,13 @@
  */
 const RAFFLE_ENTRY_KEY = "raffle";
 
-function initRaffleSignup(rootEl, { myRaffle, myRaffleCheckin, whenReady = runAfterModules }) {
+/**
+ * `requireTicket` (data/raffle-config.js, espelho de `raffleRequiresTicket()` nas regras): pede o e-mail do ingresso do
+ * Sympla e cadastra UM por ingresso: o id do cadastro é a chave da inscrição (email-hash.js, a mesma do cartão
+ * "Eu vou!"), então o mesmo e-mail em 2 aparelhos cai no mesmo documento e o banco recusa o segundo.
+ *   registrations  repository de consulta das inscrições (`get(chave)`); toKey(edition, email) = registrationKey.
+ */
+function initRaffleSignup(rootEl, { myRaffle, myRaffleCheckin, requireTicket = false, registrations = () => window.registrationsRepository, toKey = registrationKey, edition = CURRENT_EDITION, rules = raffleRulesRepository.getAll(), whenReady = runAfterModules }) {
   const phaseNow = () => {
     if (myRaffle.has(RAFFLE_ENTRY_KEY)) return "done";
     return myRaffleCheckin.has(RAFFLE_ENTRY_KEY) ? "signup" : "locked";
@@ -22,8 +28,8 @@ function initRaffleSignup(rootEl, { myRaffle, myRaffleCheckin, whenReady = runAf
   function render(containerEl, notice = "") {
     if (!containerEl) return;
     containerEl.dataset.raffleSignupContainer = "";
-    containerEl.innerHTML = raffleSignupMarkup({ phase: phaseNow(), notice });
-    renderInfoCards(raffleRulesRepository.getAll().map(rule => ({ ...rule, id: rule.title, icon: iconMarkup(rule.icon) })), document.getElementById("raffleRules"));
+    containerEl.innerHTML = raffleSignupMarkup({ phase: phaseNow(), notice, requireTicket });
+    renderInfoCards(rules.filter(rule => requireTicket || !rule.requiresTicket).map(rule => ({ ...rule, id: rule.title, icon: iconMarkup(rule.icon) })), document.getElementById("raffleRules"));
   }
 
   /** Grava o check-in do sorteio com o código do QR. "permission-denied" tem duas causas: o check-in já existia
@@ -62,17 +68,30 @@ function initRaffleSignup(rootEl, { myRaffle, myRaffleCheckin, whenReady = runAf
     const consent = formEl.querySelector("[name=consent]").checked;
     if (!firstName || !lastName) return showFormError(formEl, submitBtn, t("raffle.nameRequired", "Preencha nome e sobrenome pra participar."));
     if (!consent) return showFormError(formEl, submitBtn, t("raffle.consentRequired", "Marque a autorização pra participar do sorteio."));
+    const email = requireTicket ? text("email") : "";
+    if (requireTicket && !email) return showFormError(formEl, submitBtn, t("raffle.emailRequired", "Digite o e-mail do seu ingresso pra participar."));
     submitBtn.disabled = true;
     try {
-      const uid = await window.firebaseClient.ensureAnonymousUid();
-      await window.raffleEntriesRepository.add(uid, RAFFLE_ENTRY_KEY, { entryKey: RAFFLE_ENTRY_KEY, firstName, lastName });
+      const data = { entryKey: RAFFLE_ENTRY_KEY, firstName, lastName };
+      if (requireTicket) {
+        const key = await toKey(edition, email);
+        if (!(await registrations().get(key))) {
+          submitBtn.disabled = false;
+          return showFormError(formEl, submitBtn, t("raffle.ticketNotFound", "Não encontramos inscrição com esse e-mail. Se você acabou de se inscrever, aguarde até 10 minutos e tente de novo."));
+        }
+        await window.raffleEntriesRepository.addWithId(key, data);
+      } else {
+        const uid = await window.firebaseClient.ensureAnonymousUid();
+        await window.raffleEntriesRepository.add(uid, RAFFLE_ENTRY_KEY, data);
+      }
       myRaffle.addAll([RAFFLE_ENTRY_KEY]);
       render(container);
     } catch (error) {
-      // "permission-denied" aqui é a regra recusando um 2º cadastro (já existia): trata como sucesso, não erro.
+      // "permission-denied" aqui é a regra recusando um 2º cadastro (já existia): trata como participando, não como erro.
+      // Com o ingresso, a inscrição já foi conferida acima, então o motivo só pode ser esse ingresso já estar cadastrado.
       if (error.code === "permission-denied") {
         myRaffle.addAll([RAFFLE_ENTRY_KEY]);
-        render(container);
+        render(container, requireTicket ? "ticket-already" : "");
         return;
       }
       submitBtn.disabled = false;

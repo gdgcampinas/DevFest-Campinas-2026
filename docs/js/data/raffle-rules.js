@@ -16,6 +16,13 @@ const RAFFLE_RULES = [
     body: "Escaneie o QR do sorteio no evento pra liberar o cadastro.",
   },
   {
+    trackColor: "var(--google-yellow)",
+    icon: "check",
+    title: "Um ingresso, um cadastro",
+    body: "Só quem tem ingresso concorre, e cada ingresso vale uma vez, mesmo com dois celulares.",
+    requiresTicket: true, // só aparece quando o cadastro exige o ingresso (data/raffle-config.js)
+  },
+  {
     trackColor: "var(--google-green)",
     icon: "users",
     title: "Só quem está na sala",

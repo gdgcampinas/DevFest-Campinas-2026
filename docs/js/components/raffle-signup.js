@@ -28,7 +28,16 @@ function raffleSignupLockedMarkup({ notice = "" } = {}) {
   </div>`;
 }
 
-function raffleSignupFormMarkup() {
+/** Campo do e-mail do ingresso (só com `requireTicket`): o site só guarda o código criptografado dele, nunca o e-mail. */
+function raffleTicketFieldMarkup() {
+  return `<div class="raffle-field">
+      <label for="raffleEmail">${t("raffle.ticketEmail", "E-mail do ingresso")}</label>
+      <input id="raffleEmail" class="feedback-input" type="email" name="email" placeholder="${t("raffle.ticketEmailPlaceholder", "O e-mail da inscrição no Sympla")}" autocomplete="email" required>
+      <span class="raffle-field-hint">${t("raffle.ticketHint", "Só quem tem ingresso concorre, um cadastro por ingresso. Não guardamos o seu e-mail.")}</span>
+    </div>`;
+}
+
+function raffleSignupFormMarkup({ requireTicket = false } = {}) {
   return `<form class="raffle-form" data-raffle-signup-form>
     <h2 class="raffle-form-title">${t("raffle.formTitle", "Cadastre seu nome")}</h2>
     <div class="raffle-field">
@@ -39,6 +48,7 @@ function raffleSignupFormMarkup() {
       <label for="raffleLastName">${t("raffle.lastName", "Sobrenome")}</label>
       <input id="raffleLastName" class="feedback-input" type="text" name="lastName" placeholder="${t("raffle.lastNamePlaceholder", "Seu sobrenome")}" maxlength="79" autocomplete="family-name" required>
     </div>
+    ${requireTicket ? raffleTicketFieldMarkup() : ""}
     <label class="raffle-consent">
       <input type="checkbox" name="consent" required>
       <span>${t("raffle.consent", "Autorizo meu nome a ser sorteado e exibido na tela do evento durante o sorteio.")}</span>
@@ -47,17 +57,18 @@ function raffleSignupFormMarkup() {
   </form>`;
 }
 
-function raffleSignupDoneMarkup() {
+/** `notice` "ticket-already": esse ingresso já estava cadastrado (em outro aparelho, por ex.): a pessoa continua participando. */
+function raffleSignupDoneMarkup({ notice = "" } = {}) {
   return `<div class="raffle-done">
     <div class="raffle-done-icon">${iconMarkup("check")}</div>
     <p class="raffle-done-title">${t("raffle.doneTitle", "Você está participando!")}</p>
-    <p class="raffle-done-hint">${t("raffle.doneHint", "Fique de olho na hora do sorteio, no encerramento.")}</p>
+    <p class="raffle-done-hint">${notice === "ticket-already" ? t("raffle.ticketAlready", "Esse ingresso já estava cadastrado no sorteio, talvez em outro aparelho. Cada ingresso concorre uma vez.") : t("raffle.doneHint", "Fique de olho na hora do sorteio, no encerramento.")}</p>
   </div>`;
 }
 
 const RAFFLE_SIGNUP_MARKUP = { locked: raffleSignupLockedMarkup, done: raffleSignupDoneMarkup };
 
-function raffleSignupMarkup({ phase, notice = "" }) {
-  const body = (RAFFLE_SIGNUP_MARKUP[phase] ?? raffleSignupFormMarkup)({ notice });
+function raffleSignupMarkup({ phase, notice = "", requireTicket = false }) {
+  const body = (RAFFLE_SIGNUP_MARKUP[phase] ?? raffleSignupFormMarkup)({ notice, requireTicket });
   return `${raffleSignupExplainerMarkup()}<div class="faq-grid raffle-rules" id="raffleRules"></div>${body}`;
 }

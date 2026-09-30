@@ -9,7 +9,7 @@ function initSorteio() {
   renderOrConstruction(reveal, document.getElementById("raffleSection"),
     () => {
       const signupEl = document.getElementById("raffleSignup");
-      const { render } = initRaffleSignup(signupEl, { myRaffle: myRaffleRepository, myRaffleCheckin: myRaffleCheckinRepository });
+      const { render } = initRaffleSignup(signupEl, { myRaffle: myRaffleRepository, myRaffleCheckin: myRaffleCheckinRepository, requireTicket: raffleConfigRepository.getAll().requireTicket });
       render(signupEl);
       initRaffleDraw(document.getElementById("raffleMod"), { devSeed: reveal ? buildRaffleDevSeed(teamRepository.getAll()) : [], startInTelao: Boolean(getParam("telao")) });
     },

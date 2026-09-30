@@ -240,6 +240,24 @@ service cloud.firestore {
       return false; // RAFFLE-CODE
     }
 
+    // INTERRUPTOR "1 INGRESSO = 1 CADASTRO": false = o cadastro no sorteio é um por aparelho (id "<uid>_raffle"), sem
+    // exigir ingresso (teste em DEV, antes de haver inscritos); true = um por INGRESSO: o id do cadastro é a chave da
+    // inscrição (`registrations/<edição>_<sha256 do e-mail>`, a mesma do cartão "Eu vou!") e ela precisa existir, então
+    // 2 celulares (ou 2 contas) com o mesmo e-mail caem no mesmo documento e o segundo é recusado. ESPELHAR `requireTicket`
+    // de docs/js/data/raffle-config.js (um teste confere). A linha do return tem que ficar como está.
+    function raffleRequiresTicket() {
+      return false; // RAFFLE-TICKET
+    }
+
+    function raffleEntryIdOk(docId) {
+      return raffleRequiresTicket()
+        ? (request.auth != null
+          && docId.matches('^[0-9]{4}_[0-9a-f]{64}$')
+          && docId[0:4] == request.resource.data.edition
+          && exists(/databases/$(database)/documents/registrations/$(docId)))
+        : (isOwnDoc(docId) && idMatchesEntry(docId));
+    }
+
     // O código do check-in confere com o que o moderador publicou (atual ou anterior, pra quem escaneou na virada).
     // `get` dentro da regra funciona mesmo com a leitura do documento fechada pra plateia (abaixo).
     function raffleCodeOk(data) {
@@ -279,13 +297,13 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
-    // Cadastro no sorteio: um registro por pessoa, chave sempre "raffle" (features/raffle-signup.js). Nome e
-    // sobrenome obrigatórios, e só quem já tem o check-in do sorteio (acima). Ninguém lista (nem o dono lê a
+    // Cadastro no sorteio: um registro por pessoa (ou por ingresso, com o interruptor ligado), chave sempre "raffle"
+    // (features/raffle-signup.js). Nome e sobrenome obrigatórios, e só quem já tem o check-in do sorteio (acima). Ninguém lista (nem o dono lê a
     // lista de outras pessoas) exceto o moderador, que precisa da lista completa pra girar a roleta.
     match /raffle-entries/{docId} {
       allow get: if isOwnDoc(docId);
       allow list: if isModerator();
-      allow create: if isOwnDoc(docId) && idMatchesEntry(docId) && hasValidBaseFields()
+      allow create: if raffleEntryIdOk(docId) && hasValidBaseFields()
         && request.resource.data.entryKey == 'raffle'
         && request.resource.data.keys().hasOnly(['edition', 'entryKey', 'createdAt', 'firstName', 'lastName'])
         && requiredText(request.resource.data, 'firstName', 60)

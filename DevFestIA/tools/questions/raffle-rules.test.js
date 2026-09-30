@@ -16,6 +16,8 @@ const raffleCheckin = (who, extra = {}) => createDoc(who, "raffle-checkins", `${
 const raffleEntry = (who, extra = {}, docId = `${who.uid}_raffle`) => createDoc(who, "raffle-entries", docId, { ...base, entryKey: "raffle", firstName: "Ana", lastName: "Souza", ...extra });
 /** O moderador publica o código do QR (atual e, se houver, o anterior): `updatedAt` é o horário do servidor. */
 const publishCode = (who, code, previous) => createDoc(who, "raffle-session", "current", { edition: "2026", code, ...(previous ? { previous } : {}) }, { stamp: "updatedAt" });
+const onlyTicketOn = skip || (ticketOn ? false : "só vale com o interruptor do ingresso ligado");
+const onlyTicketOff = skip || (ticketOn ? "só vale com o interruptor do ingresso desligado" : false);
 const onlyCodeOn = skip || (codeOn ? false : "só vale com o interruptor do QR que muda ligado");
 const draw = (who, entryId, extra = {}) => createDoc(who, "raffle-draws", `${entryId}_draw`, { ...base, entryKey: "draw", entryId, name: "Ana Souza", prize: 1, status: "winner", ...extra });
 
@@ -179,11 +181,88 @@ test("check-in do sorteio com o QR que muda: a mesma pessoa não faz o check-in 
   allowed(await getDoc(who, "raffle-checkins", `${who.uid}_raffle`)); // e ela consegue ver que já tem (a tela usa isso)
 });
 
-test("cadastro com o QR que muda: o check-in com código válido libera o cadastro", { skip: onlyCodeOn }, async () => {
+test("cadastro com o QR que muda: o check-in com código válido libera o cadastro", { skip: onlyCodeOn || (ticketOn ? "com o ingresso ligado o cadastro usa a chave da inscrição (testado abaixo)" : false) }, async () => {
   const mod = moderator();
   allowed(await publishCode(mod, "LIBERA234"));
   const who = person();
   denied(await raffleEntry(who));
   allowed(await raffleCheckin(who, { code: "LIBERA234" }));
   allowed(await raffleEntry(who));
+});
+
+// ---------- 1 ingresso = 1 cadastro ----------
+const ticketKey = letter => `2026_${letter.repeat(64)}`;
+/** Inscrição do Sympla (gravada pelo job, que ignora as regras): o cadastro por ingresso exige que ela exista. */
+async function registration(id) {
+  allowed(await seed("registrations", id, { edition: "2026", ticketName: "Grátis" }));
+  return id;
+}
+/** Check-in do sorteio da pessoa, já com o código do QR quando esse interruptor também está ligado. */
+async function checkedIn(who) {
+  if (!codeOn) return allowed(await raffleCheckin(who));
+  allowed(await publishCode(moderator(), "INGRESSO234"));
+  return allowed(await raffleCheckin(who, { code: "INGRESSO234" }));
+}
+
+test("ingresso desligado: cadastro com a chave de inscrição como id é recusado (vale o <uid>_raffle)", { skip: onlyTicketOff }, async () => {
+  const who = person();
+  await checkedIn(who);
+  const id = await registration(ticketKey("a"));
+  denied(await raffleEntry(who, {}, id));
+  allowed(await raffleEntry(who));
+});
+
+test("ingresso ligado: cadastro com a chave de uma inscrição existente é aceito", { skip: onlyTicketOn }, async () => {
+  const who = person();
+  await checkedIn(who);
+  const id = await registration(ticketKey("b"));
+  allowed(await raffleEntry(who, {}, id));
+});
+
+test("ingresso ligado: 2º celular com o mesmo e-mail (mesma chave) é recusado, outro ingresso passa", { skip: onlyTicketOn }, async () => {
+  const first = person();
+  const second = person();
+  const other = person();
+  await checkedIn(first);
+  await checkedIn(second);
+  await checkedIn(other);
+  const id = await registration(ticketKey("c"));
+  const otherId = await registration(ticketKey("d"));
+  allowed(await raffleEntry(first, {}, id));
+  denied(await raffleEntry(second, { firstName: "Bia" }, id)); // mesma inscrição em outro aparelho
+  denied(await raffleEntry(first, { lastName: "Outro" }, id)); // e o mesmo aparelho também não repete
+  allowed(await raffleEntry(other, { firstName: "Caio" }, otherId));
+});
+
+test("ingresso ligado: sem inscrição, id fora do formato, edição trocada ou id <uid>_raffle são recusados", { skip: onlyTicketOn }, async () => {
+  const who = person();
+  await checkedIn(who);
+  denied(await raffleEntry(who, {}, ticketKey("e"))); // a inscrição não existe
+  const real = await registration(ticketKey("f"));
+  denied(await raffleEntry(who, {}, `${who.uid}_raffle`)); // o id antigo não vale mais
+  denied(await raffleEntry(who, {}, real.toUpperCase().replace("2026_", "2026_"))); // hexadecimal maiúsculo
+  denied(await raffleEntry(who, {}, `2026_${"f".repeat(63)}`)); // curto
+  denied(await raffleEntry(who, {}, `2026_${"g".repeat(64)}`)); // não é hexadecimal
+  const other = await registration(`2025_${"f".repeat(64)}`);
+  denied(await raffleEntry(who, {}, other)); // a edição do id (2025) não é a do cadastro (2026)
+  allowed(await raffleEntry(who, {}, real));
+});
+
+test("ingresso ligado: sem o check-in do sorteio o cadastro é recusado, mesmo com inscrição", { skip: onlyTicketOn }, async () => {
+  const who = person();
+  const id = await registration(ticketKey("1"));
+  denied(await raffleEntry(who, {}, id));
+  await checkedIn(who);
+  allowed(await raffleEntry(who, {}, id));
+});
+
+test("ingresso ligado: sem login é recusado; o moderador lista e sorteia cadastros por ingresso", { skip: onlyTicketOn }, async () => {
+  const who = person();
+  await checkedIn(who);
+  const id = await registration(ticketKey("2"));
+  denied(await createDoc(null, "raffle-entries", id, { ...base, entryKey: "raffle", firstName: "Ana", lastName: "Souza" }));
+  allowed(await raffleEntry(who, {}, id));
+  const mod = moderator();
+  allowed(await query(mod, "raffle-entries", { edition: "2026" }));
+  allowed(await draw(mod, id)); // o id do cadastro tem 69 caracteres e entra no id do sorteio
 });
