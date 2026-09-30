@@ -49,6 +49,7 @@ const TEAM = [
     bio: "Desenvolvedor de software com mais de 15 anos de experiência em soluções cross-platform (Mobile e Web), atuando tanto no back-end quanto no front-end. Especialista em aplicações mobile para Android e iOS, além de aplicações web baseadas em padrões modernos, integrando bases de dados locais e remotas em soluções robustas e escaláveis.\n\nApaixonado por tecnologias de ponta e por código simples e legível. Nas horas vagas, é músico (guitarra e violoncelo) e organizador do GDG Campinas.",
   }),
   organizer("Bianca Issa", {
+    linkedin: "https://www.linkedin.com/in/bianca-issa/",
     photo: teamPhoto("bianca-issa"),
     bio: "Atuando com testes de qualidade de software e com forte veia em networking, sou organizadora do Google Developer Group (GDG) e apaixonada por conectar pessoas e tecnologia. Uno a prática de QA à gestão e ao desenvolvimento de software para criar experiências que fomentam a inovação e a melhoria contínua nas organizações.",
   }),
