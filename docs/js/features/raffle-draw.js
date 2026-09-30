@@ -259,6 +259,7 @@ function initRaffleDraw(rootEl, {
       newArrivalIds,
       drawnList,
       prizesGiven: drawnList.filter(item => !isAbsent(item)).length,
+      repeatedNames: findRepeatedNames(livePool),
       spinning,
       winner,
       winnerPrize,

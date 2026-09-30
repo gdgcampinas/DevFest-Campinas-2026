@@ -4,7 +4,7 @@
  */
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { RAFFLE_WHEEL_MAX_SLICES, raffleDisplayName, recentArrivals, idleWheelEntries, pickRaffleWinner, buildSpinWheel } = require("../../../docs/js/features/raffle-pool.js");
+const { RAFFLE_WHEEL_MAX_SLICES, raffleDisplayName, findRepeatedNames, recentArrivals, idleWheelEntries, pickRaffleWinner, buildSpinWheel } = require("../../../docs/js/features/raffle-pool.js");
 
 const person = (n, createdAtMs = n) => ({ id: `u${n}_raffle`, firstName: `P${n}`, lastName: `S${n}`, createdAtMs });
 const crowd = size => Array.from({ length: size }, (_, i) => person(i + 1));
@@ -71,4 +71,30 @@ test("giro: não altera a lista original", () => {
   const before = pool.map(e => e.id).join();
   buildSpinWheel(pool, pool[5]);
   assert.equal(pool.map(e => e.id).join(), before);
+});
+
+test("nomes repetidos: ignora acento, maiúscula e espaços; conta e ordena pelos mais repetidos", () => {
+  const entries = [
+    { id: "1", firstName: "José", lastName: "da Silva" },
+    { id: "2", firstName: "jose", lastName: "DA  silva " },
+    { id: "3", firstName: "Jose", lastName: "da Silva" },
+    { id: "4", firstName: "Ana", lastName: "Souza" },
+    { id: "5", firstName: "ANA", lastName: "souza" },
+    { id: "6", firstName: "Bruno", lastName: "Lima" },
+  ];
+  assert.deepEqual(findRepeatedNames(entries), [{ name: "José da Silva", count: 3 }, { name: "Ana Souza", count: 2 }]);
+});
+
+test("nomes repetidos: sem repetição devolve lista vazia, e nome vazio não conta", () => {
+  assert.deepEqual(findRepeatedNames(crowd(50)), []);
+  assert.deepEqual(findRepeatedNames([{ id: "a", firstName: "", lastName: "" }, { id: "b", firstName: "", lastName: "" }]), []);
+});
+
+test("nomes repetidos: não altera a lista e lida com 1.000 pessoas rápido", () => {
+  const entries = crowd(1000);
+  const before = entries.map(e => e.id).join();
+  const started = Date.now();
+  findRepeatedNames(entries);
+  assert.ok(Date.now() - started < 200);
+  assert.equal(entries.map(e => e.id).join(), before);
 });

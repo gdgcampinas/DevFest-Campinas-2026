@@ -18,6 +18,28 @@ function raffleDisplayName(person) {
   return [person.firstName, surname].filter(Boolean).join(" ");
 }
 
+/** Nome comparável: sem acento, sem maiúscula, espaços únicos ("  José  da SILVA " e "Jose da Silva" são o mesmo). */
+function normalizeRaffleName(person) {
+  return `${person.firstName ?? ""} ${person.lastName ?? ""}`
+    .normalize("NFD").replace(/\p{M}/gu, "")
+    .toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+/** Nomes que aparecem mais de uma vez na lista ({ name, count }, os mais repetidos primeiro). É só um AVISO pro moderador
+ * conferir o ingresso no palco: não tira ninguém da roleta, porque homônimos de verdade existem (2 "João Silva"), e com
+ * "1 ingresso = 1 cadastro" cada um é uma pessoa. `name` é o nome como a primeira pessoa escreveu. */
+function findRepeatedNames(entries) {
+  const groups = new Map();
+  for (const entry of entries) {
+    const key = normalizeRaffleName(entry);
+    if (!key) continue;
+    const group = groups.get(key) ?? { name: `${entry.firstName} ${entry.lastName}`.trim(), count: 0 };
+    group.count += 1;
+    groups.set(key, group);
+  }
+  return [...groups.values()].filter(group => group.count > 1).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+}
+
 /** Cópia ordenada pela chegada (mais antigo primeiro). Quem ainda não tem horário (`createdAtMs` 0, o servidor
  * ainda não confirmou) fica no fim, na ordem em que veio. */
 function byArrival(entries) {
@@ -62,4 +84,4 @@ function buildSpinWheel(pool, winner, max = RAFFLE_WHEEL_MAX_SLICES, random = Ma
   return { entries, winnerIndex };
 }
 
-if (typeof module !== "undefined") module.exports = { RAFFLE_WHEEL_MAX_SLICES, RAFFLE_ARRIVALS_SHOWN, raffleDisplayName, recentArrivals, idleWheelEntries, pickRaffleWinner, buildSpinWheel };
+if (typeof module !== "undefined") module.exports = { RAFFLE_WHEEL_MAX_SLICES, RAFFLE_ARRIVALS_SHOWN, raffleDisplayName, normalizeRaffleName, findRepeatedNames, recentArrivals, idleWheelEntries, pickRaffleWinner, buildSpinWheel };

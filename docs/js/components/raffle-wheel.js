@@ -72,7 +72,7 @@ function raffleTelaoToggleMarkup(telao) {
   return `<button type="button" class="chip-btn raffle-telao-toggle" data-raffle-telao-toggle>${telao ? t("raffle.telaoExit", "Sair do modo telão") : t("raffle.telaoEnter", "Modo telão")}</button>`;
 }
 
-function raffleWheelReadyMarkup({ email, remaining, remainingCount, poolCount, drawnList, prizesGiven, arrivals, newArrivalIds, spinning, winner, winnerPrize, winnerDrawId, canSpin, loadError, sessionError, usingDevSeed, showQr, telao, wheelDeg }) {
+function raffleWheelReadyMarkup({ email, remaining, remainingCount, poolCount, drawnList, prizesGiven, repeatedNames, arrivals, newArrivalIds, spinning, winner, winnerPrize, winnerDrawId, canSpin, loadError, sessionError, usingDevSeed, showQr, telao, wheelDeg }) {
   const winnerBlock = winner
     ? `<div class="raffle-winner"><span class="raffle-winner-label">${t("raffle.winnerLabel", "Ganhador do prêmio {n}", { n: winnerPrize })}</span>
         <span class="raffle-winner-name">${escapeHtml(winner)}</span>
@@ -97,6 +97,7 @@ function raffleWheelReadyMarkup({ email, remaining, remainingCount, poolCount, d
         ${raffleCounterMarkup(poolCount)}
         ${raffleArrivalsMarkup(arrivals, newArrivalIds)}
         ${raffleQrPanelMarkup(showQr, sessionError)}
+        ${raffleRepeatedNamesMarkup(repeatedNames)}
         <p class="raffle-rounds-hint">${t("raffle.roundsHint", "Gira de novo pra cada prêmio, sem repetir quem já ganhou.")}</p>
         <div class="raffle-stats">
           <div class="raffle-stat"><span class="raffle-stat-value">${remainingCount}</span><span class="raffle-stat-label">${t("raffle.remaining", "Na lista")}</span></div>
@@ -110,8 +111,8 @@ function raffleWheelReadyMarkup({ email, remaining, remainingCount, poolCount, d
     </div>`;
 }
 
-function raffleWheelMarkup({ phase, email = "", remaining = [], remainingCount = remaining.length, poolCount = 0, drawnList = [], prizesGiven = drawnList.filter(item => item.status !== "absent").length, arrivals = [], newArrivalIds = new Set(), spinning = false, winner = null, winnerPrize = 0, winnerDrawId = "", canSpin = false, loadError = "", sessionError = "", usingDevSeed = false, showQr = false, telao = false, wheelDeg = 0, message = "" }) {
+function raffleWheelMarkup({ phase, email = "", remaining = [], remainingCount = remaining.length, poolCount = 0, drawnList = [], prizesGiven = drawnList.filter(item => item.status !== "absent").length, repeatedNames = [], arrivals = [], newArrivalIds = new Set(), spinning = false, winner = null, winnerPrize = 0, winnerDrawId = "", canSpin = false, loadError = "", sessionError = "", usingDevSeed = false, showQr = false, telao = false, wheelDeg = 0, message = "" }) {
   const head = `<h2 class="raffle-mod-title">${t("raffle.modTitle", "Área da organização")}</h2>`;
   if (phase === "signin") return `${head}${telao ? raffleTelaoToggleMarkup(true) : ""}${moderatorSignInMarkup({ hint: message || t("raffle.modHint", "Entre com a conta de moderador pra girar a roleta."), signInLabel: t("raffle.modSignin", "Entrar com Google") })}`;
-  return `${head}${raffleWheelReadyMarkup({ email, remaining, remainingCount, poolCount, drawnList, prizesGiven, arrivals, newArrivalIds, spinning, winner, winnerPrize, winnerDrawId, canSpin, loadError, sessionError, usingDevSeed, showQr, telao, wheelDeg })}`;
+  return `${head}${raffleWheelReadyMarkup({ email, remaining, remainingCount, poolCount, drawnList, prizesGiven, repeatedNames, arrivals, newArrivalIds, spinning, winner, winnerPrize, winnerDrawId, canSpin, loadError, sessionError, usingDevSeed, showQr, telao, wheelDeg })}`;
 }

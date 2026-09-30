@@ -178,7 +178,7 @@ de nomes repetidos (só aviso, sem excluir), testes das regras no emulador (prec
 (`pbcopy < DevFestIA/firebase/firestore.rules`), com o interruptor `raffleRequiresCode()` AINDA em `false` (nada quebra
 pra quem testa em DEV; o check-in novo aceita qualquer código). Antes do evento: virar `// RAFFLE-CODE` e `// RAFFLE-TICKET` para `true`
 (este também `requireTicket` em `docs/js/data/raffle-config.js`), rodar `DevFestIA/tools/questions/run-rules-tests.sh`
-(testa os 3 cenários de ligado), testar com o e-mail de um ingresso real e publicar. FALTAM: aviso de nomes repetidos, revisão final. Testes das regras do sorteio no emulador já existem (Java 21 instalado).
+(testa os 3 cenários de ligado), testar com o e-mail de um ingresso real e publicar. Aviso de nomes repetidos também feito. A Fase 3 está completa no código. Testes das regras do sorteio no emulador já existem (Java 21 instalado).
 
 **Nome + sobrenome na fatia e escala (2026-10-01):** a fatia mostra nome + último sobrenome. Medido com 1.000 cadastros falsos: custo de tela e de banco OK, mas a roda fica ilegível. Proposta aguardando o Renato: roda com amostra de ~24 nomes (sempre com o sorteado), sorteio sobre a lista inteira, contador ao vivo "N cadastrados". Detalhes em `PROJECT_CONTEXT.md` ("Sorteio").
 

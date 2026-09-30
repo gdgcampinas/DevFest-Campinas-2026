@@ -1210,6 +1210,7 @@ body:has(.modal:not([hidden])) .feedback-nudge{display:none}
 .raffle-winner-hint{font:500 11.5px var(--font-body);color:var(--muted)}
 .raffle-wheel-hint{margin:0;font:500 12.5px var(--font-body);color:var(--muted);text-align:center;max-width:260px}
 
+.raffle-repeated{margin:0 0 12px;padding:8px 10px;border-radius:10px;font:600 11.5px/1.5 var(--font-body);color:var(--google-yellow);background:color-mix(in oklch, var(--google-yellow) 10%, transparent);border:1px solid color-mix(in oklch, var(--google-yellow) 28%, transparent)}
 .raffle-rounds-hint{margin:0 0 16px;font:500 11.5px/1.5 var(--font-body);color:var(--muted-dim)}
 
 .raffle-stats{display:flex;gap:10px;margin-bottom:16px}
@@ -1251,7 +1252,7 @@ body.raffle-telao-open{overflow:hidden}
   background:radial-gradient(circle at 28% 45%, color-mix(in oklch, var(--google-blue) 11%, var(--bg)), var(--bg) 72%);
   display:flex;flex-direction:column;
 }
-.raffle-telao :where(.raffle-mod-title,.mod-account,.raffle-wheel-hint,.raffle-rounds-hint,.raffle-stats,.raffle-qr-toggle,.raffle-dev-badge){display:none}
+.raffle-telao :where(.raffle-mod-title,.mod-account,.raffle-wheel-hint,.raffle-rounds-hint,.raffle-stats,.raffle-qr-toggle,.raffle-dev-badge,.raffle-repeated){display:none}
 .raffle-telao .raffle-controls{position:absolute;top:1.2vmin;right:1.6vmin;margin:0;z-index:5;opacity:.4;transition:opacity .2s}
 .raffle-telao .raffle-controls:hover,.raffle-telao .raffle-controls:focus-within{opacity:1}
 .raffle-telao .raffle-layout{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,30vw);gap:3vmin;align-items:center}

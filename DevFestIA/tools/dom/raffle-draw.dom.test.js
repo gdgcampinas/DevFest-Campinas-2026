@@ -507,3 +507,25 @@ test("QR do sorteio: o QR carrega o código atual, troca a cada virada e fica ma
   assert.equal(world.qrDraws.at(-1).size, 320);
   assert.match(world.qrDraws.at(-1).text, /\?checkin=CODIGO2X$/, "entrar no telão não troca o código");
 });
+
+// ---------- nomes repetidos ----------
+test("nomes repetidos: avisa o moderador, mas ninguém sai da roleta", async () => {
+  const world = setup({ signedIn: true });
+  world.seedEntry("u1_raffle", "José", "da Silva");
+  world.seedEntry("u2_raffle", "jose", "DA SILVA");
+  world.seedEntry("u3_raffle", "Ana", "Souza");
+  await world.signIn();
+  const notice = textOf(world.rootEl.querySelector(".raffle-repeated"));
+  assert.match(notice, /1 nome repetido na lista: José da Silva \(2\)/);
+  assert.match(notice, /confira o ingresso no palco/);
+  assert.equal(world.rootEl.querySelector(".raffle-counter-value").textContent, "3", "os 3 continuam cadastrados");
+  assert.match(textOf(world.rootEl.querySelector(".raffle-stats")), /3\s*Na lista/, "e os 3 continuam na roleta");
+});
+
+test("nomes repetidos: sem repetição não mostra aviso", async () => {
+  const world = setup({ signedIn: true });
+  world.seedEntry("u1_raffle", "Ana", "Souza");
+  world.seedEntry("u2_raffle", "Bruno", "Lima");
+  await world.signIn();
+  assert.equal(world.rootEl.querySelector(".raffle-repeated"), null);
+});
