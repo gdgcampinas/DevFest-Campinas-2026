@@ -271,7 +271,7 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
 0b. **Dados de time em aberto (sessão 9/30):**
    - **Cargo dos 4 organizadores reais** (Renato Ramos, Bianca Issa, Michel Salomé, Carlos Santos): nenhum tem
      cargo confirmado ainda, o card mostra só o nome.
-   - **LinkedIn de Bianca Issa:** falta (mini-bio e foto entraram em 2026-10-01). (Michel Salomé e Carlos Santos, antes "Carlos H": foto e LinkedIn OK desde 2026-10-01.)
+   - **Organizadores:** foto, LinkedIn e bio OK para os 4 desde 2026-10-01 (Bianca Issa, Michel Salomé e Carlos Santos, antes "Carlos H", entraram nessa data); só falta o cargo.
    - **LinkedIn de Laydianne Naira:** o link colado no grupo veio cortado (`.../in/naira-ferreira-`, sem
      o resto) — confirmar com ela.
    - **LinkedIn de Davi Andrade:** ele mandou por PV no grupo, nunca confirmado aqui; o site usa o link
