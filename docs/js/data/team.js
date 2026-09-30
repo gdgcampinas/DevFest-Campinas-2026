@@ -48,7 +48,9 @@ const TEAM = [
     photo: teamPhoto("renato-ramos"),
     bio: "Desenvolvedor de software com mais de 15 anos de experiência em soluções cross-platform (Mobile e Web), atuando tanto no back-end quanto no front-end. Especialista em aplicações mobile para Android e iOS, além de aplicações web baseadas em padrões modernos, integrando bases de dados locais e remotas em soluções robustas e escaláveis.\n\nApaixonado por tecnologias de ponta e por código simples e legível. Nas horas vagas, é músico (guitarra e violoncelo) e organizador do GDG Campinas.",
   }),
-  organizer("Bianca Issa"),
+  organizer("Bianca Issa", {
+    bio: "Atuando com testes de qualidade de software e com forte veia em networking, sou organizadora do Google Developer Group (GDG) e apaixonada por conectar pessoas e tecnologia. Uno a prática de QA à gestão e ao desenvolvimento de software para criar experiências que fomentam a inovação e a melhoria contínua nas organizações.",
+  }),
   organizer("Michel Salomé", { linkedin: "https://www.linkedin.com/in/michel-luis-salome-de-barros", photo: teamPhoto("michel-salome") }),
   organizer("Carlos Santos", { linkedin: "https://www.linkedin.com/in/santos-h-carlos", photo: teamPhoto("carlos-santos") }),
   // Ordem pedida pelo Renato (2026-09-30): mulher, homem, alternando; os homens que sobrarem vão pro fim.
