@@ -1,7 +1,24 @@
 # Handoff — Current State
 
-**Last updated:** 2026-09-29/30, sessão 9 (contínua, virou longa — recomendado abrir chat novo pra próxima task). Feito desde o marco anterior: banner "Seja patrocinador" em `patrocinio.html`; cards com ícone em "Sobre"/"GDG" na home; trilha renomeada pra "Carreira em Tecnologia"; ordem da home reorganizada (Destaques -> Sobre/GDG -> Trilhas -> Números -> Vídeo -> Fotos -> Depoimentos -> Antes de vir -> teasers de página -> Patrocinadores -> Comunidades -> Realização); teaser "Palestrantes" removido da home; quiz redesenhado (tela inicial e botões de compartilhar do resultado viraram card/botões de verdade, não mais soltos/transparentes); **página Time com gente de verdade**: 4 organizadores reais (Renato Ramos, Bianca Issa, Michel Salomé, Carlos H — só Renato e Michel têm foto/LinkedIn confirmados, ver Pendências) e 18 voluntários reais (nome, LinkedIn próprio, foto de 17 deles em `assets/img/team/`, cargo com gênero certo "Voluntária"/"Voluntário", ordem alternando mulher/homem a pedido do Renato, card com barra azul/verde separando organizador de voluntário); foto do card não corta mais rosto (proporção 4:5, foco no terço de cima); "Quem somos" ganhou card de verdade (tinha ficado sem estilo, bug de sessão anterior corrigido); **travessão ("—") removido de todo texto visível do site** (ficou só em comentário de código, invisível). Ideia "álbum ao vivo" registrada no backlog. **ARMADILHA que mordeu nesta sessão: mudei o CONTEÚDO de `schedule.js` sem subir o `?v=` que ele carrega** (`schedule.js?v=22` continuou em todas as páginas mesmo com o texto novo), então o nome da trilha ficou em cache até o commit seguinte corrigir; aproveitei pra alinhar o `checkin-display.html`, que já estava desalinhado (`?v=18` contra `?v=22` do resto) antes disso. Reforça a regra: TODO arquivo cujo conteúdo mudou precisa do `?v=` subido em TODAS as páginas que o referenciam, sem exceção, e conferir se todas já estavam na mesma versão antes de mexer. Antes de confiar neste texto, rode
-`git status --short --branch` e `git log --oneline --decorate -10` (o git não mente).
+**Last updated:** 2026-09-30, fim da sessão 9 (muito longa — abrir chat novo pra próxima task, use
+`NEW_CHAT_PROMPT.md`). Resumo dos 3 grandes entregáveis (detalhes de cada um mais abaixo, nas seções
+próprias e no `PROJECT_CONTEXT.md`):
+
+1. **Modal de mini-bio no Time:** clicar num card com bio abre "Descubra mais sobre" (foto sangrando até a
+   borda do modal, sem título). 11 de 22 pessoas já têm bio — ver "Pendências A.0b".
+2. **Código de conduta redesenhado:** cards de regra com ícone (cor da marca), bloco "Fale com a gente"
+   (reusa `CONTACT`, dado novo único pra e-mail/redes, usado também no rodapé).
+3. **Aba Sorteio, nova, completa, atrás de `devOnly`:** cadastro público (exige check-in por QR) + roleta
+   do moderador (gira de verdade, nomes nas fatias, som sintetizado, modo por rodadas/único, lista de
+   teste do Time em DEV). Ver seção "Sorteio" abaixo — tem uma pendência real do Renato (publicar as
+   regras do Firestore) antes de funcionar de verdade.
+
+Mais: `.talk-feedback-error` virou `.form-error` (reusado por qualquer formulário, não só palestra); login
+do moderador (Google) extraído pra `features/moderator-login.js`/`components/moderator-login.js`, reusado
+por perguntas e sorteio; bio do Michel Salomé e foto de corpo inteiro recortada; foto do João Estevão
+Camilo recortada (tinha print de tela do celular junto); travessão removido de tudo que sobrou visível.
+Antes de confiar neste texto, rode `git status --short --branch` e `git log --oneline --decorate -20`
+(o git não mente — todos os commits da sessão estão listados lá, com mensagem descritiva cada um).
 
 ## Status em uma olhada
 
@@ -23,7 +40,9 @@
 - **Workflows no GitHub Actions** (com ícone): ✅ Validar, 🚀 Publicar no main, 🎫 Sincronizar Sympla
   (cron 10 min), 📊 Relatório do evento (sob demanda + 30 min em 28/11), 🧹 Limpar dados de teste
   (sob demanda, com travas). Secrets no repositório: `SYMPLA_TOKEN`, `FIREBASE_SERVICE_ACCOUNT`.
-- **Estado do git ao fechar a sessão 7:** `development` = `main` = `origin/*` (tudo commitado e no ar, último commit `1f695e5`). Dados de TESTE ficaram no Firestore de verdade (check-ins, perguntas "TESTE"/"Teste testes"): limpar com o workflow antes do evento.
+- **Estado do git ao fechar a sessão 9:** `development` = `main` = `origin/*` (tudo commitado, no ar, CI
+  verde), último commit `bded67d`. Dados de TESTE ficaram no Firestore de verdade (check-ins, perguntas
+  "TESTE"/"Teste testes"): limpar com o workflow antes do evento.
 
 ## Sessão 7 (2026-09-24/25): o que foi feito
 
@@ -36,7 +55,10 @@
 7. **Trava de horário das perguntas: DESLIGADA de propósito (teste em DEV).** Interruptor em dois lugares que precisam ficar iguais: `windowEnforced()` em `firestore.rules` e `enforceWindow` em `docs/js/data/talk-questions.js` (um teste confere). **LIGAR antes do evento** (checklist C, item 0).
 8. **Task anotada:** área administrativa com login (CRUD de moderadores, palestrantes...), análise em `project-docs/IDEAS_BACKLOG.md` (caminho recomendado: admin grava no Firestore + job exporta JSON; começar por moderadores CRUD).
 
-## PRÓXIMO TRABALHO (decidido com o Renato, fazer nesta ordem, teste primeiro em cada etapa)
+## Sessão 9 (2026-09-30): o que foi feito, detalhado
+
+Os 2 itens abaixo (mini-bio e Sorteio) são o que foi decidido e construído nesta sessão, do começo (plano)
+ao fim (testado, no ar). O que falta em cada um é conteúdo/decisão do Renato, não código — ver "Pendências".
 
 ### 1. Mini-bio dos voluntários/organizadores (2026-09-30) — CÓDIGO PRONTO, FALTAM OS TEXTOS
 **Feito:** campo `bio` opcional em `data/team.js`, card clicável só com bio, modal "Descubra mais sobre" (`components/person-detail.js` + `createPersonModal()` em `features/team.js`), EN pronto, testado no navegador com bio temporária. 11 pessoas já têm bio: Renato Ramos, Ricardo Koiti Matsushita, Davi Andrade, Letícia Fernandes Camargo de Campos, Pedro Escobar Missola, João Estevão Camilo, Paula Santos, Camila Fernanda Ignacio, Mayne Gabriele da Silva, Gustavo Costa e Henrique Ferreira Rodrigues da Silva. **Faltam os outros 11** (1-3 frases por pessoa): é preencher `bio` em `team.js` (5º parâmetro de `volunteer()`, `{ bio }` em `organizer()`), subir `team.js?v=` em `time.html`. Foto do Michel Salomé entrou (recorte do corpo inteiro). Abaixo, o desenho original da task:
@@ -307,7 +329,18 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
   `firebaseLocalStorageDb` + recarregar) e chaves de palestra sem documento.
 - **`prefers-reduced-motion`** está ligado no Browser pane e no iPhone do Renato: a galáxia gira mais
   devagar por config; regra global de styles.css zera outras animações.
-- **Testes de tela (jsdom, sessão 8):** `npm ci --prefix DevFestIA/tools && node --test DevFestIA/tools/dom/*.test.js` (59 casos: perguntas da plateia, moderação, quadro da sala, feedback da palestra e do evento; rodam no CI). Regras do Firestore: `DevFestIA/tools/questions/run-rules-tests.sh` (35 casos, emulador, local).
+- **Testes de tela (jsdom):** `npm ci --prefix DevFestIA/tools && node --test DevFestIA/tools/dom/*.test.js`
+  (83 casos: perguntas da plateia, moderação, quadro da sala, feedback da palestra e do evento, cadastro e
+  roleta do sorteio; rodam no CI). **Um teste da moderação (`só conta votos das aprovadas...`) é
+  conhecidamente instável no CI** (timing, não é do sorteio nem desta sessão) — se o `✅ Validar` falhar só
+  nele, `gh run rerun <id> --failed` costuma passar; não é regressão, não precisa investigar de novo toda
+  vez. Regras do Firestore: `DevFestIA/tools/questions/run-rules-tests.sh` (35 casos, emulador, local; não
+  cobre as coleções do sorteio ainda — gap conhecido, ver `PROJECT_CONTEXT.md` "Sorteio").
+- **Testar o sorteio sem Firebase de verdade** (login/cadastro/roleta): stubar `window.raffleEntriesRepository`,
+  `window.raffleCheckinsRepository`, `window.moderationRaffleEntriesRepository`,
+  `window.moderationRaffleDrawsRepository` e `window.moderatorClient.signInWithGoogle` no console do navegador
+  ANTES de clicar — mesma ideia de sempre, ver exemplos nos testes jsdom (`DevFestIA/tools/dom/raffle-*.dom.test.js`)
+  e no histórico desta sessão. `?checkin=1` na URL simula o QR (faz o check-in e libera o formulário).
 - **Testes automáticos:** `node --test DevFestIA/tools/sympla-sync/sync.test.js DevFestIA/tools/event-report/build-report.test.js DevFestIA/tools/purge-test-data/purge.test.js`
   (rodam no CI; o Node 24 não aceita diretório em `--test`, passe os arquivos). `check-meta.js` e
   `check-install.js` também rodam no CI.
@@ -347,3 +380,15 @@ palestra), tela de QR por sala, PROD esconde todo mock, DEV por `/DEV/` (session
 contador, gate opcional), feedback v2 (Minhas palestras, aviso, QR de avaliação, nome obrigatório,
 regras testadas), relatório v2, limpeza dos dados de teste, workflows com ícone, logo novo aplicado e
 galáxia girando no hero. Tasks anotadas: mural do LED, certificado profissional.
+**Sessões 7-8 (2026-09-24/25 a 09-29):** ver seção "Sessão 7" acima e `PROJECT_CONTEXT.md` ("Perguntas ao
+vivo, moderação e quadro da sala") — quiz, inglês, perguntas ao vivo v2 completas (moderação, quadro da
+sala, leitura barata), logins separados plateia/moderador, emulador local.
+**Sessão 9 (2026-09-29/30, longa):** time com gente real (4 organizadores, 18 voluntários, fotos, ordem
+alternada); **modal de mini-bio** (Descubra mais sobre, foto sangrando até a borda, 11/22 pessoas com
+texto); **Código de conduta redesenhado** (cards de regra, `CONTACT` único, bloco de contato); travessão
+removido de todo texto visível; **aba Sorteio inteira, nova** (cadastro com check-in por QR, roleta do
+moderador que gira de verdade com nomes nas fatias, som sintetizado, modo por rodadas/único, lista de
+teste do Time em DEV, atrás de `devOnly`); login do moderador extraído e reusado entre perguntas e
+sorteio; `.form-error` generalizado; várias correções de bug encontradas em teste ao vivo com o Renato
+(foto cortando rosto, URL errada no `/DEV/`, roleta sem animação, nomes de cabeça pra baixo, animação
+zerada por "Reduzir movimento"). ~20 commits, tudo testado (navegador + 83 testes automáticos) e no ar.
