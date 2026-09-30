@@ -124,10 +124,23 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], au
   let audioCtx = null;
   let wheelDeg = 0; // ângulo acumulado (graus), sempre crescente: o giro nunca "volta", só soma voltas
   let spinCount = 0;
+  // Fatias REALMENTE desenhadas na roda agora — travadas no início de cada giro (spin() reescreve), nunca
+  // recalculadas sozinhas enquanto uma pessoa está sorteada/girando: o `wheelDeg` mirou nessa arrumação
+  // exata (índice de cada fatia), tirar alguém no meio (o vencedor sai do pool assim que o sorteio grava)
+  // mudaria o tamanho/posição de toda fatia e o ponteiro passaria a apontar pra outro nome. Só o próximo
+  // clique em "Girar" congela uma arrumação nova (com o vencedor de fato fora).
+  let displayEntries = [];
 
   const usingDevSeed = () => entries.length === 0 && devSeed.length > 0;
   const activeEntries = () => (usingDevSeed() ? devSeed : entries);
   const activeDraws = () => (usingDevSeed() ? devDraws : draws);
+
+  /** Só re-trava a arrumação da roda com o pool atual quando NADA está em exibição que dependa da
+   * arrumação anterior (sem giro em andamento, sem vencedor mostrado) — ex.: gente nova se cadastrando
+   * enquanto a tela está parada entre um prêmio e outro já deve aparecer na roda antes do próximo giro. */
+  function refreshDisplayWhenIdle() {
+    if (!spinning && winner === null) displayEntries = pool();
+  }
 
   const draw = data => {
     const loadError = entriesError || drawsError;
@@ -145,18 +158,18 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], au
   }
 
   function drawReady() {
-    const remaining = pool();
+    const livePool = pool(); // quem pode legitimamente ser sorteado agora (decide o botão, não o desenho)
     const drawnList = activeDraws().slice().sort((a, b) => a.prize - b.prize);
     draw({
       phase: "ready",
-      remaining,
+      remaining: displayEntries, // o que a roda DESENHA — travado por refreshDisplayWhenIdle()/spin()
       poolCount: activeEntries().length,
       drawnList,
       spinning,
       winner,
       wheelDeg,
       usingDevSeed: usingDevSeed(),
-      canSpin: !spinning && remaining.length > 0 && !(mode === "single" && drawnList.length >= 1),
+      canSpin: !spinning && livePool.length > 0 && !(mode === "single" && drawnList.length >= 1),
     });
   }
 
@@ -170,12 +183,12 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], au
     stopDraws?.();
     stopEntries = deps().entries.listen(
       {},
-      list => { entries = list; entriesError = ""; drawReady(); },
+      list => { entries = list; entriesError = ""; refreshDisplayWhenIdle(); drawReady(); },
       () => { entriesError = t("raffle.loadEntriesError", "Não foi possível carregar a lista agora. Tentando de novo em instantes."); drawReady(); }
     );
     stopDraws = deps().draws.listen(
       {},
-      list => { draws = list; drawsError = ""; drawReady(); },
+      list => { draws = list; drawsError = ""; refreshDisplayWhenIdle(); drawReady(); },
       () => { drawsError = t("raffle.loadDrawsError", "Não foi possível carregar os sorteios agora. Tentando de novo em instantes."); drawReady(); }
     );
   }
@@ -195,6 +208,7 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], au
     const targetDeg = spinCount * 2160 + ((360 - winnerCenter) % 360); // 2160 = 6 voltas inteiras, só efeito visual
     spinning = true;
     winner = null;
+    displayEntries = remaining; // trava a MESMA arrumação usada pro cálculo do ângulo acima
     drawReady(); // primeiro render ainda no ângulo antigo: o elemento nasce parado, pronto pra animar
     raf(() => {
       wheelDeg = targetDeg;
@@ -244,6 +258,7 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], au
       entries = [];
       draws = [];
       devDraws = [];
+      displayEntries = [];
       entriesError = "";
       drawsError = "";
       draw({ phase: "signin" });

@@ -98,6 +98,22 @@ test("mostra o primeiro nome de cada pessoa na fatia da roda", async () => {
   assert.deepEqual(labels.sort(), ["Ana", "Beto"]);
 });
 
+test("depois de revelar o ganhador, a roda continua com as MESMAS fatias do giro (o ponteiro não desalinha)", async () => {
+  // Bug real (achado pelo Renato em 2026-10-01): o vencedor saía do pool assim que a gravação chegava, a
+  // roda perdia uma fatia no re-render seguinte e o `wheelDeg` (calculado pra arrumação de ANTES) passava a
+  // apontar pra outra pessoa. A correção trava as fatias desenhadas (`displayEntries`) até o PRÓXIMO giro.
+  const world = setup({ signedIn: true });
+  world.seedEntry("u1_raffle", "Ana", "Souza");
+  world.seedEntry("u2_raffle", "Beto", "Lima");
+  world.seedEntry("u3_raffle", "Carla", "Dias");
+  await world.signIn();
+  const labelsBefore = [...world.rootEl.querySelectorAll(".raffle-wheel-label span")].map(el => el.textContent).sort();
+  await world.spin();
+  assert.equal(world.draws.docs.length, 1); // já revelou (spinTimer é síncrono nos testes)
+  const labelsAfter = [...world.rootEl.querySelectorAll(".raffle-wheel-label span")].map(el => el.textContent).sort();
+  assert.deepEqual(labelsAfter, labelsBefore); // as 3 fatias continuam lá, ninguém sumiu no mesmo instante
+});
+
 test("quem já ganhou não entra mais no sorteio nem na lista de 'na lista'", async () => {
   const world = setup({ signedIn: true });
   world.seedEntry("u1_raffle", "Ana", "Souza");

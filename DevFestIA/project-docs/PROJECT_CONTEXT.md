@@ -440,6 +440,23 @@ rodar a transição de 4.2s. Teste jsdom `girar de verdade roda o disco...` ganh
 navegador (`?lineup=1`, lista de teste do Time): a roda gira visivelmente, para na fatia certa, 2 giros
 seguidos funcionam. `docs/sorteio.html` subiu `raffle-draw.js?v=5`.
 
+**Ponteiro desalinhava do ganhador depois de revelar (achado por Renato logo em seguida, corrigido
+2026-10-01):** assim que o sorteio grava (`raffle-draws`), o vencedor sai do `pool()` — e o próximo
+re-render desenhava a roda com uma fatia a MENOS. O `wheelDeg` já tinha sido calculado pro índice do
+vencedor NA ARRUMAÇÃO DE ANTES (N fatias); a roda redesenhada (N-1 fatias, todo mundo reposicionado)
+mantinha o mesmo ângulo, então o ponteiro passava a apontar pra outra pessoa (a que agora ocupa aquele
+ângulo na roda menor) — exatamente o que o print do Renato mostrava: "Ganhador Gustavo Costa" com a seta
+em cima de "João". Corrigido travando quem a roda DESENHA (`displayEntries`, novo estado) separado de quem
+PODE ser sorteado (`pool()`, ao vivo): `displayEntries` só é atualizado (a) no início de cada `spin()`
+(a mesma lista `remaining` usada pra calcular o ângulo) e (b) pelos listeners de `entries`/`draws`
+QUANDO a tela está ociosa (`refreshDisplayWhenIdle()`: sem giro em andamento, sem vencedor exibido) — assim
+gente nova cadastrada aparece antes do próximo giro, mas nada muda a arrumação no meio de um giro ou
+enquanto o vencedor ainda está na tela. `drawReady()` passa `displayEntries` pro markup da roda e usa o
+`pool()` ao vivo só pra decidir se o botão pode girar (`canSpin`)/contagem. Teste jsdom novo ("depois de
+revelar o ganhador, a roda continua com as MESMAS fatias do giro") trava a regressão. Confirmado ao vivo
+(lista de teste do Time, 22 pessoas): 2 giros seguidos, ponteiro sempre no nome certo, vencedor anterior
+sai só no giro seguinte. `docs/sorteio.html` subiu `raffle-draw.js?v=6`.
+
 **`qrcodejs` carrega sob demanda, não mais fixo no `<head>`:** carregar essa lib externa sempre, em toda
 visita à aba, combinado com a reescrita de documento do `/DEV/` (`document.write`, ver "Site nav"), fazia o
 navegador navegar pra `gdgcampinas.github.io/sorteio.html` (raiz, sem o repo) em vez de ficar na página —

@@ -143,6 +143,12 @@ cada render, e nenhum teste jsdom checava a animação em si, só o ângulo fina
 em `PROJECT_CONTEXT.md` ("Sorteio"). Confirmado ao vivo: gira, para na fatia certa, funciona em giros
 seguidos.
 
+**Ponteiro desalinhava do ganhador logo depois (achado na sequência, corrigido 2026-10-01):** o vencedor
+saía do pool assim que gravava, a roda perdia uma fatia no re-render seguinte e o ângulo (calculado pra
+arrumação de antes) passava a apontar pra outra pessoa. Causa e correção completas em `PROJECT_CONTEXT.md`
+("Sorteio"). Confirmado ao vivo: 2 giros seguidos, ponteiro sempre certo, vencedor anterior só some da roda
+no giro seguinte.
+
 **Renato testou de novo e achou mais 2 (corrigidos na mesma sessão):**
 - **"Não está rodando" no aparelho dele:** o iPhone do Renato tem "Reduzir movimento" ligado no sistema (já
   documentado aqui pra galáxia) — a regra global do site zerava a `transition-duration` da roleta junto com
