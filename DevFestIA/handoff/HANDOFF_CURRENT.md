@@ -155,6 +155,11 @@ callback de sucesso do listener, não no de erro. Causa e correção completas e
 ("Sorteio"). Confirmado ao vivo no cenário exato do print (login OK, banco recusando os dois
 repositories): roda volta a desenhar as 22 fatias do Time.
 
+**Linha divisória entre as fatias (pedido do Renato, 2026-10-01):** 2 fatias vizinhas da mesma cor (só 4
+cores, contagem varia a cada rodada) se fundiam sem fronteira visível, dando a impressão de desalinhamento
+que não existia de verdade (conferido matematicamente que o ângulo sempre bateu com o ganhador). Detalhes
+em `PROJECT_CONTEXT.md` ("Sorteio").
+
 **Renato testou de novo e achou mais 2 (corrigidos na mesma sessão):**
 - **"Não está rodando" no aparelho dele:** o iPhone do Renato tem "Reduzir movimento" ligado no sistema (já
   documentado aqui pra galáxia) — a regra global do site zerava a `transition-duration` da roleta junto com

@@ -470,6 +470,18 @@ aparecem mesmo com o aviso de erro em cima. Confirmado ao vivo contra o cenário
 (login OK, `permission-denied` nos dois repositories, DEV com a lista do Time): a roda agora desenha as 22
 fatias em vez de ficar uma só, azul. `docs/sorteio.html` subiu `raffle-draw.js?v=7`.
 
+**Linha divisória entre as fatias (pedido do Renato, 2026-10-01):** com só 4 cores girando (`RAFFLE_WHEEL_COLORS`)
+e a contagem de pessoas variando a cada rodada (gente sai do pool ao ser sorteada), 2 fatias vizinhas da
+mesma cor sem nada entre elas se fundiam numa faixa visual só — difícil ver de relance onde uma fatia
+termina e a outra começa, ainda mais com nome girado (texto radial). Conferido também que o ângulo em si
+SEMPRE bateu certo (script no console: ler `wheel.style.transform`, calcular o índice sob o ponteiro a
+partir do ângulo e comparar com `.raffle-winner-name` — bateu nos 2 giros testados), então não era bug de
+cálculo, só falta de fronteira visível. `raffleWheelGradient` (`components/raffle-wheel.js`) agora insere
+uma linha fina cor do fundo do site (`var(--bg)`, `RAFFLE_WHEEL_DIVIDER`) em cada borda entre fatias
+(`RAFFLE_WHEEL_DIVIDER_DEG = 1.6`, sempre em graus — mesma largura visual em qualquer contagem — nunca mais
+que 30% de uma fatia bem pequena, pra nunca comer a cor toda dela). `docs/sorteio.html` subiu
+`raffle-wheel.js?v=5`.
+
 **`qrcodejs` carrega sob demanda, não mais fixo no `<head>`:** carregar essa lib externa sempre, em toda
 visita à aba, combinado com a reescrita de documento do `/DEV/` (`document.write`, ver "Site nav"), fazia o
 navegador navegar pra `gdgcampinas.github.io/sorteio.html` (raiz, sem o repo) em vez de ficar na página —

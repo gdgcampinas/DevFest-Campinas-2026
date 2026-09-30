@@ -6,11 +6,23 @@
  * As 4 cores das fatias são as da marca (data/tokens.css), sem significado próprio, só ritmo visual.
  */
 const RAFFLE_WHEEL_COLORS = ["var(--google-blue)", "var(--google-red)", "var(--google-yellow)", "var(--google-green)"];
+const RAFFLE_WHEEL_DIVIDER = "var(--bg)"; // linha fina entre fatias, cor do fundo do site: contraste com as 4 cores
+const RAFFLE_WHEEL_DIVIDER_DEG = 1.6; // grau fixo (não px): mesma largura visual em qualquer contagem de pessoas
 
-/** CSS conic-gradient com N fatias coloridas em sequência (cores repetem a cada 4). */
+/** CSS conic-gradient com N fatias coloridas em sequência (cores repetem a cada 4), cada uma com uma linha
+ * fina do fundo do site na borda — sem ela, 2 fatias vizinhas da mesma cor (inevitável com só 4 cores e
+ * contagem variável) se fundiam numa só faixa visual, dificultando ver onde uma fatia termina e a próxima
+ * começa (ex.: contagens que "voltam" pro azul logo depois de outro azul, ou olhando de relance na hora do
+ * sorteio). `half` nunca passa de 30% de uma fatia bem pequena, pra nunca comer a cor toda dela. */
 function raffleWheelGradient(count) {
   const seg = 360 / Math.max(count, 1);
-  const stops = Array.from({ length: count }, (_, i) => `${RAFFLE_WHEEL_COLORS[i % RAFFLE_WHEEL_COLORS.length]} ${(i * seg).toFixed(2)}deg ${((i + 1) * seg).toFixed(2)}deg`);
+  const half = Math.min(RAFFLE_WHEEL_DIVIDER_DEG, seg * 0.3) / 2;
+  const stops = Array.from({ length: count }, (_, i) => {
+    const start = i * seg;
+    const end = (i + 1) * seg;
+    const color = RAFFLE_WHEEL_COLORS[i % RAFFLE_WHEEL_COLORS.length];
+    return `${RAFFLE_WHEEL_DIVIDER} ${start.toFixed(2)}deg ${(start + half).toFixed(2)}deg, ${color} ${(start + half).toFixed(2)}deg ${(end - half).toFixed(2)}deg`;
+  });
   return `conic-gradient(${stops.join(", ")})`;
 }
 
