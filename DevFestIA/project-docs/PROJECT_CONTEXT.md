@@ -594,6 +594,13 @@ identical — always edit both together.
   Decisão do Renato: o logo precisa girar, então não fica parada por padrão. `?movimento=1`
   força a velocidade normal mesmo com "Reduzir movimento" (telão do evento).
 
+## Mascote Gumbleton (2026-09-30)
+
+- **Identidade:** Gumbleton, chamado de Gumble, é a fênix do GDG Campinas. A narrativa é a reconstrução de Campinas, conhecida na campanha como Cidade Fênix, e o renascimento da própria comunidade.
+- **Referência visual aprovada:** o mascote é vermelho, laranja e amarelo, com expressão determinada e proporções atléticas; não pode se tornar chibi nem receber logo/símbolo no peito.
+- **Arquivo de materiais:** `../../../Design/mascote-gumbleton-2026/` no guarda-chuva GDGCampinas. O inventário e as restrições ficam em `../../../docs/Marca_e_Mascote_2026.md`.
+- **Estado no site:** o mascote ainda não foi aplicado automaticamente no site. Antes de alterar favicon, OG image, galáxia, HTML ou outros recursos públicos, perguntar ao Renato e seguir o fluxo normal de Git, testes, documentação e deploy.
+
 ## Fundo estrelado
 
 `initStarfield()` (features/starfield.js) injeta, uma vez por página via

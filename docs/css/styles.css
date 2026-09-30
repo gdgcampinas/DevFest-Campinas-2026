@@ -868,7 +868,9 @@ a.detail-speaker .li-icon{
   border-radius:16px 16px 0 0;overflow:hidden;
 }
 .person-detail-photo-wrap::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:var(--track-color);z-index:1}
-.person-detail-photo{width:100%;aspect-ratio:16/11;object-fit:cover;object-position:50% 22%;display:block}
+/* mesma proporção/foco do .person-photo do card (4/5, 50% 22%): a foto de cada pessoa já foi enquadrada
+   pra essa janela — um recorte mais largo aqui cortava rosto (ex.: Davi Andrade só mostrava testa) */
+.person-detail-photo{width:100%;aspect-ratio:4/5;object-fit:cover;object-position:50% 22%;display:block}
 .person-detail-photo--fallback{display:flex;align-items:center;justify-content:center;font:700 44px var(--font-display);color:var(--muted);background:var(--card-b)}
 .person-detail-name{margin:4px 0 0;font:700 22px var(--font-display);color:oklch(97% 0.005 260)}
 .person-detail-role{margin:-6px 0 0;font:500 13px var(--font-body);color:var(--muted-dim)}

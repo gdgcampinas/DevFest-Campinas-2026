@@ -12,6 +12,7 @@ PASSO 1 — Leia o contexto (nesta ordem)
 2. DevFestIA/handoff/HANDOFF_CURRENT.md       ← estado atual, pendências, próximos passos
 3. DevFestIA/CLAUDE.md                        ← diretivas de comportamento
 4. DevFestIA/project-docs/Continuidade.md     ← como o processo de continuidade funciona (opcional)
+5. Se a solicitação envolver o mascote, comunicação visual ou marca: `../../../docs/Marca_e_Mascote_2026.md` ← identidade, arquivos e restrições de uso
 
 PASSO 2 — Valide o estado Git (o handoff pode estar desatualizado — o git não mente)
 git status --short --branch

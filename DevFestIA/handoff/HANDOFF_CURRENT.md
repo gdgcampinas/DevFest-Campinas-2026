@@ -5,6 +5,8 @@
 
 ## Status em uma olhada
 
+- **Mascote e comunicação:** Gumbleton (Gumble), a fênix do GDG Campinas, foi consolidado em `../../../Design/mascote-gumbleton-2026/`. O inventário e as regras de uso estão em `../../../docs/Marca_e_Mascote_2026.md`. Nenhum arquivo do site, deploy, Firebase ou workflow foi alterado por essa consolidação; aplicar o mascote no site requer autorização explícita do Renato.
+
 - Site estático de **7 páginas** (Principal, Grade, Palestrantes, Ingressos, Time, Patrocínio,
   Código de Conduta) mais 2 ferramentas internas (`checkin-display.html`, `reset-teste.html`),
   sem build. Publicado por GitHub Pages a partir de `docs/` no `main`; trabalho no
@@ -191,12 +193,11 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
     de desenhar: tamanho e proporção do painel, entrada (HDMI de notebook ou navegador), origem das fotos
     ao vivo, arquivo da fênix (vídeo, sprites ou animação, com som?), quem opera.
     Já dá pra começar pelas cenas que não dependem disso (agora/próximas, QR, números, galáxia).
-    **Mascote (fênix) aprovada e recebida (2026-09-30):** 3 arquivos estáticos em
-    `~/Downloads/mascote-gdg-campinas/aprovado/` (fora do repo, não comitados) — `icone-grupo-mascote.png`
-    (1024x1024, com o logo GDG Campinas embaixo), `icone-grupo-mascote-previa-circulo.png` (512x512,
-    recorte circular) e `mascote-fonte-gpt.webp` (1122x1402, só a arte, sem logo). Ainda estático, sem
-    vídeo/sprite/animação. **Onde usar (favicon, home, og:image, ou só guardar pro mural) ainda em aberto
-    — perguntar ao Renato antes de aplicar em qualquer lugar do site.**
+    **Mascote (fênix) consolidada (2026-09-30):** Gumbleton (Gumble) e os materiais derivados foram arquivados
+    em `../../../Design/mascote-gumbleton-2026/`, inclusive as referências aprovadas em `referencias/mascote-aprovado/`
+    e `referencias/logo-oficial/`. Ainda é material estático, sem vídeo/sprite/animação.
+    **Onde usar (favicon, home, og:image, ou só guardar pro mural) ainda está em aberto — perguntar ao Renato
+    antes de aplicar em qualquer lugar do site.**
 11b. **Área administrativa com login** (CRUD de moderadores, palestrantes, patrocinadores...; análise e caminho recomendado em `IDEAS_BACKLOG.md`): começar por moderadores CRUD; depois de fechar perguntas e quadro da sala.
 12. **Internacionalização (PT/EN/ES/FR):** grande, precisa ser desenhada.
 13. Ideias em `IDEAS_BACKLOG.md`: quiz "Monte sua trilha", enquetes/perguntas ao vivo, passaporte com
