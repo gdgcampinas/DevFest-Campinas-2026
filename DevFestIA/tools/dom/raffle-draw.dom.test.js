@@ -98,6 +98,18 @@ test("mostra o primeiro nome de cada pessoa na fatia da roda", async () => {
   assert.deepEqual(labels.sort(), ["Ana", "Beto"]);
 });
 
+test("o nome de cada fatia fica no centro da cor dela (rótulo parte das 12h, igual ao conic-gradient)", async () => {
+  // Bug real (2026-10-01): a linha do rótulo aponta pras 3h com rotate(0) e o conic-gradient começa às 12h;
+  // sem tirar 90° os nomes ficavam deslocados da própria fatia e o ganhador anunciado nunca estava sob a seta.
+  const world = setup({ signedIn: true });
+  world.seedEntry("u1_raffle", "Ana", "Souza");
+  world.seedEntry("u2_raffle", "Beto", "Lima");
+  await world.signIn();
+  const rotations = [...world.rootEl.querySelectorAll(".raffle-wheel-label")].map(el => parseFloat(el.style.transform.match(/rotate\(([-\d.]+)deg\)/)[1]));
+  // 2 fatias de 180°: centros em 90° e 270° (a partir das 12h) => rotações 0° e 180° (a partir das 3h)
+  assert.deepEqual(rotations, [0, 180]);
+});
+
 test("depois de revelar o ganhador, a roda continua com as MESMAS fatias do giro (o ponteiro não desalinha)", async () => {
   // Bug real (achado pelo Renato em 2026-10-01): o vencedor saía do pool assim que a gravação chegava, a
   // roda perdia uma fatia no re-render seguinte e o `wheelDeg` (calculado pra arrumação de ANTES) passava a

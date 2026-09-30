@@ -16,12 +16,14 @@ const RAFFLE_WHEEL_DIVIDER_DEG = 1.6; // grau fixo (não px): mesma largura visu
  * sorteio). `half` nunca passa de 30% de uma fatia bem pequena, pra nunca comer a cor toda dela. */
 function raffleWheelGradient(count) {
   const seg = 360 / Math.max(count, 1);
-  const half = Math.min(RAFFLE_WHEEL_DIVIDER_DEG, seg * 0.3) / 2;
+  const line = Math.min(RAFFLE_WHEEL_DIVIDER_DEG, seg * 0.3);
+  // Cada fatia = cor + linha no fim dela, sem NENHUM vão entre uma e outra: um vão faz o navegador
+  // interpolar (borrar) o trecho em vez de desenhar uma borda reta.
   const stops = Array.from({ length: count }, (_, i) => {
     const start = i * seg;
     const end = (i + 1) * seg;
     const color = RAFFLE_WHEEL_COLORS[i % RAFFLE_WHEEL_COLORS.length];
-    return `${RAFFLE_WHEEL_DIVIDER} ${start.toFixed(2)}deg ${(start + half).toFixed(2)}deg, ${color} ${(start + half).toFixed(2)}deg ${(end - half).toFixed(2)}deg`;
+    return `${color} ${start.toFixed(2)}deg ${(end - line).toFixed(2)}deg, ${RAFFLE_WHEEL_DIVIDER} ${(end - line).toFixed(2)}deg ${end.toFixed(2)}deg`;
   });
   return `conic-gradient(${stops.join(", ")})`;
 }
@@ -32,12 +34,14 @@ function raffleWheelGradient(count) {
 function raffleWheelLabelsMarkup(remaining) {
   const seg = 360 / Math.max(remaining.length, 1);
   return remaining.map((person, i) => {
-    const center = i * seg + seg / 2;
-    // A metade esquerda da roda (90°-270°) fica de cabeça pra baixo com esse truque (o texto gira junto
-    // com a fatia, e nessa faixa isso passa de 90°): rotaciona só o texto (não a posição) mais 180° de
-    // volta, então ele continua no lugar certo, só lendo do jeito certo.
-    const flip = center > 90 && center < 270;
-    return `<div class="raffle-wheel-label" style="transform:rotate(${center.toFixed(2)}deg)"><span${flip ? ' style="transform:rotate(180deg)"' : ""}>${escapeHtml(person.firstName)}</span></div>`;
+    const center = i * seg + seg / 2; // graus a partir das 12h, sentido horário (igual ao conic-gradient)
+    // A linha do rótulo aponta pras 3h com rotate(0), e o conic-gradient começa às 12h: sem tirar 90° os
+    // nomes ficavam meia fatia (ou mais) fora da própria cor.
+    const rotation = center - 90;
+    // Com a linha apontando pra esquerda (rotação entre 90° e 270°, ou seja center entre 180° e 360°) o
+    // texto ficaria de cabeça pra baixo: rotaciona só o texto (não a posição) mais 180° de volta.
+    const flip = center > 180 && center < 360;
+    return `<div class="raffle-wheel-label" style="transform:rotate(${rotation.toFixed(2)}deg)"><span${flip ? ' style="transform:rotate(180deg)"' : ""}>${escapeHtml(person.firstName)}</span></div>`;
   }).join("");
 }
 

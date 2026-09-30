@@ -160,6 +160,10 @@ cores, contagem varia a cada rodada) se fundiam sem fronteira visível, dando a 
 que não existia de verdade (conferido matematicamente que o ângulo sempre bateu com o ganhador). Detalhes
 em `PROJECT_CONTEXT.md` ("Sorteio").
 
+**Causa raiz dos nomes fora das fatias (2026-10-01):** os rótulos estavam 90° deslocados das cores (linha do
+rótulo aponta pras 3h, gradiente começa às 12h). Corrigido em `raffleWheelLabelsMarkup` (`rotate(center - 90)`),
+mais o vão do degradê da linha divisória. Detalhes em `PROJECT_CONTEXT.md` ("Sorteio").
+
 **Renato testou de novo e achou mais 2 (corrigidos na mesma sessão):**
 - **"Não está rodando" no aparelho dele:** o iPhone do Renato tem "Reduzir movimento" ligado no sistema (já
   documentado aqui pra galáxia) — a regra global do site zerava a `transition-duration` da roleta junto com

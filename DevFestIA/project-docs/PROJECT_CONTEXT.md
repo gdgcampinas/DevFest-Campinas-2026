@@ -482,6 +482,17 @@ uma linha fina cor do fundo do site (`var(--bg)`, `RAFFLE_WHEEL_DIVIDER`) em cad
 que 30% de uma fatia bem pequena, pra nunca comer a cor toda dela). `docs/sorteio.html` subiu
 `raffle-wheel.js?v=5`.
 
+**Nomes 90° fora das fatias (causa raiz das queixas "nome não está na fatia", "ganhador não está sob a seta" e
+"nomes descentralizados", corrigido 2026-10-01):** `.raffle-wheel-label` é uma linha que aponta pras 3h com
+`rotate(0)`, mas o `conic-gradient` (cores) começa às 12h. O rótulo era girado por `center` (graus a partir
+das 12h) sem descontar esses 90°, então todo nome ficava deslocado 90° da própria cor (meia fatia com 22
+pessoas, por isso os nomes cruzavam as linhas); o ângulo do sorteio sempre esteve certo (vem do gradiente),
+mas o nome do ganhador só aparecia a 90° da seta. `raffleWheelLabelsMarkup` agora usa `rotate(center - 90)`
+e `flip` (texto de ponta-cabeça) quando `center` está entre 180° e 360°. A linha divisória também tinha um
+vão de meio grau por fronteira (o navegador borrava o trecho em degradê); agora cada fatia é cor + linha no
+fim, sem vão. Teste jsdom novo trava a rotação dos rótulos; conferido ao vivo: nome do ganhador escrito na
+fatia sob a seta. `raffle-wheel.js?v=6`.
+
 **`qrcodejs` carrega sob demanda, não mais fixo no `<head>`:** carregar essa lib externa sempre, em toda
 visita à aba, combinado com a reescrita de documento do `/DEV/` (`document.write`, ver "Site nav"), fazia o
 navegador navegar pra `gdgcampinas.github.io/sorteio.html` (raiz, sem o repo) em vez de ficar na página —
