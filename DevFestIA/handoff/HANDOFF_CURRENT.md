@@ -246,7 +246,7 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
 - Nada de backend pra conteúdo; Firebase só pra feedback/check-in e leitura pública do total,
   sempre atrás de repository. **Tudo grátis (sem Blaze):** Cloud Functions descartadas, o job roda no
   GitHub Actions.
-- **Inscrição só no Sympla** (a API dele é só de leitura); o site é vitrine e ponte.
+- **Inscrição só no Sympla** (venda e inscrição; a API v1.6.0 tem endpoints de ESCRITA de check-in, mas ficamos com o app do Sympla na porta, ver `IDEAS_BACKLOG.md` "Check-in de porta"); o site é vitrine e ponte.
 - Feedback: uid do Firebase segue anônimo, mas **o nome é obrigatório** em toda avaliação (digitado,
   não verificado; substitui a decisão antiga de "anônimo"). Check-in é a prova de presença e é
   exigido pelas regras. Sem perguntas rápidas extras por palestra. **Nota média pública nos cards:

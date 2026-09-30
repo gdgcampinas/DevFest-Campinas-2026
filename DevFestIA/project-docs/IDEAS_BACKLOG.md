@@ -205,6 +205,26 @@ existe). Precisaria de um jeito de "identificar" a pessoa sem conta de
 verdade (nome + Firestore, ou vincular ao mesmo uid anônimo do check-in de
 palestra).
 
+### Check-in de porta: Sympla x pelo nosso site (analisado 2026-10-01, decisão: NÃO fazer agora)
+A API do Sympla v1.6.0 TEM endpoints de escrita de check-in (Check-in: `POST .../participants/ticketNumber/{ticketNumber}/check-in`,
+`POST .../participants/{participantId}/check-in` e `POST .../qrcode/check-in`), então a nossa nota antiga de que a API
+"é só de leitura" estava errada pro check-in (inscrição/venda continua só no Sympla). Pergunta do Renato: vale
+fazer a entrada pelo nosso site em vez do app do Sympla?
+- **Contra (por que não agora):** o token do Sympla é segredo, então o navegador não pode chamar esses endpoints;
+  precisaria de um backend (Cloud Function exigiria Blaze, que decidimos não usar; alternativa grátis seria um
+  Worker/Netlify function, infra nova pra manter). Uma fila de ~1.000 pessoas na porta não pode depender de
+  sinal de celular/site novo sem fallback; o Sympla já tem leitor de QR do ingresso pronto e testado; vira
+  mais um ponto de falha no dia mais crítico; dobraria o cuidado com LGPD (QR de pessoa identificável).
+- **A favor:** a presença na porta alimentaria o sorteio e a avaliação (só quem entrou no evento), e daria
+  números em tempo real pro painel.
+- **Caminho barato que já cobre o ganho:** porta = app do Sympla; o job 🎫 Sincronizar Sympla JÁ lê o status de
+  check-in de cada participante (`checkedIn` em `reconcile.js`/`sympla-repository.js`, hoje só conta no resumo).
+  Se um dia quisermos "só quem passou na porta", gravar esse status (por hash de e-mail, como `registrations`)
+  e usar como critério extra do sorteio/avaliação, sem nenhuma escrita no Sympla.
+- **Se mesmo assim quiser o nosso:** tela de recepção no navegador (leitor de QR por câmera, `BarcodeDetector`/lib)
+  que chama um proxy com o token, com lista local em cache pra funcionar offline. Só reavaliar depois de fechar o
+  essencial (line-up, sorteio, ensaio).
+
 ### Vagas dos patrocinadores
 Seção listando vagas abertas de cada empresa patrocinadora — dado viria
 dos próprios patrocinadores reais (ainda não existem, é tudo mock).

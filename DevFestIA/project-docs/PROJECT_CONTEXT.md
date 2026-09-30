@@ -576,7 +576,7 @@ o mesmo botão funciona em qualquer outra página só chamando
 ## Inscritos do Sympla: sync, gate do cartão e contador
 
 **Inscrição acontece só no Sympla** (evento `s36cd5d`, `reference_id` 3591517).
-A API do Sympla é só de leitura e sem webhook; o site é estático e o token é
+A API do Sympla não tem webhook e, pra inscrição/venda, é só de leitura (existem endpoints de escrita só pro check-in de porta, não usados: ver `IDEAS_BACKLOG.md`); o site é estático e o token é
 segredo, então a ponte é um job agendado, sem servidor nosso e sem custo:
 
 - **Job** (`.github/workflows/sync-sympla.yml`, a cada 10 min, só no `main`):
