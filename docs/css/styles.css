@@ -1210,10 +1210,7 @@ body:has(.modal:not([hidden])) .feedback-nudge{display:none}
 .raffle-winner-hint{font:500 11.5px var(--font-body);color:var(--muted)}
 .raffle-wheel-hint{margin:0;font:500 12.5px var(--font-body);color:var(--muted);text-align:center;max-width:260px}
 
-.raffle-mode-toggle{display:flex;gap:8px}
-.raffle-mode-btn{flex:1;padding:9px 10px;border-radius:10px;border:1px solid var(--card-border);background:transparent;color:var(--muted);font:700 12px var(--font-body);cursor:pointer}
-.raffle-mode-btn.is-active{border-color:var(--google-blue);background:color-mix(in oklch, var(--google-blue) 16%, transparent);color:oklch(85% 0.05 258)}
-.raffle-mode-hint{margin:6px 0 16px;font:500 11.5px/1.5 var(--font-body);color:var(--muted-dim)}
+.raffle-rounds-hint{margin:0 0 16px;font:500 11.5px/1.5 var(--font-body);color:var(--muted-dim)}
 
 .raffle-stats{display:flex;gap:10px;margin-bottom:16px}
 .raffle-stat{flex:1;padding:12px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid var(--card-border)}

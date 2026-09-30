@@ -114,7 +114,6 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], au
   let devDraws = []; // sorteios feitos com devSeed: só em memória, nunca vai pro Firestore
   let stopEntries = null;
   let stopDraws = null;
-  let mode = "rounds";
   let spinning = false;
   let winner = null;
   let muted = false;
@@ -144,7 +143,7 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], au
 
   const draw = data => {
     const loadError = entriesError || drawsError;
-    rootEl.innerHTML = raffleWheelMarkup({ email, mode, showQr, loadError, ...data });
+    rootEl.innerHTML = raffleWheelMarkup({ email, showQr, loadError, ...data });
     if (showQr && data.phase !== "signin") drawQrCode(document.getElementById("raffleQr"), raffleCheckinUrl(location.href));
   };
 
@@ -169,7 +168,7 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], au
       winner,
       wheelDeg,
       usingDevSeed: usingDevSeed(),
-      canSpin: !spinning && livePool.length > 0 && !(mode === "single" && drawnList.length >= 1),
+      canSpin: !spinning && livePool.length > 0,
     });
   }
 
@@ -195,7 +194,7 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], au
 
   async function spin() {
     const remaining = pool();
-    if (spinning || !remaining.length || (mode === "single" && activeDraws().length >= 1)) return;
+    if (spinning || !remaining.length) return;
     const chosenIndex = Math.floor(Math.random() * remaining.length);
     const chosen = remaining[chosenIndex];
     // Gira sempre pra frente (soma voltas inteiras) e para exatamente com a fatia sorteada sob o ponteiro
@@ -271,11 +270,6 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], au
       return;
     }
     if (event.target.closest("[data-raffle-spin]")) return spin();
-    const modeBtn = event.target.closest("[data-raffle-mode]");
-    if (modeBtn) {
-      mode = modeBtn.dataset.raffleMode;
-      drawReady();
-    }
   });
 
   draw({ phase: "signin" });

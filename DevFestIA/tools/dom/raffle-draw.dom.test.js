@@ -44,8 +44,7 @@ function setup({ signedIn = false, devSeed = [], entries = createFakeQuestions()
   const seedEntry = (id, firstName, lastName) => entries.seed({ id, firstName, lastName });
   const signIn = async () => { rootEl.querySelector("[data-mod-signin]").click(); await settle(); };
   const spin = async () => { rootEl.querySelector("[data-raffle-spin]").click(); await settle(); };
-  const setMode = async mode => { rootEl.querySelector(`[data-raffle-mode="${mode}"]`).click(); await settle(); };
-  return { rootEl, entries, draws, auth, seedEntry, signIn, spin, setMode };
+  return { rootEl, entries, draws, auth, seedEntry, signIn, spin };
 }
 
 test("sem login: pede a conta de moderador e não lê nada do banco", async () => {
@@ -140,17 +139,15 @@ test("quem já ganhou não entra mais no sorteio nem na lista de 'na lista'", as
   assert.equal(world.draws.docs[1].prize, 2);
 });
 
-test("modo sorteio único: trava o botão depois do 1º prêmio", async () => {
+test("não existe mais o modo sorteio único: só por rodadas, o botão segue livre depois de um prêmio", async () => {
   const world = setup({ signedIn: true });
   world.seedEntry("u1_raffle", "Ana", "Souza");
   world.seedEntry("u2_raffle", "Beto", "Lima");
   await world.signIn();
-  await world.setMode("single");
+  assert.equal(world.rootEl.querySelector("[data-raffle-mode]"), null);
   await world.spin();
   assert.equal(world.draws.docs.length, 1);
-  assert.equal(world.rootEl.querySelector("[data-raffle-spin]").disabled, true);
-  await world.spin(); // clique não faz nada: já travado
-  assert.equal(world.draws.docs.length, 1);
+  assert.equal(world.rootEl.querySelector("[data-raffle-spin]").disabled, false);
 });
 
 test("ninguém cadastrado: o botão de girar fica desabilitado", async () => {

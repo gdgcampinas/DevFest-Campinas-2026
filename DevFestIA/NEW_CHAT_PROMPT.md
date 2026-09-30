@@ -81,7 +81,7 @@ Site de 8 páginas (Principal, Grade, Palestrantes, Ingressos, Time, Patrocínio
 perguntas, votos e (novo) cadastro/check-in/sorteios do Sorteio. Inglês pronto (`?lang=en`). Sessão 9
 entregou: modal de mini-bio no Time (11/22 pessoas com texto), Código de conduta redesenhado (regras com
 ícone, contato via `CONTACT`), e a aba Sorteio inteira (cadastro com check-in por QR + roleta do moderador
-que gira de verdade, nomes nas fatias, modo por rodadas/único). Trava de horário das perguntas DESLIGADA de
+que gira de verdade, nomes nas fatias, modo por rodadas). Trava de horário das perguntas DESLIGADA de
 propósito (teste em DEV): LIGAR antes do evento.
 
 PRÓXIMO TRABALHO (ver "Pendências" no handoff pra lista completa)

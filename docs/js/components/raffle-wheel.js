@@ -56,16 +56,6 @@ function raffleDrawnItemMarkup(item) {
   return `<li class="raffle-drawn-item"><span class="raffle-drawn-prize">${item.prize}</span><span class="raffle-drawn-name">${escapeHtml(item.name)}</span></li>`;
 }
 
-function raffleModeToggleMarkup(mode) {
-  const modes = [
-    { value: "rounds", label: t("raffle.modeRounds", "Por rodadas") },
-    { value: "single", label: t("raffle.modeSingle", "Sorteio único") },
-  ];
-  return `<div class="raffle-mode-toggle" role="group" aria-label="${t("raffle.modeLabel", "Modo do sorteio")}">
-    ${modes.map(option => `<button type="button" class="raffle-mode-btn${option.value === mode ? " is-active" : ""}" data-raffle-mode="${option.value}">${option.label}</button>`).join("")}
-  </div>`;
-}
-
 /** QR do check-in do sorteio (`sorteio.html?checkin=1`): escondido por padrão, o moderador mostra quando
  * for projetar/imprimir. O desenho em si (`new QRCode(...)`) é feito por quem chama, no container por id. */
 function raffleQrMarkup(showQr) {
@@ -75,7 +65,7 @@ function raffleQrMarkup(showQr) {
   </div>`;
 }
 
-function raffleWheelReadyMarkup({ email, remaining, poolCount, drawnList, spinning, winner, mode, canSpin, loadError, usingDevSeed, showQr, wheelDeg }) {
+function raffleWheelReadyMarkup({ email, remaining, poolCount, drawnList, spinning, winner, canSpin, loadError, usingDevSeed, showQr, wheelDeg }) {
   const remainingCount = remaining.length;
   const winnerBlock = winner
     ? `<div class="raffle-winner"><span class="raffle-winner-label">${t("raffle.winnerLabel", "Ganhador do prêmio {n}", { n: drawnList.length })}</span>
@@ -96,8 +86,7 @@ function raffleWheelReadyMarkup({ email, remaining, poolCount, drawnList, spinni
       ${winnerBlock}
     </div>
     <div class="raffle-mod-side">
-      ${raffleModeToggleMarkup(mode)}
-      <p class="raffle-mode-hint">${t("raffle.modeHint", "Por rodadas: gira de novo pra cada prêmio, sem repetir quem já ganhou. Sorteio único: só um nome sai, o botão trava depois.")}</p>
+      <p class="raffle-rounds-hint">${t("raffle.roundsHint", "Gira de novo pra cada prêmio, sem repetir quem já ganhou.")}</p>
       <div class="raffle-stats">
         <div class="raffle-stat"><span class="raffle-stat-value">${remainingCount}</span><span class="raffle-stat-label">${t("raffle.remaining", "Na lista")}</span></div>
         <div class="raffle-stat"><span class="raffle-stat-value">${drawnList.length}</span><span class="raffle-stat-label">${t("raffle.drawnCount", "Já sorteados")}</span></div>
@@ -109,8 +98,8 @@ function raffleWheelReadyMarkup({ email, remaining, poolCount, drawnList, spinni
     </div>`;
 }
 
-function raffleWheelMarkup({ phase, email = "", remaining = [], poolCount = 0, drawnList = [], spinning = false, winner = null, mode = "rounds", canSpin = false, loadError = "", usingDevSeed = false, showQr = false, wheelDeg = 0, message = "" }) {
+function raffleWheelMarkup({ phase, email = "", remaining = [], poolCount = 0, drawnList = [], spinning = false, winner = null, canSpin = false, loadError = "", usingDevSeed = false, showQr = false, wheelDeg = 0, message = "" }) {
   const head = `<h2 class="raffle-mod-title">${t("raffle.modTitle", "Área da organização")}</h2>`;
   if (phase === "signin") return `${head}${moderatorSignInMarkup({ hint: message || t("raffle.modHint", "Entre com a conta de moderador pra girar a roleta."), signInLabel: t("raffle.modSignin", "Entrar com Google") })}`;
-  return `${head}${raffleWheelReadyMarkup({ email, remaining, poolCount, drawnList, spinning, winner, mode, canSpin, loadError, usingDevSeed, showQr, wheelDeg })}`;
+  return `${head}${raffleWheelReadyMarkup({ email, remaining, poolCount, drawnList, spinning, winner, canSpin, loadError, usingDevSeed, showQr, wheelDeg })}`;
 }

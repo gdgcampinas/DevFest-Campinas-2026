@@ -9,7 +9,7 @@ próprias e no `PROJECT_CONTEXT.md`):
 2. **Código de conduta redesenhado:** cards de regra com ícone (cor da marca), bloco "Fale com a gente"
    (reusa `CONTACT`, dado novo único pra e-mail/redes, usado também no rodapé).
 3. **Aba Sorteio, nova, completa, atrás de `devOnly`:** cadastro público (exige check-in por QR) + roleta
-   do moderador (gira de verdade, nomes nas fatias, som sintetizado, modo por rodadas/único, lista de
+   do moderador (gira de verdade, nomes nas fatias, som sintetizado, modo por rodadas, lista de
    teste do Time em DEV). Ver seção "Sorteio" abaixo — tem uma pendência real do Renato (publicar as
    regras do Firestore) antes de funcionar de verdade.
 
@@ -86,8 +86,7 @@ Aba nova `sorteio.html`: seção "Regras" (card com ícone, `data/raffle-rules.j
 antes do evento" e "precisa estar lá" (a regra do Firestore recusa o cadastro sem esse check-in, não é só
 a tela escondendo). O sorteio em si continua da lista inteira de quem se cadastrou; "só quem está na sala
 ganha o prêmio" é regra operacional (se a pessoa sorteada não estiver lá, o MC gira de novo — manual, sem
-lógica no código), explicada no card de regras. Dois modos na roleta: por rodadas (não repete ganhador) ou
-sorteio único (trava depois do 1º prêmio). Detalhes técnicos completos em `PROJECT_CONTEXT.md` ("Sorteio"):
+lógica no código), explicada no card de regras. Só o modo por rodadas na roleta (não repete ganhador; o "sorteio único" foi removido em 2026-10-01). Detalhes técnicos completos em `PROJECT_CONTEXT.md` ("Sorteio"):
 3 coleções novas no Firestore (`raffle-checkins`/`raffle-entries`/`raffle-draws`, regras coladas — **falta
 o Renato publicar as regras novas no console, `pbcopy < DevFestIA/firebase/firestore.rules`**), login/erro
 do Google extraídos pra `features/moderator-login.js`/`components/moderator-login.js` (reusado pela
@@ -268,7 +267,7 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
    (`pbcopy < DevFestIA/firebase/firestore.rules`, tem `raffle-entries`/`raffle-draws` juntas com as de
    sempre); decidir quando tirar do `devOnly` e abrir pro público; decidir se troca o som sintetizado por
    um efeito de verdade (grátis, simples, a pedido do Renato) e por qual; decidir quantos prêmios/como
-   funciona no dia (a roleta já aceita "por rodadas" ou "sorteio único", só falta a operação combinar).
+   funciona no dia (a roleta gira por rodadas, só falta a operação combinar).
 0b. **Dados de time em aberto (sessão 9/30):**
    - **Cargo dos 4 organizadores reais** (Renato Ramos, Bianca Issa, Michel Salomé, Carlos Santos): nenhum tem
      cargo confirmado ainda, o card mostra só o nome.
@@ -417,7 +416,7 @@ sala, leitura barata), logins separados plateia/moderador, emulador local.
 alternada); **modal de mini-bio** (Descubra mais sobre, foto sangrando até a borda, 11/22 pessoas com
 texto); **Código de conduta redesenhado** (cards de regra, `CONTACT` único, bloco de contato); travessão
 removido de todo texto visível; **aba Sorteio inteira, nova** (cadastro com check-in por QR, roleta do
-moderador que gira de verdade com nomes nas fatias, som sintetizado, modo por rodadas/único, lista de
+moderador que gira de verdade com nomes nas fatias, som sintetizado, modo por rodadas, lista de
 teste do Time em DEV, atrás de `devOnly`); login do moderador extraído e reusado entre perguntas e
 sorteio; `.form-error` generalizado; várias correções de bug encontradas em teste ao vivo com o Renato
 (foto cortando rosto, URL errada no `/DEV/`, roleta sem animação, nomes de cabeça pra baixo, animação

@@ -395,8 +395,7 @@ conduta).
 `components/moderator-login.js` (`moderatorSignInMarkup`/`moderatorAccountMarkup`, `signInErrorMessage`), os
 dois consomem o compartilhado agora — zero duplicação entre moderação de perguntas e sorteio. `entries`/`draws`
 chegam por `listen()` (pool ao vivo: alguém pode se cadastrar durante o evento e já entra no sorteio sem
-recarregar a tela). Modo **"por rodadas"** (várias rodadas, sem repetir ganhador) x **"sorteio único"** (trava o
-botão depois do 1º prêmio) é só um `mode` em memória da tela, não grava no banco. Som: sintetizado (Web Audio,
+recarregar a tela). Só existe o modo **por rodadas** (várias rodadas, sem repetir ganhador; o antigo "sorteio único" foi removido a pedido do Renato, 2026-10-01, junto com o seletor e as chaves `raffle.mode*` do EN). Som: sintetizado (Web Audio,
 `raffleTick`/`raffleChime`), sem depender de arquivo externo — trocar por um efeito de verdade é só mexer
 nessas duas funções. `createRaffleSpinTimer()` isola o tempo do giro (4.2 s + tiques) pra testar sem esperar.
 
