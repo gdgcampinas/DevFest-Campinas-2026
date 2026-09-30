@@ -9,8 +9,17 @@
  * data/moderation-repositories.js/firestore.rules): a mesma pessoa nunca pode ser sorteada 2x, a regra do
  * Firestore recusa como "já existe" — mesmo truque de dedupe dos check-ins, não uma checagem no cliente.
  *
+ * `devSeed` (opcional, injetado por quem chama — pages/sorteio.js só passa algo quando `reveal` é true):
+ * lista de teste (ex.: a página Time) usada SÓ quando ainda não tem ninguém cadastrado de verdade, pra dar
+ * pra testar a roleta girando sem esperar o evento. Nunca grava no Firestore — o sorteio fica só na memória
+ * da tela (`devDraws`) e some se a página recarregar. Assim que a 1ª pessoa de verdade se cadastra, a lista
+ * real assume sozinha.
+ *
+ * Um erro ao carregar (`loadError`) NUNCA esconde a roleta — vira um aviso pequeno por cima; a roleta
+ * continua desenhada mesmo com 0 pessoas (assim o moderador já vê a tela pronta antes de qualquer cadastro).
+ *
  * Som: sintetizado (Web Audio), sem depender de arquivo externo — troca fácil por um efeito de verdade depois
- * (só mudar `tick`/`chime`).
+ * (só mudar `raffleTick`/`raffleChime`).
  */
 function raffleTick(ctx) {
   const osc = ctx.createOscillator();
@@ -40,7 +49,7 @@ function raffleChime(ctx) {
   });
 }
 
-/** Tempo do giro: som decrescente de tiques + revelação no fim. Isolado pra dar pra testar sem esperar 4s de verdade. */
+/** Tempo do giro: som decrescente de tiques + revelação no fim. Isolado pra dar pra testar sem esperar 4s. */
 function createRaffleSpinTimer({ spinMs = 4200, maxTicks = 26 } = {}) {
   let tickTimer = null;
   let revealTimer = null;
@@ -63,6 +72,25 @@ function createRaffleSpinTimer({ spinMs = 4200, maxTicks = 26 } = {}) {
   };
 }
 
+/** Link que o QR do sorteio abre: a própria página, só com `?checkin=1` (limpa qualquer outro parâmetro,
+ * ex.: `?lineup=1`). Dual (sem `location`, em Node testa string simples) — quem chama passa a URL atual. */
+function raffleCheckinUrl(href) {
+  const url = new URL(href);
+  url.search = "";
+  url.searchParams.set("checkin", "1");
+  return url.toString();
+}
+
+/** Transforma TEAM (data/team.js) numa lista de teste pro `devSeed` — só nome/sobrenome e um id que nunca
+ * bate com um cadastro de verdade (`dev_<índice>`), pra girar a roleta antes de ter gente cadastrada. Só
+ * quem chama (pages/sorteio.js) decide SE isso é usado (passa `[]` fora do modo DEV). */
+function buildRaffleDevSeed(team) {
+  return team.map((person, index) => {
+    const [firstName, ...rest] = person.name.split(" ");
+    return { id: `dev_${index}`, firstName, lastName: rest.join(" ") || firstName };
+  });
+}
+
 function defaultRaffleDrawDeps() {
   return {
     entries: window.moderationRaffleEntriesRepository,
@@ -71,39 +99,53 @@ function defaultRaffleDrawDeps() {
   };
 }
 
-function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, audio = () => new (window.AudioContext || window.webkitAudioContext)(), whenReady = runAfterModules, spinTimer = createRaffleSpinTimer() } = {}) {
+function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], audio = () => new (window.AudioContext || window.webkitAudioContext)(), whenReady = runAfterModules, spinTimer = createRaffleSpinTimer(), drawQrCode = defaultDrawQrCode } = {}) {
   let email = "";
   let entries = [];
   let draws = [];
+  let devDraws = []; // sorteios feitos com devSeed: só em memória, nunca vai pro Firestore
   let stopEntries = null;
   let stopDraws = null;
   let mode = "rounds";
   let spinning = false;
   let winner = null;
   let muted = false;
+  let showQr = false;
+  let entriesError = "";
+  let drawsError = "";
   let audioCtx = null;
 
-  const draw = data => { rootEl.innerHTML = raffleWheelMarkup({ email, mode, ...data }); };
+  const usingDevSeed = () => entries.length === 0 && devSeed.length > 0;
+  const activeEntries = () => (usingDevSeed() ? devSeed : entries);
+  const activeDraws = () => (usingDevSeed() ? devDraws : draws);
+
+  const draw = data => {
+    const loadError = entriesError || drawsError;
+    rootEl.innerHTML = raffleWheelMarkup({ email, mode, showQr, loadError, ...data });
+    if (showQr && data.phase !== "signin") drawQrCode(document.getElementById("raffleQr"), raffleCheckinUrl(location.href));
+  };
 
   function drawnEntryIds() {
-    return new Set(draws.map(item => item.entryId));
+    return new Set(activeDraws().map(item => item.entryId));
   }
 
   function pool() {
     const excluded = drawnEntryIds();
-    return entries.filter(entry => !excluded.has(entry.id));
+    return activeEntries().filter(entry => !excluded.has(entry.id));
   }
 
   function drawReady() {
     const remaining = pool();
+    const drawnList = activeDraws().slice().sort((a, b) => a.prize - b.prize);
     draw({
       phase: "ready",
-      poolCount: entries.length,
+      poolCount: activeEntries().length,
       remainingCount: remaining.length,
-      drawnList: draws.slice().sort((a, b) => a.prize - b.prize),
+      drawnList,
       spinning,
       winner,
-      canSpin: !spinning && remaining.length > 0 && !(mode === "single" && draws.length >= 1),
+      usingDevSeed: usingDevSeed(),
+      canSpin: !spinning && remaining.length > 0 && !(mode === "single" && drawnList.length >= 1),
     });
   }
 
@@ -115,29 +157,45 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, audio = () => ne
   function startWatching() {
     stopEntries?.();
     stopDraws?.();
-    stopEntries = deps().entries.listen({}, list => { entries = list; drawReady(); }, () => draw({ phase: "error", message: "Não foi possível carregar a lista agora. Tentando de novo em instantes." }));
-    stopDraws = deps().draws.listen({}, list => { draws = list; drawReady(); }, () => draw({ phase: "error", message: "Não foi possível carregar os sorteios agora. Tentando de novo em instantes." }));
+    stopEntries = deps().entries.listen(
+      {},
+      list => { entries = list; entriesError = ""; drawReady(); },
+      () => { entriesError = t("raffle.loadEntriesError", "Não foi possível carregar a lista agora. Tentando de novo em instantes."); drawReady(); }
+    );
+    stopDraws = deps().draws.listen(
+      {},
+      list => { draws = list; drawsError = ""; drawReady(); },
+      () => { drawsError = t("raffle.loadDrawsError", "Não foi possível carregar os sorteios agora. Tentando de novo em instantes."); drawReady(); }
+    );
   }
 
   async function spin() {
     const remaining = pool();
-    if (spinning || !remaining.length || (mode === "single" && draws.length >= 1)) return;
+    if (spinning || !remaining.length || (mode === "single" && activeDraws().length >= 1)) return;
     const chosen = remaining[Math.floor(Math.random() * remaining.length)];
     spinning = true;
     winner = null;
     drawReady();
     const ctx = muted ? null : ensureAudio();
+    const dev = usingDevSeed();
     spinTimer.run(
       () => ctx && raffleTick(ctx),
       async () => {
-        const prize = draws.length + 1;
-        try {
-          await deps().draws.add(chosen.id, "draw", { entryKey: "draw", entryId: chosen.id, name: `${chosen.firstName} ${chosen.lastName}`, prize });
+        const prize = activeDraws().length + 1;
+        const name = `${chosen.firstName} ${chosen.lastName}`;
+        if (dev) {
+          devDraws = devDraws.concat([{ entryId: chosen.id, name, prize }]);
           if (ctx) raffleChime(ctx);
-          winner = `${chosen.firstName} ${chosen.lastName}`;
-        } catch {
-          // "permission-denied" = alguém já sorteou essa pessoa (2 telas abertas): a lista em tempo real já reflete.
-          winner = null;
+          winner = name;
+        } else {
+          try {
+            await deps().draws.add(chosen.id, "draw", { entryKey: "draw", entryId: chosen.id, name, prize });
+            if (ctx) raffleChime(ctx);
+            winner = name;
+          } catch {
+            // "permission-denied" = alguém já sorteou essa pessoa (2 telas abertas): a lista em tempo real já reflete.
+            winner = null;
+          }
         }
         spinning = false;
         drawReady();
@@ -161,8 +219,16 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, audio = () => ne
       email = "";
       entries = [];
       draws = [];
+      devDraws = [];
+      entriesError = "";
+      drawsError = "";
       draw({ phase: "signin" });
       await deps().signOut();
+      return;
+    }
+    if (event.target.closest("[data-raffle-qr-toggle]")) {
+      showQr = !showQr;
+      drawReady();
       return;
     }
     if (event.target.closest("[data-raffle-spin]")) return spin();
@@ -180,4 +246,12 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, audio = () => ne
   });
 
   return { spin };
+}
+
+/** Desenha o QR no elemento, só se ainda não tiver (evita regerar a cada re-render enquanto "Mostrar QR"
+ * está ligado). Sobre qrcodejs (já usado no quadro da sala, features/checkin-display.js), CDN clássica, sem
+ * módulo. Isolado em função própria pra dar pra trocar em teste (sem window.QRCode em jsdom). */
+function defaultDrawQrCode(el, text) {
+  if (!el || el.childElementCount > 0 || typeof window.QRCode !== "function") return;
+  new window.QRCode(el, { text, width: 176, height: 176, colorDark: "#05060a", colorLight: "#ffffff" });
 }

@@ -80,6 +80,24 @@ dos outros QR do evento, fora do código) e **decidir se as fotos do sorteio do 
 ofereceu mandar) entram em algum lugar da aba (banner, seção "como foi ano passado"?) — perguntar antes de
 desenhar.
 
+**Ajustes do mesmo dia, depois do 1º teste do Renato em DEV:**
+- **QR desenhado na própria tela** (Área da organização, botão "Mostrar QR do sorteio"): reusa `qrcodejs`
+  (mesma lib do quadro da sala, `sorteio.html?checkin=1` como texto, sem hardcode de domínio — funciona em
+  DEV e em PROD sozinho). `features/raffle-draw.js` → `raffleCheckinUrl()` monta o link a partir da própria
+  URL, limpando outros parâmetros (`?lineup=1` etc). Não precisa mais de ferramenta externa pra gerar o QR.
+- **Lista de teste (Time) só em modo DEV, quando ninguém se cadastrou ainda:** `buildRaffleDevSeed(team)`
+  transforma `TEAM` (`data/team.js`) num pool de teste; a roleta gira e sorteia normal, mas o sorteio fica
+  só na memória da aba (`devDraws`), nunca grava no Firestore. Some sozinho assim que a 1ª pessoa de
+  verdade se cadastra (a lista real assume). `pages/sorteio.js` decide isso via `reveal` (só passa a
+  lista de teste em modo DEV), a feature não sabe de Time nem de DEV — recebe tudo por parâmetro.
+- **Erro de carregar não esconde mais a roleta:** antes, um erro (ex.: regras do Firestore ainda não
+  publicadas) trocava a tela inteira por uma mensagem, sumindo com a roleta. Agora vira um aviso pequeno
+  por cima, a roleta continua desenhada (com 0 pessoas se for o caso) — confirmado testando de verdade
+  contra o Firebase real sem as regras publicadas ainda: aparece o aviso, a roleta com a lista de teste do
+  Time continua funcionando embaixo.
+- Travessão removido do texto da regra "Só no dia do evento" (tinha escapado).
+- 22 testes jsdom no total pro sorteio agora (11 cadastro + 11 roleta).
+
 ### Motor das perguntas ao vivo — FEITO E ESTÁVEL desde a sessão 8, sem pendência técnica
 Fluxo simples: espectador com check-in pergunta (até 3) -> moderador aprova/rejeita/reabre/marca
 respondida -> espectadores votam -> ordena por votos. Leitura barata (`talk-boards/<talkKey>`, sem

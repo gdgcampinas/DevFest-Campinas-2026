@@ -7,7 +7,7 @@ const RAFFLE_RULES = [
     trackColor: "var(--google-blue)",
     icon: "calendar",
     title: "Só no dia do evento",
-    body: "O cadastro abre durante o DevFest, ao vivo — não antes.",
+    body: "O cadastro abre durante o DevFest, ao vivo, não antes.",
   },
   {
     trackColor: "var(--google-red)",

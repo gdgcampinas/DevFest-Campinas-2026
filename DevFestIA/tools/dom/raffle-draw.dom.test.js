@@ -21,12 +21,10 @@ const fakeAudioCtx = () => {
   return { createOscillator: node, createGain: node, destination: {}, currentTime: 0 };
 };
 
-function setup({ signedIn = false } = {}) {
+function setup({ signedIn = false, devSeed = [], entries = createFakeQuestions(), draws = createFakeQuestions() } = {}) {
   const site = loadSite({ scripts: SCRIPTS });
   const { document, window } = site;
   windows.push(window);
-  const entries = createFakeQuestions();
-  const draws = createFakeQuestions();
   const auth = { email: signedIn ? "mod@gdg.dev" : null, signInError: null };
   document.body.innerHTML = `<div id="mod"></div>`;
   const rootEl = document.getElementById("mod");
@@ -37,6 +35,7 @@ function setup({ signedIn = false } = {}) {
       restore: async () => auth.email,
       signOut: async () => { auth.email = null; },
     }),
+    devSeed,
     whenReady: task => task(),
     spinTimer: instantSpinTimer(),
     audio: fakeAudioCtx,
@@ -116,4 +115,44 @@ test("2 telas de moderador giram ao mesmo tempo: a regra recusa a gravação dup
   await world.spin();
   assert.equal(world.draws.docs.length, 0);
   assert.doesNotMatch(textOf(world.rootEl), /undefined/);
+});
+
+test("erro ao carregar a lista: mostra o aviso mas a roleta continua desenhada (não esconde tudo)", async () => {
+  const entries = { listen: (filters, onNext, onError) => { onError(new Error("offline")); return () => {}; } };
+  const draws = createFakeQuestions();
+  const world = setup({ signedIn: true, entries, draws });
+  await world.signIn();
+  assert.match(textOf(world.rootEl), /Não foi possível carregar a lista agora/);
+  assert.ok(world.rootEl.querySelector(".raffle-wheel")); // a roleta (com 0 pessoas) continua na tela
+  assert.equal(world.rootEl.querySelector("[data-raffle-spin]").disabled, true);
+});
+
+test("modo DEV sem ninguém cadastrado: gira com a lista de teste (devSeed), sem gravar no Firestore", async () => {
+  const devSeed = [{ id: "dev_0", firstName: "Renato", lastName: "Ramos" }, { id: "dev_1", firstName: "Bianca", lastName: "Issa" }];
+  const world = setup({ signedIn: true, devSeed });
+  await world.signIn();
+  assert.match(textOf(world.rootEl), /Modo DEV/);
+  await world.spin();
+  assert.equal(world.draws.docs.length, 0); // nada foi pro Firestore
+  assert.match(textOf(world.rootEl), /Renato Ramos|Bianca Issa/);
+});
+
+test("modo DEV: assim que alguém de verdade se cadastra, a lista de teste some e a real assume", async () => {
+  const devSeed = [{ id: "dev_0", firstName: "Renato", lastName: "Ramos" }];
+  const world = setup({ signedIn: true, devSeed });
+  await world.signIn();
+  assert.match(textOf(world.rootEl), /Modo DEV/);
+  world.seedEntry("u1_raffle", "Ana", "Souza");
+  assert.doesNotMatch(textOf(world.rootEl), /Modo DEV/);
+  assert.match(textOf(world.rootEl), /1 pessoa cadastrada/);
+});
+
+test("mostrar/esconder o QR do sorteio", async () => {
+  const world = setup({ signedIn: true });
+  await world.signIn();
+  assert.equal(world.rootEl.querySelector("#raffleQr"), null);
+  world.rootEl.querySelector("[data-raffle-qr-toggle]").click();
+  assert.ok(world.rootEl.querySelector("#raffleQr"));
+  world.rootEl.querySelector("[data-raffle-qr-toggle]").click();
+  assert.equal(world.rootEl.querySelector("#raffleQr"), null);
 });

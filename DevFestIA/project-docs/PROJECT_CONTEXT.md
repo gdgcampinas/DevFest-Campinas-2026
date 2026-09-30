@@ -400,6 +400,31 @@ botão depois do 1º prêmio) é só um `mode` em memória da tela, não grava n
 `raffleTick`/`raffleChime`), sem depender de arquivo externo — trocar por um efeito de verdade é só mexer
 nessas duas funções. `createRaffleSpinTimer()` isola o tempo do giro (4.2 s + tiques) pra testar sem esperar.
 
+**Check-in do sorteio (revisão no mesmo dia):** `raffle-entries` agora exige `exists()` num
+`raffle-checkins/<uid>_raffle`, feito por `sorteio.html?checkin=1` (mesma ideia do `?checkin=<código>` de
+palestra, chave fixa, sem código por palestra). É a regra do Firestore que trava "só durante o evento, só
+quem está lá", não um relógio — o `?checkin=1` só existe de verdade quando alguém escaneia o QR que a
+organização mostra NO dia. Seção "Regras" na aba (`data/raffle-rules.js`, mesmo card com ícone do Código de
+conduta) explica isso e que "só quem está na sala ganha o prêmio" é operacional (MC redesenha se ausente).
+
+**QR ao vivo, sem ferramenta externa:** botão "Mostrar QR do sorteio" na Área da organização desenha o QR
+na hora com `qrcodejs` (mesma lib do quadro da sala, `checkin-display.js`), apontando pra
+`raffleCheckinUrl(location.href)` (a própria página, só com `?checkin=1`, limpa qualquer outro parâmetro)
+— funciona em DEV e continua funcionando sozinho quando a aba sair do `devOnly`.
+
+**Lista de teste (Time) só em DEV, sem gravar nada:** `buildRaffleDevSeed(team)` (dual, só transforma
+array) vira o pool da roleta QUANDO `entries` está vazio; `pages/sorteio.js` só passa isso quando `reveal`
+é true (fora do DEV, `devSeed: []`, a feature nem sabe que `team.js` existe). Sorteios com a lista de teste
+ficam em `devDraws`, só na memória da aba — nunca tentam escrever no Firestore (os ids "dev_N" não batem
+com nenhum `raffle-entries` de verdade, então nem adiantaria). Assim que a 1ª pessoa de verdade se
+cadastra, `entries.length > 0` e a lista real assume sozinha, sem recarregar a página.
+
+**Erro de carregar não esconde a roleta:** antes, `listen()` falhar (ex.: regras ainda não publicadas)
+trocava a tela toda por uma mensagem. Agora `entriesError`/`drawsError` (dois estados separados, pra um não
+apagar o erro do outro) só viram um aviso pequeno por cima; a roleta (com a lista de teste ou vazia) sempre
+aparece. Testado contra o Firebase real (projeto de produção) sem as regras publicadas: erro aparece,
+roleta com a lista de teste do Time continua girando embaixo, nada quebra.
+
 **`.form-error` (antes `.talk-feedback-error`):** classe renomeada — é o aviso de erro genérico de qualquer
 formulário do site (`showFormError` em `features/talk-feedback.js`, já reusado por palestra/evento/sorteio),
 não só de palestra. Mesma regra de sempre: renomear = `?v=` de tudo que usa sobe junto.
