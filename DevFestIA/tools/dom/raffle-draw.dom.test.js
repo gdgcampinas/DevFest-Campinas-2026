@@ -89,13 +89,13 @@ test("girar de verdade roda o disco (transform muda a cada giro, nunca fica para
   assert.notEqual(secondTransform, firstTransform); // cada giro soma ângulo, nunca repete o anterior
 });
 
-test("mostra o primeiro nome de cada pessoa na fatia da roda", async () => {
+test("mostra nome e último sobrenome de cada pessoa na fatia da roda", async () => {
   const world = setup({ signedIn: true });
   world.seedEntry("u1_raffle", "Ana", "Souza");
   world.seedEntry("u2_raffle", "Beto", "Lima");
   await world.signIn();
   const labels = [...world.rootEl.querySelectorAll(".raffle-wheel-label span")].map(el => el.textContent);
-  assert.deepEqual(labels.sort(), ["Ana", "Beto"]);
+  assert.deepEqual(labels.sort(), ["Ana Souza", "Beto Lima"]);
 });
 
 test("o nome de cada fatia fica no centro da cor dela (rótulo parte das 12h, igual ao conic-gradient)", async () => {

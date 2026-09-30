@@ -493,6 +493,10 @@ vão de meio grau por fronteira (o navegador borrava o trecho em degradê); agor
 fim, sem vão. Teste jsdom novo trava a rotação dos rótulos; conferido ao vivo: nome do ganhador escrito na
 fatia sob a seta. `raffle-wheel.js?v=6`.
 
+**Texto da fatia (pedido do Renato, 2026-10-01):** nome + ÚLTIMO sobrenome (`raffleWheelLabelText` em `components/raffle-wheel.js`; "Henrique Ferreira Rodrigues da Silva" vira "Henrique Silva"), pra caber na fatia; o nome completo segue no bloco do ganhador. `raffle-wheel.js?v=7`.
+
+**Escala (medido 2026-10-01, evento esperado ~1.000 pessoas):** com 1.000 cadastros a roda vira um borrão ilegível (1.000 fatias de 0,36° e 1.000 rótulos), embora o desenho leve só ~4 ms por atualização e o Firestore caiba no plano Spark (~1.000 leituras na abertura + 1 por cadastro novo; ~2.000 escritas de 20 mil/dia). Pendente decidir: a roda mostrar só uma amostra (~24 nomes, sempre incluindo o sorteado) e o sorteio sair da lista inteira.
+
 **`qrcodejs` carrega sob demanda, não mais fixo no `<head>`:** carregar essa lib externa sempre, em toda
 visita à aba, combinado com a reescrita de documento do `/DEV/` (`document.write`, ver "Site nav"), fazia o
 navegador navegar pra `gdgcampinas.github.io/sorteio.html` (raiz, sem o repo) em vez de ficar na página —

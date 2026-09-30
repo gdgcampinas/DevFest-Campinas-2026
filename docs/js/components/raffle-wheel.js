@@ -28,9 +28,16 @@ function raffleWheelGradient(count) {
   return `conic-gradient(${stops.join(", ")})`;
 }
 
+/** Texto da fatia: nome + último sobrenome ("Henrique Ferreira Rodrigues da Silva" vira "Henrique Silva"),
+ * pra o nome inteiro caber na fatia e continuar sendo reconhecível. O nome completo aparece no ganhador. */
+function raffleWheelLabelText(person) {
+  const surname = String(person.lastName ?? "").trim().split(/\s+/).pop();
+  return [person.firstName, surname].filter(Boolean).join(" ");
+}
+
 /** Um nome por fatia, girando junto com a roda (é filho do próprio `.raffle-wheel`): `.raffle-wheel-label`
  * é uma linha de 0 de altura presa no centro, rodada até o meio da fatia; o texto anda pra fora nessa linha
- * (truque clássico de rótulo em roleta CSS, sem depender de canvas/SVG). Só o primeiro nome, pra caber. */
+ * (truque clássico de rótulo em roleta CSS, sem depender de canvas/SVG). Nome + último sobrenome, pra caber. */
 function raffleWheelLabelsMarkup(remaining) {
   const seg = 360 / Math.max(remaining.length, 1);
   return remaining.map((person, i) => {
@@ -41,7 +48,7 @@ function raffleWheelLabelsMarkup(remaining) {
     // Com a linha apontando pra esquerda (rotação entre 90° e 270°, ou seja center entre 180° e 360°) o
     // texto ficaria de cabeça pra baixo: rotaciona só o texto (não a posição) mais 180° de volta.
     const flip = center > 180 && center < 360;
-    return `<div class="raffle-wheel-label" style="transform:rotate(${rotation.toFixed(2)}deg)"><span${flip ? ' style="transform:rotate(180deg)"' : ""}>${escapeHtml(person.firstName)}</span></div>`;
+    return `<div class="raffle-wheel-label" style="transform:rotate(${rotation.toFixed(2)}deg)"><span${flip ? ' style="transform:rotate(180deg)"' : ""}>${escapeHtml(raffleWheelLabelText(person))}</span></div>`;
   }).join("");
 }
 
