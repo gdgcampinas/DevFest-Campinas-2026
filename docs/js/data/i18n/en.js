@@ -202,8 +202,6 @@ I18N_DICTIONARIES.en = {
     "home.testimonials": "Stories from people who lived this experience",
     "home.sponsors": "Sponsors and partners",
     "home.communities": "Partner communities",
-    "time.organizersSoon": "Organizers will be revealed soon.",
-    "time.volunteersSoon": "Volunteers will be revealed soon.",
     "footer.conduct": "Code of conduct",
     "footer.credits": "DevFest Campinas, organized by",
     "page.home.title": "DevFest Campinas 2026",

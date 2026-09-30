@@ -899,6 +899,8 @@ that has a `#ticker` element (all seven do, right after `<body>`).
 
 ## PROD x DEV (mesmo site, um parâmetro, salvo no navegador)
 
+**Exceção (2026-10-01): a página Time é 100% real e aparece igual em PROD e DEV** (`pages/time.js` não usa mais `renderOrConstruction`; as chaves `time.organizersSoon`/`time.volunteersSoon` saíram do EN). Continuam atrás do gate: Grade/line-up, patrocinadores, comunidades, ingressos (mock) e o Sorteio (`devOnly`).
+
 Não existe deploy/config separado pra PROD e DEV — os dois são a mesma
 URL publicada, só muda o estado de `reveal`. `EVENT.lineupRevealed = false`
 (PROD, padrão). `?lineup=1` entra no modo DEV **e grava em

@@ -32,8 +32,8 @@ Antes de confiar neste texto, rode `git status --short --branch` e `git log --on
 - **Backend mínimo, todo grátis (plano Spark, sem Blaze, sem servidor nosso):** Firebase
   (Firestore + Authentication anônimo) pra check-in, avaliações e o total de inscritos; um job do
   GitHub Actions (a cada 10 min) lê o Sympla e grava no Firestore. O resto do site é 100% estático.
-- **PROD (público) esconde todo mock por padrão** (line-up, patrocinadores, comunidades, time,
-  ingressos: "será revelado em breve"). **DEV** (`/DEV/<página>` ou `?lineup=1`) mostra tudo.
+- **PROD (público) esconde todo mock por padrão** (line-up, patrocinadores, comunidades,
+  ingressos: "será revelado em breve"). **O Time foi liberado em PROD em 2026-10-01** (22 pessoas reais, `pages/time.js` renderiza sem o gate). **DEV** (`/DEV/<página>` ou `?lineup=1`) mostra tudo.
   A identidade visual (logo, galáxia, cores) vale nos dois modos.
 - **Inscrição é só no Sympla** (evento `s36cd5d`, id 3591517, vendas abertas, link em
   `EVENT.tickets.url`, 0 inscritos no dia da implementação).
