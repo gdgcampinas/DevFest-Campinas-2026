@@ -136,6 +136,13 @@ fatia, girando junto (texto radial em CSS puro, mesmo truque de sempre, sem canv
 com a lista de teste do Time (22 pessoas): gira, anima, nomes legíveis, revela o ganhador certo. 2 testes
 jsdom novos travam essa correção (24 no total pro sorteio).
 
+**Roda ainda não girava de verdade (achado por Renato depois da sessão 9, corrigido 2026-10-01):** era só o
+botão que trocava pra "Girando…", a roda ficava parada — bug diferente dos dois abaixo (esses já tinham
+sido corrigidos na sessão 9; esse escapou porque só aparece quando o `spin()` recria o elemento do zero a
+cada render, e nenhum teste jsdom checava a animação em si, só o ângulo final). Causa e correção completas
+em `PROJECT_CONTEXT.md` ("Sorteio"). Confirmado ao vivo: gira, para na fatia certa, funciona em giros
+seguidos.
+
 **Renato testou de novo e achou mais 2 (corrigidos na mesma sessão):**
 - **"Não está rodando" no aparelho dele:** o iPhone do Renato tem "Reduzir movimento" ligado no sistema (já
   documentado aqui pra galáxia) — a regra global do site zerava a `transition-duration` da roleta junto com

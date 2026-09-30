@@ -39,6 +39,7 @@ function setup({ signedIn = false, devSeed = [], entries = createFakeQuestions()
     whenReady: task => task(),
     spinTimer: instantSpinTimer(),
     audio: fakeAudioCtx,
+    raf: fn => fn(), // roda na hora, sem esperar frame: os testes conferem o ângulo logo depois do giro
   });
   const seedEntry = (id, firstName, lastName) => entries.seed({ id, firstName, lastName });
   const signIn = async () => { rootEl.querySelector("[data-mod-signin]").click(); await settle(); };

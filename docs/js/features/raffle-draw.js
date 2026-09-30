@@ -99,7 +99,15 @@ function defaultRaffleDrawDeps() {
   };
 }
 
-function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], audio = () => new (window.AudioContext || window.webkitAudioContext)(), whenReady = runAfterModules, spinTimer = createRaffleSpinTimer(), drawQrCode = defaultDrawQrCode } = {}) {
+/** Aplica o ângulo final direto no elemento já existente na tela (sem recriar o HTML), pra a transição CSS
+ * do `.raffle-wheel` (`styles.css`) ter um "antes" pra animar a partir dele — recriar o elemento inteiro
+ * (como um re-render normal faz) já nasce no ângulo final e pula direto pra lá, sem girar visualmente. */
+function applyWheelRotation(rootEl, deg) {
+  const wheelEl = rootEl.querySelector(".raffle-wheel");
+  if (wheelEl) wheelEl.style.transform = `rotate(${deg}deg)`;
+}
+
+function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], audio = () => new (window.AudioContext || window.webkitAudioContext)(), whenReady = runAfterModules, spinTimer = createRaffleSpinTimer(), drawQrCode = defaultDrawQrCode, raf = (window.requestAnimationFrame || (fn => setTimeout(fn, 16))).bind(window) } = {}) {
   let email = "";
   let entries = [];
   let draws = [];
@@ -184,10 +192,14 @@ function initRaffleDraw(rootEl, { deps = defaultRaffleDrawDeps, devSeed = [], au
     const seg = 360 / remaining.length;
     const winnerCenter = chosenIndex * seg + seg / 2;
     spinCount += 1;
-    wheelDeg = spinCount * 2160 + ((360 - winnerCenter) % 360); // 2160 = 6 voltas inteiras, só efeito visual
+    const targetDeg = spinCount * 2160 + ((360 - winnerCenter) % 360); // 2160 = 6 voltas inteiras, só efeito visual
     spinning = true;
     winner = null;
-    drawReady();
+    drawReady(); // primeiro render ainda no ângulo antigo: o elemento nasce parado, pronto pra animar
+    raf(() => {
+      wheelDeg = targetDeg;
+      applyWheelRotation(rootEl, wheelDeg); // muta o elemento que já está na tela, não recria: a transição roda
+    });
     const ctx = muted ? null : ensureAudio();
     const dev = usingDevSeed();
     spinTimer.run(

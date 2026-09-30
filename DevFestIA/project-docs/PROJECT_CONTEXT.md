@@ -424,6 +424,22 @@ recebem `remaining` (o array, não só a contagem) pra desenhar os rótulos.
   `raffleWheelLabelsMarkup` agora detecta essa faixa e aplica `transform:rotate(180deg)` só no `<span>`
   interno (a posição do rótulo, herdada do container, não muda) pra ele ficar legível dos dois lados.
 
+**Roda ainda não animava de verdade (achado por Renato depois da sessão 9, corrigido 2026-10-01):** o
+`spin()` calculava o `wheelDeg` final e chamava `drawReady()` antes de qualquer outra coisa — mas
+`drawReady()`/`draw()` fazem `rootEl.innerHTML = raffleWheelMarkup(...)`, ou seja, **recriam o elemento
+`.raffle-wheel` do zero** já com o ângulo final no HTML. `transition:transform` do CSS só anima uma
+mudança de estilo num elemento que já existia na tela; um elemento recém-criado nasce direto no estado
+final, sem "antes" pra animar a partir dele — por isso só o texto do botão ("Girando…") mudava e a roda
+ficava parada. Corrigido separando as duas coisas: `spin()` primeiro chama `drawReady()` ainda com o
+ângulo ANTIGO (o elemento nasce parado, pronto pra animar), e só depois, num frame seguinte
+(`raf`, injetável, `requestAnimationFrame` por padrão — mesmo padrão de injeção de `spinTimer`/`audio`),
+`applyWheelRotation(rootEl, wheelDeg)` muta o `style.transform` do elemento QUE JÁ ESTÁ NA TELA
+diretamente (sem recriar o HTML) — aí sim o navegador tem um "antes" e "depois" no mesmo elemento pra
+rodar a transição de 4.2s. Teste jsdom `girar de verdade roda o disco...` ganhou `raf: fn => fn()`
+(síncrono, mesmo padrão de `spinTimer`/`audio` fake) pra continuar determinístico. Confirmado ao vivo no
+navegador (`?lineup=1`, lista de teste do Time): a roda gira visivelmente, para na fatia certa, 2 giros
+seguidos funcionam. `docs/sorteio.html` subiu `raffle-draw.js?v=5`.
+
 **`qrcodejs` carrega sob demanda, não mais fixo no `<head>`:** carregar essa lib externa sempre, em toda
 visita à aba, combinado com a reescrita de documento do `/DEV/` (`document.write`, ver "Site nav"), fazia o
 navegador navegar pra `gdgcampinas.github.io/sorteio.html` (raiz, sem o repo) em vez de ficar na página —
