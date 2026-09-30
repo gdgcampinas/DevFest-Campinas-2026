@@ -232,9 +232,21 @@ service cloud.firestore {
     }
 
     // ---- Sorteio ----
+    // Check-in do sorteio: prova de presença, mesma forma dos checkins de palestra, chave sempre "raffle". Só
+    // dá pra fazer com o QR/link que a organização mostra NO evento (`sorteio.html?checkin=1`) — o cadastro
+    // (abaixo) exige esse check-in, então não dá pra se cadastrar antes do evento nem sem estar lá.
+    match /raffle-checkins/{docId} {
+      allow get: if isOwnDoc(docId);
+      allow list: if false;
+      allow create: if isOwnDoc(docId) && idMatchesEntry(docId) && hasValidBaseFields()
+        && request.resource.data.entryKey == 'raffle'
+        && request.resource.data.keys().hasOnly(['edition', 'entryKey', 'createdAt']);
+      allow update, delete: if false;
+    }
+
     // Cadastro no sorteio: um registro por pessoa, chave sempre "raffle" (features/raffle-signup.js). Nome e
-    // sobrenome obrigatórios. Ninguém lista (nem o dono lê a lista de outras pessoas) exceto o moderador, que
-    // precisa da lista completa pra girar a roleta.
+    // sobrenome obrigatórios, e só quem já tem o check-in do sorteio (acima). Ninguém lista (nem o dono lê a
+    // lista de outras pessoas) exceto o moderador, que precisa da lista completa pra girar a roleta.
     match /raffle-entries/{docId} {
       allow get: if isOwnDoc(docId);
       allow list: if isModerator();
@@ -242,7 +254,8 @@ service cloud.firestore {
         && request.resource.data.entryKey == 'raffle'
         && request.resource.data.keys().hasOnly(['edition', 'entryKey', 'createdAt', 'firstName', 'lastName'])
         && requiredText(request.resource.data, 'firstName', 60)
-        && requiredText(request.resource.data, 'lastName', 80);
+        && requiredText(request.resource.data, 'lastName', 80)
+        && exists(/databases/$(database)/documents/raffle-checkins/$(request.auth.uid + '_raffle'));
       allow update, delete: if false;
     }
 

@@ -1,6 +1,7 @@
 /**
  * Testes de TELA do cadastro no sorteio (docs/js/features/raffle-signup.js + components/raffle-signup.js) em
- * jsdom, com o Firebase de mentira em `globals`: fases (formulário/feito), validação e o cadastro duplicado.
+ * jsdom, com o Firebase de mentira em `globals`: as 3 fases (travado/formulário/feito), o check-in por
+ * `?checkin=1`, validação e o cadastro duplicado.
  *   node --test DevFestIA/tools/dom/raffle-signup.dom.test.js
  */
 const test = require("node:test");
@@ -8,16 +9,18 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, memoryStorage, settle, textOf } = require("../lib/dom-harness.js");
 const { denied } = require("../lib/fake-question-world.js");
 
-const SCRIPTS = [...SITE_BASE, "components/raffle-signup.js", "features/talk-feedback.js", "features/raffle-signup.js"];
+const SCRIPTS = [...SITE_BASE, "data/raffle-rules.js", "components/info-card.js", "components/raffle-signup.js", "features/talk-feedback.js", "features/raffle-signup.js"];
 
 const windows = [];
 test.after(() => windows.forEach(window => window.close()));
 
-function setup({ alreadyIn = false } = {}) {
+function setup({ alreadyIn = false, checkedIn = false, url = "http://localhost/" } = {}) {
   const calls = [];
-  const fail = { add: null };
+  const checkinCalls = [];
+  const fail = { add: null, checkinAdd: null };
   const site = loadSite({
     scripts: SCRIPTS,
+    url,
     globals: {
       firebaseClient: { ensureAnonymousUid: async () => "me" },
       raffleEntriesRepository: {
@@ -26,36 +29,77 @@ function setup({ alreadyIn = false } = {}) {
           calls.push({ uid, entryKey, data });
         },
       },
+      raffleCheckinsRepository: {
+        async add(uid, entryKey, data) {
+          if (fail.checkinAdd) throw fail.checkinAdd;
+          checkinCalls.push({ uid, entryKey, data });
+        },
+      },
     },
   });
   const { document, window } = site;
   windows.push(window);
   const myRaffle = site.get("createPersistedSetRepository")({ storageKey: "raffle", storage: memoryStorage() });
+  const myRaffleCheckin = site.get("createPersistedSetRepository")({ storageKey: "raffle-checkin", storage: memoryStorage() });
   if (alreadyIn) myRaffle.addAll(["raffle"]);
+  if (checkedIn) myRaffleCheckin.addAll(["raffle"]);
   document.body.innerHTML = `<div id="raffle"></div>`;
   const rootEl = document.getElementById("raffle");
-  const { render } = site.get("initRaffleSignup")(rootEl, { myRaffle });
+  const { render } = site.get("initRaffleSignup")(rootEl, { myRaffle, myRaffleCheckin });
   render(rootEl);
   const fill = (name, value) => { rootEl.querySelector(`[name=${name}]`).value = value; };
   const check = name => { rootEl.querySelector(`[name=${name}]`).checked = true; };
   const submit = () => rootEl.querySelector("[data-raffle-signup-form]").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
-  return { rootEl, calls, fail, myRaffle, fill, check, submit };
+  return { rootEl, calls, checkinCalls, fail, myRaffle, myRaffleCheckin, fill, check, submit };
 }
 
-test("mostra o formulário quando ainda não cadastrou", () => {
+test("sem check-in: fica travado, mostra as regras e não tem formulário", () => {
   const world = setup();
-  assert.match(textOf(world.rootEl), /Cadastre seu nome/);
-  assert.equal(world.myRaffle.has("raffle"), false);
+  assert.match(textOf(world.rootEl), /Cadastro só durante o evento/);
+  assert.match(textOf(world.rootEl), /Só no dia do evento/); // uma das regras
+  assert.equal(world.rootEl.querySelector("[data-raffle-signup-form]"), null);
+});
+
+test("com check-in local (já escaneou antes): mostra o formulário direto", () => {
+  const world = setup({ checkedIn: true });
+  assert.ok(world.rootEl.querySelector("[data-raffle-signup-form]"));
+});
+
+test("?checkin=1 na URL: faz o check-in, limpa o parâmetro e libera o formulário", async () => {
+  const world = setup({ url: "http://localhost/?checkin=1" });
+  await settle();
+  assert.equal(world.checkinCalls.length, 1);
+  assert.equal(world.checkinCalls[0].uid, "me");
+  assert.equal(world.checkinCalls[0].entryKey, "raffle");
+  assert.ok(world.myRaffleCheckin.has("raffle"));
+  assert.ok(world.rootEl.querySelector("[data-raffle-signup-form]"));
+  assert.equal(new URL(world.rootEl.ownerDocument.location.href).searchParams.has("checkin"), false);
+});
+
+test("?checkin=1 recusado por já existir: conta como feito, libera o formulário", async () => {
+  const world = setup({ url: "http://localhost/?checkin=1" });
+  world.fail.checkinAdd = denied();
+  await settle();
+  assert.ok(world.myRaffleCheckin.has("raffle"));
+  assert.ok(world.rootEl.querySelector("[data-raffle-signup-form]"));
+});
+
+test("?checkin=1 sem internet: fica travado, sem quebrar", async () => {
+  const world = setup({ url: "http://localhost/?checkin=1" });
+  world.fail.checkinAdd = Object.assign(new Error("offline"), { code: "unavailable" });
+  await settle();
+  assert.equal(world.myRaffleCheckin.has("raffle"), false);
+  assert.match(textOf(world.rootEl), /Cadastro só durante o evento/);
 });
 
 test("já cadastrado neste navegador: mostra a confirmação direto, sem formulário", () => {
-  const world = setup({ alreadyIn: true });
+  const world = setup({ alreadyIn: true, checkedIn: true });
   assert.match(textOf(world.rootEl), /Você está participando/);
   assert.equal(world.rootEl.querySelector("[data-raffle-signup-form]"), null);
 });
 
 test("nome ou sobrenome em branco: avisa e não grava nada", async () => {
-  const world = setup();
+  const world = setup({ checkedIn: true });
   world.fill("firstName", "");
   world.fill("lastName", "Souza");
   world.check("consent");
@@ -66,7 +110,7 @@ test("nome ou sobrenome em branco: avisa e não grava nada", async () => {
 });
 
 test("sem marcar a autorização: avisa e não grava nada", async () => {
-  const world = setup();
+  const world = setup({ checkedIn: true });
   world.fill("firstName", "Ana");
   world.fill("lastName", "Souza");
   world.submit();
@@ -76,7 +120,7 @@ test("sem marcar a autorização: avisa e não grava nada", async () => {
 });
 
 test("cadastro completo: grava firstName/lastName, lembra localmente e mostra a confirmação", async () => {
-  const world = setup();
+  const world = setup({ checkedIn: true });
   world.fill("firstName", "Ana");
   world.fill("lastName", "Souza");
   world.check("consent");
@@ -93,7 +137,7 @@ test("cadastro completo: grava firstName/lastName, lembra localmente e mostra a 
 });
 
 test("banco recusa por já existir (2ª aba): conta como cadastrado, sem mostrar erro", async () => {
-  const world = setup();
+  const world = setup({ checkedIn: true });
   world.fail.add = denied();
   world.fill("firstName", "Ana");
   world.fill("lastName", "Souza");
@@ -105,7 +149,7 @@ test("banco recusa por já existir (2ª aba): conta como cadastrado, sem mostrar
 });
 
 test("erro de rede: avisa e deixa tentar de novo", async () => {
-  const world = setup();
+  const world = setup({ checkedIn: true });
   world.fail.add = Object.assign(new Error("offline"), { code: "unavailable" });
   world.fill("firstName", "Ana");
   world.fill("lastName", "Souza");

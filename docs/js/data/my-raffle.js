@@ -4,3 +4,6 @@
  * sorteio, outra coleção do Firestore.
  */
 const myRaffleRepository = createPersistedSetRepository({ storageKey: "devfest-campinas-2026:my-raffle" });
+/** Se ESTE navegador já fez o check-in do sorteio (QR mostrado no evento): libera o formulário sem precisar
+ * escanear de novo a cada visita. */
+const myRaffleCheckinRepository = createPersistedSetRepository({ storageKey: "devfest-campinas-2026:my-raffle-checkin" });

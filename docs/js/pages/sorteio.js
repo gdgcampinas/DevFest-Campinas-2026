@@ -9,7 +9,7 @@ function initSorteio() {
   renderOrConstruction(reveal, document.getElementById("raffleSection"),
     () => {
       const signupEl = document.getElementById("raffleSignup");
-      const { render } = initRaffleSignup(signupEl, { myRaffle: myRaffleRepository });
+      const { render } = initRaffleSignup(signupEl, { myRaffle: myRaffleRepository, myRaffleCheckin: myRaffleCheckinRepository });
       render(signupEl);
       initRaffleDraw(document.getElementById("raffleMod"));
     },

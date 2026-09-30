@@ -365,17 +365,24 @@ Um fluxo só, da pergunta ao quadro. Regras do jogo (as do banco, espelhadas na 
 
 ## Sorteio (sessão 9, 2026-09-30) — atrás de `devOnly`, ainda não em PROD
 
-`sorteio.html`: cadastro público (todo mundo) + roleta (só moderador), mesma aba. Elegibilidade decidida com o
-Renato: a lista é **todo mundo que já fez check-in em qualquer palestra do dia** (não só quem está presente na
-hora do sorteio — sorteia da lista inteira, se a pessoa sorteada não estiver na sala o MC gira de nova, isso é
-manual, não tem lógica no site pra isso), então o cadastro de nome fica disponível o dia todo, sem depender de
-check-in específico (as regras do Firestore não conseguem checar "fez check-in em algum lugar" sem listar tudo,
-então o cadastro é em confiança, como o resto do site).
+`sorteio.html`: cadastro público (todo mundo) + roleta (só moderador), mesma aba. Elegibilidade REVISADA
+(2026-09-30, mesma sessão): o cadastro não pode ficar aberto antes do evento, e a pessoa precisa provar que
+está lá — então o cadastro de nome agora EXIGE o check-in do sorteio (abaixo), feito com um QR/link que a
+organização só mostra NO dia. O sorteio em si segue da lista inteira de quem se cadastrou (não só quem está
+fisicamente na sala na hora do giro — se a pessoa sorteada não estiver lá o MC gira de novo, isso é manual,
+sem lógica no site pra isso); "só quem está na sala pode ganhar o prêmio" é regra operacional, explicada na
+seção "Regras" da própria aba (`data/raffle-rules.js`, mesmo card com ícone de `info-card.js` do Código de
+conduta).
 
-**Dados (Firestore), 2 coleções create-only, mesmo padrão das outras 5:**
+**Dados (Firestore), 3 coleções create-only, mesmo padrão das outras 5:**
+- `raffle-checkins`: prova de presença, chave sempre "raffle", igual aos `checkins` de palestra — feito via
+  `sorteio.html?checkin=1` (mesma ideia do `?checkin=<código>` de palestra em `features/talk-feedback.js`, só
+  que com chave fixa, já que o sorteio não é por palestra). **É isso que trava "só durante o evento, só quem
+  está lá"**, não um relógio: sem esse check-in a regra de `raffle-entries` (abaixo) recusa o cadastro.
 - `raffle-entries`: um documento por pessoa (`<uid>_raffle`, `RAFFLE_ENTRY_KEY` em `features/raffle-signup.js`),
   `firstName`/`lastName`. Opt-in explícito e separado do check-in (a pessoa concorda que o nome pode ser
-  sorteado e exibido na tela). `allow list` só pro moderador — ninguém vê a lista de nomes antes da hora.
+  sorteado e exibido na tela); a regra exige `exists()` no `raffle-checkins` da mesma pessoa. `allow list` só
+  pro moderador — ninguém vê a lista de nomes antes da hora.
 - `raffle-draws`: um documento por prêmio sorteado. **O id do documento É o id do cadastro sorteado + `_draw`**
   (não `<uid do moderador>_<nº do prêmio>`): isso é o que trava a mesma pessoa nunca ser sorteada 2x — o
   `create` de um documento que já existe é recusado pela regra (mesmo truque de dedupe dos `checkins`), não uma

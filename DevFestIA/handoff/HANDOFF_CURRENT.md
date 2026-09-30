@@ -56,20 +56,29 @@ palestra (`talk-modal.js`: card clicável abre `createModal()` com o detalhe).
   modal reusa foto (maior), nome, cargo, LinkedIn e o texto da bio.
 
 ### 2. Sorteio (2026-09-30) — CÓDIGO PRONTO E TESTADO, SÓ EM MODO DEV
-Aba nova `sorteio.html`: cadastro público (nome/sobrenome, opt-in explícito) + roleta (área da
-organização, só quem loga como moderador). Elegibilidade decidida com o Renato: a lista é todo mundo
-que já fez check-in em qualquer palestra do dia (não só quem está na sala na hora do sorteio); se a
-pessoa sorteada não estiver presente, o MC gira de novo — isso é manual, sem lógica no site. Dois modos
-na roleta: por rodadas (não repete ganhador) ou sorteio único (trava depois do 1º prêmio). Detalhes
-técnicos completos em `PROJECT_CONTEXT.md` ("Sorteio"): 2 coleções novas no Firestore
-(`raffle-entries`/`raffle-draws`, regras coladas — **falta o Renato publicar as regras novas no
-console, `pbcopy < DevFestIA/firebase/firestore.rules`**), login/erro do Google extraídos pra
-`features/moderator-login.js`/`components/moderator-login.js` (reusado pela moderação de perguntas
-também), som sintetizado (trocar por efeito de verdade é opcional, decidir depois), 14 testes jsdom
-novos. Testado no navegador desktop e mobile com repositories falsos (sem Firebase de verdade ainda —
-**falta testar com o Firestore real depois que o Renato publicar as regras**). Fica **atrás de
-`devOnly`** (não aparece no menu nem mostra conteúdo real fora do modo DEV/`?lineup=1`, a pedido do
-Renato) até decidir abrir pro público — ver Pendências.
+Aba nova `sorteio.html`: seção "Regras" (card com ícone, `data/raffle-rules.js`) + cadastro público
+(nome/sobrenome, opt-in explícito) + roleta (área da organização, só quem loga como moderador).
+**Elegibilidade revisada na mesma sessão** (o Renato pediu depois de ver a 1ª versão): o cadastro
+**exige check-in** feito com um QR/link que a organização só mostra NO evento (`sorteio.html?checkin=1`)
+— antes disso a tela fica travada, sem formulário, só as regras. Isso é o que garante "não pode cadastrar
+antes do evento" e "precisa estar lá" (a regra do Firestore recusa o cadastro sem esse check-in, não é só
+a tela escondendo). O sorteio em si continua da lista inteira de quem se cadastrou; "só quem está na sala
+ganha o prêmio" é regra operacional (se a pessoa sorteada não estiver lá, o MC gira de novo — manual, sem
+lógica no código), explicada no card de regras. Dois modos na roleta: por rodadas (não repete ganhador) ou
+sorteio único (trava depois do 1º prêmio). Detalhes técnicos completos em `PROJECT_CONTEXT.md` ("Sorteio"):
+3 coleções novas no Firestore (`raffle-checkins`/`raffle-entries`/`raffle-draws`, regras coladas — **falta
+o Renato publicar as regras novas no console, `pbcopy < DevFestIA/firebase/firestore.rules`**), login/erro
+do Google extraídos pra `features/moderator-login.js`/`components/moderator-login.js` (reusado pela
+moderação de perguntas também), som sintetizado (trocar por efeito de verdade é opcional, decidir depois),
+15 testes jsdom novos. Testado no navegador desktop e mobile com repositories falsos (sem Firebase de
+verdade ainda — **falta testar com o Firestore real depois que o Renato publicar as regras**; confirmado
+que uma tentativa de check-in contra o banco real de verdade, sem as regras publicadas, é recusada sem
+quebrar a tela, não grava lixo nenhum). Fica **atrás de `devOnly`** (não aparece no menu nem mostra
+conteúdo real fora do modo DEV/`?lineup=1`, a pedido do Renato) até decidir abrir pro público — ver
+Pendências. **Falta gerar/imprimir o QR físico** que aponta pra `sorteio.html?checkin=1` (mesmo processo
+dos outros QR do evento, fora do código) e **decidir se as fotos do sorteio do DevFest 2025** (o Renato
+ofereceu mandar) entram em algum lugar da aba (banner, seção "como foi ano passado"?) — perguntar antes de
+desenhar.
 
 ### Motor das perguntas ao vivo — FEITO E ESTÁVEL desde a sessão 8, sem pendência técnica
 Fluxo simples: espectador com check-in pergunta (até 3) -> moderador aprova/rejeita/reabre/marca

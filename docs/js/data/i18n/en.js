@@ -225,6 +225,8 @@ I18N_DICTIONARIES.en = {
     "raffle.submit": "Count me in",
     "raffle.doneTitle": "You're in!",
     "raffle.doneHint": "Keep an eye out at closing time, when the raffle happens.",
+    "raffle.lockedTitle": "Sign-up opens during the event",
+    "raffle.lockedHint": "Scan the raffle QR code, shown by the organization at DevFest, to unlock sign-up.",
     "raffle.modeRounds": "By rounds",
     "raffle.modeSingle": "Single draw",
     "raffle.modeLabel": "Raffle mode",

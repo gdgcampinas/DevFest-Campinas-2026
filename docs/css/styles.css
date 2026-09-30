@@ -1162,6 +1162,9 @@ body:has(.modal:not([hidden])) .feedback-nudge{display:none}
 .raffle-submit{width:100%;justify-content:center;padding:12px}
 
 .raffle-done{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:26px 18px}
+.raffle-locked{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:26px 18px}
+.raffle-locked .raffle-done-icon{background:color-mix(in oklch, var(--google-blue) 18%, transparent);color:var(--google-blue)}
+.raffle-rules{margin-bottom:16px} /* grid em si vem de .faq-grid (info-card.js), reusada aqui */
 .raffle-done-icon{width:42px;height:42px;border-radius:50%;background:color-mix(in oklch, var(--google-green) 18%, transparent);color:var(--google-green);display:flex;align-items:center;justify-content:center}
 .raffle-done-icon .icon{width:22px;height:22px}
 .raffle-done-title{margin:0;font:800 16px var(--font-display);color:oklch(96% 0.006 260)}

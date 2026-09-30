@@ -1,11 +1,20 @@
 /**
- * Markup do cadastro no sorteio (aba Sorteio, todo mundo vê). Duas fases: "signup" (formulário) e "done"
- * (confirmação, depois de cadastrado). Só desenha; features/raffle-signup.js decide a fase e grava.
+ * Markup do cadastro no sorteio (aba Sorteio, todo mundo vê). Três fases: "locked" (sem o check-in do
+ * evento, sem formulário), "signup" (formulário) e "done" (confirmação, depois de cadastrado). Só desenha;
+ * features/raffle-signup.js decide a fase e grava.
  */
 function raffleSignupExplainerMarkup() {
   return `<div class="raffle-hero">
     <div class="raffle-hero-icon">${iconMarkup("gift")}</div>
-    <p>${t("raffle.explainer", "No fim do evento a organização sorteia brindes ao vivo, com a lista de todo mundo que passou por aqui. Cadastre seu nome pra entrar.")}</p>
+    <p>${t("raffle.explainer", "No fim do evento a organização sorteia brindes ao vivo, com a lista de quem participou. Confira as regras e cadastre seu nome pra entrar.")}</p>
+  </div>`;
+}
+
+function raffleSignupLockedMarkup() {
+  return `<div class="raffle-form raffle-locked">
+    <div class="raffle-done-icon">${iconMarkup("shield")}</div>
+    <p class="raffle-done-title">${t("raffle.lockedTitle", "Cadastro só durante o evento")}</p>
+    <p class="raffle-done-hint">${t("raffle.lockedHint", "Escaneie o QR do sorteio, mostrado pela organização no DevFest, pra liberar o cadastro.")}</p>
   </div>`;
 }
 
@@ -36,6 +45,9 @@ function raffleSignupDoneMarkup() {
   </div>`;
 }
 
+const RAFFLE_SIGNUP_MARKUP = { locked: raffleSignupLockedMarkup, done: raffleSignupDoneMarkup };
+
 function raffleSignupMarkup({ phase }) {
-  return `${raffleSignupExplainerMarkup()}${phase === "done" ? raffleSignupDoneMarkup() : raffleSignupFormMarkup()}`;
+  const body = (RAFFLE_SIGNUP_MARKUP[phase] ?? raffleSignupFormMarkup)();
+  return `${raffleSignupExplainerMarkup()}<div class="faq-grid raffle-rules" id="raffleRules"></div>${body}`;
 }
