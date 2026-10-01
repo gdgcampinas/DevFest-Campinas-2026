@@ -19,6 +19,7 @@ mkdir -p "$OUT"
 # "altura,largura,offsetY,offsetX" recorta antes de redimensionar (foto de corpo inteiro, por ex.).
 declare -a PHOTOS=(
   "Bianca Issa.webp|bianca-issa"
+  "Matheus Naitzki Angeloni.webp|matheus-naitzki-angeloni|1291,1033,0,54"
   "Carlos Santos.png|carlos-santos"
   "Camila Fernanda Ignacio .jpeg|camila-fernanda-ignacio"
   "Davi Andrade.jpeg|davi-andrade"

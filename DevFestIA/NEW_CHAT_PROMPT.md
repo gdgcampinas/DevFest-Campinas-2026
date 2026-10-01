@@ -89,7 +89,7 @@ Sorteio: falta o Renato publicar as regras novas do Firestore no console (`raffl
 `raffle-draws`, já coladas junto com as de sempre em `DevFestIA/firebase/firestore.rules`) — sem isso o
 cadastro/roleta são recusados contra o banco real. Depois: decidir quando tira do `devOnly` e abre pro
 público, gerar/imprimir o QR físico (o QR já é desenhado na própria tela, "Mostrar QR do sorteio"), decidir
-som de verdade (hoje sintetizado) e como opera os prêmios no dia. Mini-bio: faltam os textos de 7 pessoas (15/22 já têm)
+som de verdade (hoje sintetizado) e como opera os prêmios no dia. Mini-bio: faltam os textos de 7 pessoas (16/23 já têm)
 (organizadores e voluntários) — perguntar ao Renato. Motor das perguntas ao vivo: feito e estável desde a
 sessão 8, sem pendência técnica; página Sala ao vivo/tela Palco decidida mas pausada a pedido do Renato.
 
