@@ -5,7 +5,7 @@
 próprias e no `PROJECT_CONTEXT.md`):
 
 1. **Modal de mini-bio no Time:** clicar num card com bio abre "Descubra mais sobre" (foto sangrando até a
-   borda do modal, sem título). 16 de 23 pessoas já têm bio (Matheus Naitzki Angeloni entrou em 2026-10-01 como voluntário, sem LinkedIn) (atualizado 2026-10-01) — ver "Pendências A.0b".
+   borda do modal, sem título). 16 de 23 pessoas já têm bio (Matheus Naitzki Angeloni entrou em 2026-10-01 como voluntário, com foto, bio e LinkedIn) (atualizado 2026-10-01) — ver "Pendências A.0b".
 2. **Código de conduta redesenhado:** cards de regra com ícone (cor da marca), bloco "Fale com a gente"
    (reusa `CONTACT`, dado novo único pra e-mail/redes, usado também no rodapé).
 3. **Aba Sorteio, nova, completa, atrás de `devOnly`:** cadastro público (exige check-in por QR) + roleta

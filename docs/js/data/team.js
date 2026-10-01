@@ -76,8 +76,8 @@ const TEAM = [
   volunteer("Felipe de Oliveira", "https://www.linkedin.com/in/felipeoliveira8", "m", teamPhoto("felipe-de-oliveira")),
   volunteer("Henrique Ribeiro Medeiros da Silva", "https://www.linkedin.com/in/henriquermdsilva", "m", teamPhoto("henrique-ribeiro-medeiros-da-silva"), "Sou apaixonado por tecnologia e pelo impacto positivo que ela pode trazer na vida das pessoas. Atualmente sou estudante de Ciência da Computação na UNICAMP, com experiência em aplicações web e mobile desenvolvidas em Flutter e React, e estagiário em uma empresa de segurança da informação.\n\nNas horas vagas, curto ouvir vários tipos de música e tocar bateria!"),
   volunteer("Joao Paulo Gomes Lima", "https://www.linkedin.com/in/joao-paulo-gomes-lima-008", "m", teamPhoto("joao-paulo-gomes-lima")),
-  // Entrou em 2026-10-01 (foto e bio pelo grupo); LinkedIn e cargo ainda não mandados. Homens que sobram vão pro fim da lista.
-  volunteer("Matheus Naitzki Angeloni", "", "m", teamPhoto("matheus-naitzki-angeloni"), "Tenho 28 anos e moro em Americana, SP. Faço Análise e Desenvolvimento de Sistemas na Fatec de Americana, sou Assistente de TI na Faculdade FAM e também faço manutenção particular em computadores e notebooks.\n\nSempre tive o sonho de trabalhar com tecnologia. Hoje busco aprofundar meus conhecimentos e agregar com toda a comunidade."),
+  // Entrou em 2026-10-01 (foto, bio e LinkedIn pelo grupo). Homens que sobram vão pro fim da lista.
+  volunteer("Matheus Naitzki Angeloni", "https://www.linkedin.com/in/matheus-angeloni-013960227", "m", teamPhoto("matheus-naitzki-angeloni"), "Tenho 28 anos e moro em Americana, SP. Faço Análise e Desenvolvimento de Sistemas na Fatec de Americana, sou Assistente de TI na Faculdade FAM e também faço manutenção particular em computadores e notebooks.\n\nSempre tive o sonho de trabalhar com tecnologia. Hoje busco aprofundar meus conhecimentos e agregar com toda a comunidade."),
 ];
 
 const teamRepository = createRepository(TEAM, {
