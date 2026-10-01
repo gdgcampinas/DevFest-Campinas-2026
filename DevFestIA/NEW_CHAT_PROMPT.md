@@ -89,13 +89,13 @@ Sorteio: falta o Renato publicar as regras novas do Firestore no console (`raffl
 `raffle-draws`, já coladas junto com as de sempre em `DevFestIA/firebase/firestore.rules`) — sem isso o
 cadastro/roleta são recusados contra o banco real. Depois: decidir quando tira do `devOnly` e abre pro
 público, gerar/imprimir o QR físico (o QR já é desenhado na própria tela, "Mostrar QR do sorteio"), decidir
-som de verdade (hoje sintetizado) e como opera os prêmios no dia. Mini-bio: faltam os textos de 7 pessoas (16/23 já têm)
+som de verdade (hoje sintetizado) e como opera os prêmios no dia. Mini-bio: faltam os textos de 6 pessoas (17/23 já têm)
 (organizadores e voluntários) — perguntar ao Renato. Motor das perguntas ao vivo: feito e estável desde a
 sessão 8, sem pendência técnica; página Sala ao vivo/tela Palco decidida mas pausada a pedido do Renato.
 
 PENDÊNCIAS
 Do Renato/organização: publicar as regras do Firestore do Sorteio (ver acima); dados de time em aberto
-(cargo dos 4 organizadores, LinkedIn de Laydianne e Davi, 7 bios);
+(cargo dos 4 organizadores, LinkedIn de Laydianne e Davi, 6 bios);
 dados reais do evento (local, salas/MCs, line-up, patrocinadores, valores); plenárias (A, B ou C, recomendo
 B); mensagens do Sympla com os links `.../ingressos.html?cartao=1` e `.../index.html?avaliar=1` + QR no
 encerramento; quem monta os tablets/TVs das salas; patrocínio FIAP (nota fiscal na 1ª semana de dezembro).

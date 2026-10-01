@@ -53,7 +53,11 @@ const TEAM = [
     photo: teamPhoto("bianca-issa"),
     bio: "Atuando com testes de qualidade de software e com forte veia em networking, sou organizadora do Google Developer Group (GDG) e apaixonada por conectar pessoas e tecnologia. Uno a prática de QA à gestão e ao desenvolvimento de software para criar experiências que fomentam a inovação e a melhoria contínua nas organizações.",
   }),
-  organizer("Michel Salomé", { linkedin: "https://www.linkedin.com/in/michel-luis-salome-de-barros", photo: teamPhoto("michel-salome") }),
+  organizer("Michel Salomé", {
+    linkedin: "https://www.linkedin.com/in/michel-luis-salome-de-barros",
+    photo: teamPhoto("michel-salome"),
+    bio: "Trabalho como Analista de Suporte há 15 anos na Fatec Americana e há 6 anos como docente de curso técnico de desenvolvimento de sistemas na Etec Americana e em Nova Odessa.\n\nOrganizador do GDG Campinas e apaixonado pela comunidade de TI.",
+  }),
   organizer("Carlos Santos", { linkedin: "https://www.linkedin.com/in/santos-h-carlos", photo: teamPhoto("carlos-santos") }),
   // Ordem pedida pelo Renato (2026-09-30): mulher, homem, alternando; os homens que sobrarem vão pro fim.
   volunteer("Paula Santos", "https://www.linkedin.com/in/paula-santos-", "f", teamPhoto("paula-santos"), "Paula Santos é curiosa por natureza, e foi assim que se encontrou na tecnologia. Atua como Cloud & FinOps Architect na Capgemini, com foco em otimização de custos multicloud, dados e IA.\n\nAdora eventos de tech pela troca de conhecimento e pelas conexões."),
