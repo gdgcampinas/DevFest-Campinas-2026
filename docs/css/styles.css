@@ -1248,7 +1248,7 @@ body:has(.modal:not([hidden])) .feedback-nudge{display:none}
 body.raffle-telao-open{overflow:hidden}
 .raffle-mod.raffle-telao{
   /* 68vh e não 82vh: embaixo da roda cabe o cartão do ganhador (nome + botão "Ausente"), sem cortar em tela larga e baixa */
-  --raffle-wheel-size:min(68vh,56vw);--raffle-label-size:clamp(11px,1.7vmin,24px);
+  --raffle-wheel-size:min(68vh,44vw);--raffle-label-size:clamp(11px,1.7vmin,24px);
   position:fixed;inset:0;z-index:2000;margin:0;padding:3.2vmin 3vmin 2vmin;border-radius:0;border:0;overflow:hidden;
   background:radial-gradient(circle at 28% 45%, color-mix(in oklch, var(--google-blue) 11%, var(--bg)), var(--bg) 72%);
   display:flex;flex-direction:column;
@@ -1256,7 +1256,11 @@ body.raffle-telao-open{overflow:hidden}
 .raffle-telao :where(.raffle-mod-title,.mod-account,.raffle-wheel-hint,.raffle-rounds-hint,.raffle-stats,.raffle-qr-toggle,.raffle-dev-badge,.raffle-repeated){display:none}
 .raffle-telao .raffle-controls{position:absolute;top:1.2vmin;right:1.6vmin;margin:0;z-index:5;opacity:.4;transition:opacity .2s}
 .raffle-telao .raffle-controls:hover,.raffle-telao .raffle-controls:focus-within{opacity:1}
-.raffle-telao .raffle-layout{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,30vw);gap:3vmin;align-items:center}
+/* 3 colunas: sorteados (esquerda), roda (centro), contador + chegadas + QR (direita) */
+.raffle-telao .raffle-layout{flex:1;min-height:0;display:grid;grid-template-columns:minmax(200px,23vw) minmax(0,1fr) minmax(280px,26vw);grid-template-areas:"drawn stage side";gap:3vmin;align-items:center}
+.raffle-telao .raffle-drawn{grid-area:drawn;align-self:stretch;min-height:0;overflow:hidden;padding-top:2vmin}
+.raffle-telao .raffle-wheel-stage{grid-area:stage}
+.raffle-telao .raffle-mod-side{grid-area:side}
 .raffle-telao .raffle-wheel-stage{padding:0;gap:2.4vmin}
 .raffle-telao .raffle-winner{padding:1.6vmin 3vmin;min-width:0;max-width:100%}
 .raffle-telao .raffle-winner-label{font-size:clamp(11px,1.6vmin,20px)}
@@ -1275,14 +1279,14 @@ body.raffle-telao-open{overflow:hidden}
 .raffle-telao .raffle-qr-wrap :where(img,canvas){width:min(24vh,22vw) !important;height:auto !important} /* o QR escala com a tela (desenhado em 320px, reduzido por CSS) */
 .raffle-telao .raffle-arrival:nth-child(n+5){display:none}
 .raffle-telao .raffle-qr-hint{font-size:clamp(11px,1.6vmin,20px)}
-.raffle-telao .raffle-drawn{min-height:0;overflow:hidden}
-.raffle-telao .raffle-drawn-title{font-size:clamp(11px,1.6vmin,20px)}
+.raffle-telao .raffle-drawn-title{font-size:clamp(12px,1.9vmin,24px);color:var(--google-green);letter-spacing:.08em;margin-bottom:1.2vmin}
 .raffle-telao .raffle-drawn-list{max-height:none;overflow:hidden;flex-direction:column-reverse} /* o mais recente em cima; o que não cabe é o mais antigo */
-.raffle-telao .raffle-drawn-name{font-size:clamp(14px,2.3vmin,30px)}
+.raffle-telao .raffle-drawn-name{font-size:clamp(14px,2.5vmin,32px)}
+.raffle-telao .raffle-drawn-item{padding:1vmin 1.4vmin;gap:1.2vmin}
 .raffle-telao .raffle-drawn-prize{width:clamp(22px,3.2vmin,40px);height:clamp(22px,3.2vmin,40px);font-size:clamp(11px,1.7vmin,22px)}
 /* tela baixa: menos nomes na faixa de chegadas, pra o QR e o ganhador continuarem inteiros */
 @media(max-height:900px){.raffle-telao .raffle-arrival:nth-child(n+4){display:none}}
 @media(max-aspect-ratio:1/1){
   .raffle-mod.raffle-telao{--raffle-wheel-size:min(58vh,90vw)}
-  .raffle-telao .raffle-layout{grid-template-columns:1fr;grid-template-rows:auto 1fr;align-items:start}
+  .raffle-telao .raffle-layout{grid-template-columns:1fr;grid-template-rows:auto auto auto;grid-template-areas:"stage" "side" "drawn";align-items:start}
 }

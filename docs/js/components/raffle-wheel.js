@@ -103,10 +103,10 @@ function raffleWheelReadyMarkup({ email, remaining, remainingCount, poolCount, d
           <div class="raffle-stat"><span class="raffle-stat-value">${remainingCount}</span><span class="raffle-stat-label">${t("raffle.remaining", "Na lista")}</span></div>
           <div class="raffle-stat"><span class="raffle-stat-value">${prizesGiven}</span><span class="raffle-stat-label">${t("raffle.drawnCount", "Já sorteados")}</span></div>
         </div>
-        <div class="raffle-drawn">
-          <span class="raffle-drawn-title">${t("raffle.drawnTitle", "Já sorteados")}</span>
-          ${drawnList.length ? `<ol class="raffle-drawn-list">${drawnList.map(raffleDrawnItemMarkup).join("")}</ol>` : `<p class="mod-hint">${t("raffle.drawnEmpty", "Ninguém sorteado ainda.")}</p>`}
-        </div>
+      </div>
+      <div class="raffle-drawn">
+        <span class="raffle-drawn-title">${t("raffle.drawnTitle", "Já sorteados")}</span>
+        ${drawnList.length ? `<ol class="raffle-drawn-list">${drawnList.map(raffleDrawnItemMarkup).join("")}</ol>` : `<p class="mod-hint">${t("raffle.drawnEmpty", "Ninguém sorteado ainda.")}</p>`}
       </div>
     </div>`;
 }
