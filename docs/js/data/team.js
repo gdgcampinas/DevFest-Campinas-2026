@@ -74,7 +74,7 @@ const TEAM = [
   volunteer("Pedro Escobar Missola", "https://www.linkedin.com/in/pedromissola", "m", teamPhoto("pedro-escobar-missola"), "Estudante de Gestão de TI na Fatec Campinas, atua na área de Qualidade. Estuda Gestão de Projetos e também trabalha com programação, usando Node.js e JavaScript para criar websites, APIs, automações e aplicações. Gosta de unir tecnologia e gestão para transformar problemas em soluções reais."),
   volunteer("Lorenzo da Cunha", "https://www.linkedin.com/in/lorenzodacunha", "m", teamPhoto("lorenzo-da-cunha")),
   volunteer("Felipe de Oliveira", "https://www.linkedin.com/in/felipeoliveira8", "m", teamPhoto("felipe-de-oliveira")),
-  volunteer("Henrique Ribeiro Medeiros da Silva", "https://www.linkedin.com/in/henriquermdsilva", "m", teamPhoto("henrique-ribeiro-medeiros-da-silva")),
+  volunteer("Henrique Ribeiro Medeiros da Silva", "https://www.linkedin.com/in/henriquermdsilva", "m", teamPhoto("henrique-ribeiro-medeiros-da-silva"), "Sou apaixonado por tecnologia e pelo impacto positivo que ela pode trazer na vida das pessoas. Atualmente sou estudante de Ciência da Computação na UNICAMP, com experiência em aplicações web e mobile desenvolvidas em Flutter e React, e estagiário em uma empresa de segurança da informação.\n\nNas horas vagas, curto ouvir vários tipos de música e tocar bateria!"),
   volunteer("Joao Paulo Gomes Lima", "https://www.linkedin.com/in/joao-paulo-gomes-lima-008", "m", teamPhoto("joao-paulo-gomes-lima")),
 ];
 

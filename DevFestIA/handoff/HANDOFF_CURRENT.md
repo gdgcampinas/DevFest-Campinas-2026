@@ -5,7 +5,7 @@
 próprias e no `PROJECT_CONTEXT.md`):
 
 1. **Modal de mini-bio no Time:** clicar num card com bio abre "Descubra mais sobre" (foto sangrando até a
-   borda do modal, sem título). 13 de 22 pessoas já têm bio (atualizado 2026-10-01) — ver "Pendências A.0b".
+   borda do modal, sem título). 14 de 22 pessoas já têm bio (atualizado 2026-10-01) — ver "Pendências A.0b".
 2. **Código de conduta redesenhado:** cards de regra com ícone (cor da marca), bloco "Fale com a gente"
    (reusa `CONTACT`, dado novo único pra e-mail/redes, usado também no rodapé).
 3. **Aba Sorteio, nova, completa, atrás de `devOnly`:** cadastro público (exige check-in por QR) + roleta
@@ -61,7 +61,7 @@ Os 2 itens abaixo (mini-bio e Sorteio) são o que foi decidido e construído nes
 ao fim (testado, no ar). O que falta em cada um é conteúdo/decisão do Renato, não código — ver "Pendências".
 
 ### 1. Mini-bio dos voluntários/organizadores (2026-09-30) — CÓDIGO PRONTO, FALTAM OS TEXTOS
-**Feito:** campo `bio` opcional em `data/team.js`, card clicável só com bio, modal "Descubra mais sobre" (`components/person-detail.js` + `createPersonModal()` em `features/team.js`), EN pronto, testado no navegador com bio temporária. 11 pessoas já têm bio: Renato Ramos, Ricardo Koiti Matsushita, Davi Andrade, Letícia Fernandes Camargo de Campos, Pedro Escobar Missola, João Estevão Camilo, Paula Santos, Camila Fernanda Ignacio, Mayne Gabriele da Silva, Gustavo Costa e Henrique Ferreira Rodrigues da Silva. **Faltam os outros 9 (13/22 já têm, 2026-10-01)** (1-3 frases por pessoa): é preencher `bio` em `team.js` (5º parâmetro de `volunteer()`, `{ bio }` em `organizer()`), subir `team.js?v=` em `time.html`. Foto do Michel Salomé entrou (recorte do corpo inteiro). Abaixo, o desenho original da task:
+**Feito:** campo `bio` opcional em `data/team.js`, card clicável só com bio, modal "Descubra mais sobre" (`components/person-detail.js` + `createPersonModal()` em `features/team.js`), EN pronto, testado no navegador com bio temporária. 11 pessoas já têm bio: Renato Ramos, Ricardo Koiti Matsushita, Davi Andrade, Letícia Fernandes Camargo de Campos, Pedro Escobar Missola, João Estevão Camilo, Paula Santos, Camila Fernanda Ignacio, Mayne Gabriele da Silva, Gustavo Costa e Henrique Ferreira Rodrigues da Silva. **Faltam os outros 8 (14/22 já têm, 2026-10-01)** (1-3 frases por pessoa): é preencher `bio` em `team.js` (5º parâmetro de `volunteer()`, `{ bio }` em `organizer()`), subir `team.js?v=` em `time.html`. Foto do Michel Salomé entrou (recorte do corpo inteiro). Abaixo, o desenho original da task:
 Clicar no card (Organizadores ou Voluntários, `time.html`) abre um **modal** "Descubra mais sobre" com
 mais informação da pessoa. **Os cards continuam exatamente como estão** (foto, nome, cargo, barra
 azul/verde, ícone do LinkedIn) — o modal é só uma camada a mais no clique, mesmo padrão do card de
