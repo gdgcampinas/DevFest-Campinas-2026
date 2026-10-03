@@ -9,16 +9,19 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, settle, textOf } = require("../lib/dom-harness.js");
 const { createFakeQuestions, denied } = require("../lib/fake-question-world.js");
 
-const SCRIPTS = [...SITE_BASE, "components/moderator-login.js", "features/raffle-pool.js", "features/raffle-session.js", "features/confetti-engine.js", "features/confetti.js", "data/raffle-confetti.js", "components/raffle-arrivals.js", "components/raffle-wheel.js", "features/moderator-login.js", "features/raffle-draw.js"];
+const SCRIPTS = [...SITE_BASE, "components/moderator-login.js", "features/raffle-pool.js", "features/raffle-session.js", "features/confetti-engine.js", "features/confetti.js", "data/raffle-confetti.js", "data/raffle-sound.js", "features/raffle-sound.js", "features/calendar.js", "components/raffle-arrivals.js", "components/raffle-wheel.js", "features/moderator-login.js", "features/raffle-draw.js"];
 
 const windows = [];
 test.after(() => windows.forEach(window => window.close()));
 
 /** Roleta girando "instantânea" nos testes: sem tique nem espera de 4s, revela na hora. */
 const instantSpinTimer = () => ({ run: (onTick, onReveal) => onReveal(), cancel() {} });
+/** AudioContext de mentira: conta quantas notas (osciladores) foram tocadas e quantas vezes o contexto foi criado. */
+const audioLog = { contexts: 0, oscillators: 0 };
 const fakeAudioCtx = () => {
+  audioLog.contexts++;
   const node = () => ({ connect: () => node(), start() {}, stop() {}, frequency: { value: 0 }, gain: { value: 0, exponentialRampToValueAtTime() {}, linearRampToValueAtTime() {} } });
-  return { createOscillator: node, createGain: node, destination: {}, currentTime: 0 };
+  return { createOscillator: () => { audioLog.oscillators++; return node(); }, createGain: node, destination: {}, currentTime: 0 };
 };
 
 /** Modo telão sem tela cheia de verdade (jsdom não tem a API): só registra as chamadas. */
@@ -567,4 +570,45 @@ test("papel picado: um giro por prêmio, e nada ao marcar ausente ou quando o ba
   world.draws.add = async () => { throw new Error("offline"); };
   await world.spin();
   assert.equal(world.confettiFires.length, 2, "sem ganhador gravado, sem festa");
+});
+
+// ---------- som ----------
+test("som: a revelação toca a fanfarra de festa inteira (e o tique enquanto gira não conta como fanfarra)", async () => {
+  audioLog.contexts = 0; audioLog.oscillators = 0;
+  const world = setup({ signedIn: true });
+  manyEntries(world, 3);
+  await world.signIn();
+  await world.spin();
+  assert.ok(audioLog.oscillators >= 18, `tocou ${audioLog.oscillators} notas`);
+});
+
+test("som: botão Som desliga e liga; mudo não cria áudio nenhum", async () => {
+  audioLog.contexts = 0; audioLog.oscillators = 0;
+  const world = setup({ signedIn: true });
+  manyEntries(world, 3);
+  await world.signIn();
+  assert.match(textOf(world.rootEl.querySelector("[data-raffle-sound-toggle]")), /Som: ligado/);
+  world.rootEl.querySelector("[data-raffle-sound-toggle]").click();
+  await settle();
+  assert.match(textOf(world.rootEl.querySelector("[data-raffle-sound-toggle]")), /Som: desligado/);
+  assert.equal(world.rootEl.querySelector("[data-raffle-sound-toggle]").getAttribute("aria-pressed"), "false");
+  await world.spin();
+  assert.equal(audioLog.oscillators, 0, "mudo: nenhuma nota");
+  assert.equal(audioLog.contexts, 0, "mudo: nem abre o áudio");
+  assert.ok(world.rootEl.querySelector(".raffle-winner"), "o sorteio acontece do mesmo jeito");
+  world.rootEl.querySelector("[data-raffle-sound-toggle]").click();
+  await settle();
+  await world.spin();
+  assert.ok(audioLog.oscillators >= 18, "ligou de novo: toca");
+});
+
+test("som: marcar ausente não toca nada", async () => {
+  const world = setup({ signedIn: true });
+  manyEntries(world, 3);
+  await world.signIn();
+  await world.spin();
+  const before = audioLog.oscillators;
+  world.rootEl.querySelector(".raffle-winner [data-raffle-absent]").click();
+  await settle();
+  assert.equal(audioLog.oscillators, before);
 });

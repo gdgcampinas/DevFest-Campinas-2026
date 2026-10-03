@@ -243,6 +243,8 @@ I18N_DICTIONARIES.en = {
     "raffle.arrivalsTitle": "Just joined",
     "raffle.telaoEnter": "Stage screen mode",
     "raffle.telaoExit": "Exit stage screen mode",
+    "raffle.soundOn": "Sound: on",
+    "raffle.soundOff": "Sound: off",
     "raffle.qrHide": "Hide raffle QR code",
     "raffle.qrShow": "Show raffle QR code",
     "raffle.qrHint": "This QR code changes every minute: show it live, a photo of it soon stops working.",

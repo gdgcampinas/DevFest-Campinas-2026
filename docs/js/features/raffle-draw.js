@@ -18,42 +18,14 @@
  * Um erro ao carregar (`loadError`) NUNCA esconde a roleta — vira um aviso pequeno por cima; a roleta
  * continua desenhada mesmo com 0 pessoas (assim o moderador já vê a tela pronta antes de qualquer cadastro).
  *
- * Som: sintetizado (Web Audio), sem depender de arquivo externo — troca fácil por um efeito de verdade depois
- * (só mudar `raffleTick`/`raffleChime`).
+ * Som: sintetizado (Web Audio), sem arquivo externo; as notas são dados (data/raffle-sound.js) e quem toca é
+ * features/raffle-sound.js. Tique enquanto gira e fanfarra de festa na revelação; botão "Som" liga e desliga.
  */
 /** Estados de um sorteio (campo `status` em raffle-draws, o mesmo das regras do Firestore). */
 const RAFFLE_DRAW_STATUS = Object.freeze({ winner: "winner", absent: "absent" });
 const RAFFLE_SPIN_TURNS = 6; // voltas inteiras de cada giro, só efeito visual
 const RAFFLE_QR_SIZE = 176;
 const RAFFLE_TELAO_QR_SIZE = 320; // no telão o QR é lido de longe
-
-function raffleTick(ctx) {
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = "square";
-  osc.frequency.value = 680;
-  gain.gain.value = 0.05;
-  osc.connect(gain).connect(ctx.destination);
-  osc.start();
-  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
-  osc.stop(ctx.currentTime + 0.06);
-}
-
-function raffleChime(ctx) {
-  [660, 880, 1320].forEach((freq, i) => {
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = "sine";
-    osc.frequency.value = freq;
-    gain.gain.value = 0.0001;
-    osc.connect(gain).connect(ctx.destination);
-    const at = ctx.currentTime + i * 0.09;
-    osc.start(at);
-    gain.gain.linearRampToValueAtTime(0.09, at + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.0005, at + 0.5);
-    osc.stop(at + 0.55);
-  });
-}
 
 /** Tempo do giro: som decrescente de tiques + revelação no fim. Isolado pra dar pra testar sem esperar 4s. */
 function createRaffleSpinTimer({ spinMs = 4200, maxTicks = 26 } = {}) {
@@ -134,6 +106,7 @@ function initRaffleDraw(rootEl, {
   every = (fn, ms) => { const id = setInterval(fn, ms); return () => clearInterval(id); },
   generateCode = generateRaffleCode,
   confetti = createConfetti(),
+  sound = raffleSoundRepository.getAll(),
 } = {}) {
   let email = "";
   let entries = [];
@@ -261,6 +234,7 @@ function initRaffleDraw(rootEl, {
       drawnList,
       prizesGiven: drawnList.filter(item => !isAbsent(item)).length,
       repeatedNames: findRepeatedNames(livePool),
+      muted,
       spinning,
       winner,
       winnerPrize,
@@ -329,21 +303,21 @@ function initRaffleDraw(rootEl, {
     const ctx = muted ? null : ensureAudio();
     const dev = usingDevSeed();
     spinTimer.run(
-      () => ctx && raffleTick(ctx),
+      () => ctx && playRaffleTick(ctx, sound),
       async () => {
         const prize = activeDraws().filter(item => !isAbsent(item)).length + 1; // ausente não gasta o número do prêmio
         const name = `${chosen.firstName} ${chosen.lastName}`;
         const drawId = `${chosen.id}_draw`; // o id que o repository dá a add(chosen.id, "draw", ...)
         if (dev) {
           devDraws = devDraws.concat([{ id: drawId, entryId: chosen.id, name, prize, status: RAFFLE_DRAW_STATUS.winner }]);
-          if (ctx) raffleChime(ctx);
+          if (ctx) playRaffleFanfare(ctx, sound);
           winner = name;
           winnerPrize = prize;
           winnerDrawId = drawId;
         } else {
           try {
             await deps().draws.add(chosen.id, "draw", { entryKey: "draw", entryId: chosen.id, name, prize, status: RAFFLE_DRAW_STATUS.winner });
-            if (ctx) raffleChime(ctx);
+            if (ctx) playRaffleFanfare(ctx, sound);
             winner = name;
             winnerPrize = prize;
             winnerDrawId = drawId;
@@ -447,6 +421,10 @@ function initRaffleDraw(rootEl, {
     }
     const absentBtn = event.target.closest("[data-raffle-absent]");
     if (absentBtn && !spinning) return markAbsent(absentBtn.dataset.raffleAbsent);
+    if (event.target.closest("[data-raffle-sound-toggle]")) {
+      muted = !muted;
+      return drawReady();
+    }
     if (event.target.closest("[data-raffle-telao-toggle]")) return setTelao(!telao);
     if (event.target.closest("[data-raffle-spin]")) return spin();
   });

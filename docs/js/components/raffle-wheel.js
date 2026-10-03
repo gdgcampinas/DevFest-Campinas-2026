@@ -68,11 +68,15 @@ function raffleQrPanelMarkup(showQr, sessionError) {
     <p class="raffle-qr-hint">${t("raffle.qrHint", "Este QR muda a cada minuto: mostre ele ao vivo, uma foto dele logo deixa de valer.")}</p></div>`;
 }
 
+function raffleSoundToggleMarkup(muted) {
+  return `<button type="button" class="chip-btn raffle-sound-toggle" data-raffle-sound-toggle aria-pressed="${!muted}">${muted ? t("raffle.soundOff", "Som: desligado") : t("raffle.soundOn", "Som: ligado")}</button>`;
+}
+
 function raffleTelaoToggleMarkup(telao) {
   return `<button type="button" class="chip-btn raffle-telao-toggle" data-raffle-telao-toggle>${telao ? t("raffle.telaoExit", "Sair do modo telão") : t("raffle.telaoEnter", "Modo telão")}</button>`;
 }
 
-function raffleWheelReadyMarkup({ email, remaining, remainingCount, poolCount, drawnList, prizesGiven, repeatedNames, arrivals, newArrivalIds, spinning, winner, winnerPrize, winnerDrawId, canSpin, loadError, sessionError, usingDevSeed, showQr, telao, wheelDeg }) {
+function raffleWheelReadyMarkup({ email, remaining, remainingCount, poolCount, drawnList, prizesGiven, repeatedNames, arrivals, newArrivalIds, spinning, winner, winnerPrize, winnerDrawId, canSpin, loadError, sessionError, usingDevSeed, showQr, muted, telao, wheelDeg }) {
   const winnerBlock = winner
     ? `<div class="raffle-winner"><span class="raffle-winner-label">${t("raffle.winnerLabel", "Ganhador do prêmio {n}", { n: winnerPrize })}</span>
         <span class="raffle-winner-name">${escapeHtml(winner)}</span>
@@ -83,7 +87,7 @@ function raffleWheelReadyMarkup({ email, remaining, remainingCount, poolCount, d
   return `${moderatorAccountMarkup(email)}
     ${loadError ? `<p class="form-error raffle-load-error" role="alert">${loadError}</p>` : ""}
     ${usingDevSeed ? `<p class="raffle-dev-badge">${t("raffle.devSeedBadge", "Modo DEV: ninguém cadastrado ainda, girando com a lista do Time só pra teste (não grava nada).")}</p>` : ""}
-    <div class="raffle-controls">${raffleQrToggleMarkup(showQr)}${raffleTelaoToggleMarkup(telao)}</div>
+    <div class="raffle-controls">${raffleQrToggleMarkup(showQr)}${raffleSoundToggleMarkup(muted)}${raffleTelaoToggleMarkup(telao)}</div>
     <div class="raffle-layout">
       <div class="raffle-wheel-stage">
         <div class="raffle-wheel-wrap">
@@ -111,8 +115,8 @@ function raffleWheelReadyMarkup({ email, remaining, remainingCount, poolCount, d
     </div>`;
 }
 
-function raffleWheelMarkup({ phase, email = "", remaining = [], remainingCount = remaining.length, poolCount = 0, drawnList = [], prizesGiven = drawnList.filter(item => item.status !== "absent").length, repeatedNames = [], arrivals = [], newArrivalIds = new Set(), spinning = false, winner = null, winnerPrize = 0, winnerDrawId = "", canSpin = false, loadError = "", sessionError = "", usingDevSeed = false, showQr = false, telao = false, wheelDeg = 0, message = "" }) {
+function raffleWheelMarkup({ phase, email = "", remaining = [], remainingCount = remaining.length, poolCount = 0, drawnList = [], prizesGiven = drawnList.filter(item => item.status !== "absent").length, repeatedNames = [], arrivals = [], newArrivalIds = new Set(), spinning = false, winner = null, winnerPrize = 0, winnerDrawId = "", canSpin = false, loadError = "", sessionError = "", usingDevSeed = false, showQr = false, muted = false, telao = false, wheelDeg = 0, message = "" }) {
   const head = `<h2 class="raffle-mod-title">${t("raffle.modTitle", "Área da organização")}</h2>`;
   if (phase === "signin") return `${head}${telao ? raffleTelaoToggleMarkup(true) : ""}${moderatorSignInMarkup({ hint: message || t("raffle.modHint", "Entre com a conta de moderador pra girar a roleta."), signInLabel: t("raffle.modSignin", "Entrar com Google") })}`;
-  return `${head}${raffleWheelReadyMarkup({ email, remaining, remainingCount, poolCount, drawnList, prizesGiven, repeatedNames, arrivals, newArrivalIds, spinning, winner, winnerPrize, winnerDrawId, canSpin, loadError, sessionError, usingDevSeed, showQr, telao, wheelDeg })}`;
+  return `${head}${raffleWheelReadyMarkup({ email, remaining, remainingCount, poolCount, drawnList, prizesGiven, repeatedNames, arrivals, newArrivalIds, spinning, winner, winnerPrize, winnerDrawId, canSpin, loadError, sessionError, usingDevSeed, showQr, muted, telao, wheelDeg })}`;
 }
