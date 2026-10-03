@@ -89,8 +89,8 @@ endpoints de ESCRITA de check-in de porta (decidido NÃO usar agora; análise em
 - **Backend mínimo, todo grátis (plano Spark, sem Blaze, sem servidor nosso):** Firebase
   (Firestore + Authentication anônimo) pra check-in, avaliações e o total de inscritos; um job do
   GitHub Actions (a cada 10 min) lê o Sympla e grava no Firestore. O resto do site é 100% estático.
-- **PROD (público) esconde todo mock por padrão** (as páginas Grade, Palestrantes e Patrocínio abrem, mas mostram "será revelado em breve" no lugar de line-up, patrocinadores, comunidades,
-  ingressos: "será revelado em breve"). **O Time foi liberado em PROD em 2026-10-01** (22 pessoas reais, `pages/time.js` renderiza sem o gate). **DEV** (`/DEV/<página>` ou `?lineup=1`) mostra tudo.
+- **PROD (público) esconde todo mock por padrão** (as páginas Grade, Palestrantes e Patrocínio abrem, mas mostram "será revelado em breve" no lugar de line-up, patrocinadores, comunidades
+  e valores de ingresso). **O Time foi liberado em PROD em 2026-10-01** (hoje 23 pessoas reais, `pages/time.js` renderiza sem o gate). **DEV** (`/DEV/<página>` ou `?lineup=1`) mostra tudo.
   A identidade visual (logo, galáxia, cores) vale nos dois modos.
 - **Inscrição é só no Sympla** (evento `s36cd5d`, id 3591517, vendas abertas, link em
   `EVENT.tickets.url`, 0 inscritos no dia da implementação).
