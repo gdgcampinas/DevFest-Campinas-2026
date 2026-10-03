@@ -24,6 +24,13 @@ function createFakeQuestions() {
       notify();
     },
     async update(id, fields) { Object.assign(docs.find(doc => doc.id === id), fields); notify(); },
+    failRemoveWith: null, // erro pra devolver na próxima exclusão em lote
+    removed: [],          // ids já apagados por removeMany
+    async removeMany(ids) {
+      if (world.failRemoveWith) { const error = world.failRemoveWith; world.failRemoveWith = null; throw error; }
+      ids.forEach(id => { const index = docs.findIndex(doc => doc.id === id); if (index >= 0) docs.splice(index, 1); world.removed.push(id); });
+      notify();
+    },
     listen(filters, onNext) {
       const send = () => onNext(docs.filter(doc => matches(doc, filters)).map(doc => ({ ...doc })));
       listeners.add(send);

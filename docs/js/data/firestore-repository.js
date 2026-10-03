@@ -13,7 +13,7 @@
  * primeiro — é isso que trava "1 registro por pessoa por entrada",
  * não uma checagem no cliente (que dá pra burlar).
  */
-import { collection, doc, setDoc, getDoc, getDocs, getCountFromServer, onSnapshot, updateDoc, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+import { collection, doc, setDoc, getDoc, getDocs, getCountFromServer, onSnapshot, updateDoc, writeBatch, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
 function createFirestoreRepository({ db, collectionName, edition }) {
   const col = () => collection(db, collectionName);
@@ -40,6 +40,15 @@ function createFirestoreRepository({ db, collectionName, edition }) {
     /** Igual a `add`, mas com o id do documento escolhido por quem chama (ex.: o cadastro do sorteio por INGRESSO usa a
      * chave da inscrição, não o uid). Mesma garantia: se já existe, a regra de segurança recusa e a promise rejeita. */
     addWithId,
+    /** Apaga vários documentos por id, em lotes (o Firestore aceita até 500 por lote). Só passa se a regra deixar (hoje: o
+     * moderador, no reset de emergência do sorteio). Se um lote falhar, os anteriores já foram apagados: quem chama repete. */
+    async removeMany(ids) {
+      for (let start = 0; start < ids.length; start += 400) {
+        const batch = writeBatch(db);
+        ids.slice(start, start + 400).forEach(id => batch.delete(doc(col(), id)));
+        await batch.commit();
+      }
+    },
     /** Se a pessoa já tem registro pra essa chave. */
     async has(uid, entryKey) {
       const snap = await getDoc(doc(col(), docId(uid, entryKey)));

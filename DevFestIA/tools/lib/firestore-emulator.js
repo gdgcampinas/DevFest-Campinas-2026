@@ -76,6 +76,11 @@ function updateDoc(as, collection, id, data) {
   });
 }
 
+/** Apaga o documento (sem pré-condição); as regras decidem se `as` pode. */
+function deleteDoc(as, collection, id) {
+  return call(as, endpoint(":commit"), { writes: [{ delete: documentName(collection, id) }] });
+}
+
 const getDoc = (as, collection, id) => call(as, endpoint(`/${collection}/${encodeURIComponent(id)}`)); // o id tem `|` e `#` (chave da palestra)
 
 /** Consulta por igualdade ({campo: valor}), como getWhere() do site. Devolve os ids em `ids`. */
@@ -95,4 +100,4 @@ function seed(collection, id, data) {
   return createDoc("owner", collection, id, data);
 }
 
-module.exports = { anonymous, google, createDoc, updateDoc, getDoc, query, seed };
+module.exports = { anonymous, google, createDoc, updateDoc, deleteDoc, getDoc, query, seed };

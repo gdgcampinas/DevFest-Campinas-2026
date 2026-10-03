@@ -5,7 +5,7 @@
  */
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { createDoc, updateDoc, getDoc, query, seed } = require("../lib/firestore-emulator.js");
+const { createDoc, updateDoc, getDoc, deleteDoc, query, seed } = require("../lib/firestore-emulator.js");
 const { skip, nextId, person, moderator, base, denied, allowed } = require("../lib/rules-test-kit.js");
 
 const codeOn = process.env.RULES_RAFFLE_CODE === "on";
@@ -111,7 +111,7 @@ test("ausente: sorteio antigo, gravado sem status, também pode virar ausente", 
   allowed(await updateDoc(moderator(), "raffle-draws", docId, { status: "absent" }));
 });
 
-test("sorteios feitos: só o moderador lê e lista; ninguém apaga", { skip }, async () => {
+test("sorteios feitos: só o moderador lê e lista", { skip }, async () => {
   const mod = moderator();
   const entryId = await seededEntry();
   allowed(await draw(mod, entryId));
@@ -265,4 +265,36 @@ test("ingresso ligado: sem login é recusado; o moderador lista e sorteia cadast
   const mod = moderator();
   allowed(await query(mod, "raffle-entries", { edition: "2026" }));
   allowed(await draw(mod, id)); // o id do cadastro tem 69 caracteres e entra no id do sorteio
+});
+
+// ---------- reset de emergência ----------
+test("reset: só o moderador apaga sorteios; a plateia e quem não está logado não", { skip }, async () => {
+  const mod = moderator();
+  const entryId = await seededEntry();
+  allowed(await draw(mod, entryId));
+  const docId = `${entryId}_draw`;
+  denied(await deleteDoc(person(), "raffle-draws", docId));
+  denied(await deleteDoc(null, "raffle-draws", docId));
+  allowed(await getDoc(mod, "raffle-draws", docId));
+  allowed(await deleteDoc(mod, "raffle-draws", docId));
+  assert.equal((await getDoc(mod, "raffle-draws", docId)).status, 404, "o documento sumiu do banco");
+});
+
+test("reset: depois de apagar, a mesma pessoa pode ser sorteada de novo (volta pra roleta), inclusive se era ausente", { skip }, async () => {
+  const mod = moderator();
+  const entryId = await seededEntry();
+  allowed(await draw(mod, entryId));
+  allowed(await updateDoc(mod, "raffle-draws", `${entryId}_draw`, { status: "absent" }));
+  denied(await draw(mod, entryId)); // enquanto o documento existe, não repete
+  allowed(await deleteDoc(mod, "raffle-draws", `${entryId}_draw`));
+  allowed(await draw(mod, entryId)); // agora o id está livre de novo
+});
+
+test("reset: ninguém apaga cadastros nem check-ins (só os sorteios)", { skip }, async () => {
+  const mod = moderator();
+  const who = person();
+  const entryId = await seededEntry();
+  denied(await deleteDoc(mod, "raffle-entries", entryId));
+  denied(await deleteDoc(who, "raffle-entries", `${who.uid}_raffle`));
+  denied(await deleteDoc(mod, "raffle-checkins", `${who.uid}_raffle`));
 });

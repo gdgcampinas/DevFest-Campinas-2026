@@ -107,6 +107,9 @@ function initRaffleDraw(rootEl, {
   generateCode = generateRaffleCode,
   confetti = createConfetti(),
   sound = raffleSoundRepository.getAll(),
+  resetWord = raffleConfigRepository.getAll().resetWord,
+  download = downloadTextFile,
+  clock = () => new Date(),
 } = {}) {
   let email = "";
   let entries = [];
@@ -138,6 +141,8 @@ function initRaffleDraw(rootEl, {
   let qrSession = null; // { code, previous } do QR que está na tela (o mesmo que foi gravado em raffle-session)
   let stopRotation = null; // desliga a virada do código (intervalo)
   let sessionError = "";
+  let resetOpen = false; // caixa de confirmação do reset aberta
+  let resetError = "";
   let seenArrivalIds = null; // null até a 1ª lista chegar: quem já estava lá não ganha a animação de "acabou de entrar"
 
   const isAbsent = item => item.status === RAFFLE_DRAW_STATUS.absent;
@@ -165,7 +170,7 @@ function initRaffleDraw(rootEl, {
 
   const draw = data => {
     const loadError = entriesError || drawsError;
-    rootEl.innerHTML = raffleWheelMarkup({ email, showQr, telao, loadError, sessionError, ...data });
+    rootEl.innerHTML = raffleWheelMarkup({ email, showQr, telao, loadError, sessionError, resetOpen, resetWord, resetError, ...data });
     drawQr(data.phase);
   };
 
@@ -361,6 +366,43 @@ function initRaffleDraw(rootEl, {
     drawReady();
   }
 
+  /**
+   * RESET DE EMERGÊNCIA: apaga TODOS os sorteios feitos (ganhadores e ausentes) e devolve todo mundo pra roleta, do zero. Os
+   * cadastros ficam. Antes de apagar baixa a lista em CSV (se o download falhar, o reset segue: o banco é o que importa).
+   * Se o banco recusar, nada muda na tela e o erro aparece na própria caixa, pra tentar de novo.
+   */
+  async function resetDraws() {
+    if (spinning) return;
+    const list = activeDraws().slice();
+    if (list.length) {
+      try {
+        const backup = buildRaffleBackup(list, { now: clock() });
+        download(backup.filename, backup.mimeType, backup.content);
+      } catch {
+        /* sem a cópia o reset ainda vale */
+      }
+      try {
+        if (usingDevSeed()) devDraws = [];
+        else await deps().draws.removeMany(list.map(item => item.id));
+      } catch {
+        resetError = t("raffle.resetError", "Não foi possível resetar agora. Nada foi apagado por inteiro; tente de novo.");
+        drawReady();
+        return;
+      }
+      if (!usingDevSeed()) draws = [];
+    }
+    winner = null;
+    winnerPrize = 0;
+    winnerDrawId = "";
+    holding = false;
+    holdToken += 1;
+    wheelDeg = 0;
+    resetOpen = false;
+    resetError = "";
+    refreshDisplayWhenIdle();
+    drawReady();
+  }
+
   /** Liga/desliga o modo telão: a própria área da organização vira uma tela cheia (classe `raffle-telao`). */
   function applyTelao() {
     rootEl.classList.toggle("raffle-telao", telao);
@@ -421,12 +463,34 @@ function initRaffleDraw(rootEl, {
     }
     const absentBtn = event.target.closest("[data-raffle-absent]");
     if (absentBtn && !spinning) return markAbsent(absentBtn.dataset.raffleAbsent);
+    if (event.target.closest("[data-raffle-reset-open]")) {
+      resetOpen = true;
+      resetError = "";
+      return drawReady();
+    }
+    if (event.target.closest("[data-raffle-reset-cancel]")) {
+      resetOpen = false;
+      resetError = "";
+      return drawReady();
+    }
+    const confirmBtn = event.target.closest("[data-raffle-reset-confirm]");
+    if (confirmBtn) {
+      const typed = rootEl.querySelector("[data-raffle-reset-word]")?.value ?? "";
+      return typed.trim().toUpperCase() === resetWord.toUpperCase() ? resetDraws() : undefined;
+    }
     if (event.target.closest("[data-raffle-sound-toggle]")) {
       muted = !muted;
       return drawReady();
     }
     if (event.target.closest("[data-raffle-telao-toggle]")) return setTelao(!telao);
     if (event.target.closest("[data-raffle-spin]")) return spin();
+  });
+
+  // Libera o botão de resetar só com a palavra certa (sem redesenhar, pra não perder o foco nem o texto digitado).
+  rootEl.addEventListener("input", event => {
+    if (!event.target.matches("[data-raffle-reset-word]")) return;
+    const confirmBtn = rootEl.querySelector("[data-raffle-reset-confirm]");
+    if (confirmBtn) confirmBtn.disabled = event.target.value.trim().toUpperCase() !== resetWord.toUpperCase();
   });
 
   document.addEventListener("keydown", event => {

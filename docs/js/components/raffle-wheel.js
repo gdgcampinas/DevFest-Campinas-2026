@@ -72,11 +72,31 @@ function raffleSoundToggleMarkup(muted) {
   return `<button type="button" class="chip-btn raffle-sound-toggle" data-raffle-sound-toggle aria-pressed="${!muted}">${muted ? t("raffle.soundOff", "Som: desligado") : t("raffle.soundOn", "Som: ligado")}</button>`;
 }
 
+/** Botão que abre a confirmação do reset de emergência. Só aparece quando já existe algum sorteio. */
+function raffleResetOpenMarkup({ hasDraws, spinning }) {
+  return hasDraws ? `<button type="button" class="chip-btn raffle-reset-open" data-raffle-reset-open${spinning ? " disabled" : ""}>${t("raffle.resetOpen", "Resetar sorteios")}</button>` : "";
+}
+
+/** Confirmação inline (nunca confirm() do navegador): só libera o botão quando a pessoa digita a palavra de `resetWord`. */
+function raffleResetPanelMarkup({ resetOpen, resetWord, resetError }) {
+  if (!resetOpen) return "";
+  return `<div class="raffle-reset" role="alertdialog" aria-label="${t("raffle.resetTitle", "Resetar os sorteios?")}">
+    <p class="raffle-reset-title">${t("raffle.resetTitle", "Resetar os sorteios?")}</p>
+    <p class="raffle-reset-hint">${t("raffle.resetHint", "Apaga todos os sorteios feitos e devolve todo mundo pra roleta, como se nada tivesse sido sorteado. Os cadastros ficam. Antes de apagar, o site baixa uma lista com quem ganhou. Pra confirmar, digite {word}.", { word: resetWord })}</p>
+    <input class="feedback-input" type="text" data-raffle-reset-word autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${escapeHtml(resetWord)}" aria-label="${t("raffle.resetWordLabel", "Digite a palavra de confirmação")}">
+    ${resetError ? `<p class="form-error" role="alert">${resetError}</p>` : ""}
+    <div class="raffle-reset-actions">
+      <button type="button" class="chip-btn chip-btn--primary raffle-reset-confirm" data-raffle-reset-confirm disabled>${t("raffle.resetConfirm", "Resetar tudo")}</button>
+      <button type="button" class="chip-btn" data-raffle-reset-cancel>${t("raffle.resetCancel", "Cancelar")}</button>
+    </div>
+  </div>`;
+}
+
 function raffleTelaoToggleMarkup(telao) {
   return `<button type="button" class="chip-btn raffle-telao-toggle" data-raffle-telao-toggle>${telao ? t("raffle.telaoExit", "Sair do modo telão") : t("raffle.telaoEnter", "Modo telão")}</button>`;
 }
 
-function raffleWheelReadyMarkup({ email, remaining, remainingCount, poolCount, drawnList, prizesGiven, repeatedNames, arrivals, newArrivalIds, spinning, winner, winnerPrize, winnerDrawId, canSpin, loadError, sessionError, usingDevSeed, showQr, muted, telao, wheelDeg }) {
+function raffleWheelReadyMarkup({ email, remaining, remainingCount, poolCount, drawnList, prizesGiven, repeatedNames, arrivals, newArrivalIds, spinning, winner, winnerPrize, winnerDrawId, canSpin, loadError, sessionError, usingDevSeed, showQr, muted, telao, resetOpen, resetWord, resetError, wheelDeg }) {
   const winnerBlock = winner
     ? `<div class="raffle-winner"><span class="raffle-winner-label">${t("raffle.winnerLabel", "Ganhador do prêmio {n}", { n: winnerPrize })}</span>
         <span class="raffle-winner-name">${escapeHtml(winner)}</span>
@@ -87,7 +107,8 @@ function raffleWheelReadyMarkup({ email, remaining, remainingCount, poolCount, d
   return `${moderatorAccountMarkup(email)}
     ${loadError ? `<p class="form-error raffle-load-error" role="alert">${loadError}</p>` : ""}
     ${usingDevSeed ? `<p class="raffle-dev-badge">${t("raffle.devSeedBadge", "Modo DEV: ninguém cadastrado ainda, girando com a lista do Time só pra teste (não grava nada).")}</p>` : ""}
-    <div class="raffle-controls">${raffleQrToggleMarkup(showQr)}${raffleSoundToggleMarkup(muted)}${raffleTelaoToggleMarkup(telao)}</div>
+    <div class="raffle-controls">${raffleQrToggleMarkup(showQr)}${raffleSoundToggleMarkup(muted)}${raffleResetOpenMarkup({ hasDraws: drawnList.length > 0, spinning })}${raffleTelaoToggleMarkup(telao)}</div>
+    ${raffleResetPanelMarkup({ resetOpen, resetWord, resetError })}
     <div class="raffle-layout">
       <div class="raffle-wheel-stage">
         <div class="raffle-wheel-wrap">
@@ -115,8 +136,8 @@ function raffleWheelReadyMarkup({ email, remaining, remainingCount, poolCount, d
     </div>`;
 }
 
-function raffleWheelMarkup({ phase, email = "", remaining = [], remainingCount = remaining.length, poolCount = 0, drawnList = [], prizesGiven = drawnList.filter(item => item.status !== "absent").length, repeatedNames = [], arrivals = [], newArrivalIds = new Set(), spinning = false, winner = null, winnerPrize = 0, winnerDrawId = "", canSpin = false, loadError = "", sessionError = "", usingDevSeed = false, showQr = false, muted = false, telao = false, wheelDeg = 0, message = "" }) {
+function raffleWheelMarkup({ phase, email = "", remaining = [], remainingCount = remaining.length, poolCount = 0, drawnList = [], prizesGiven = drawnList.filter(item => item.status !== "absent").length, repeatedNames = [], arrivals = [], newArrivalIds = new Set(), spinning = false, winner = null, winnerPrize = 0, winnerDrawId = "", canSpin = false, loadError = "", sessionError = "", usingDevSeed = false, showQr = false, muted = false, telao = false, resetOpen = false, resetWord = "", resetError = "", wheelDeg = 0, message = "" }) {
   const head = `<h2 class="raffle-mod-title">${t("raffle.modTitle", "Área da organização")}</h2>`;
   if (phase === "signin") return `${head}${telao ? raffleTelaoToggleMarkup(true) : ""}${moderatorSignInMarkup({ hint: message || t("raffle.modHint", "Entre com a conta de moderador pra girar a roleta."), signInLabel: t("raffle.modSignin", "Entrar com Google") })}`;
-  return `${head}${raffleWheelReadyMarkup({ email, remaining, remainingCount, poolCount, drawnList, prizesGiven, repeatedNames, arrivals, newArrivalIds, spinning, winner, winnerPrize, winnerDrawId, canSpin, loadError, sessionError, usingDevSeed, showQr, muted, telao, wheelDeg })}`;
+  return `${head}${raffleWheelReadyMarkup({ email, remaining, remainingCount, poolCount, drawnList, prizesGiven, repeatedNames, arrivals, newArrivalIds, spinning, winner, winnerPrize, winnerDrawId, canSpin, loadError, sessionError, usingDevSeed, showQr, muted, telao, resetOpen, resetWord, resetError, wheelDeg })}`;
 }
