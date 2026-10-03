@@ -74,8 +74,8 @@ trabalhar e testar aqui" do handoff (bump de ?v=N, cache do
 schedule.dev.js, painel do app sem service worker, etc.).
 
 ESTADO EM 2026-10-03, fim da sessão 10 (longa — detalhes completos no handoff, seção "Sessão 10" no topo)
-Site de 8 páginas (Principal, Grade, Palestrantes, Ingressos, Time — PÚBLICO em PROD, 23 pessoas reais —, Patrocínio, Sorteio — atrás de
-`devOnly`, só em DEV —, Código de Conduta) mais quiz e ferramentas internas: quadro da sala (`checkin-display.html?trilha=<id>`),
+Site de 8 páginas (Principal, Grade, Palestrantes, Ingressos, Time — PÚBLICO em PROD, 23 pessoas reais, 17 bios —, Patrocínio, Sorteio — atrás de
+`devOnly`, só em DEV —, Código de Conduta); em PROD, Grade, Palestrantes e Patrocínio abrem mas mostram "será revelado em breve" no lugar do conteúdo mock (line-up, patrocinadores, comunidades, valores), que só aparece em `/DEV/` ou `?lineup=1`. Há também quiz e ferramentas internas: quadro da sala (`checkin-display.html?trilha=<id>`),
 moderação (`moderacao.html?trilha=<id>`) e `reset-teste.html`. No ar (main = development). Firebase (Firestore + Auth, plano Spark)
 guarda check-ins, avaliações, perguntas, votos e o Sorteio. Inglês pronto (`?lang=en`). A sessão 10 FECHOU O SORTEIO NO CÓDIGO: modo
 telão (`?telao=1`, notebook no HDMI, 3 colunas), contador e chegadas ao vivo, roda com amostra de 24 (sorteia da lista inteira), Ausente
@@ -89,8 +89,8 @@ PRÓXIMO TRABALHO (ver "Pendências" e "Sorteio no dia do evento" no handoff)
 2) Ouvir o que ele viu e corrigir. 3) Decisões abertas: horários de abrir/fechar o cadastro do sorteio, prêmios (e qual é o principal, pra
 confete maior), quando tirar o `devOnly`. 4) Mini-bios que faltam (6): Carlos, Débora, Laydianne, Lorenzo, Felipe, João Paulo; LinkedIn
 completo da Laydianne e do Davi; cargo dos 4 organizadores. 5) Sincronizar Sympla roda a cada ~4,4 h (não 10 min) e lê 0 inscritos:
-o Renato conferir o painel; corrigir o texto "aguarde até 10 minutos" do cadastro por ingresso. 6) Pedir OK pra incluir
-`DevFestIA/tools/raffle/*.test.js` no `validate.yml`. 7) Outras frentes (ver handoff): dados reais do evento, mural do telão de LED,
+o Renato conferir o painel; corrigir o texto "aguarde até 10 minutos" do cadastro por ingresso (pequeno, o Claude faz sem depender do Renato).
+6) Incluir `DevFestIA/tools/raffle/*.test.js` no `validate.yml`: SÓ com o OK explícito do Renato (mexe no pipeline de CI). 7) Outras frentes (ver handoff): dados reais do evento, mural do telão de LED,
 certificado, área administrativa, ES/FR. Motor das perguntas ao vivo: estável; Sala ao vivo/tela Palco pausadas a pedido do Renato.
 
 PENDÊNCIAS
