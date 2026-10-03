@@ -73,50 +73,46 @@ verificado, o que depende dele. Armadilhas e como testar: seção "Como
 trabalhar e testar aqui" do handoff (bump de ?v=N, cache do
 schedule.dev.js, painel do app sem service worker, etc.).
 
-ESTADO EM 2026-09-30, fim da sessão 9 (longa — detalhes completos no handoff)
-Site de 8 páginas (Principal, Grade, Palestrantes, Ingressos, Time, Patrocínio, Sorteio — atrás de
-`devOnly`, só em DEV — Código de Conduta) mais quiz e ferramentas internas: quadro da sala
-(`checkin-display.html?trilha=<id>`), moderação (`moderacao.html?trilha=<id>`) e `reset-teste.html`. No ar
-(main = development, CI verde). Firebase (Firestore + Auth) no plano Spark guarda check-ins, avaliações,
-perguntas, votos e (novo) cadastro/check-in/sorteios do Sorteio. Inglês pronto (`?lang=en`). Sessão 9
-entregou: modal de mini-bio no Time (11/22 pessoas com texto), Código de conduta redesenhado (regras com
-ícone, contato via `CONTACT`), e a aba Sorteio inteira (cadastro com check-in por QR + roleta do moderador
-que gira de verdade, nomes nas fatias, modo por rodadas). Trava de horário das perguntas DESLIGADA de
+ESTADO EM 2026-10-03, fim da sessão 10 (longa — detalhes completos no handoff, seção "Sessão 10" no topo)
+Site de 8 páginas (Principal, Grade, Palestrantes, Ingressos, Time — PÚBLICO em PROD, 23 pessoas reais —, Patrocínio, Sorteio — atrás de
+`devOnly`, só em DEV —, Código de Conduta) mais quiz e ferramentas internas: quadro da sala (`checkin-display.html?trilha=<id>`),
+moderação (`moderacao.html?trilha=<id>`) e `reset-teste.html`. No ar (main = development). Firebase (Firestore + Auth, plano Spark)
+guarda check-ins, avaliações, perguntas, votos e o Sorteio. Inglês pronto (`?lang=en`). A sessão 10 FECHOU O SORTEIO NO CÓDIGO: modo
+telão (`?telao=1`, notebook no HDMI, 3 colunas), contador e chegadas ao vivo, roda com amostra de 24 (sorteia da lista inteira), Ausente
+(sai de vez), Resetar sorteios = nova RODADA sem apagar nem baixar nada, papel picado, fanfarra de festa com botão de som, QR que muda a
+cada minuto e 1 ingresso = 1 cadastro (e-mail do Sympla) — estes DOIS atrás de interruptores nas regras do Firestore, hoje DESLIGADOS —,
+aviso de nomes repetidos. O Renato JÁ publicou as regras (versão do commit `135c56a`). Trava de horário das perguntas DESLIGADA de
 propósito (teste em DEV): LIGAR antes do evento.
 
-PRÓXIMO TRABALHO (ver "Pendências" no handoff pra lista completa)
-Sorteio: falta o Renato publicar as regras novas do Firestore no console (`raffle-checkins`/`raffle-entries`/
-`raffle-draws`, já coladas junto com as de sempre em `DevFestIA/firebase/firestore.rules`) — sem isso o
-cadastro/roleta são recusados contra o banco real. Depois: decidir quando tira do `devOnly` e abre pro
-público, gerar/imprimir o QR físico (o QR já é desenhado na própria tela, "Mostrar QR do sorteio"), decidir
-som de verdade (hoje sintetizado) e como opera os prêmios no dia. Mini-bio: faltam os textos de 6 pessoas (17/23 já têm)
-(organizadores e voluntários) — perguntar ao Renato. Motor das perguntas ao vivo: feito e estável desde a
-sessão 8, sem pendência técnica; página Sala ao vivo/tela Palco decidida mas pausada a pedido do Renato.
+PRÓXIMO TRABALHO (ver "Pendências" e "Sorteio no dia do evento" no handoff)
+1) O Renato testar o lado do moderador do sorteio (login Google; o Claude não consegue): girar, Ausente, Resetar, girar de novo.
+2) Ouvir o que ele viu e corrigir. 3) Decisões abertas: horários de abrir/fechar o cadastro do sorteio, prêmios (e qual é o principal, pra
+confete maior), quando tirar o `devOnly`. 4) Mini-bios que faltam (6): Carlos, Débora, Laydianne, Lorenzo, Felipe, João Paulo; LinkedIn
+completo da Laydianne e do Davi; cargo dos 4 organizadores. 5) Sincronizar Sympla roda a cada ~4,4 h (não 10 min) e lê 0 inscritos:
+o Renato conferir o painel; corrigir o texto "aguarde até 10 minutos" do cadastro por ingresso. 6) Pedir OK pra incluir
+`DevFestIA/tools/raffle/*.test.js` no `validate.yml`. 7) Outras frentes (ver handoff): dados reais do evento, mural do telão de LED,
+certificado, área administrativa, ES/FR. Motor das perguntas ao vivo: estável; Sala ao vivo/tela Palco pausadas a pedido do Renato.
 
 PENDÊNCIAS
-Do Renato/organização: publicar as regras do Firestore do Sorteio (ver acima); dados de time em aberto
-(cargo dos 4 organizadores, LinkedIn de Laydianne e Davi, 6 bios);
-dados reais do evento (local, salas/MCs, line-up, patrocinadores, valores); plenárias (A, B ou C, recomendo
-B); mensagens do Sympla com os links `.../ingressos.html?cartao=1` e `.../index.html?avaliar=1` + QR no
-encerramento; quem monta os tablets/TVs das salas; patrocínio FIAP (nota fiscal na 1ª semana de dezembro).
-Antes do evento: LIGAR a trava de horário das perguntas (regras + `enforceWindow`), rodar "🧹 Limpar dados
-de teste" (simulação, depois APAGAR, só antes de 28/11 08:00) e `reset-teste.html` nos aparelhos de teste;
-ensaio geral.
-Quando houver inscrições: conferir o resumo do "🎫 Sincronizar Sympla", testar o gate com e-mail real e
-ligar `registrationGate` (só no `schedule.js`).
-Tasks anotadas: certificado profissional (decidir quem recebe e carga horária), mural do telão de LED
-(mascote Gumbleton já consolidada, ainda estática), área administrativa com login (CRUD de
-moderadores/palestrantes; caminho em `project-docs/IDEAS_BACKLOG.md`), internacionalização de ES/FR.
+Do Renato/organização: ver "Pendências A" no handoff (sorteio, time, dados reais do evento: local, salas/MCs, line-up, patrocinadores,
+valores; plenárias A/B/C, recomendo B; mensagens do Sympla com os links `.../ingressos.html?cartao=1` e `.../index.html?avaliar=1` + QR no
+encerramento; quem monta os tablets/TVs das salas; patrocínio FIAP: nota fiscal na 1ª semana de dezembro).
+Antes do evento: LIGAR a trava de horário das perguntas (regras + `enforceWindow`); virar `RAFFLE-CODE`, `RAFFLE-TICKET` e `requireTicket`
+pra `true` (testar com e-mail de ingresso real, rodar `bash DevFestIA/tools/questions/run-rules-tests.sh`, publicar); rodar o sincronismo do
+Sympla na mão antes de abrir o cadastro do sorteio; rodar "🧹 Limpar dados de teste" (simulação, depois APAGAR, só antes de 28/11 08:00:
+há 75+ cadastros fictícios do sorteio no banco) e `reset-teste.html` nos aparelhos de teste; ensaio geral com o notebook do telão
+(tomada, sem repouso, áudio HDMI).
+Quando houver inscrições: conferir o resumo do "🎫 Sincronizar Sympla" e ligar `registrationGate` (só no `schedule.js`).
 
 ARMADILHAS (leia "Como trabalhar e testar aqui" no handoff antes de agir)
-O HTML no GitHub Pages fica 10 min em cache: confira com curl o que está publicado. `?v=N` tem que ser igual em todas
-as páginas pra cada arquivo que o referencia. Regras do Firestore são coladas à mão no console
-(`pbcopy < DevFestIA/firebase/firestore.rules`; o Firebase CLI não está logado). Nunca renomear o workflow Validar sem
-antes o Promote ouvir o nome novo. Secrets nunca no chat. Sempre passar links COMPLETOS ao Renato. Um script externo
-(tipo `qrcodejs`) fixo no `<head>` quebra a navegação dentro de `/DEV/` — carregar sob demanda, nunca fixo. Um teste
-de moderação é conhecidamente instável no CI (timing, não é regressão): `gh run rerun <id> --failed` resolve. Testes
-de ponta a ponta: `DevFestIA/tools/emulator/start.sh` + site com `?emulador=1`; regras:
-`DevFestIA/tools/questions/run-rules-tests.sh` (porta 8085 livre).
+O HTML no GitHub Pages fica 10 min em cache: confira com curl o que está publicado. `?v=N` tem que ser igual em todas as páginas pra cada
+arquivo que o referencia. Regras do Firestore são coladas à mão no console (`pbcopy < DevFestIA/firebase/firestore.rules`; o Firebase CLI
+não está logado). Nunca renomear o workflow Validar sem antes o Promote ouvir o nome novo. Secrets nunca no chat. Sempre passar links
+COMPLETOS ao Renato. Script externo fixo no `<head>` quebra a navegação dentro de `/DEV/`. Um teste de moderação é instável no CI (timing):
+`gh run rerun <id> --failed`. NUNCA encadear `grep ... && git commit` sem checar o resultado dos testes (use `if ...; then commit; else ...`).
+`requestAnimationFrame` não dispara em aba oculta: nada crítico pode depender dele. Testes de tela: `node --test DevFestIA/tools/dom/*.test.js`;
+puros: `node --test DevFestIA/tools/raffle/*.test.js DevFestIA/tools/questions/questions.test.js`; regras (Java 21 instalado):
+`bash DevFestIA/tools/questions/run-rules-tests.sh` (porta 8085 livre).
 
 DIRETIVA DE ENGAJAMENTO
 Você é parceiro técnico do projeto, não executor passivo.

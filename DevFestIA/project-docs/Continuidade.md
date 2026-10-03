@@ -18,8 +18,8 @@ trabalho sem depender do histórico de uma conversa específica.
 - **[../tools/](../tools/)** — scripts em Node (a única dependência npm é o `jsdom` dos testes de tela em `dom/`, com `package.json` só nesta pasta): verificação (`check-meta.js` e
   `check-install.js` rodam no CI; `check-lineup.js`, `check-calendar.js` e os `e2e-*.js` são manuais),
   `sympla-sync/` (job Sympla -> Firestore), `event-report/` (relatório do evento), `purge-test-data/`
-  (limpeza dos dados de teste), `quiz/`, `questions/`, `room/`, `i18n/` (testes puros no CI), `dom/` (testes de tela em jsdom, no CI: `npm ci --prefix DevFestIA/tools && node --test DevFestIA/tools/dom/*.test.js`; `questions/run-rules-tests.sh` testa as
-  regras no emulador, local), `emulator/start.sh` (Firebase local pra testar o site inteiro com `?emulador=1`) e `lib/` (auth Google, cliente REST do
+  (limpeza dos dados de teste), `quiz/`, `questions/`, `room/`, `i18n/` (testes puros no CI), `raffle/` (regras puras do sorteio: amostra da roda, código do QR, rodadas, som, papel picado; `node --test DevFestIA/tools/raffle/*.test.js`, ainda local, fora do CI), `dom/` (testes de tela em jsdom, no CI: `npm ci --prefix DevFestIA/tools && node --test DevFestIA/tools/dom/*.test.js`; `questions/run-rules-tests.sh` testa as
+  regras no emulador, local, precisa de Java 21; inclui os cenários dos interruptores do sorteio), `emulator/start.sh` (Firebase local pra testar o site inteiro com `?emulador=1`) e `lib/` (auth Google, cliente REST do
   Firestore e cliente do emulador); os testes de Node rodam no CI. **[../design/](../design/)** — fontes HTML das imagens geradas e o
   `build-brand-assets.sh` que regera favicon, ícones do app e imagem de compartilhamento a partir do
   SVG do logo. **[../firebase/](../firebase/)** — `firestore.rules` (colar à mão no console).

@@ -107,7 +107,13 @@ docs/
       about.js                    "about the event" copy
       team.js, team-intro.js   organizers (Time page)
       cod.js                      code of conduct text (intro + 4 rules with icon/color, contact block)
-      raffle-pool.js             regras PURAS da roleta (dual, testado em Node): nome da fatia, chegadas, amostra da roda, montagem do giro
+      raffle-pool.js             regras PURAS da roleta (dual, testado em Node): nome da fatia, chegadas, amostra da roda, montagem do giro, nomes repetidos
+      raffle-session.js          código do QR que muda a cada minuto (dual): geração, virada atual/anterior, link do QR
+      raffle-rounds.js           rodadas do sorteio (dual): id do documento por rodada, filtro da rodada atual
+      raffle-sound.js            toca o tique e a fanfarra (Web Audio, AudioContext injetado)
+      confetti-engine.js         física do papel picado (dual, puro)  |  confetti.js: canvas, relógio e quadros injetáveis
+      raffle-signup.js, raffle-draw.js   cadastro público e roleta/telão do moderador
+      (data/) raffle-config.js (interruptor do ingresso, palavra do reset), raffle-confetti.js, raffle-sound.js, raffle-rules.js, my-raffle.js
       contact.js                   CONTACT (e-mail, Meetup, Instagram, LinkedIn, Linktree) — única fonte, reusada por footer.js e cod.js
       footer.js                   footer columns
       testimonials.js             testimonial quotes
@@ -365,7 +371,14 @@ Um fluxo só, da pergunta ao quadro. Regras do jogo (as do banco, espelhadas na 
 - Regras no emulador do Firestore, sem tocar o banco real: `DevFestIA/tools/questions/run-rules-tests.sh` (Java 21 + Firebase CLI; 21 casos: janela, limites, id trocado, moderador, votos). Cliente em `DevFestIA/tools/lib/firestore-emulator.js` (só `node:`). Palestras de teste com horário relativo a agora. Fora do CI (baixa o emulador); rodar sempre que mexer nas regras.
 - Lógica pura no CI: `DevFestIA/tools/questions/questions.test.js`, `DevFestIA/tools/room/*.test.js`.
 
-## Sorteio (sessão 9, 2026-09-30) — atrás de `devOnly`, ainda não em PROD
+## Sorteio (sessões 9 e 10, 2026-09-30 a 2026-10-03) — atrás de `devOnly`, ainda não em PROD
+
+**LEIA PRIMEIRO (estado atual, sessão 10):** os parágrafos DATADOS mais abaixo (modo telão, amostra de 24, ausente, QR que muda, 1 ingresso =
+1 cadastro, nomes repetidos, papel picado, som, reset por RODADA) descrevem o estado atual e prevalecem sobre o texto original da sessão 9,
+logo a seguir, que é o desenho inicial (algumas frases dele ficaram históricas: "link `?checkin=1`" virou `?checkin=<código>`, "modo por
+rodadas/único" virou só rodadas com `raffle-state`, o som "plim" virou fanfarra). Coleções do sorteio no Firestore: `raffle-checkins`,
+`raffle-entries`, `raffle-draws`, `raffle-session` (código do QR) e `raffle-state` (rodada atual). Interruptores (hoje DESLIGADOS):
+`// RAFFLE-CODE` e `// RAFFLE-TICKET` em `firestore.rules` + `requireTicket` em `docs/js/data/raffle-config.js`.
 
 `sorteio.html`: cadastro público (todo mundo) + roleta (só moderador), mesma aba. Elegibilidade REVISADA
 (2026-09-30, mesma sessão): o cadastro não pode ficar aberto antes do evento, e a pessoa precisa provar que
@@ -519,7 +532,7 @@ fatia sob a seta. `raffle-wheel.js?v=6`.
 
 **"Ausente, sortear outro" (Fase 3, 2026-10-01; decisão do Renato: o ausente SAI DE VEZ):** cada sorteio em `raffle-draws` ganhou `status` (`winner` na criação, `RAFFLE_DRAW_STATUS`); o moderador só pode mudar `winner` para `absent` (regras: `allow update` só do campo `status`; docs antigos sem `status` contam como winner). Ausente não gasta o número do prêmio (`prize = sorteios não ausentes + 1`) mas continua com o documento, então a pessoa NÃO volta pra roleta. Botão "Ausente, sortear outro" no cartão do ganhador e "Ausente" em cada item de "Já sorteados" (serve depois que o cartão some); ausente aparece riscado e não conta em "Já sorteados". Em DEV (lista de teste) vale em memória.
 
-**Texto da fatia (pedido do Renato, 2026-10-01):** nome + ÚLTIMO sobrenome (`raffleWheelLabelText` em `components/raffle-wheel.js`; "Henrique Ferreira Rodrigues da Silva" vira "Henrique Silva"), pra caber na fatia; o nome completo segue no bloco do ganhador. `raffle-wheel.js?v=7`.
+**Texto da fatia (pedido do Renato, 2026-10-01):** nome + ÚLTIMO sobrenome (hoje `raffleDisplayName` em `features/raffle-pool.js`, a única fonte; "Henrique Ferreira Rodrigues da Silva" vira "Henrique Silva"), pra caber na fatia; o nome completo segue no bloco do ganhador. `raffle-wheel.js?v=7`.
 
 **Escala (medido 2026-10-01, evento esperado ~1.000 pessoas):** com 1.000 cadastros a roda vira um borrão ilegível (1.000 fatias de 0,36° e 1.000 rótulos), embora o desenho leve só ~4 ms por atualização e o Firestore caiba no plano Spark (~1.000 leituras na abertura + 1 por cadastro novo; ~2.000 escritas de 20 mil/dia). RESOLVIDO na Fase 1 (amostra de 24 + sorteio da lista inteira, ver acima). Medido depois, com a roda de 24 fatias e o modo telão ligado: 1.000 cadastros = ~1 ms pra carregar a lista, 5.000 = ~1 ms; ~0,3-0,4 ms por cadastro novo chegando; DOM fixo em ~305 nós (antes da amostra eram ~2.300 só com 1.000). Limite do que dá pra medir sem o moderador: a leitura REAL do Firestore só lista pra conta de moderador (Google), então o teste de carga real é feito pelo Renato abrindo a roleta; criar centenas de logins anônimos de teste também bate no limite de contas anônimas por IP do Firebase (cerca de 100/hora).
 
@@ -539,7 +552,7 @@ conduta) explica isso e que "só quem está na sala ganha o prêmio" é operacio
 
 **QR ao vivo, sem ferramenta externa:** botão "Mostrar QR do sorteio" na Área da organização desenha o QR
 na hora com `qrcodejs` (mesma lib do quadro da sala, `checkin-display.js`), apontando pra
-`raffleCheckinUrl(location.href)` (a própria página, só com `?checkin=1`, limpa qualquer outro parâmetro)
+`raffleCheckinUrl(location.href, código)` (agora em `features/raffle-session.js`: a própria página, só com `?checkin=<código>`, limpa qualquer outro parâmetro)
 — funciona em DEV e continua funcionando sozinho quando a aba sair do `devOnly`.
 
 **Lista de teste (Time) só em DEV, sem gravar nada:** `buildRaffleDevSeed(team)` (dual, só transforma
@@ -560,10 +573,9 @@ formulário do site (`showFormError` em `features/talk-feedback.js`, já reusado
 não só de palestra. Mesma regra de sempre: renomear = `?v=` de tudo que usa sobe junto.
 
 **Ainda só em DEV (`devOnly` no nav + `renderOrConstruction` na página, ver "Site nav"):** falta decidir com o
-Renato quando abrir pro público, e como o PDF/link de doação ou lista de prêmios entra (se entrar). Sem testes
-de regra do Firestore automatizados ainda (só `node --test DevFestIA/tools/dom/raffle-signup.dom.test.js
-DevFestIA/tools/dom/raffle-draw.dom.test.js`, jsdom com repositories falsos, mesmo padrão das perguntas) —
-gap conhecido, adicionar em `DevFestIA/tools/questions/` (ou pasta própria) quando sobrar sessão.
+Renato quando abrir pro público, e como o PDF/link de doação ou lista de prêmios entra (se entrar). Testes: tela
+(`DevFestIA/tools/dom/raffle-*.dom.test.js` e `confetti.dom.test.js`, jsdom com repositories falsos), puros em `DevFestIA/tools/raffle/` e
+regras no emulador em `DevFestIA/tools/questions/raffle-rules.test.js` (o gap antigo foi fechado na sessão 10).
 
 ## Internacionalização (sessão 7): PT padrão, EN pronto
 
@@ -606,6 +618,11 @@ o mesmo botão funciona em qualquer outra página só chamando
 A API do Sympla não tem webhook e, pra inscrição/venda, é só de leitura (existem endpoints de escrita só pro check-in de porta, não usados: ver `IDEAS_BACKLOG.md`); o site é estático e o token é
 segredo, então a ponte é um job agendado, sem servidor nosso e sem custo:
 
+- **Cadência real (medida em 2026-10-03):** configurado a cada 10 min, mas o GitHub o executa em média a cada **4,4 h** (máx. 8,3 h; 53 execuções
+  em 10 dias, todas com sucesso, ~10 s, sem lógica de nova tentativa): agendamento do GitHub é "melhor esforço" e pula/atrasa execuções. Última
+  rodada: 0 inscritos, 0 check-in, 0 não aprovados. Quem depende de dado fresco (cadastro do sorteio por ingresso, contador) deve rodar o job na
+  mão antes: `gh workflow run sync-sympla.yml -R gdgcampinas/DevFest-Campinas-2026 --ref main`. A API v1.6.0 do Sympla também tem endpoints de
+  escrita de check-in de porta (não usados; ver `IDEAS_BACKLOG.md`).
 - **Job** (`.github/workflows/sync-sympla.yml`, a cada 10 min, só no `main`):
   `DevFestIA/tools/sympla-sync/sync.js` lê participantes (API v1.5.1, paginação por
   página, com e-mail, tipo de ingresso, `order_status`, check-in) e pedidos

@@ -1,31 +1,77 @@
 # Handoff — Current State
 
-**Last updated:** 2026-09-30, fim da sessão 9 (muito longa — abrir chat novo pra próxima task, use
-`NEW_CHAT_PROMPT.md`). Resumo dos 3 grandes entregáveis (detalhes de cada um mais abaixo, nas seções
-próprias e no `PROJECT_CONTEXT.md`):
+**Last updated:** 2026-10-03, fim da sessão 10 (longa: Sorteio fechado no código, Time público, análise do
+Sincronizar Sympla). Abrir chat novo pra próxima task, use `NEW_CHAT_PROMPT.md`. Antes de confiar neste texto, rode
+`git status --short --branch` e `git log --oneline --decorate -30` (o git não mente; cada commit tem mensagem descritiva).
 
-1. **Modal de mini-bio no Time:** clicar num card com bio abre "Descubra mais sobre" (foto sangrando até a
-   borda do modal, sem título). 17 de 23 pessoas já têm bio (Matheus Naitzki Angeloni entrou em 2026-10-01 como voluntário, com foto, bio e LinkedIn) (atualizado 2026-10-01) — ver "Pendências A.0b".
-2. **Código de conduta redesenhado:** cards de regra com ícone (cor da marca), bloco "Fale com a gente"
-   (reusa `CONTACT`, dado novo único pra e-mail/redes, usado também no rodapé).
-3. **Aba Sorteio, nova, completa, atrás de `devOnly`:** cadastro público (exige check-in por QR) + roleta
-   do moderador (gira de verdade, nomes nas fatias, som sintetizado, modo por rodadas, lista de
-   teste do Time em DEV). Ver seção "Sorteio" abaixo — tem uma pendência real do Renato (publicar as
-   regras do Firestore) antes de funcionar de verdade.
+## Sessão 10 (2026-10-01 a 2026-10-03): o que foi feito
 
-Mais: `.talk-feedback-error` virou `.form-error` (reusado por qualquer formulário, não só palestra); login
-do moderador (Google) extraído pra `features/moderator-login.js`/`components/moderator-login.js`, reusado
-por perguntas e sorteio; bio do Michel Salomé e foto de corpo inteiro recortada; foto do João Estevão
-Camilo recortada (tinha print de tela do celular junto); travessão removido de tudo que sobrou visível.
-Antes de confiar neste texto, rode `git status --short --branch` e `git log --oneline --decorate -20`
-(o git não mente — todos os commits da sessão estão listados lá, com mensagem descritiva cada um).
+Detalhes técnicos de cada item: `PROJECT_CONTEXT.md`, seção "Sorteio" (parágrafos datados). Resumo:
+
+**Sorteio (fechado no código, atrás de `devOnly`; só falta o Renato testar o lado do moderador e ligar as travas no dia)**
+- **Roda:** gira de verdade, nomes centrados nas fatias (rótulo girado -90°), linha divisória reta entre fatias, amostra de 24
+  fatias com o sorteio saindo da lista inteira, ganhador fica 25 s sob a seta e a roda se renova.
+- **Modo telão** (botão "Modo telão" ou `sorteio.html?telao=1`, notebook no HDMI do telão do palco): 3 colunas (já sorteados à
+  esquerda com rolagem, roda e cartão do ganhador no centro, contador enorme + "Acabaram de entrar" + QR à direita). Testado em
+  janelas largas e baixas.
+- **Ausente** (sai de vez, não gasta o número do prêmio) e **Resetar sorteios** = nova RODADA (`raffle-state`): todos voltam pra
+  roleta e o prêmio recomeça do 1, SEM apagar nem baixar nada (confirmação digitando RESETAR). Cadastros nunca são tocados.
+- **Papel picado** (explosão do cartão + chuva do topo) e **fanfarra de festa** sintetizada, com botão "Som: ligado/desligado".
+- **Proteção contra trapaça, cada uma atrás de um INTERRUPTOR hoje DESLIGADO:** QR que muda a cada minuto
+  (`raffleRequiresCode()`, linha `// RAFFLE-CODE` em `firestore.rules`) e 1 ingresso = 1 cadastro com o e-mail do Sympla
+  (`raffleRequiresTicket()`, linha `// RAFFLE-TICKET` + `requireTicket` em `docs/js/data/raffle-config.js`; um teste no CI confere que
+  tela e regras estão iguais). Aviso de nomes repetidos (só aviso, ninguém é excluído).
+- **Regras do Firestore publicadas pelo Renato em 2026-10-03** (versão do commit `135c56a`, 391 linhas) e conferidas pelo Claude
+  contra o banco real SÓ como plateia anônima (check-in com código, cadastro, plateia sem acesso a `raffle-session`/`raffle-state`/
+  `raffle-draws`). **O lado do moderador (gravar a rodada, sortear com `round`, ausente, resetar) o Claude NÃO consegue testar
+  (exige login Google): o Renato precisa rodar o roteiro abaixo.**
+- Bugs reais achados e corrigidos: o giro dependia de `requestAnimationFrame` (não dispara com aba oculta: a roda não girava e o
+  ganhador era revelado na fatia errada); rótulos 90° fora das fatias; roda de 1 fatia azul quando o banco recusava a leitura;
+  cartão do ganhador cortado em tela larga e baixa; lista de sorteados sem rolagem no telão.
+
+**Roteiro de teste do moderador (pendente do Renato, 2 min):** abrir `https://gdgcampinas.github.io/DevFest-Campinas-2026/DEV/sorteio.html?telao=1`
+(ou sem `?telao=1`), Cmd+Shift+R, entrar com Google, girar (confete + fanfarra + ganhador em "Já sorteados"), marcar Ausente e girar
+de novo (o prêmio não avança), Resetar sorteios (digitar RESETAR: todo mundo volta, "Já sorteados" zera), girar de novo (prêmio 1).
+
+**Time**
+- Página liberada em PROD (22 pessoas reais, agora 23 com Matheus Naitzki Angeloni). Todos têm foto e LinkedIn, exceto o
+  Matheus (LinkedIn dele entrou) e a Laydianne (link cortado). Bios: 17 de 23 (faltam Carlos, Débora, Laydianne, Lorenzo, Felipe,
+  João Paulo). Bianca e Carlos Santos (antes "Carlos H") completos. Cargo dos 4 organizadores ainda em branco.
+
+**Sympla (análise, nada alterado):** o job "🎫 Sincronizar Sympla" está configurado a cada 10 min mas o GitHub o roda em média a cada
+**4,4 h** (máx. 8,3 h), 53 de 53 com sucesso, ~10 s cada, sem lógica de nova tentativa. Última rodada: **0 inscritos**, 0 check-in,
+0 não aprovados (token ok; ou não há ingressos aprovados, ou a leitura não pega: o Renato conferir o painel do Sympla). Impacto: com
+`RAFFLE-TICKET` ligado, quem comprar ingresso na hora pode esperar HORAS pra entrar no sorteio. Plano: rodar o sincronismo na mão
+antes de abrir o cadastro (`gh workflow run sync-sympla.yml -R gdgcampinas/DevFest-Campinas-2026 --ref main`). A mensagem da tela
+"aguarde até 10 minutos" (`raffle.ticketNotFound`) está otimista demais e deve ser corrigida. A API do Sympla v1.6.0 tem
+endpoints de ESCRITA de check-in de porta (decidido NÃO usar agora; análise em `IDEAS_BACKLOG.md`, "Check-in de porta").
+
+**Outros:** análise da "credencial digital" e do check-in de porta no `IDEAS_BACKLOG.md`. O GitHub pediu permissão nova do app
+"Claude" (Administration + Merge queues, só leitura): recomendado NÃO aceitar (nada aqui depende do app).
+
+## Sorteio no dia do evento: checklist e decisões
+
+- **Interruptores:** virar `// RAFFLE-CODE` e `// RAFFLE-TICKET` para `true` em `DevFestIA/firebase/firestore.rules` e
+  `requireTicket: true` em `docs/js/data/raffle-config.js`; rodar `bash DevFestIA/tools/questions/run-rules-tests.sh` (testa os 5
+  cenários, precisa de Java 21, já instalado); testar com o e-mail de um ingresso REAL; publicar as regras
+  (`pbcopy < DevFestIA/firebase/firestore.rules`). Com o código ligado o link antigo `?checkin=1` deixa de valer.
+- **Fluxo da pessoa:** escaneia o QR do telão (isso JÁ é o check-in do sorteio, não existe passo separado), preenche nome,
+  sobrenome, e-mail do ingresso e o aceite. Não depende do check-in das palestras nem do check-in da porta no Sympla.
+- **Cadastro:** a janela é o tempo em que o QR está na tela da organização (sem QR visível ele expira em 1 a 2 min). Recomendado:
+  abrir de manhã/começo da tarde e fechar 10 a 15 min antes do sorteio. **Horários de abrir/fechar: o Renato ainda não definiu.**
+- **Notebook do telão:** tomada, sem repouso, logado, QR visível (se dormir o QR expira); testar áudio HDMI e volume no ensaio.
+- **Antes do evento:** rodar "🧹 Limpar dados de teste" (agora cobre as coleções do sorteio, `raffle-session` e `raffle-state`):
+  hoje há mais de 75 cadastros fictícios no banco (72 voluntários x4 + "Teste Claude", "Teste Pos Regras", "Teste Rodadas").
+- **Decisões do Renato (não reabrir sem motivo):** ausente sai de vez; exigir o e-mail do ingresso do Sympla; reset NÃO apaga nem
+  baixa nada; som "mais festa"; confete = explosão do cartão + chuva do topo; telão = notebook no HDMI. **Em aberto:** prêmios
+  (quais e quantos, pausado), intensidade maior no prêmio principal, quando tirar o `devOnly`, fotos do sorteio de 2025.
 
 ## Status em uma olhada
 
 - **Mascote e comunicação:** Gumbleton (Gumble), a fênix do GDG Campinas, foi consolidado em `../../../Design/mascote-gumbleton-2026/`. O inventário e as regras de uso estão em `../../../docs/Marca_e_Mascote_2026.md`. Nenhum arquivo do site, deploy, Firebase ou workflow foi alterado por essa consolidação; aplicar o mascote no site requer autorização explícita do Renato.
 
 - Site estático de **8 páginas** (Principal, Grade, Palestrantes, Ingressos, Time, Patrocínio, Sorteio,
-  Código de Conduta — Sorteio ainda só em modo DEV, ver "Sorteio" abaixo) mais 2 ferramentas internas
+  Código de Conduta — Sorteio ainda só em modo DEV, ver "Sorteio" abaixo; Time já é público) mais 2 ferramentas internas
   (`checkin-display.html`, `reset-teste.html`),
   sem build. Publicado por GitHub Pages a partir de `docs/` no `main`; trabalho no
   `development`, o CI valida e promove sozinho (push no `development` = vai pro ar em minutos).
@@ -40,9 +86,10 @@ Antes de confiar neste texto, rode `git status --short --branch` e `git log --on
 - **Workflows no GitHub Actions** (com ícone): ✅ Validar, 🚀 Publicar no main, 🎫 Sincronizar Sympla
   (cron 10 min), 📊 Relatório do evento (sob demanda + 30 min em 28/11), 🧹 Limpar dados de teste
   (sob demanda, com travas). Secrets no repositório: `SYMPLA_TOKEN`, `FIREBASE_SERVICE_ACCOUNT`.
-- **Estado do git ao fechar a sessão 9:** `development` = `main` = `origin/*` (tudo commitado, no ar, CI
-  verde), último commit `bded67d`. Dados de TESTE ficaram no Firestore de verdade (check-ins, perguntas
-  "TESTE"/"Teste testes"): limpar com o workflow antes do evento.
+- **Estado do git ao fechar a sessão 10:** `development` = `main` = `origin/*`, árvore limpa (conferir com `git log`). Dados de TESTE
+  no Firestore de verdade (check-ins, perguntas, cadastros do sorteio): limpar com o workflow antes do evento.
+- **Testes:** ~200 de tela (jsdom) + Node em `DevFestIA/tools/raffle/` e `questions/` + regras no emulador. Os de `tools/raffle/`
+  AINDA NÃO rodam no CI (pendente de OK do Renato pra editar `.github/workflows/validate.yml`).
 
 ## Sessão 7 (2026-09-24/25): o que foi feito
 
@@ -55,7 +102,7 @@ Antes de confiar neste texto, rode `git status --short --branch` e `git log --on
 7. **Trava de horário das perguntas: DESLIGADA de propósito (teste em DEV).** Interruptor em dois lugares que precisam ficar iguais: `windowEnforced()` em `firestore.rules` e `enforceWindow` em `docs/js/data/talk-questions.js` (um teste confere). **LIGAR antes do evento** (checklist C, item 0).
 8. **Task anotada:** área administrativa com login (CRUD de moderadores, palestrantes...), análise em `project-docs/IDEAS_BACKLOG.md` (caminho recomendado: admin grava no Firestore + job exporta JSON; começar por moderadores CRUD).
 
-## Sessão 9 (2026-09-30): o que foi feito, detalhado
+## Sessão 9 (2026-09-30): o que foi feito, detalhado (histórico; algumas pendências daqui já foram resolvidas na sessão 10)
 
 Os 2 itens abaixo (mini-bio e Sorteio) são o que foi decidido e construído nesta sessão, do começo (plano)
 ao fim (testado, no ar). O que falta em cada um é conteúdo/decisão do Renato, não código — ver "Pendências".
@@ -77,7 +124,7 @@ palestra (`talk-modal.js`: card clicável abre `createModal()` com o detalhe).
   clicável só quando `person.bio` existir (`person-card.js`, mesmo `data-item`/clique de `info-card.js`),
   modal reusa foto (maior), nome, cargo, LinkedIn e o texto da bio.
 
-### 2. Sorteio (2026-09-30) — CÓDIGO PRONTO E TESTADO, SÓ EM MODO DEV
+### 2. Sorteio (2026-09-30) — HISTÓRICO da sessão 9 (o estado atual está na "Sessão 10" no topo e em PROJECT_CONTEXT)
 Aba nova `sorteio.html`: seção "Regras" (card com ícone, `data/raffle-rules.js`) + cadastro público
 (nome/sobrenome, opt-in explícito) + roleta (área da organização, só quem loga como moderador).
 **Elegibilidade revisada na mesma sessão** (o Renato pediu depois de ver a 1ª versão): o cadastro
@@ -264,6 +311,9 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
 
 ## Decisões que o Renato já tomou (não reabrir sem motivo)
 
+- **Sorteio (sessão 10):** ver "Sorteio no dia do evento: checklist e decisões" no topo deste arquivo (ausente sai de vez; e-mail do ingresso obrigatório; reset = nova rodada sem apagar; som de festa; confete explosão + chuva; telão no notebook/HDMI).
+- **Time público em PROD** (decisão do Renato em 2026-10-01); cargo dos organizadores em aberto.
+
 - Nada de backend pra conteúdo; Firebase só pra feedback/check-in e leitura pública do total,
   sempre atrás de repository. **Tudo grátis (sem Blaze):** Cloud Functions descartadas, o job roda no
   GitHub Actions.
@@ -284,18 +334,10 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
 ## Pendências
 
 **A. Só o Renato/organização pode fazer**
-0. **Sorteio (2026-10-01): PUBLICAR DE NOVO AS REGRAS DO FIRESTORE JÁ.** O site no ar já manda `status` no sorteio e `code` no
-   check-in, e as regras publicadas antes recusam esses campos (o sorteio real não grava o ganhador e o check-in do
-   sorteio vira "QR expirado"). `pbcopy < DevFestIA/firebase/firestore.rules`, colar em Firestore > Regras > Publicar.
-   Os interruptores `RAFFLE-CODE` e `RAFFLE-TICKET` saem `false`, então nada mais muda pra quem testa. **Antes do evento:**
-   virar os dois pra `true` (e `requireTicket: true` em `data/raffle-config.js`), testar com o e-mail de um ingresso REAL do
-   Sympla, rodar `DevFestIA/tools/questions/run-rules-tests.sh` e publicar. Pendente de OK do Renato: incluir os testes de
-   `DevFestIA/tools/raffle/*.test.js` no passo de testes do `validate.yml` (hoje só rodam local: `node --test DevFestIA/tools/raffle/*.test.js`).
-   (Texto antigo:) publicar as regras novas do Firestore no console
-   (`pbcopy < DevFestIA/firebase/firestore.rules`, tem `raffle-entries`/`raffle-draws` juntas com as de
-   sempre); decidir quando tirar do `devOnly` e abrir pro público; decidir se troca o som sintetizado por
-   um efeito de verdade (grátis, simples, a pedido do Renato) e por qual; decidir quantos prêmios/como
-   funciona no dia (a roleta gira por rodadas, só falta a operação combinar).
+0. **Sorteio (2026-10-03):** regras do Firestore já publicadas (commit `135c56a`). Pendente do Renato: (a) rodar o roteiro de teste do
+   moderador (topo do handoff); (b) definir horários de abrir/fechar o cadastro; (c) decidir prêmios e o prêmio principal; (d) decidir
+   quando tirar o `devOnly`; (e) ligar os interruptores no dia (ver "Sorteio no dia do evento"); (f) OK pra incluir os testes de
+   `DevFestIA/tools/raffle/*.test.js` no `validate.yml`; (g) conferir no painel do Sympla quantos ingressos aprovados existem (o job lê 0).
 0b. **Dados de time em aberto (sessão 9/30):**
    - **Cargo dos 4 organizadores reais** (Renato Ramos, Bianca Issa, Michel Salomé, Carlos Santos): nenhum tem
      cargo confirmado ainda, o card mostra só o nome.
@@ -387,17 +429,16 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
 - **`prefers-reduced-motion`** está ligado no Browser pane e no iPhone do Renato: a galáxia gira mais
   devagar por config; regra global de styles.css zera outras animações.
 - **Testes de tela (jsdom):** `npm ci --prefix DevFestIA/tools && node --test DevFestIA/tools/dom/*.test.js`
-  (83 casos: perguntas da plateia, moderação, quadro da sala, feedback da palestra e do evento, cadastro e
-  roleta do sorteio; rodam no CI). **Um teste da moderação (`só conta votos das aprovadas...`) é
+  (perguntas da plateia, moderação, quadro da sala, feedback, cadastro e roleta do sorteio, confete; rodam no CI). **Um teste da moderação (`só conta votos das aprovadas...`) é
   conhecidamente instável no CI** (timing, não é do sorteio nem desta sessão) — se o `✅ Validar` falhar só
   nele, `gh run rerun <id> --failed` costuma passar; não é regressão, não precisa investigar de novo toda
-  vez. Regras do Firestore: `DevFestIA/tools/questions/run-rules-tests.sh` (35 casos, emulador, local; não
-  cobre as coleções do sorteio ainda — gap conhecido, ver `PROJECT_CONTEXT.md` "Sorteio").
+  vez. Regras do Firestore: `bash DevFestIA/tools/questions/run-rules-tests.sh` (emulador, local, ~3 min, 5 cenários incluindo os interruptores do sorteio; não roda no CI). Testes puros do sorteio: `node --test DevFestIA/tools/raffle/*.test.js` (local por enquanto).
 - **Testar o sorteio sem Firebase de verdade** (login/cadastro/roleta): stubar `window.raffleEntriesRepository`,
   `window.raffleCheckinsRepository`, `window.moderationRaffleEntriesRepository`,
   `window.moderationRaffleDrawsRepository` e `window.moderatorClient.signInWithGoogle` no console do navegador
   ANTES de clicar — mesma ideia de sempre, ver exemplos nos testes jsdom (`DevFestIA/tools/dom/raffle-*.dom.test.js`)
   e no histórico desta sessão. `?checkin=1` na URL simula o QR (faz o check-in e libera o formulário).
+- **Armadilhas aprendidas na sessão 10:** (1) NUNCA encadear `grep fail 0 && git commit` sem checar o resultado: use `if node --test ... | grep -E "^ℹ fail 0$"; then commit; else echo FALHOU; fi` (um commit saiu com sintaxe quebrada); (2) `requestAnimationFrame` não dispara em aba oculta/painel do app: nada importante pode depender dele (usar reflow forçado); (3) no macOS `sed -i` precisa de `''` e não tem `\b`; (4) objetos criados dentro do jsdom não passam em `assert.deepEqual` contra objetos do Node (comparar por `JSON.parse(JSON.stringify())`); (5) `:where()` tem especificidade zero: uma regra CSS posterior com o mesmo seletor ganha; (6) ids de teste "hex" precisam ser mesmo hexadecimais (a-f, 0-9); (7) testar ao vivo no navegador do app em janelas largas e baixas (o telão é assim); (8) o app do navegador mostra um painel por vez: `tabs_select` antes de `find`.
 - **Testes automáticos:** `node --test DevFestIA/tools/sympla-sync/sync.test.js DevFestIA/tools/event-report/build-report.test.js DevFestIA/tools/purge-test-data/purge.test.js`
   (rodam no CI; o Node 24 não aceita diretório em `--test`, passe os arquivos). `check-meta.js` e
   `check-install.js` também rodam no CI.
@@ -412,7 +453,7 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
 - **Regenerar marca:** `DevFestIA/design/build-brand-assets.sh` (rsvg-convert, Chrome, sips).
 - Firebase: projeto `DevFest-Campinas` (console.firebase.google.com). Regras em
   `DevFestIA/firebase/firestore.rules`, colar em Firestore > Regras > Publicar a cada mudança
-  (`pbcopy < arquivo` deixa na área de transferência). Emulador não roda (Java 11; precisa 21).
+  (`pbcopy < arquivo` deixa na área de transferência). O emulador roda com Java 21 (`brew install openjdk@21`, já instalado; o runner põe no PATH).
 - **Terminal no app:** o painel limita as abas que a IA abre por sessão; comandos curtos vão por Bash.
   No zsh `status` é variável reservada (não use como nome de variável).
 - Fluxo de entrega aprovado: implementar, testar de verdade (navegador desktop e celular, node), atualizar
@@ -449,3 +490,7 @@ teste do Time em DEV, atrás de `devOnly`); login do moderador extraído e reusa
 sorteio; `.form-error` generalizado; várias correções de bug encontradas em teste ao vivo com o Renato
 (foto cortando rosto, URL errada no `/DEV/`, roleta sem animação, nomes de cabeça pra baixo, animação
 zerada por "Reduzir movimento"). ~20 commits, tudo testado (navegador + 83 testes automáticos) e no ar.
+**Sessão 10 (2026-10-01 a 10-03, longa):** Sorteio fechado no código (modo telão, contador e chegadas ao vivo, roda com amostra de 24, ausente,
+reset por rodada, papel picado, fanfarra, QR que muda, 1 ingresso = 1 cadastro e aviso de nomes repetidos, os dois últimos atrás de
+interruptores desligados); regras do Firestore publicadas e conferidas como plateia; Time liberado em PROD (23 pessoas, 17 bios);
+análise do Sincronizar Sympla (roda a cada ~4,4 h, 0 inscritos) e do check-in de porta; ~40 commits, tudo no ar.
