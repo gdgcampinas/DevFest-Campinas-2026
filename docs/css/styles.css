@@ -1290,3 +1290,6 @@ body.raffle-telao-open{overflow:hidden}
   .raffle-mod.raffle-telao{--raffle-wheel-size:min(58vh,90vw)}
   .raffle-telao .raffle-layout{grid-template-columns:1fr;grid-template-rows:auto auto auto;grid-template-areas:"stage" "side" "drawn";align-items:start}
 }
+
+/* Papel picado do sorteio (features/confetti.js): canvas do tamanho da tela, por cima de tudo (inclusive do modo telão), sem clique */
+.raffle-confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2500}

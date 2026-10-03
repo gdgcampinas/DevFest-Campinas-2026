@@ -133,6 +133,7 @@ function initRaffleDraw(rootEl, {
   startInTelao = false,
   every = (fn, ms) => { const id = setInterval(fn, ms); return () => clearInterval(id); },
   generateCode = generateRaffleCode,
+  confetti = createConfetti(),
 } = {}) {
   let email = "";
   let entries = [];
@@ -296,6 +297,14 @@ function initRaffleDraw(rootEl, {
     );
   }
 
+  /** Papel picado na revelação do ganhador: explosão saindo do cartão dele + chuva do topo. No modo telão sempre
+   * (faz parte do show); fora dele respeita "Reduzir movimento". Nunca atrapalha o sorteio (o motor engole falhas). */
+  function celebrate() {
+    const rect = rootEl.querySelector(".raffle-winner")?.getBoundingClientRect();
+    const origin = rect && rect.width ? { x: rect.left + rect.width / 2, y: rect.top + rect.height * 0.35 } : null;
+    confetti.fire({ origin, force: telao });
+  }
+
   async function spin() {
     const fullPool = pool();
     if (spinning || !fullPool.length) return;
@@ -348,6 +357,7 @@ function initRaffleDraw(rootEl, {
         const token = (holdToken += 1);
         schedule(() => releaseReveal(token), revealHoldMs);
         drawReady();
+        if (winner) celebrate();
       }
     );
   }

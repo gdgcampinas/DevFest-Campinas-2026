@@ -9,7 +9,7 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, settle, textOf } = require("../lib/dom-harness.js");
 const { createFakeQuestions, denied } = require("../lib/fake-question-world.js");
 
-const SCRIPTS = [...SITE_BASE, "components/moderator-login.js", "features/raffle-pool.js", "features/raffle-session.js", "components/raffle-arrivals.js", "components/raffle-wheel.js", "features/moderator-login.js", "features/raffle-draw.js"];
+const SCRIPTS = [...SITE_BASE, "components/moderator-login.js", "features/raffle-pool.js", "features/raffle-session.js", "features/confetti-engine.js", "features/confetti.js", "data/raffle-confetti.js", "components/raffle-arrivals.js", "components/raffle-wheel.js", "features/moderator-login.js", "features/raffle-draw.js"];
 
 const windows = [];
 test.after(() => windows.forEach(window => window.close()));
@@ -44,6 +44,7 @@ function setup({ signedIn = false, devSeed = [], entries = createFakeQuestions()
   const fullscreen = fakeFullscreen();
   const session = fakeSession();
   const qrDraws = []; // o que foi desenhado no QR (texto e tamanho)
+  const confettiFires = []; // cada disparo do papel picado ({ origin, force })
   const ticks = []; // virada do código: só roda quando o teste manda (`rotateCode`)
   let codeNumber = 0;
   const scheduled = []; // tempo de exibição do ganhador: só roda quando o teste manda (`releaseReveal`)
@@ -60,6 +61,7 @@ function setup({ signedIn = false, devSeed = [], entries = createFakeQuestions()
     audio: fakeAudioCtx,
     schedule: fn => scheduled.push(fn),
     drawQrCode: (el, text, size) => { if (el) qrDraws.push({ text, size }); },
+    confetti: { fire: options => { confettiFires.push(options); return true; } },
     every: fn => { ticks.push(fn); return () => ticks.splice(ticks.indexOf(fn), 1); },
     generateCode: () => `CODIGO${++codeNumber}`.padEnd(8, "X"),
     fullscreen,
@@ -71,7 +73,7 @@ function setup({ signedIn = false, devSeed = [], entries = createFakeQuestions()
   const rotateCode = async () => { ticks.slice().forEach(fn => fn()); await settle(); };
   const signIn = async () => { rootEl.querySelector("[data-mod-signin]").click(); await settle(); };
   const spin = async () => { rootEl.querySelector("[data-raffle-spin]").click(); await settle(); };
-  return { rootEl, document, window, entries, draws, auth, seedEntry, signIn, spin, fullscreen, releaseReveal, session, ticks, rotateCode, qrDraws };
+  return { rootEl, document, window, entries, draws, auth, seedEntry, signIn, spin, fullscreen, releaseReveal, session, ticks, rotateCode, qrDraws, confettiFires };
 }
 
 test("sem login: pede a conta de moderador e não lê nada do banco", async () => {
@@ -528,4 +530,41 @@ test("nomes repetidos: sem repetição não mostra aviso", async () => {
   world.seedEntry("u2_raffle", "Bruno", "Lima");
   await world.signIn();
   assert.equal(world.rootEl.querySelector(".raffle-repeated"), null);
+});
+
+// ---------- papel picado ----------
+test("papel picado: dispara uma vez quando o ganhador é revelado, com a explosão saindo do cartão dele", async () => {
+  const world = setup({ signedIn: true });
+  manyEntries(world, 3);
+  await world.signIn();
+  world.window.Element.prototype.getBoundingClientRect = function () { return this.classList?.contains("raffle-winner") ? { left: 100, top: 200, width: 300, height: 100 } : { left: 0, top: 0, width: 0, height: 0 }; };
+  await world.spin();
+  assert.equal(world.confettiFires.length, 1);
+  assert.deepEqual(JSON.parse(JSON.stringify(world.confettiFires[0].origin)), { x: 250, y: 235 });
+  assert.equal(world.confettiFires[0].force, false, "fora do telão respeita 'Reduzir movimento'");
+});
+
+test("papel picado: no modo telão sempre dispara (force)", async () => {
+  const world = setup({ signedIn: true });
+  manyEntries(world, 3);
+  await world.signIn();
+  world.rootEl.querySelector("[data-raffle-telao-toggle]").click();
+  await settle();
+  await world.spin();
+  assert.equal(world.confettiFires.at(-1).force, true);
+});
+
+test("papel picado: um giro por prêmio, e nada ao marcar ausente ou quando o banco recusa o sorteio", async () => {
+  const world = setup({ signedIn: true });
+  manyEntries(world, 4);
+  await world.signIn();
+  await world.spin();
+  await world.spin();
+  assert.equal(world.confettiFires.length, 2);
+  world.rootEl.querySelector(".raffle-winner [data-raffle-absent]").click();
+  await settle();
+  assert.equal(world.confettiFires.length, 2, "ausente não comemora");
+  world.draws.add = async () => { throw new Error("offline"); };
+  await world.spin();
+  assert.equal(world.confettiFires.length, 2, "sem ganhador gravado, sem festa");
 });
