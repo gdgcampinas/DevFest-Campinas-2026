@@ -6,7 +6,7 @@
  *   2) recusa a partir do início do evento (depois disso os dados são reais);
  *   3) simulação por padrão: só apaga com dryRun falso E confirmação exata.
  */
-const PURGEABLE_COLLECTIONS = ["checkins", "talk-feedback", "event-feedback", "talk-questions", "talk-question-votes", "raffle-checkins", "raffle-entries", "raffle-draws"];
+const PURGEABLE_COLLECTIONS = ["checkins", "talk-feedback", "event-feedback", "talk-questions", "talk-question-votes", "raffle-checkins", "raffle-entries", "raffle-draws", "raffle-session", "raffle-state"];
 const CONFIRMATION_WORD = "APAGAR";
 
 function planPurge({ dryRun = true, confirm = "", now, startsAt }) {

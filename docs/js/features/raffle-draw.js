@@ -65,6 +65,7 @@ function defaultRaffleDrawDeps() {
     entries: window.moderationRaffleEntriesRepository,
     draws: window.moderationRaffleDrawsRepository,
     session: window.moderationRaffleSessionRepository,
+    state: window.moderationRaffleStateRepository,
     ...defaultModeratorLoginDeps(),
   };
 }
@@ -108,8 +109,6 @@ function initRaffleDraw(rootEl, {
   confetti = createConfetti(),
   sound = raffleSoundRepository.getAll(),
   resetWord = raffleConfigRepository.getAll().resetWord,
-  download = downloadTextFile,
-  clock = () => new Date(),
 } = {}) {
   let email = "";
   let entries = [];
@@ -141,6 +140,10 @@ function initRaffleDraw(rootEl, {
   let qrSession = null; // { code, previous } do QR que está na tela (o mesmo que foi gravado em raffle-session)
   let stopRotation = null; // desliga a virada do código (intervalo)
   let sessionError = "";
+  let round = RAFFLE_FIRST_ROUND; // rodada atual do sorteio (raffle-state): só os sorteios dela contam
+  let stateLoaded = false; // já sabemos a rodada? (antes disso não dá pra sortear: o banco recusaria uma rodada errada)
+  let stopState = null;
+  let stateError = "";
   let resetOpen = false; // caixa de confirmação do reset aberta
   let resetError = "";
   let seenArrivalIds = null; // null até a 1ª lista chegar: quem já estava lá não ganha a animação de "acabou de entrar"
@@ -148,7 +151,7 @@ function initRaffleDraw(rootEl, {
   const isAbsent = item => item.status === RAFFLE_DRAW_STATUS.absent;
   const usingDevSeed = () => entries.length === 0 && devSeed.length > 0;
   const activeEntries = () => (usingDevSeed() ? devSeed : entries);
-  const activeDraws = () => (usingDevSeed() ? devDraws : draws);
+  const activeDraws = () => (usingDevSeed() ? devDraws : drawsOfRound(draws, round));
 
   /** Só re-trava a arrumação da roda com o pool atual quando NADA está em exibição que dependa da
    * arrumação anterior (sem giro em andamento, sem ganhador recém-revelado sob o ponteiro) — assim gente
@@ -169,7 +172,7 @@ function initRaffleDraw(rootEl, {
   }
 
   const draw = data => {
-    const loadError = entriesError || drawsError;
+    const loadError = entriesError || drawsError || stateError;
     rootEl.innerHTML = raffleWheelMarkup({ email, showQr, telao, loadError, sessionError, resetOpen, resetWord, resetError, ...data });
     drawQr(data.phase);
   };
@@ -246,7 +249,7 @@ function initRaffleDraw(rootEl, {
       winnerDrawId,
       wheelDeg,
       usingDevSeed: usingDevSeed(),
-      canSpin: !spinning && livePool.length > 0,
+      canSpin: stateLoaded && !spinning && livePool.length > 0,
     });
   }
 
@@ -255,9 +258,30 @@ function initRaffleDraw(rootEl, {
     return audioCtx;
   }
 
+  /** Passou pra outra rodada (este moderador resetou, ou outra tela dele): começa do zero na tela. */
+  function applyRound(next) {
+    if (next === round) return;
+    round = next;
+    winner = null;
+    winnerPrize = 0;
+    winnerDrawId = "";
+    holding = false;
+    holdToken += 1;
+    wheelDeg = 0;
+    resetOpen = false;
+    resetError = "";
+    refreshDisplayWhenIdle();
+  }
+
   function startWatching() {
     stopEntries?.();
     stopDraws?.();
+    stopState?.();
+    stopState = deps().state.listen(
+      RAFFLE_STATE_ID,
+      doc => { stateLoaded = true; stateError = ""; applyRound(doc?.round ?? RAFFLE_FIRST_ROUND); drawReady(); },
+      () => { stateLoaded = true; stateError = t("raffle.loadDrawsError", "Não foi possível carregar os sorteios agora. Tentando de novo em instantes."); drawReady(); }
+    );
     stopEntries = deps().entries.listen(
       {},
       list => {
@@ -312,16 +336,16 @@ function initRaffleDraw(rootEl, {
       async () => {
         const prize = activeDraws().filter(item => !isAbsent(item)).length + 1; // ausente não gasta o número do prêmio
         const name = `${chosen.firstName} ${chosen.lastName}`;
-        const drawId = `${chosen.id}_draw`; // o id que o repository dá a add(chosen.id, "draw", ...)
+        const drawId = raffleDrawDocId(chosen.id, round); // o id leva a rodada: a mesma pessoa sai de novo depois de um reset
         if (dev) {
-          devDraws = devDraws.concat([{ id: drawId, entryId: chosen.id, name, prize, status: RAFFLE_DRAW_STATUS.winner }]);
+          devDraws = devDraws.concat([{ id: drawId, entryId: chosen.id, name, prize, status: RAFFLE_DRAW_STATUS.winner, round }]);
           if (ctx) playRaffleFanfare(ctx, sound);
           winner = name;
           winnerPrize = prize;
           winnerDrawId = drawId;
         } else {
           try {
-            await deps().draws.add(chosen.id, "draw", { entryKey: "draw", entryId: chosen.id, name, prize, status: RAFFLE_DRAW_STATUS.winner });
+            await deps().draws.addWithId(drawId, { entryKey: "draw", entryId: chosen.id, name, prize, status: RAFFLE_DRAW_STATUS.winner, round });
             if (ctx) playRaffleFanfare(ctx, sound);
             winner = name;
             winnerPrize = prize;
@@ -367,39 +391,35 @@ function initRaffleDraw(rootEl, {
   }
 
   /**
-   * RESET DE EMERGÊNCIA: apaga TODOS os sorteios feitos (ganhadores e ausentes) e devolve todo mundo pra roleta, do zero. Os
-   * cadastros ficam. Antes de apagar baixa a lista em CSV (se o download falhar, o reset segue: o banco é o que importa).
-   * Se o banco recusar, nada muda na tela e o erro aparece na própria caixa, pra tentar de novo.
+   * RESETAR: recomeça o sorteio do zero, SEM apagar nem baixar nada. Abre a próxima rodada (`raffle-state`): todo mundo que
+   * já saiu, ganhadores e ausentes, volta pra roleta, o prêmio volta a ser o 1 e a lista "Já sorteados" começa vazia. Os
+   * sorteios da rodada anterior continuam guardados no banco, só deixam de contar. Os cadastros nem são tocados.
+   * Se o banco recusar: o erro aparece na caixa, nada muda na tela, dá pra tentar de novo.
    */
   async function resetDraws() {
     if (spinning) return;
-    const list = activeDraws().slice();
-    if (list.length) {
-      try {
-        const backup = buildRaffleBackup(list, { now: clock() });
-        download(backup.filename, backup.mimeType, backup.content);
-      } catch {
-        /* sem a cópia o reset ainda vale */
-      }
-      try {
-        if (usingDevSeed()) devDraws = [];
-        else await deps().draws.removeMany(list.map(item => item.id));
-      } catch {
-        resetError = t("raffle.resetError", "Não foi possível resetar agora. Nada foi apagado por inteiro; tente de novo.");
-        drawReady();
-        return;
-      }
-      if (!usingDevSeed()) draws = [];
+    const next = round + 1;
+    try {
+      if (!usingDevSeed()) await deps().state.set(RAFFLE_STATE_ID, { round: next });
+    } catch {
+      resetError = t("raffle.resetError", "Não foi possível resetar agora. Nada foi alterado; tente de novo.");
+      drawReady();
+      return;
     }
-    winner = null;
-    winnerPrize = 0;
-    winnerDrawId = "";
-    holding = false;
-    holdToken += 1;
-    wheelDeg = 0;
-    resetOpen = false;
-    resetError = "";
-    refreshDisplayWhenIdle();
+    devDraws = [];
+    if (usingDevSeed()) {
+      winner = null;
+      winnerPrize = 0;
+      winnerDrawId = "";
+      holding = false;
+      holdToken += 1;
+      wheelDeg = 0;
+      resetOpen = false;
+      resetError = "";
+      refreshDisplayWhenIdle();
+    } else {
+      applyRound(next); // o listener confirma a mesma rodada logo depois
+    }
     drawReady();
   }
 
@@ -440,7 +460,10 @@ function initRaffleDraw(rootEl, {
     if (event.target.closest("[data-mod-signout]")) {
       stopEntries?.();
       stopDraws?.();
+      stopState?.();
       email = "";
+      round = RAFFLE_FIRST_ROUND;
+      stateLoaded = false;
       syncCodeRotation();
       entries = [];
       draws = [];
@@ -451,6 +474,7 @@ function initRaffleDraw(rootEl, {
       holdToken += 1;
       entriesError = "";
       drawsError = "";
+      stateError = "";
       draw({ phase: "signin" });
       await deps().signOut();
       return;

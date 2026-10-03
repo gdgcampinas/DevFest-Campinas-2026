@@ -40,9 +40,17 @@ const moderationRaffleSessionRepository = window.createFirestoreDocumentReposito
   edition: CURRENT_EDITION,
 });
 
+/** Rodada atual do sorteio (`raffle-state/current`): só o moderador lê e grava. "Resetar" abre a rodada seguinte. */
+const moderationRaffleStateRepository = window.createFirestoreDocumentRepository({
+  db: window.moderatorClient.db,
+  collectionName: "raffle-state",
+  edition: CURRENT_EDITION,
+});
+
 window.moderationQuestionsRepository = moderationQuestionsRepository;
 window.moderationBoardsRepository = moderationBoardsRepository;
 window.moderationVotesRepository = moderationVotesRepository;
 window.moderationRaffleEntriesRepository = moderationRaffleEntriesRepository;
 window.moderationRaffleDrawsRepository = moderationRaffleDrawsRepository;
 window.moderationRaffleSessionRepository = moderationRaffleSessionRepository;
+window.moderationRaffleStateRepository = moderationRaffleStateRepository;

@@ -9,7 +9,7 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, settle, textOf } = require("../lib/dom-harness.js");
 const { createFakeQuestions, denied } = require("../lib/fake-question-world.js");
 
-const SCRIPTS = [...SITE_BASE, "components/moderator-login.js", "features/raffle-pool.js", "features/raffle-session.js", "features/confetti-engine.js", "features/confetti.js", "data/raffle-confetti.js", "data/raffle-sound.js", "features/raffle-sound.js", "features/calendar.js", "features/raffle-backup.js", "data/raffle-config.js", "components/raffle-arrivals.js", "components/raffle-wheel.js", "features/moderator-login.js", "features/raffle-draw.js"];
+const SCRIPTS = [...SITE_BASE, "components/moderator-login.js", "features/raffle-pool.js", "features/raffle-session.js", "features/confetti-engine.js", "features/confetti.js", "data/raffle-confetti.js", "data/raffle-sound.js", "features/raffle-sound.js", "features/raffle-rounds.js", "data/raffle-config.js", "components/raffle-arrivals.js", "components/raffle-wheel.js", "features/moderator-login.js", "features/raffle-draw.js"];
 
 const windows = [];
 test.after(() => windows.forEach(window => window.close()));
@@ -31,13 +31,37 @@ const fakeFullscreen = () => {
   return { calls, enter: () => { calls.enter++; active = true; }, exit: () => { calls.exit++; active = false; }, isActive: () => active, setActive: value => { active = value; } };
 };
 
+/** Rodada atual do sorteio (raffle-state/current) de mentira: `set` grava e avisa quem escuta; `emit` simula outra tela. */
+const fakeState = (initialRound = null) => {
+  const listeners = new Set();
+  const world = {
+    doc: initialRound ? { round: initialRound } : null,
+    sets: [],
+    fail: false,
+    errorOnListen: false,
+    listen(id, onNext, onError) {
+      if (world.errorOnListen) { onError(new Error("offline")); return () => {}; }
+      listeners.add(onNext);
+      onNext(world.doc);
+      return () => listeners.delete(onNext);
+    },
+    async set(id, data) {
+      if (world.fail) throw new Error("offline");
+      world.sets.push({ id, ...data });
+      world.emit({ round: data.round });
+    },
+    emit(doc) { world.doc = doc; listeners.forEach(listener => listener(doc)); },
+  };
+  return world;
+};
+
 /** Repository de mentira do código do QR: guarda as gravações e deixa simular falha. */
 const fakeSession = () => {
   const world = { writes: [], fail: false, async set(id, data) { if (world.fail) throw new Error("offline"); world.writes.push({ id, ...data }); } };
   return world;
 };
 
-function setup({ signedIn = false, devSeed = [], entries = createFakeQuestions(), draws = createFakeQuestions(), startInTelao = false, random } = {}) {
+function setup({ signedIn = false, devSeed = [], entries = createFakeQuestions(), draws = createFakeQuestions(), startInTelao = false, random, initialRound = null } = {}) {
   const site = loadSite({ scripts: SCRIPTS });
   const { document, window } = site;
   windows.push(window);
@@ -46,15 +70,15 @@ function setup({ signedIn = false, devSeed = [], entries = createFakeQuestions()
   const rootEl = document.getElementById("mod");
   const fullscreen = fakeFullscreen();
   const session = fakeSession();
+  const state = fakeState(initialRound);
   const qrDraws = []; // o que foi desenhado no QR (texto e tamanho)
   const confettiFires = []; // cada disparo do papel picado ({ origin, force })
-  const downloads = []; // arquivos baixados (nome, tipo, conteúdo)
   const ticks = []; // virada do código: só roda quando o teste manda (`rotateCode`)
   let codeNumber = 0;
   const scheduled = []; // tempo de exibição do ganhador: só roda quando o teste manda (`releaseReveal`)
   site.get("initRaffleDraw")(rootEl, {
     deps: () => ({
-      entries, draws, session,
+      entries, draws, session, state,
       signIn: async () => { if (auth.signInError) throw auth.signInError; auth.email = "mod@gdg.dev"; return auth.email; },
       restore: async () => auth.email,
       signOut: async () => { auth.email = null; },
@@ -65,8 +89,6 @@ function setup({ signedIn = false, devSeed = [], entries = createFakeQuestions()
     audio: fakeAudioCtx,
     schedule: fn => scheduled.push(fn),
     drawQrCode: (el, text, size) => { if (el) qrDraws.push({ text, size }); },
-    download: (filename, mimeType, content) => downloads.push({ filename, mimeType, content }),
-    clock: () => new Date("2026-11-28T15:04:00Z"),
     confetti: { fire: options => { confettiFires.push(options); return true; } },
     every: fn => { ticks.push(fn); return () => ticks.splice(ticks.indexOf(fn), 1); },
     generateCode: () => `CODIGO${++codeNumber}`.padEnd(8, "X"),
@@ -79,7 +101,7 @@ function setup({ signedIn = false, devSeed = [], entries = createFakeQuestions()
   const rotateCode = async () => { ticks.slice().forEach(fn => fn()); await settle(); };
   const signIn = async () => { rootEl.querySelector("[data-mod-signin]").click(); await settle(); };
   const spin = async () => { rootEl.querySelector("[data-raffle-spin]").click(); await settle(); };
-  return { rootEl, document, window, entries, draws, auth, seedEntry, signIn, spin, fullscreen, releaseReveal, session, ticks, rotateCode, qrDraws, confettiFires, downloads };
+  return { rootEl, document, window, entries, draws, auth, seedEntry, signIn, spin, fullscreen, releaseReveal, session, ticks, rotateCode, qrDraws, confettiFires, state };
 }
 
 test("sem login: pede a conta de moderador e não lê nada do banco", async () => {
@@ -195,7 +217,7 @@ test("2 telas de moderador giram ao mesmo tempo: a regra recusa a gravação dup
   const world = setup({ signedIn: true });
   world.seedEntry("u1_raffle", "Ana", "Souza");
   await world.signIn();
-  world.draws.add = async () => { throw denied(); }; // simula a outra tela já tendo sorteado essa pessoa
+  world.draws.addWithId = async () => { throw denied(); }; // simula a outra tela já tendo sorteado essa pessoa
   await world.spin();
   assert.equal(world.draws.docs.length, 0);
   assert.doesNotMatch(textOf(world.rootEl), /undefined/);
@@ -570,7 +592,7 @@ test("papel picado: um giro por prêmio, e nada ao marcar ausente ou quando o ba
   world.rootEl.querySelector(".raffle-winner [data-raffle-absent]").click();
   await settle();
   assert.equal(world.confettiFires.length, 2, "ausente não comemora");
-  world.draws.add = async () => { throw new Error("offline"); };
+  world.draws.addWithId = async () => { throw new Error("offline"); };
   await world.spin();
   assert.equal(world.confettiFires.length, 2, "sem ganhador gravado, sem festa");
 });
@@ -616,7 +638,7 @@ test("som: marcar ausente não toca nada", async () => {
   assert.equal(audioLog.oscillators, before);
 });
 
-// ---------- reset de emergência ----------
+// ---------- resetar = nova rodada (nada é apagado, nada é baixado) ----------
 const typeResetWord = async (world, word) => {
   const input = world.rootEl.querySelector("[data-raffle-reset-word]");
   input.value = word;
@@ -625,8 +647,41 @@ const typeResetWord = async (world, word) => {
 };
 const openReset = async world => { world.rootEl.querySelector("[data-raffle-reset-open]").click(); await settle(); };
 const confirmReset = async world => { world.rootEl.querySelector("[data-raffle-reset-confirm]").click(); await settle(); };
+const doReset = async world => { await openReset(world); await typeResetWord(world, "RESETAR"); await confirmReset(world); };
 
-test("reset: o botão só existe quando já há algum sorteio", async () => {
+test("rodada: sem documento de estado a rodada é a 1; enquanto não sabe a rodada, o botão de girar espera", async () => {
+  const world = setup({ signedIn: true });
+  manyEntries(world, 3);
+  world.state.errorOnListen = false;
+  await world.signIn();
+  assert.equal(world.rootEl.querySelector("[data-raffle-spin]").disabled, false);
+  await world.spin();
+  assert.equal(world.draws.docs[0].round, 1);
+  assert.equal(world.draws.docs[0].id, `${world.draws.docs[0].entryId}_draw`, "a rodada 1 mantém o id de sempre");
+});
+
+test("rodada: com o banco já na rodada 2, o sorteio grava na rodada 2 e o id leva a rodada", async () => {
+  const world = setup({ signedIn: true, initialRound: 2 });
+  manyEntries(world, 3);
+  await world.signIn();
+  await world.spin();
+  assert.equal(world.draws.docs[0].round, 2);
+  assert.equal(world.draws.docs[0].id, `${world.draws.docs[0].entryId}_r2_draw`);
+});
+
+test("rodada: sorteios de rodadas anteriores não contam (a pessoa está na roleta, o prêmio recomeça e a lista só mostra a atual)", async () => {
+  const world = setup({ signedIn: true, initialRound: 2 });
+  manyEntries(world, 3);
+  world.draws.seed({ id: "u1_raffle_draw", entryId: "u1_raffle", name: "P1 S1", prize: 1, status: "winner" }); // rodada 1 (sem campo round)
+  world.draws.seed({ id: "u2_raffle_r2_draw", entryId: "u2_raffle", name: "P2 S2", prize: 1, status: "winner", round: 2 });
+  await world.signIn();
+  assert.match(textOf(world.rootEl.querySelector(".raffle-stats")), /2\s*Na lista/, "u1 voltou pra roleta, só u2 saiu na rodada atual");
+  assert.deepEqual([...world.rootEl.querySelectorAll(".raffle-drawn-name")].map(el => el.textContent), ["P2 S2"]);
+  await world.spin();
+  assert.equal(world.draws.docs.at(-1).prize, 2, "o 2º prêmio da rodada atual");
+});
+
+test("reset: o botão só existe quando já há algum sorteio na rodada", async () => {
   const world = setup({ signedIn: true });
   manyEntries(world, 3);
   await world.signIn();
@@ -635,28 +690,29 @@ test("reset: o botão só existe quando já há algum sorteio", async () => {
   assert.ok(world.rootEl.querySelector("[data-raffle-reset-open]"));
 });
 
-test("reset: a confirmação pede a palavra RESETAR; sem ela o botão fica travado, com ela (em qualquer caixa) libera; cancelar fecha", async () => {
+test("reset: pede a palavra RESETAR (qualquer caixa) antes de liberar; cancelar fecha sem fazer nada", async () => {
   const world = setup({ signedIn: true });
   manyEntries(world, 3);
   await world.signIn();
   await world.spin();
   await openReset(world);
   assert.match(textOf(world.rootEl.querySelector(".raffle-reset")), /digite RESETAR/);
+  assert.match(textOf(world.rootEl.querySelector(".raffle-reset")), /Nada é apagado/);
   const confirmBtn = () => world.rootEl.querySelector("[data-raffle-reset-confirm]");
   assert.equal(confirmBtn().disabled, true);
   await typeResetWord(world, "reset");
   assert.equal(confirmBtn().disabled, true, "palavra incompleta não libera");
-  await confirmReset(world); // clicar mesmo travado não faz nada
-  assert.equal(world.draws.docs.length, 1);
+  await confirmReset(world);
+  assert.equal(world.state.sets.length, 0, "clicar travado não faz nada");
   await typeResetWord(world, "resetar");
   assert.equal(confirmBtn().disabled, false);
   world.rootEl.querySelector("[data-raffle-reset-cancel]").click();
   await settle();
   assert.equal(world.rootEl.querySelector(".raffle-reset"), null);
-  assert.equal(world.draws.docs.length, 1, "cancelar não apaga nada");
+  assert.equal(world.state.sets.length, 0);
 });
 
-test("reset: baixa a lista em CSV, apaga todos os sorteios (inclusive ausentes), devolve todo mundo e volta ao prêmio 1", async () => {
+test("reset: abre a rodada 2 SEM apagar nada, todo mundo (ganhadores e ausentes) volta pra roleta e o prêmio recomeça do 1", async () => {
   const world = setup({ signedIn: true });
   manyEntries(world, 4);
   await world.signIn();
@@ -666,37 +722,57 @@ test("reset: baixa a lista em CSV, apaga todos os sorteios (inclusive ausentes),
   await world.spin();
   await world.spin();
   assert.equal(world.draws.docs.length, 3);
-  await openReset(world);
-  await typeResetWord(world, "RESETAR");
-  await confirmReset(world);
-  assert.equal(world.draws.docs.length, 0, "tudo apagado");
-  assert.equal(world.draws.removed.length, 3);
-  assert.equal(world.downloads.length, 1, "uma cópia baixada antes");
-  assert.equal(world.downloads[0].filename, "sorteio-backup-2026-11-28-15-04.csv");
-  assert.match(world.downloads[0].content, /Ganhador/);
-  assert.match(world.downloads[0].content, /Ausente/);
-  assert.equal(world.downloads[0].content.trim().split(/\r?\n/).length, 4, "cabeçalho + 3 sorteios");
+  await doReset(world);
+  assert.deepEqual(world.state.sets, [{ id: "current", round: 2 }]);
+  assert.equal(world.draws.docs.length, 3, "NADA foi apagado: os sorteios da rodada 1 continuam guardados");
   assert.equal(world.rootEl.querySelector(".raffle-reset"), null, "a caixa fechou");
-  assert.equal(world.rootEl.querySelector(".raffle-winner"), null, "o cartão do ganhador some");
-  assert.equal(world.rootEl.querySelector("[data-raffle-reset-open]"), null, "e o botão some até haver outro sorteio");
-  assert.match(textOf(world.rootEl.querySelector(".raffle-stats")), /4\s*Na lista/, "todo mundo voltou pra roleta (inclusive o ausente)");
+  assert.equal(world.rootEl.querySelector(".raffle-winner"), null);
+  assert.equal(world.rootEl.querySelector("[data-raffle-reset-open]"), null, "sem sorteios na rodada nova, o botão some");
+  assert.equal(world.rootEl.querySelectorAll(".raffle-drawn-item").length, 0);
+  assert.match(textOf(world.rootEl.querySelector(".raffle-stats")), /4\s*Na lista/, "inclusive o ausente voltou");
   assert.match(textOf(world.rootEl.querySelector(".raffle-stats")), /0\s*Já sorteados/);
   assert.equal(world.rootEl.querySelectorAll(".raffle-wheel-label").length, 4);
   await world.spin();
-  assert.equal(world.draws.docs[0].prize, 1, "recomeça do prêmio 1");
-  assert.equal(world.rootEl.querySelectorAll(".raffle-drawn-item").length, 1);
+  const fresh = world.draws.docs.at(-1);
+  assert.equal(fresh.round, 2);
+  assert.equal(fresh.prize, 1, "recomeça do prêmio 1");
+  assert.match(fresh.id, /_r2_draw$/);
 });
 
-test("reset: os cadastros continuam (só os sorteios são apagados)", async () => {
+test("reset: quem já saiu na rodada 1 pode sair de novo na rodada 2, mas não duas vezes na mesma", async () => {
+  const world = setup({ signedIn: true });
+  manyEntries(world, 1);
+  await world.signIn();
+  await world.spin();
+  const first = world.draws.docs[0];
+  await doReset(world);
+  await world.spin();
+  assert.equal(world.draws.docs.length, 2);
+  assert.equal(world.draws.docs[1].entryId, first.entryId, "a única pessoa saiu de novo");
+  assert.notEqual(world.draws.docs[1].id, first.id);
+  assert.equal(world.rootEl.querySelector("[data-raffle-spin]").disabled, true, "e agora não sobra ninguém na rodada 2");
+});
+
+test("reset: os cadastros e o contador não mudam", async () => {
   const world = setup({ signedIn: true });
   manyEntries(world, 3);
   await world.signIn();
   await world.spin();
-  await openReset(world);
-  await typeResetWord(world, "RESETAR");
-  await confirmReset(world);
+  await doReset(world);
   assert.equal(world.entries.docs.length, 3);
   assert.equal(world.rootEl.querySelector(".raffle-counter-value").textContent, "3");
+});
+
+test("reset: não baixa nenhum arquivo", async () => {
+  const world = setup({ signedIn: true });
+  manyEntries(world, 3);
+  await world.signIn();
+  await world.spin();
+  const anchors = [];
+  const original = world.document.createElement.bind(world.document);
+  world.document.createElement = tag => { const el = original(tag); if (tag === "a") anchors.push(el); return el; };
+  await doReset(world);
+  assert.equal(anchors.length, 0);
 });
 
 test("reset: se o banco recusar, mostra o erro, não muda a tela e deixa tentar de novo", async () => {
@@ -704,40 +780,47 @@ test("reset: se o banco recusar, mostra o erro, não muda a tela e deixa tentar 
   manyEntries(world, 3);
   await world.signIn();
   await world.spin();
-  world.draws.failRemoveWith = Object.assign(new Error("offline"), { code: "unavailable" });
-  await openReset(world);
-  await typeResetWord(world, "RESETAR");
-  await confirmReset(world);
+  world.state.fail = true;
+  await doReset(world);
   assert.match(textOf(world.rootEl), /Não foi possível resetar agora/);
   assert.ok(world.rootEl.querySelector(".raffle-reset"), "a caixa continua aberta");
-  assert.equal(world.draws.docs.length, 1, "nada foi apagado");
   assert.ok(world.rootEl.querySelector(".raffle-winner"), "o ganhador continua na tela");
+  world.state.fail = false;
   await typeResetWord(world, "RESETAR");
   await confirmReset(world);
-  assert.equal(world.draws.docs.length, 0, "na segunda tentativa funcionou");
+  assert.equal(world.state.sets.length, 1);
   assert.doesNotMatch(textOf(world.rootEl), /Não foi possível resetar/);
 });
 
-test("reset: se o download falhar o reset continua (o banco é o que importa)", async () => {
+test("reset por OUTRA tela do moderador: esta tela também recomeça do zero sozinha", async () => {
   const world = setup({ signedIn: true });
   manyEntries(world, 3);
   await world.signIn();
   await world.spin();
-  world.window.Blob = undefined;
-  await openReset(world);
-  await typeResetWord(world, "RESETAR");
-  await confirmReset(world);
-  assert.equal(world.draws.docs.length, 0);
+  assert.ok(world.rootEl.querySelector(".raffle-winner"));
+  world.state.emit({ round: 2 });
+  await settle();
+  assert.equal(world.rootEl.querySelector(".raffle-winner"), null);
+  assert.match(textOf(world.rootEl.querySelector(".raffle-stats")), /3\s*Na lista/);
+  assert.equal(world.rootEl.querySelectorAll(".raffle-drawn-item").length, 0);
 });
 
-test("reset no modo DEV (lista de teste): zera só em memória, sem tocar o banco", async () => {
+test("reset no modo DEV (lista de teste): zera só em memória, sem mexer no banco", async () => {
   const devSeed = [{ id: "dev_0", firstName: "Renato", lastName: "Ramos" }, { id: "dev_1", firstName: "Bianca", lastName: "Issa" }];
   const world = setup({ signedIn: true, devSeed });
   await world.signIn();
   await world.spin();
-  await openReset(world);
-  await typeResetWord(world, "RESETAR");
-  await confirmReset(world);
-  assert.equal(world.draws.removed.length, 0);
+  await doReset(world);
+  assert.equal(world.state.sets.length, 0);
   assert.match(textOf(world.rootEl.querySelector(".raffle-stats")), /2\s*Na lista/);
+  assert.equal(world.rootEl.querySelectorAll(".raffle-drawn-item").length, 0);
+});
+
+test("erro ao ler a rodada (regras não publicadas): avisa mas a roleta não trava", async () => {
+  const world = setup({ signedIn: true });
+  manyEntries(world, 3);
+  world.state.errorOnListen = true;
+  await world.signIn();
+  assert.match(textOf(world.rootEl), /Não foi possível carregar os sorteios/);
+  assert.equal(world.rootEl.querySelector("[data-raffle-spin]").disabled, false);
 });

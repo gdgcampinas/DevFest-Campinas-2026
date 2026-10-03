@@ -82,7 +82,7 @@ function raffleResetPanelMarkup({ resetOpen, resetWord, resetError }) {
   if (!resetOpen) return "";
   return `<div class="raffle-reset" role="alertdialog" aria-label="${t("raffle.resetTitle", "Resetar os sorteios?")}">
     <p class="raffle-reset-title">${t("raffle.resetTitle", "Resetar os sorteios?")}</p>
-    <p class="raffle-reset-hint">${t("raffle.resetHint", "Apaga todos os sorteios feitos e devolve todo mundo pra roleta, como se nada tivesse sido sorteado. Os cadastros ficam. Antes de apagar, o site baixa uma lista com quem ganhou. Pra confirmar, digite {word}.", { word: resetWord })}</p>
+    <p class="raffle-reset-hint">${t("raffle.resetHint", "Devolve todos os sorteados e ausentes pra roleta e recomeça do prêmio 1, com os cadastros de agora. Nada é apagado: os sorteios anteriores ficam guardados. Pra confirmar, digite {word}.", { word: resetWord })}</p>
     <input class="feedback-input" type="text" data-raffle-reset-word autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${escapeHtml(resetWord)}" aria-label="${t("raffle.resetWordLabel", "Digite a palavra de confirmação")}">
     ${resetError ? `<p class="form-error" role="alert">${resetError}</p>` : ""}
     <div class="raffle-reset-actions">

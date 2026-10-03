@@ -180,7 +180,7 @@ pra quem testa em DEV; o check-in novo aceita qualquer código). Antes do evento
 (este também `requireTicket` em `docs/js/data/raffle-config.js`), rodar `DevFestIA/tools/questions/run-rules-tests.sh`
 (testa os 3 cenários de ligado), testar com o e-mail de um ingresso real e publicar. Aviso de nomes repetidos também feito. A Fase 3 está completa no código. Testes das regras do sorteio no emulador já existem (Java 21 instalado).
 
-**Som de festa + Resetar sorteios (2026-10-03):** fanfarra original de ~1,5 s com botão "Som: ligado/desligado" e botão "Resetar sorteios" (digita RESETAR, baixa CSV, apaga só os sorteios, cadastros ficam). **O reset precisa das regras novas publicadas** (`pbcopy < DevFestIA/firebase/firestore.rules`: o moderador agora pode apagar `raffle-draws`). Detalhes em `PROJECT_CONTEXT.md` ("Sorteio").
+**Som de festa + Resetar sorteios (2026-10-03):** fanfarra original de ~1,5 s com botão "Som: ligado/desligado". "Resetar sorteios" (digita RESETAR) abre uma nova RODADA: todos os sorteados e ausentes voltam pra roleta, prêmio recomeça do 1, SEM apagar nem baixar nada (os sorteios antigos ficam guardados e deixam de contar). **PRECISA publicar as regras novas** (`pbcopy < DevFestIA/firebase/firestore.rules`): `raffle-state` (rodada) e o campo `round` nos sorteios; sem elas o sorteio real é recusado. Detalhes em `PROJECT_CONTEXT.md` ("Sorteio").
 
 **Papel picado (2026-10-03):** explosão do cartão + chuva do topo a cada ganhador revelado (módulo puro + canvas injetável + config em `data/raffle-confetti.js`). Detalhes em `PROJECT_CONTEXT.md` ("Sorteio"). Decisão aberta: intensidade maior no prêmio principal (ainda não definido).
 

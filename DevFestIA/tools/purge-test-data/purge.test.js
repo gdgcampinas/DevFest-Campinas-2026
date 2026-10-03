@@ -8,7 +8,7 @@ const after = new Date("2026-11-28T12:00:00Z");
 const startsAt = new Date("2026-11-28T11:00:00Z");
 
 test("lista fixa: só as coleções de teste (feedback, perguntas e sorteio), nunca as do Sympla", () => {
-  assert.deepEqual(PURGEABLE_COLLECTIONS, ["checkins", "talk-feedback", "event-feedback", "talk-questions", "talk-question-votes", "raffle-checkins", "raffle-entries", "raffle-draws"]);
+  assert.deepEqual(PURGEABLE_COLLECTIONS, ["checkins", "talk-feedback", "event-feedback", "talk-questions", "talk-question-votes", "raffle-checkins", "raffle-entries", "raffle-draws", "raffle-session", "raffle-state"]);
   ["registrations", "event-stats", "sync-state"].forEach(name => assert.equal(PURGEABLE_COLLECTIONS.includes(name), false));
 });
 
@@ -49,7 +49,7 @@ const docs = {
 test("caso de uso: simulação só conta e não grava nada", async () => {
   const database = fakeDatabase(docs);
   const report = await runPurge({ database, edition: "2026", deleting: false });
-  assert.deepEqual(report, { checkins: { found: 2, deleted: 0 }, "talk-feedback": { found: 1, deleted: 0 }, "event-feedback": { found: 0, deleted: 0 }, "talk-questions": { found: 1, deleted: 0 }, "talk-question-votes": { found: 0, deleted: 0 }, "raffle-checkins": { found: 0, deleted: 0 }, "raffle-entries": { found: 1, deleted: 0 }, "raffle-draws": { found: 1, deleted: 0 } });
+  assert.deepEqual(report, { checkins: { found: 2, deleted: 0 }, "talk-feedback": { found: 1, deleted: 0 }, "event-feedback": { found: 0, deleted: 0 }, "talk-questions": { found: 1, deleted: 0 }, "talk-question-votes": { found: 0, deleted: 0 }, "raffle-checkins": { found: 0, deleted: 0 }, "raffle-entries": { found: 1, deleted: 0 }, "raffle-draws": { found: 1, deleted: 0 }, "raffle-session": { found: 0, deleted: 0 }, "raffle-state": { found: 0, deleted: 0 } });
   assert.equal(database.commits.length, 0);
 });
 

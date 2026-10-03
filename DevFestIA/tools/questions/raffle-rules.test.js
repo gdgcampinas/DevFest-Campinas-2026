@@ -5,7 +5,7 @@
  */
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { createDoc, updateDoc, getDoc, deleteDoc, query, seed } = require("../lib/firestore-emulator.js");
+const { createDoc, updateDoc, deleteDoc, getDoc, query, seed } = require("../lib/firestore-emulator.js");
 const { skip, nextId, person, moderator, base, denied, allowed } = require("../lib/rules-test-kit.js");
 
 const codeOn = process.env.RULES_RAFFLE_CODE === "on";
@@ -19,7 +19,7 @@ const publishCode = (who, code, previous) => createDoc(who, "raffle-session", "c
 const onlyTicketOn = skip || (ticketOn ? false : "só vale com o interruptor do ingresso ligado");
 const onlyTicketOff = skip || (ticketOn ? "só vale com o interruptor do ingresso desligado" : false);
 const onlyCodeOn = skip || (codeOn ? false : "só vale com o interruptor do QR que muda ligado");
-const draw = (who, entryId, extra = {}) => createDoc(who, "raffle-draws", `${entryId}_draw`, { ...base, entryKey: "draw", entryId, name: "Ana Souza", prize: 1, status: "winner", ...extra });
+const draw = (who, entryId, extra = {}, docId = `${entryId}_draw`) => createDoc(who, "raffle-draws", docId, { ...base, entryKey: "draw", entryId, name: "Ana Souza", prize: 1, status: "winner", round: 1, ...extra });
 
 /** Um cadastro já existente no banco (gravado como dono), pra o moderador sortear. */
 async function seededEntry() {
@@ -267,34 +267,68 @@ test("ingresso ligado: sem login é recusado; o moderador lista e sorteia cadast
   allowed(await draw(mod, id)); // o id do cadastro tem 69 caracteres e entra no id do sorteio
 });
 
-// ---------- reset de emergência ----------
-test("reset: só o moderador apaga sorteios; a plateia e quem não está logado não", { skip }, async () => {
-  const mod = moderator();
-  const entryId = await seededEntry();
-  allowed(await draw(mod, entryId));
-  const docId = `${entryId}_draw`;
-  denied(await deleteDoc(person(), "raffle-draws", docId));
-  denied(await deleteDoc(null, "raffle-draws", docId));
-  allowed(await getDoc(mod, "raffle-draws", docId));
-  allowed(await deleteDoc(mod, "raffle-draws", docId));
-  assert.equal((await getDoc(mod, "raffle-draws", docId)).status, 404, "o documento sumiu do banco");
-});
+// ---------- rodadas: "Resetar" abre a próxima rodada, sem apagar nada ----------
+// Este grupo fica por último de propósito: o documento de estado é compartilhado por todos os testes do arquivo.
+const publishRound = (who, round, docId = "current", extra = {}) => createDoc(who, "raffle-state", docId, { edition: "2026", round, ...extra }, { stamp: "updatedAt" });
 
-test("reset: depois de apagar, a mesma pessoa pode ser sorteada de novo (volta pra roleta), inclusive se era ausente", { skip }, async () => {
-  const mod = moderator();
-  const entryId = await seededEntry();
-  allowed(await draw(mod, entryId));
-  allowed(await updateDoc(mod, "raffle-draws", `${entryId}_draw`, { status: "absent" }));
-  denied(await draw(mod, entryId)); // enquanto o documento existe, não repete
-  allowed(await deleteDoc(mod, "raffle-draws", `${entryId}_draw`));
-  allowed(await draw(mod, entryId)); // agora o id está livre de novo
-});
-
-test("reset: ninguém apaga cadastros nem check-ins (só os sorteios)", { skip }, async () => {
+test("rodada: só o moderador lê e grava o estado; o primeiro documento é sempre a rodada 2; forma e id fixos", { skip }, async () => {
   const mod = moderator();
   const who = person();
+  denied(await publishRound(who, 2));
+  denied(await publishRound(null, 2));
+  denied(await publishRound(mod, 1)); // a rodada 1 é a implícita
+  denied(await publishRound(mod, 3)); // não pula
+  denied(await publishRound(mod, 2, "outro"));
+  denied(await publishRound(mod, 2, "current", { extra: "x" }));
+  denied(await createDoc(mod, "raffle-state", "current", { edition: "1999", round: 2 }, { stamp: "updatedAt" }));
+  denied(await createDoc(mod, "raffle-state", "current", { edition: "2026", round: "2" }, { stamp: "updatedAt" }));
+  allowed(await publishRound(mod, 2));
+  allowed(await getDoc(mod, "raffle-state", "current"));
+  denied(await getDoc(who, "raffle-state", "current"));
+  denied(await deleteDoc(mod, "raffle-state", "current"));
+});
+
+test("rodada: depois do documento, só anda de 1 em 1 (nunca volta, nunca repete, nunca pula)", { skip }, async () => {
+  const mod = moderator();
+  denied(await publishRound(mod, 2)); // repetir
+  denied(await publishRound(mod, 1)); // voltar
+  denied(await publishRound(mod, 4)); // pular
+  denied(await publishRound(person(), 3));
+  denied(await createDoc(mod, "raffle-state", "current", { edition: "1999", round: 3 }, { stamp: "updatedAt" })); // não troca a edição
+  allowed(await publishRound(mod, 3));
+  denied(await publishRound(mod, 3));
+});
+
+test("sorteio na rodada: só vale na rodada ATUAL (uma tela esquecida em rodada velha é recusada) e o id leva a rodada", { skip }, async () => {
+  // estado atual: rodada 3
+  const mod = moderator();
   const entryId = await seededEntry();
+  denied(await draw(mod, entryId)); // rodada 1, velha
+  denied(await draw(mod, entryId, { round: 2 }, `${entryId}_r2_draw`)); // rodada 2, velha
+  denied(await draw(mod, entryId, { round: 3 })); // rodada certa, id errado (sem a rodada)
+  denied(await draw(mod, entryId, { round: 3 }, `${entryId}_r2_draw`)); // id de outra rodada
+  denied(await draw(mod, entryId, { round: "3" }, `${entryId}_r3_draw`)); // rodada não numérica
+  denied(await createDoc(mod, "raffle-draws", `${entryId}_r3_draw`, { ...base, entryKey: "draw", entryId, name: "Ana Souza", prize: 1, status: "winner" })); // sem a rodada
+  allowed(await draw(mod, entryId, { round: 3 }, `${entryId}_r3_draw`));
+  denied(await draw(mod, entryId, { round: 3 }, `${entryId}_r3_draw`)); // a mesma pessoa não sai 2x na mesma rodada
+});
+
+test("reset: a mesma pessoa pode sair de novo na rodada seguinte (e a anterior continua guardada, nada é apagado)", { skip }, async () => {
+  const mod = moderator();
+  const entryId = await seededEntry();
+  allowed(await draw(mod, entryId, { round: 3 }, `${entryId}_r3_draw`));
+  allowed(await publishRound(mod, 4)); // "Resetar"
+  denied(await draw(mod, entryId, { round: 3 }, `${entryId}_r3_draw`)); // rodada velha agora
+  allowed(await draw(mod, entryId, { round: 4 }, `${entryId}_r4_draw`)); // a mesma pessoa, na rodada nova
+  allowed(await getDoc(mod, "raffle-draws", `${entryId}_r3_draw`)); // o sorteio velho continua lá
+  denied(await deleteDoc(mod, "raffle-draws", `${entryId}_r3_draw`));
   denied(await deleteDoc(mod, "raffle-entries", entryId));
-  denied(await deleteDoc(who, "raffle-entries", `${who.uid}_raffle`));
-  denied(await deleteDoc(mod, "raffle-checkins", `${who.uid}_raffle`));
+});
+
+test("ausente continua funcionando na rodada atual", { skip }, async () => {
+  const mod = moderator();
+  const entryId = await seededEntry();
+  allowed(await draw(mod, entryId, { round: 4 }, `${entryId}_r4_draw`));
+  allowed(await updateDoc(mod, "raffle-draws", `${entryId}_r4_draw`, { status: "absent" }));
+  denied(await updateDoc(person(), "raffle-draws", `${entryId}_r4_draw`, { status: "absent" }));
 });
