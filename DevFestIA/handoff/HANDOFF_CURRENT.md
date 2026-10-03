@@ -49,6 +49,17 @@ endpoints de ESCRITA de check-in de porta (decidido NÃO usar agora; análise em
 **Outros:** análise da "credencial digital" e do check-in de porta no `IDEAS_BACKLOG.md`. O GitHub pediu permissão nova do app
 "Claude" (Administration + Merge queues, só leitura): recomendado NÃO aceitar (nada aqui depende do app).
 
+## Próximos passos (ordem sugerida no fim da sessão 10)
+
+1. **Renato:** rodar o roteiro de teste do moderador do sorteio (acima) e contar o que viu. 2. **Claude:** corrigir o que aparecer.
+3. **Claude, sem depender do Renato:** corrigir o texto "aguarde até 10 minutos" do cadastro por ingresso (`raffle.ticketNotFound`, PT e EN)
+   para algo honesto sobre o atraso do Sincronizar Sympla (horas, não minutos). 4. **Só com o OK explícito do Renato** (mexe no pipeline de CI):
+   incluir `DevFestIA/tools/raffle/*.test.js` no passo de testes do `.github/workflows/validate.yml`. 5. **Renato decide:** horários de
+   abrir/fechar o cadastro do sorteio, prêmios (e qual é o principal), quando tirar o `devOnly`. 6. **Renato manda:** 6 mini-bios (Carlos, Débora,
+   Laydianne, Lorenzo, Felipe, João Paulo), LinkedIn completo da Laydianne e do Davi, cargo dos 4 organizadores; e confere no painel do Sympla
+   quantos ingressos aprovados existem (o job lê 0). 7. Outras frentes: dados reais do evento, mural do telão de LED, certificado, área
+   administrativa, ES/FR.
+
 ## Sorteio no dia do evento: checklist e decisões
 
 - **Interruptores:** virar `// RAFFLE-CODE` e `// RAFFLE-TICKET` para `true` em `DevFestIA/firebase/firestore.rules` e
@@ -78,7 +89,7 @@ endpoints de ESCRITA de check-in de porta (decidido NÃO usar agora; análise em
 - **Backend mínimo, todo grátis (plano Spark, sem Blaze, sem servidor nosso):** Firebase
   (Firestore + Authentication anônimo) pra check-in, avaliações e o total de inscritos; um job do
   GitHub Actions (a cada 10 min) lê o Sympla e grava no Firestore. O resto do site é 100% estático.
-- **PROD (público) esconde todo mock por padrão** (line-up, patrocinadores, comunidades,
+- **PROD (público) esconde todo mock por padrão** (as páginas Grade, Palestrantes e Patrocínio abrem, mas mostram "será revelado em breve" no lugar de line-up, patrocinadores, comunidades,
   ingressos: "será revelado em breve"). **O Time foi liberado em PROD em 2026-10-01** (22 pessoas reais, `pages/time.js` renderiza sem o gate). **DEV** (`/DEV/<página>` ou `?lineup=1`) mostra tudo.
   A identidade visual (logo, galáxia, cores) vale nos dois modos.
 - **Inscrição é só no Sympla** (evento `s36cd5d`, id 3591517, vendas abertas, link em
