@@ -100,6 +100,10 @@ usado (fênix com som?).
 
 ## Engajamento e gamificação
 
+### Coding Jam no DevFest (sessão 11, 2026-10-06): Fase 1 FEITA, Fases 2 a 4 em aberto
+Sessão prática de construção com mini competição (pódio 1º, 2º, 3º) dentro da grade, com votação dos projetos. Fase 1 (card e modal na grade) está no ar em DEV; o desenho
+completo, as decisões e as fases seguintes (página `codejam.html`, envio de projetos, votação com um voto por check-in, 2 slots) estão em `PROJECT_CONTEXT.md`, seção "Destaque de sessão".
+
 ### Quiz "Monte sua trilha"
 Perguntas rápidas (ex.: "prefere código ou apresentação?", "júnior ou
 sênior?") que no fim sugerem quais palestras favoritar — preenche a Minha

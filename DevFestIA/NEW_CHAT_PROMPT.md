@@ -84,6 +84,10 @@ cada minuto e 1 ingresso = 1 cadastro (e-mail do Sympla) — estes DOIS atrás d
 aviso de nomes repetidos. O Renato JÁ publicou as regras (versão do commit `135c56a`). Trava de horário das perguntas DESLIGADA de
 propósito (teste em DEV): LIGAR antes do evento.
 
+NOVO (sessão 11, 2026-10-06): o Coding Jam entrou na grade como card de destaque (Fase 1, mock em Mobile/Agile 14:15; ver "Destaque de sessão" no PROJECT_CONTEXT e
+"Sessão 11" no handoff). Faltam: horário/sala/prêmios do Renato, confirmar que conta como workshop obrigatório, acesso no codingjam.dev, página `codejam.html` com envio de projetos,
+votação (um voto por check-in) e Jam de 2 slots. Ideias descartadas: ver "Descartadas" no IDEAS_BACKLOG. Moderadores: o Renato vai passar os 6 e-mails.
+
 PRÓXIMO TRABALHO (ver "Pendências" e "Sorteio no dia do evento" no handoff)
 1) O Renato testar o lado do moderador do sorteio (login Google; o Claude não consegue): girar, Ausente, Resetar, girar de novo.
 2) Ouvir o que ele viu e corrigir. 3) Decisões abertas: horários de abrir/fechar o cadastro do sorteio, prêmios (e qual é o principal, pra

@@ -89,6 +89,7 @@ docs/
       analytics.js              ANALYTICS config (provider, endpoint, notice); empty endpoint = off
       tickets.js                TICKET_TYPES (Grátis / com camiseta / VIP, mock values) + TICKETS_NOTE
       talk-formats.js           TALK_FORMATS (palestra/workshop/painel/bate-papo) + getById()
+      talk-highlights.js        TALK_HIGHLIGHTS (Coding Jam: chip, frase, pódio, etapas, regras, `questions`) + forTalk()/allowsQuestions(); ver "Destaque de sessão"
       mock-links.js             MOCK_LINKEDIN_URL / MOCK_FACEBOOK_URL / MOCK_SPONSOR_URL (one place for all mock links)
       mock-photo.js             mockPhoto(id): hand-picked stock portraits (pravatar.cc) by number
       mock-logo.js              mockLogo({name, shape, color}): fictional company logo as inline SVG
@@ -137,7 +138,8 @@ docs/
       agenda-actions.js          Minha agenda action bar markup (export, WhatsApp, copy link)
       speaker-link.js            speakerAnchorId/speakerProfileHref: how a speaker links to palestrantes.html#speaker-<id>
       favorite-button.js         favoriteButtonMarkup() — star, used in card/hero/modal
-      talk-meta.js               talkTagsMarkup/talkAvatarsMarkup/talkLinksMarkup (format+tags, avatars, LinkedIn)
+      talk-highlight.js          chip, corpo do card (frase, pódio, aviso) e seções do modal (etapas, pódio, regras) do destaque de sessão
+      talk-meta.js               talkTagsMarkup/talkAvatarsMarkup/talkLinksMarkup + talkWhoList() (format+tags, avatars, LinkedIn; palestrantes ou o `host` do destaque)
       site-nav.js                nav links shared by every page
       track-card.js               talk card (agenda + hero) + detail modal; options come from talkCardOptions() (agenda.js)
       info-card.js                 generic "before you come" card
@@ -319,6 +321,39 @@ um `onEventEnd(containerEl)` opcional e só chama, a página (`home.js`)
 é quem injeta `eventFeedback.render`. Regra de segurança e coleção
 (`event-feedback`) e o repository (`data/event-feedback-repository.js`)
 já existiam desde a fundação do Firebase (sessão 5); só faltava a UI.
+
+## Destaque de sessão: Coding Jam na grade (sessão 11, 2026-10-06)
+
+Uma palestra da grade pode ganhar `highlight: "<id>"` (ex.: em `mock-talks.js`, 6º parâmetro de `talk()`) e passa a ter um card e um modal próprios,
+**sem deixar de ser uma palestra normal**: trilha, slot, favorito (estrela, Minha agenda, `?agenda=`), calendário (.ics e Google), "acontecendo
+agora" (tag AGORA e barra), filtro por trilha, check-in por QR, avaliação (nota 1 a 5) e relatório do evento funcionam sozinhos, pela mesma chave
+`<início>|<trilha>`. Tudo que muda vem do dado, em `data/talk-highlights.js` (repository: `forTalk(data)`, `allowsQuestions(data)`), sem CSS ou JS por id:
+`label`/`icon`/`color` (chip e cor, via `--highlight-color` inline), `tagline`, `note`/`noteIcon`, `host` (quem conduz quando não há palestrante), `podium`
+(1º, 2º, 3º com `prize` opcional, aparece no card e no modal quando preenchido), `steps`, `rules` e `questions: false`.
+- **Coding Jam:** `format: "workshop"` (conta como o workshop obrigatório do e-mail de patrocínio dos organizadores; confirmar com o programa) mais
+  `highlight: "codejam"`. Título "GDG Campinas Coding Jam", frase "Monte seu projeto, apresente e dispute o pódio". Hoje é MOCK em `mock-talks.js`
+  (trilha Mobile/Agile, 14:15, 1 slot de 40 min); o horário e a sala reais ainda não foram definidos pelo Renato.
+- **Perguntas ao vivo desligadas** (decisão do Renato: as perguntas do Jam são ao vivo, no microfone): o modal não cria o bloco de perguntas
+  (`talkDetailMarkup`); `resolveRoomBoard({ allowsQuestions })` devolve `questionsPhase: null` e o quadro da sala não monta a coluna de perguntas
+  (mas MANTÉM o QR de check-in, que vai liberar o voto); a moderação mostra "perguntas desativadas nesta sessão" e volta a moderar quando a sala
+  passa pra outra palestra. A trava é só de tela: as regras do Firestore não mudaram.
+- **Sem palestrante:** `talkWhoList(data)` devolve os palestrantes ou, se não houver, o `host` do destaque (GDG Campinas, com o ícone do GDG). Fica fora de
+  `speakerList()` de propósito (quem conduz não vira palestrante da galeria nem do calendário). Corrigiu um "undefined" que aparecia no card sem
+  palestrante e o "Agora:" vazio da faixa fixa. O .ics ganha a linha "Coding Jam: <frase>".
+- **`reveal` falso** (line-up escondido, PROD): o card volta ao genérico, o destaque não vaza. Em PROD a Grade continua com o aviso único.
+- **Duração por dado:** o card não fixa "40 min" (vem do slot). O campo `slots` (1 ou 2 slots da mesma trilha) está só documentado em `talk-highlights.js`:
+  ainda NÃO implementado. Pra 2 slots mudam a grade (ocupar 2 linhas), o cálculo do fim e a janela de horário das regras do Firestore
+  (`talkDurationMinutes()` assume 40 min por palestra: check-in, voto e avaliação usam essa janela).
+- **Votação (ainda NÃO implementada, desenho decidido):** só vota quem fez check-in, **um voto por check-in**: o documento do voto usa o MESMO id do
+  check-in (`<uid>_<talkKey>`), criado só se o check-in existir, sem edição nem exclusão (a regra garante, não só a tela). Placar nunca ao vivo pro
+  público: só o moderador lista e conta, e o resultado é publicado de uma vez (como o quadro das perguntas). Limite: o uid é anônimo, então quem limpa
+  o navegador e refaz o check-in ganha outro voto; mitigar aceitando só check-in por QR da sala (sem botão de honra) e o moderador descarta voto suspeito.
+- **Fases seguintes:** (2) `codejam.html` com regras, envio do projeto (formulário, só com check-in, moderado) e galeria; (3) votação, apuração e pódio com
+  papel picado; (4) Jam de 2 slots e ensaio. Também falta o Renato criar/pedir acesso à página do jam no codingjam.dev (programa dos Community Ambassadors).
+- Testes: `DevFestIA/tools/dom/talk-highlight.dom.test.js` (card, modal, estados, calendário, índice), `checkin-display.dom.test.js`, um caso na
+  `question-moderation.dom.test.js`, dois em `tools/room/room-board.test.js` e um em `event-report/build-report.test.js` (palestra sem palestrante).
+  O harness (`tools/lib/dom-harness.js`) carrega `data/talk-highlights.js` na base. Páginas que renderizam card, quadro ou moderação carregam
+  `data/talk-highlights.js` e `components/talk-highlight.js` (script tags e `?v=`).
 
 ## Quiz "Monte sua trilha" (sessão 7)
 

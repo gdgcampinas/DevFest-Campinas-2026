@@ -1,8 +1,26 @@
 # Handoff — Current State
 
-**Last updated:** 2026-10-03, fim da sessão 10 (longa: Sorteio fechado no código, Time público, análise do
+**Last updated:** 2026-10-06, sessão 11 (ideias reorganizadas, Coding Jam na grade, Fase 1). Antes: fim da sessão 10 (Sorteio fechado no código, Time público, análise do
 Sincronizar Sympla). Abrir chat novo pra próxima task, use `NEW_CHAT_PROMPT.md`. Antes de confiar neste texto, rode
 `git status --short --branch` e `git log --oneline --decorate -30` (o git não mente; cada commit tem mensagem descritiva).
+
+## Sessão 11 (2026-10-06): ideias, Coding Jam na grade (Fase 1)
+
+**Decisões de ideias:** ver "Decisões de 2026-10-06" mais abaixo e "Descartadas" no `IDEAS_BACKLOG.md` (nota média pública nunca; credencial digital, mentorias,
+mural da hashtag, área administrativa e votação das salas descartados; certificado só DEPOIS do evento). Moderadores: 6 e-mails fixos (1 por trilha + 2 reservas).
+**Pendente do Renato:** passar os 6 e-mails (contas Google com e-mail verificado) e confirmar `gdgcampinascontato@gmail.com`; o Claude edita `isModerator()`,
+roda `bash DevFestIA/tools/questions/run-rules-tests.sh` e o Renato cola as regras no console, uma vez.
+
+**Coding Jam (Fase 1 feita no código):** card de destaque na grade, como uma palestra normal (workshop) com `highlight: "codejam"`: chip duplo "Workshop" mais
+"Coding Jam", frase "Monte seu projeto, apresente e dispute o pódio", pódio 1º, 2º, 3º (prêmio opcional por dado), aviso "Traga seu notebook", quem conduz (GDG Campinas),
+modal com etapas e regras, perguntas ao vivo DESLIGADAS (feitas no microfone), avaliação mantida. Herda favorito, Minha agenda, `?agenda=`, calendário, "agora",
+check-in e relatório. Detalhes e decisões em `PROJECT_CONTEXT.md`, seção "Destaque de sessão". Hoje é MOCK (Mobile/Agile, 14:15, 1 slot de 40 min).
+**Falta:** (a) Renato definir horário, sala, prêmios e se o Jam ocupa 1 ou 2 slots; (b) confirmar com o programa (e-mail dos organizadores) que o Coding Jam conta como o
+workshop obrigatório (sem workshop o patrocínio não é pago); (c) o Renato pedir acesso de organizador no codingjam.dev (o e-mail pra `gca-americas@google.com` voltou: grupo inexistente;
+a mensagem do LinkedIn pra Christina Lin foi rascunhada); (d) Fase 2: `codejam.html` com envio de projetos; (e) Fase 3: votação (um voto por check-in, id do voto = id do check-in), apuração e
+pódio com papel picado; (f) Fase 4: Jam de 2 slots (campo `slots`, ainda não implementado; exige ajustar a janela de horário das regras).
+**Armadilha nova:** `tools/check-lineup.js` e `tools/check-calendar.js` já estavam quebrados antes (listas de arquivos defasadas, fora do CI); a cobertura vem dos testes jsdom.
+No Node 24 `node --test <diretório>` falha: passe os arquivos (o CI usa outra versão).
 
 ## Sessão 10 (2026-10-01 a 2026-10-03): o que foi feito
 
