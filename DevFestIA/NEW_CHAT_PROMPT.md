@@ -91,7 +91,7 @@ confete maior), quando tirar o `devOnly`. 4) Mini-bios que faltam (6): Carlos, D
 completo da Laydianne e do Davi; cargo dos 4 organizadores. 5) Sincronizar Sympla roda a cada ~4,4 h (não 10 min) e lê 0 inscritos:
 o Renato conferir o painel; corrigir o texto "aguarde até 10 minutos" do cadastro por ingresso (pequeno, o Claude faz sem depender do Renato).
 6) Incluir `DevFestIA/tools/raffle/*.test.js` no `validate.yml`: SÓ com o OK explícito do Renato (mexe no pipeline de CI). 7) Outras frentes (ver handoff): dados reais do evento, mural do telão de LED,
-certificado, área administrativa, ES/FR. Motor das perguntas ao vivo: estável; Sala ao vivo/tela Palco pausadas a pedido do Renato.
+certificado (depois do evento), ES/FR. Área administrativa foi DESCARTADA (6 moderadores = e-mails fixos em `isModerator()`; o Renato vai passar os e-mails). Motor das perguntas ao vivo: estável; Sala ao vivo/tela Palco pausadas a pedido do Renato.
 
 PENDÊNCIAS
 Do Renato/organização: ver "Pendências A" no handoff (sorteio, time, dados reais do evento: local, salas/MCs, line-up, patrocinadores,

@@ -57,8 +57,7 @@ endpoints de ESCRITA de check-in de porta (decidido NÃO usar agora; análise em
    incluir `DevFestIA/tools/raffle/*.test.js` no passo de testes do `.github/workflows/validate.yml`. 5. **Renato decide:** horários de
    abrir/fechar o cadastro do sorteio, prêmios (e qual é o principal), quando tirar o `devOnly`. 6. **Renato manda:** 6 mini-bios (Carlos, Débora,
    Laydianne, Lorenzo, Felipe, João Paulo), LinkedIn completo da Laydianne e do Davi, cargo dos 4 organizadores; e confere no painel do Sympla
-   quantos ingressos aprovados existem (o job lê 0). 7. Outras frentes: dados reais do evento, mural do telão de LED, certificado, área
-   administrativa, ES/FR.
+   quantos ingressos aprovados existem (o job lê 0). 7. Outras frentes: dados reais do evento, mural do telão de LED, certificado (depois do evento), ES/FR.
 
 ## Sorteio no dia do evento: checklist e decisões
 
@@ -111,7 +110,7 @@ endpoints de ESCRITA de check-in de porta (decidido NÃO usar agora; análise em
 5. **Testes de verdade sem tocar o banco:** emulador local (`DevFestIA/tools/emulator/start.sh`, site com `?emulador=1`) e 21 casos das regras (`DevFestIA/tools/questions/run-rules-tests.sh`, roda com a trava de horário ligada e como está no arquivo). O emulador guarda os dados sob o projeto `devfest-campinas`.
 6. **Logins separados:** plateia (anônimo) e moderador (Google) são apps Firebase diferentes (`window.firebaseClient` / `window.moderatorClient`), pra entrar como moderador não trocar a identidade da plateia no mesmo navegador; se o banco recusar por check-in ausente o site refaz o check-in e tenta de novo.
 7. **Trava de horário das perguntas: DESLIGADA de propósito (teste em DEV).** Interruptor em dois lugares que precisam ficar iguais: `windowEnforced()` em `firestore.rules` e `enforceWindow` em `docs/js/data/talk-questions.js` (um teste confere). **LIGAR antes do evento** (checklist C, item 0).
-8. **Task anotada:** área administrativa com login (CRUD de moderadores, palestrantes...), análise em `project-docs/IDEAS_BACKLOG.md` (caminho recomendado: admin grava no Firestore + job exporta JSON; começar por moderadores CRUD).
+8. **Área administrativa com login: DESCARTADA em 2026-10-06** (ver "Descartadas" em `project-docs/IDEAS_BACKLOG.md`).
 
 ## Sessão 9 (2026-09-30): o que foi feito, detalhado (histórico; algumas pendências daqui já foram resolvidas na sessão 10)
 
@@ -324,7 +323,7 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
 
 - **Sorteio (sessão 10):** ver "Sorteio no dia do evento: checklist e decisões" no topo deste arquivo (ausente sai de vez; e-mail do ingresso obrigatório; reset = nova rodada sem apagar; som de festa; confete explosão + chuva; telão no notebook/HDMI).
 - **Time público em PROD** (decisão do Renato em 2026-10-01); cargo dos organizadores em aberto.
-- **Decisões de 2026-10-06 (ideias):** nota média por palestra NUNCA é pública (só no relatório interno); credencial digital com QR, mentorias com agendamento e mural da hashtag DESCARTADOS (ver "Descartadas" em `IDEAS_BACKLOG.md`); certificado é enviado DEPOIS do evento, a todos que participaram; mapa do local, álbum ao vivo, mural do LED e cartão "Eu vou!" com a Minha agenda MANTIDOS. Sorteio considerado fechado pelo Renato (restam o texto "aguarde até 10 minutos" e os interruptores do dia).
+- **Decisões de 2026-10-06 (ideias):** nota média por palestra NUNCA é pública (só no relatório interno); credencial digital com QR, mentorias com agendamento e mural da hashtag DESCARTADOS (ver "Descartadas" em `IDEAS_BACKLOG.md`); certificado é enviado DEPOIS do evento, a todos que participaram; mapa do local, álbum ao vivo, mural do LED e cartão "Eu vou!" com a Minha agenda MANTIDOS. Sorteio considerado fechado pelo Renato (restam o texto "aguarde até 10 minutos" e os interruptores do dia). **Área administrativa DESCARTADA** (line-up chega pronto, só o Renato preenche; 6 moderadores = 1 por trilha + 2 reservas). **Pendente: o Renato passa os 6 e-mails (contas Google com e-mail verificado); o Claude põe em `isModerator()`, roda `bash DevFestIA/tools/questions/run-rules-tests.sh` e o Renato cola as regras no console, uma vez, antes do evento.** Confirmar também se `gdgcampinascontato@gmail.com` continua sendo admin.
 
 - Nada de backend pra conteúdo; Firebase só pra feedback/check-in e leitura pública do total,
   sempre atrás de repository. **Tudo grátis (sem Blaze):** Cloud Functions descartadas, o job roda no
@@ -407,7 +406,6 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
     e `referencias/logo-oficial/`. Ainda é material estático, sem vídeo/sprite/animação.
     **Onde usar (favicon, home, og:image, ou só guardar pro mural) ainda está em aberto — perguntar ao Renato
     antes de aplicar em qualquer lugar do site.**
-11b. **Área administrativa com login** (CRUD de moderadores, palestrantes, patrocinadores...; análise e caminho recomendado em `IDEAS_BACKLOG.md`): começar por moderadores CRUD; depois de fechar perguntas e quadro da sala.
 12. **Internacionalização (PT/EN/ES/FR):** grande, precisa ser desenhada.
 13. Ideias em `IDEAS_BACKLOG.md`: quiz "Monte sua trilha", enquetes/perguntas ao vivo, passaporte com
     QR nos estandes, mapa do local, votação das salas,

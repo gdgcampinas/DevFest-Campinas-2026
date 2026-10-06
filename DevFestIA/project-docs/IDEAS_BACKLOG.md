@@ -237,24 +237,6 @@ No Google Cloud Console → Credenciais, restringir a `apiKey` do Firebase
 por referenciador HTTP (`gdgcampinas.github.io/*`) — reforço extra, não
 essencial (a proteção real já é a regra do Firestore).
 
-### Área administrativa com login (TASK ANOTADA, não iniciada; pedido do Renato em 2026-09-24)
-Ideia: uma área com login pra alimentar os dados do site sem mexer em código: CRUD de moderadores, de palestrantes,
-palestras, patrocinadores, time etc. Onde hoje há um dado em `data/*.js` (tudo já passa por repository) passa a haver um formulário.
-**Análise (resumo):** vale a pena, e o repository pattern já deixa o terreno pronto (trocar a fonte do dado sem mexer nos consumidores).
-Restrições que decidem o desenho: site estático em GitHub Pages, Firebase no plano Spark (50 mil leituras/dia), OG/SEO e PWA offline
-precisam de dado estável, e Cloud Storage do Firebase exige Blaze (imagens = URL por enquanto).
-Três caminhos: (A) CMS em cima do Git (Decap/planilha que commita JSON): grátis e revisável, mas o formulário é o do CMS;
-(B) site lendo direto do Firestore: dinâmico, mas gasta leitura em toda visita e piora offline/SEO;
-(C) **híbrido (recomendado):** o admin grava no Firestore (login Google, lista de admins) e um job do GitHub Actions, como o do Sympla,
-exporta pra `docs/data/*.json` (site continua estático, zero leitura, versionado, funciona offline; só o "publicar" tem atraso de minutos).
-**Primeira fatia pequena e de valor imediato: moderadores CRUD.** Trocar a lista fixa em `isModerator()` por documentos `moderators/<e-mail>`
-(as regras leem com `exists()`), com admins fixos nas regras; acaba a colagem de regras a cada moderador novo.
-Depois: palestrantes/palestras (formulário: nome, cargo, LinkedIn, foto por URL, tags), patrocinadores, time.
-Riscos a tratar: papéis (admin x moderador), quem pode editar o quê, trilha de auditoria, validação no formulário e nas regras, LGPD
-(foto e LinkedIn de terceiros: consentimento), imagem por URL externa pode quebrar (preferir arquivo no repo), e não depender do
-admin durante o evento (dado publicado é estático).
-Não fazer antes de fechar perguntas e quadro da sala; ponto natural de começar: antes da revelação do line-up real.
-
 ---
 
 ## Descartadas (decisão do Renato, 2026-10-06: não fazer, não propor de novo)
@@ -263,3 +245,4 @@ Não fazer antes de fechar perguntas e quadro da sala; ponto natural de começar
 - **Credencial digital com QR:** a galera prefere o crachá físico.
 - **Mentorias com agendamento.**
 - **Mural da hashtag** (`#DevFestCampinas2026`).
+- **Área administrativa com login** (CRUD de moderadores, palestrantes, palestras...), descartada em 2026-10-06. Motivo: o line-up chega pronto e só o Renato preenche; os moderadores são 6 pessoas fixas (1 por trilha + 2 reservas), então basta colocar os 6 e-mails em `isModerator()` (`firestore.rules`) e publicar as regras uma vez. Complexidade alta (grade slot x trilha com preview, foto só por URL, site passando a ler JSON, papéis, auditoria, LGPD). **Só reavaliar se mais gente passar a editar dados toda semana.** Alternativa barata nesse caso: planilha modelo + script em `DevFestIA/tools/` que lê o CSV, valida (slot duplicado, foto faltando, trilha inexistente) e gera o arquivo de dados.
