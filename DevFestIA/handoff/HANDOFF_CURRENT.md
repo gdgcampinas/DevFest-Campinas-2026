@@ -11,16 +11,21 @@ mural da hashtag, área administrativa e votação das salas descartados; certif
 **Pendente do Renato:** passar os 6 e-mails (contas Google com e-mail verificado) e confirmar `gdgcampinascontato@gmail.com`; o Claude edita `isModerator()`,
 roda `bash DevFestIA/tools/questions/run-rules-tests.sh` e o Renato cola as regras no console, uma vez.
 
-**Coding Jam (Fase 1 feita no código):** card de destaque na grade, como uma palestra normal (workshop) com `highlight: "codejam"`: chip duplo "Workshop" mais
-"Coding Jam", frase "Monte seu projeto, apresente e dispute o pódio", pódio 1º, 2º, 3º (prêmio opcional por dado), aviso "Traga seu notebook", quem conduz (GDG Campinas),
-modal com etapas e regras, perguntas ao vivo DESLIGADAS (feitas no microfone), avaliação mantida. Herda favorito, Minha agenda, `?agenda=`, calendário, "agora",
-check-in e relatório. Detalhes e decisões em `PROJECT_CONTEXT.md`, seção "Destaque de sessão". Hoje é MOCK (Mobile/Agile, 14:15, 1 slot de 40 min).
-**Falta:** (a) Renato definir horário, sala, prêmios e se o Jam ocupa 1 ou 2 slots; (b) confirmar com o programa (e-mail dos organizadores) que o Coding Jam conta como o
-workshop obrigatório (sem workshop o patrocínio não é pago); (c) o Renato pedir acesso de organizador no codingjam.dev (o e-mail pra `gca-americas@google.com` voltou: grupo inexistente;
-a mensagem do LinkedIn pra Christina Lin foi rascunhada); (d) Fase 2: `codejam.html` com envio de projetos; (e) Fase 3: votação (um voto por check-in, id do voto = id do check-in), apuração e
-pódio com papel picado; (f) Fase 4: Jam de 2 slots (campo `slots`, ainda não implementado; exige ajustar a janela de horário das regras).
-**Armadilha nova:** `tools/check-lineup.js` e `tools/check-calendar.js` já estavam quebrados antes (listas de arquivos defasadas, fora do CI); a cobertura vem dos testes jsdom.
-No Node 24 `node --test <diretório>` falha: passe os arquivos (o CI usa outra versão).
+**Coding Jam (feito no código, 2026-10-06):** card de destaque na grade (faixa "Competição" no topo, chip cheio, borda com brilho, marca d'água de troféu, pódio 1º, 2º, 3º com
+prêmio opcional por dado, "Traga seu notebook", GDG Campinas como quem conduz), modal com etapas e regras, perguntas ao vivo DESLIGADAS (no microfone), avaliação mantida. É uma palestra
+normal da grade (workshop + `highlight: "codejam"`): herda favorito, Minha agenda, `?agenda=`, calendário, "agora", check-in e relatório, e vale em qualquer trilha e sala.
+**Concurso da sessão (cadastro do projeto, votação e pódio): FEITO, mas depende de regras novas.** Quem tem check-in cadastra o próprio projeto (nome da pessoa e do projeto), a turma vota
+(um voto por check-in, nunca no próprio) só durante a sessão, o moderador publica o pódio (mostrado no modal, nos cards e no quadro da sala com papel picado). Detalhes e decisões em
+`PROJECT_CONTEXT.md`, seção "Destaque de sessão". Hoje é MOCK (Mobile/Agile, 14:15, 1 slot de 40 min).
+**O Renato precisa FAZER:** (1) **colar as regras do Firestore de novo** (`pbcopy < DevFestIA/firebase/firestore.rules` e Firestore > Regras > Publicar): sem elas o cadastro e o voto são recusados;
+(2) definir horário, sala e prêmios do Coding Jam (hoje mock) e se ele conta como o workshop obrigatório do e-mail dos organizadores (sem workshop o patrocínio não é pago);
+(3) pedir acesso de organizador no codingjam.dev (o e-mail pra `gca-americas@google.com` voltou: grupo inexistente; a mensagem do LinkedIn pra Christina Lin foi rascunhada);
+(4) testar o lado do moderador do concurso (login Google, o Claude não consegue): abrir `moderacao.html?trilha=mobile` no horário do Jam (ou com `?palestra=1415.mobile`), ver os projetos e votos, Publicar pódio;
+(5) os 6 e-mails dos moderadores (ver acima).
+**Cancelado/adiado:** a página `codejam.html` com envio de projetos (o envio é direto no Google); Jam de 2 slots (campo `slots`, só anotado).
+**Armadilhas novas:** `tools/check-lineup.js` e `tools/check-calendar.js` já estavam quebrados antes (listas de arquivos defasadas, fora do CI); a cobertura vem dos testes jsdom. No Node 24
+`node --test <diretório>` falha: passe os arquivos (o CI usa outra versão). Os testes das regras agora põem o `pid` nos ids (os arquivos rodam em paralelo no mesmo emulador e colidiam às vezes).
+O emulador local guarda os dados sob o projeto `devfest-campinas` (não `demo-devfest`, que é o dos testes de regras): pra semear dado na mão use esse projeto na URL REST.
 
 ## Sessão 10 (2026-10-01 a 2026-10-03): o que foi feito
 

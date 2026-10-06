@@ -100,9 +100,10 @@ usado (fênix com som?).
 
 ## Engajamento e gamificação
 
-### Coding Jam no DevFest (sessão 11, 2026-10-06): Fase 1 FEITA, Fases 2 a 4 em aberto
-Sessão prática de construção com mini competição (pódio 1º, 2º, 3º) dentro da grade, com votação dos projetos. Fase 1 (card e modal na grade) está no ar em DEV; o desenho
-completo, as decisões e as fases seguintes (página `codejam.html`, envio de projetos, votação com um voto por check-in, 2 slots) estão em `PROJECT_CONTEXT.md`, seção "Destaque de sessão".
+### Coding Jam no DevFest (sessão 11, 2026-10-06): FEITO no código (card, modal e concurso)
+Sessão prática de construção com mini competição (pódio 1º, 2º, 3º) dentro da grade, com cadastro do projeto e votação. Feito: card e modal de destaque, concurso da sessão (cadastro do projeto, um voto
+por check-in, pódio publicado pelo moderador, no modal, nos cards e no quadro da sala). Desenho e decisões em `PROJECT_CONTEXT.md`, seção "Destaque de sessão". Cancelado: página `codejam.html` com envio de
+projetos (o envio é no Google). Adiado: Jam de 2 slots da mesma trilha. Depende do Renato: regras do Firestore, horário/sala/prêmios, acesso no codingjam.dev.
 
 ### Quiz "Monte sua trilha"
 Perguntas rápidas (ex.: "prefere código ou apresentação?", "júnior ou

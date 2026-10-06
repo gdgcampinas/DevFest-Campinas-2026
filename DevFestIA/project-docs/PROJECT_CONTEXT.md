@@ -90,6 +90,8 @@ docs/
       tickets.js                TICKET_TYPES (Grátis / com camiseta / VIP, mock values) + TICKETS_NOTE
       talk-formats.js           TALK_FORMATS (palestra/workshop/painel/bate-papo) + getById()
       talk-highlights.js        TALK_HIGHLIGHTS (Coding Jam: chip, frase, pódio, etapas, regras, `questions`) + forTalk()/allowsQuestions(); ver "Destaque de sessão"
+      talk-contest.js           TALK_CONTEST (config do concurso da sessão: limites, intervalos de leitura) + talkContestConfigRepository
+      contest-projects-repository.js, contest-votes-repository.js, contest-results-repository.js   Firestore (coleções contest-*), mesmo padrão de feedback-repository.js
       mock-links.js             MOCK_LINKEDIN_URL / MOCK_FACEBOOK_URL / MOCK_SPONSOR_URL (one place for all mock links)
       mock-photo.js             mockPhoto(id): hand-picked stock portraits (pravatar.cc) by number
       mock-logo.js              mockLogo({name, shape, color}): fictional company logo as inline SVG
@@ -344,16 +346,34 @@ agora" (tag AGORA e barra), filtro por trilha, check-in por QR, avaliação (not
 - **Duração por dado:** o card não fixa "40 min" (vem do slot). O campo `slots` (1 ou 2 slots da mesma trilha) está só documentado em `talk-highlights.js`:
   ainda NÃO implementado. Pra 2 slots mudam a grade (ocupar 2 linhas), o cálculo do fim e a janela de horário das regras do Firestore
   (`talkDurationMinutes()` assume 40 min por palestra: check-in, voto e avaliação usam essa janela).
-- **Votação (ainda NÃO implementada, desenho decidido):** só vota quem fez check-in, **um voto por check-in**: o documento do voto usa o MESMO id do
-  check-in (`<uid>_<talkKey>`), criado só se o check-in existir, sem edição nem exclusão (a regra garante, não só a tela). Placar nunca ao vivo pro
-  público: só o moderador lista e conta, e o resultado é publicado de uma vez (como o quadro das perguntas). Limite: o uid é anônimo, então quem limpa
-  o navegador e refaz o check-in ganha outro voto; mitigar aceitando só check-in por QR da sala (sem botão de honra) e o moderador descarta voto suspeito.
-- **Fases seguintes:** (2) `codejam.html` com regras, envio do projeto (formulário, só com check-in, moderado) e galeria; (3) votação, apuração e pódio com
-  papel picado; (4) Jam de 2 slots e ensaio. Também falta o Renato criar/pedir acesso à página do jam no codingjam.dev (programa dos Community Ambassadors).
-- Testes: `DevFestIA/tools/dom/talk-highlight.dom.test.js` (card, modal, estados, calendário, índice), `checkin-display.dom.test.js`, um caso na
-  `question-moderation.dom.test.js`, dois em `tools/room/room-board.test.js` e um em `event-report/build-report.test.js` (palestra sem palestrante).
-  O harness (`tools/lib/dom-harness.js`) carrega `data/talk-highlights.js` na base. Páginas que renderizam card, quadro ou moderação carregam
-  `data/talk-highlights.js` e `components/talk-highlight.js` (script tags e `?v=`).
+- **Concurso da sessão (Etapas B e C, implementado em 2026-10-06; precisa das regras publicadas):** só em palestra cujo destaque tem `contest: true`.
+  Quem tem check-in na sessão cadastra o PRÓPRIO projeto (nome da pessoa e do projeto, um por check-in, sem edição: erro de digitação = o moderador apaga
+  e a pessoa cadastra de novo), a turma vota (**um voto por check-in**, nunca no próprio projeto) e o moderador publica o pódio. Tudo SÓ durante a sessão
+  (a mesma trava de horário das perguntas, `enforceWindow`/`windowEnforced()`: um interruptor só, sem espelho novo). O envio dos projetos em si é no Google
+  (codingjam.dev); aqui só entram nome da pessoa e do projeto, pra votar.
+  - **Coleções (regras em `firestore.rules`, bloco "Concurso da sessão"):** `contest-projects` (id `<uid>_<talkKey>`; lista só quem tem check-in naquela sessão e o
+    moderador; só o moderador apaga), `contest-votes` (id IGUAL ao do check-in, então um voto por check-in é garantido pelo banco; só o moderador lista, a plateia nunca
+    vê o placar; exige projeto da mesma sessão e `projectId != docId`, ou seja, não vota no próprio) e `contest-results/<talkKey>` (o pódio, gravado só pelo moderador,
+    lido por qualquer autenticado, ninguém lista). 16 casos no emulador em `tools/questions/contest-rules.test.js` (entra no `run-rules-tests.sh`).
+    **O Renato precisa colar as regras de novo no console** (`pbcopy < DevFestIA/firebase/firestore.rules`) pra isso funcionar de verdade.
+  - **Plateia (no modal, `features/talk-contest.js` + `components/talk-contest.js`):** fases locked (sem check-in), waiting, open (formulário com o nome já preenchido, lista de
+    projetos, Votar, "Seu projeto", "Votado"), closed (pódio se publicado). **Leitura barata:** a lista de projetos é lida UMA vez ao abrir e no botão "Atualizar" (intervalo mínimo
+    `refreshMinMs`), nunca sozinha; depois do fim lê só o pódio (1 documento). Reusa o item de lista e o CSS das perguntas (`questionItemMarkup` ganhou `voteAttribute` e `locked`),
+    `features/modal-block.js` (helpers compartilhados com as perguntas: bloco na tela, digitando, refazer check-in) e os repositories fakes dos testes das perguntas.
+  - **Moderador (`features/contest-moderation.js`, ligado pela moderação de perguntas quando a palestra da sala não tem perguntas e tem concurso):** projetos com a contagem de
+    votos (`features/contest-ranking.js`, puro), Apagar (dois toques, sem `confirm()`), Atualizar e **Publicar pódio** (os mais votados, só quem tem voto; pode republicar).
+    Relê a cada `moderatorRefreshMs`. O placar só existe nessa tela.
+  - **Pódio visível:** no modal (fase closed) e nos cards da grade (`features/contest-results.js`: lê `contest-results` só depois do fim da sessão, 1 leitura a cada `resultsPollMs`
+    até aparecer; depois não lê mais). No quadro da sala (`features/board-contest.js` + `boardContestMarkup`, no lugar da coluna de perguntas): lugares vazios até o resultado sair e
+    **papel picado** (o do sorteio) quando o pódio aparece AO VIVO; quadro recarregado com o pódio já publicado não dispara. `createConfetti` agora estiliza o próprio canvas
+    (inline), então funciona no quadro (que não carrega `styles.css`). Com a trava de horário desligada (DEV) o pódio publicado também aparece no modal e nos cards.
+  - **Limite honesto:** o uid é anônimo; quem limpa o navegador e refaz o check-in ganha outro voto. Mitigações: o QR da sala e o moderador apagar projeto suspeito.
+- **Perguntas ao vivo desligadas e Fase 2/3/4 do plano antigo:** a página `codejam.html` com envio de projetos FOI CANCELADA (o envio é no Google). Jam de 2 slots (`slots`) continua
+  só anotado, adiado a pedido do Renato ("1 slot apenas"). Falta o Renato definir horário, sala e prêmios, e pedir acesso de organizador no codingjam.dev.
+- Testes: `tools/dom/talk-highlight.dom.test.js` (card, modal, estados, calendário, índice, 4 trilhas), `talk-contest`, `contest-moderation`, `contest-results`, `board-contest`,
+  `checkin-display` (dom), um caso na `question-moderation.dom.test.js`, `tools/contest/contest-ranking.test.js` (puro), dois em `tools/room/room-board.test.js` e um em
+  `event-report/build-report.test.js`. O harness (`tools/lib/dom-harness.js`) carrega `data/talk-highlights.js` na base. Páginas que renderizam card, quadro, moderação ou o
+  modal carregam os scripts novos (script tags e `?v=`).
 
 ## Quiz "Monte sua trilha" (sessão 7)
 
@@ -741,7 +761,7 @@ permitir comparar edições depois sem UNION manual entre bancos.
   permite `create` (nunca `update`/`delete` do client), tipo/tamanho de
   campo, e que o prefixo do id do documento bata com o uid de quem
   escreve.
-- Coleções do visitante hoje: `checkins`, `talk-feedback`, `event-feedback`. Nenhuma
+- Coleções do visitante hoje: `checkins`, `talk-feedback`, `event-feedback` (e, do concurso da sessão, `contest-projects` e `contest-votes`; ver "Destaque de sessão"). Nenhuma
   tem leitura pública pelo client (`allow read: if false`); `registrations`/`event-stats` são
   do job do Sympla (ver seção própria). Nota média/agregado de avaliação
   NUNCA é exibido publicamente (decisão definitiva), então não há leitura pública dessas coleções.
