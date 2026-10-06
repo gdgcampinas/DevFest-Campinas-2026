@@ -408,7 +408,7 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
     antes de aplicar em qualquer lugar do site.**
 12. **Internacionalização (PT/EN/ES/FR):** grande, precisa ser desenhada.
 13. Ideias em `IDEAS_BACKLOG.md`: quiz "Monte sua trilha", enquetes/perguntas ao vivo, passaporte com
-    QR nos estandes, mapa do local, votação das salas,
+    QR nos estandes, mapa do local,
     GA4 com consentimento, restringir a chave do Firebase por domínio.
 14. Pequenos: estender o repository pattern a `EVENT`/`TRACKS`/`SCHEDULE`; logos de 1 cor e de perfil
     (na pasta Downloads do Renato) ainda sem uso; galáxia como cena do mural.

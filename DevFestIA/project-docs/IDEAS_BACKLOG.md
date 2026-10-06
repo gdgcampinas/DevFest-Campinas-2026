@@ -208,11 +208,6 @@ fazer a entrada pelo nosso site em vez do app do Sympla?
 Seção listando vagas abertas de cada empresa patrocinadora — dado viria
 dos próprios patrocinadores reais (ainda não existem, é tudo mock).
 
-### Votação da comunidade pras salas
-Deixar a comunidade sugerir/votar nos nomes das salas (hoje são lugares
-históricos de Campinas, decisão já tomada, mas Renato mencionou isso como
-ideia à parte, não pra reabrir a decisão atual).
-
 ---
 
 ## Infraestrutura / não é "feature nova", é melhoria de base
@@ -246,3 +241,4 @@ essencial (a proteção real já é a regra do Firestore).
 - **Mentorias com agendamento.**
 - **Mural da hashtag** (`#DevFestCampinas2026`).
 - **Área administrativa com login** (CRUD de moderadores, palestrantes, palestras...), descartada em 2026-10-06. Motivo: o line-up chega pronto e só o Renato preenche; os moderadores são 6 pessoas fixas (1 por trilha + 2 reservas), então basta colocar os 6 e-mails em `isModerator()` (`firestore.rules`) e publicar as regras uma vez. Complexidade alta (grade slot x trilha com preview, foto só por URL, site passando a ler JSON, papéis, auditoria, LGPD). **Só reavaliar se mais gente passar a editar dados toda semana.** Alternativa barata nesse caso: planilha modelo + script em `DevFestIA/tools/` que lê o CSV, valida (slot duplicado, foto faltando, trilha inexistente) e gera o arquivo de dados.
+- **Votação da comunidade pras salas** (os nomes das salas já estão decididos e no ar).
