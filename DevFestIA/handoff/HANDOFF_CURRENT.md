@@ -46,7 +46,7 @@ antes de abrir o cadastro (`gh workflow run sync-sympla.yml -R gdgcampinas/DevFe
 "aguarde até 10 minutos" (`raffle.ticketNotFound`) está otimista demais e deve ser corrigida. A API do Sympla v1.6.0 tem
 endpoints de ESCRITA de check-in de porta (decidido NÃO usar agora; análise em `IDEAS_BACKLOG.md`, "Check-in de porta").
 
-**Outros:** análise da "credencial digital" e do check-in de porta no `IDEAS_BACKLOG.md`. O GitHub pediu permissão nova do app
+**Outros:** análise do check-in de porta no `IDEAS_BACKLOG.md` (a "credencial digital" foi descartada em 2026-10-06). O GitHub pediu permissão nova do app
 "Claude" (Administration + Merge queues, só leitura): recomendado NÃO aceitar (nada aqui depende do app).
 
 ## Próximos passos (ordem sugerida no fim da sessão 10)
@@ -324,6 +324,7 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
 
 - **Sorteio (sessão 10):** ver "Sorteio no dia do evento: checklist e decisões" no topo deste arquivo (ausente sai de vez; e-mail do ingresso obrigatório; reset = nova rodada sem apagar; som de festa; confete explosão + chuva; telão no notebook/HDMI).
 - **Time público em PROD** (decisão do Renato em 2026-10-01); cargo dos organizadores em aberto.
+- **Decisões de 2026-10-06 (ideias):** nota média por palestra NUNCA é pública (só no relatório interno); credencial digital com QR, mentorias com agendamento e mural da hashtag DESCARTADOS (ver "Descartadas" em `IDEAS_BACKLOG.md`); certificado é enviado DEPOIS do evento, a todos que participaram; mapa do local, álbum ao vivo, mural do LED e cartão "Eu vou!" com a Minha agenda MANTIDOS. Sorteio considerado fechado pelo Renato (restam o texto "aguarde até 10 minutos" e os interruptores do dia).
 
 - Nada de backend pra conteúdo; Firebase só pra feedback/check-in e leitura pública do total,
   sempre atrás de repository. **Tudo grátis (sem Blaze):** Cloud Functions descartadas, o job roda no
@@ -409,7 +410,7 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
 11b. **Área administrativa com login** (CRUD de moderadores, palestrantes, patrocinadores...; análise e caminho recomendado em `IDEAS_BACKLOG.md`): começar por moderadores CRUD; depois de fechar perguntas e quadro da sala.
 12. **Internacionalização (PT/EN/ES/FR):** grande, precisa ser desenhada.
 13. Ideias em `IDEAS_BACKLOG.md`: quiz "Monte sua trilha", enquetes/perguntas ao vivo, passaporte com
-    QR nos estandes, mural da hashtag, mapa do local, credencial digital, mentorias, votação das salas,
+    QR nos estandes, mapa do local, votação das salas,
     GA4 com consentimento, restringir a chave do Firebase por domínio.
 14. Pequenos: estender o repository pattern a `EVENT`/`TRACKS`/`SCHEDULE`; logos de 1 cor e de perfil
     (na pasta Downloads do Renato) ainda sem uso; galáxia como cena do mural.

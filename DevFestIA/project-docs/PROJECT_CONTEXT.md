@@ -297,7 +297,7 @@ Duas ferramentas, uma pra cada lado, sem tocar no que é dado real:
   palestrantes, check-ins, nota média, distribuição de estrelas e comentários; por
   palestrante (nota média); e o evento (nota geral, aspectos, indicação 0-10 em
   pontos, comentários). É privado (comentários e nomes, quando dados). Nota média
-  pública nos cards NÃO foi feita de propósito (decisão: só interno por ora).
+  pública NUNCA entra no site (decisão definitiva do Renato, 2026-10-06): só interna, neste relatório.
 
 ## Avaliação do evento (fase 5.3; formulário atual na seção "Feedback v2")
 
@@ -708,8 +708,8 @@ permitir comparar edições depois sem UNION manual entre bancos.
   escreve.
 - Coleções do visitante hoje: `checkins`, `talk-feedback`, `event-feedback`. Nenhuma
   tem leitura pública pelo client (`allow read: if false`); `registrations`/`event-stats` são
-  do job do Sympla (ver seção própria); exibir
-  agregado (nota média etc.) é trabalho futuro (ver handoff, fase 5.4).
+  do job do Sympla (ver seção própria). Nota média/agregado de avaliação
+  NUNCA é exibido publicamente (decisão definitiva), então não há leitura pública dessas coleções.
 
 ## Repository pattern for static data
 

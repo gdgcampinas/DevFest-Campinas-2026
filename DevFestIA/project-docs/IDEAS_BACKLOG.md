@@ -85,8 +85,7 @@ sozinho se travar, funciona offline (service worker já cacheia as páginas).
 9. **Avisos da organização** (sorteio, mudança de sala, atraso): editável sem
    deploy, precisa de uma fonte (documento no Firestore escrito pela
    organização ou arquivo no repo).
-10. **Mural da hashtag** `#DevFestCampinas2026` (depende de fonte, ver
-    "Mural da hashtag" abaixo), **enquete/pergunta ao vivo** e
+10. **Enquete/pergunta ao vivo** e
     **passaporte com carimbos** (já estão neste backlog).
 11. **Contagem regressiva** antes de abrir e **"obrigado"** com os números finais
     do evento no encerramento.
@@ -108,6 +107,7 @@ agenda automaticamente via `favoritesRepository.addAll()` (já existe,
 reusado do fluxo de agenda compartilhada).
 
 ### Certificado de participação do evento (profissional) — TASK ANOTADA, não iniciada
+**Decisão do Renato (2026-10-06): é enviado DEPOIS do evento, e todo mundo que participou recebe.**
 Pedido do Renato (2026-09-23): emitir certificado de participação do DevFest Campinas 2026.
 **Não fazer agora**, só registrado. Reusa peças que já existem (cartão "Eu vou!" em
 canvas, check-ins por palestra, gate por inscrição do Sympla, feedback com nome).
@@ -169,23 +169,9 @@ Quem visita cada estande dos patrocinadores escaneia um QR, junta
 palestra (QR + Firestore + uid anônimo), só que por estande em vez de por
 palestra — reusaria a mesma `createFirestoreRepository()` genérica.
 
-### Mural da hashtag
-Feed ao vivo de posts com `#DevFestCampinas2026` (Twitter/Instagram)
-mostrado num telão. Depende de decidir a fonte (API paga de rede social,
-ou wall de terceiro tipo Walls.io/Flockler).
-
 ---
 
 ## Conteúdo e utilidade no dia
-
-### Nota média por palestra visível (fase 5.4 do feedback, já planejada)
-Depois que a avaliação por palestra estiver rodando de verdade no evento,
-mostrar a nota média (estrelas) no card/modal da palestra. Precisa de
-leitura agregada no Firestore — hoje a regra de segurança nega leitura
-crua (`allow read: if false` nas 3 coleções), leitura agregada exigiria ou
-uma Cloud Function que calcula e publica só o agregado, ou abrir uma
-leitura pública limitada com regra própria. Decidir com cautela (ver
-`DevFestIA/firebase/firestore.rules`).
 
 ### Depoimento público x privado (decisão pendente, adiada de propósito)
 O campo "o que mais gostou" do feedback de palestra — vira depoimento
@@ -197,13 +183,6 @@ básico estar rodando.
 Planta baixa simples do venue com a localização de cada sala/trilha.
 Depende do local real ser confirmado (`EVENT.venue`, `venueConfirmed`
 ainda `false`).
-
-### Credencial digital com QR
-Substituto do crachá físico — QR único por pessoa, gerado no navegador,
-pra check-in geral do evento (diferente do check-in por palestra que já
-existe). Precisaria de um jeito de "identificar" a pessoa sem conta de
-verdade (nome + Firestore, ou vincular ao mesmo uid anônimo do check-in de
-palestra).
 
 ### Check-in de porta: Sympla x pelo nosso site (analisado 2026-10-01, decisão: NÃO fazer agora)
 A API do Sympla v1.6.0 TEM endpoints de escrita de check-in (Check-in: `POST .../participants/ticketNumber/{ticketNumber}/check-in`,
@@ -228,12 +207,6 @@ fazer a entrada pelo nosso site em vez do app do Sympla?
 ### Vagas dos patrocinadores
 Seção listando vagas abertas de cada empresa patrocinadora — dado viria
 dos próprios patrocinadores reais (ainda não existem, é tudo mock).
-
-### Mentorias com agendamento
-Na trilha Carreiras & Mentorias, agendamento de conversa 1:1 com
-mentores. Precisaria de calendário/agenda de terceiro (Calendly-like) ou
-construir do zero com Firestore — escopo grande, avaliar ferramenta pronta
-antes de codar.
 
 ### Votação da comunidade pras salas
 Deixar a comunidade sugerir/votar nos nomes das salas (hoje são lugares
@@ -281,3 +254,12 @@ Riscos a tratar: papéis (admin x moderador), quem pode editar o quê, trilha de
 (foto e LinkedIn de terceiros: consentimento), imagem por URL externa pode quebrar (preferir arquivo no repo), e não depender do
 admin durante o evento (dado publicado é estático).
 Não fazer antes de fechar perguntas e quadro da sala; ponto natural de começar: antes da revelação do line-up real.
+
+---
+
+## Descartadas (decisão do Renato, 2026-10-06: não fazer, não propor de novo)
+
+- **Nota média por palestra visível ao público: NUNCA.** A nota média existe só no relatório interno (📊 Relatório do evento), que só a organização vê. Não aparece em card, modal nem em nenhuma parte pública do site.
+- **Credencial digital com QR:** a galera prefere o crachá físico.
+- **Mentorias com agendamento.**
+- **Mural da hashtag** (`#DevFestCampinas2026`).
