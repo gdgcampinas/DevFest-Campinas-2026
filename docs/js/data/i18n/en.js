@@ -391,6 +391,7 @@ I18N_DICTIONARIES.en = {
     "Palestra": "Talk",
     "Painel": "Panel",
     "Bate-papo": "Chat",
+    "Competição": "Competition",
     "Monte seu projeto, apresente e dispute o pódio": "Build your project, present it and compete for the podium",
     "Traga seu notebook": "Bring your laptop",
     "1º lugar": "1st place",

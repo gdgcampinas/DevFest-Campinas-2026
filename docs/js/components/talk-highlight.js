@@ -13,10 +13,21 @@ function talkPodiumMarkup(podium = []) {
   return slots ? `<ol class="talk-podium">${slots}</ol>` : "";
 }
 
-/** Corpo do card: frase, pódio e aviso curto (cada parte só aparece se o dado tiver). */
+/** Faixa no topo do card (primeiro filho, sangra até as bordas): rótulo de modalidade do destaque, ex.: "Competição". */
+function talkHighlightRibbonMarkup(highlight) {
+  return highlight.ribbon ? `<div class="talk-ribbon">${iconMarkup(highlight.icon)}${highlight.ribbon}</div>` : "";
+}
+
+/** Marca d'água (o ícone do destaque, grande e translúcido): só decoração, fica atrás do texto. */
+function talkHighlightMarkMarkup(highlight) {
+  return `<span class="talk-highlight-mark" aria-hidden="true">${iconMarkup(highlight.icon, "talk-highlight-mark-icon")}</span>`;
+}
+
+/** Corpo do card: marca d'água, frase, pódio e aviso curto (cada parte só aparece se o dado tiver). */
 function talkHighlightBodyMarkup(highlight) {
   const note = highlight.note ? `<div class="talk-highlight-note">${highlight.noteIcon ? iconMarkup(highlight.noteIcon) : ""}${highlight.note}</div>` : "";
   return `<div class="talk-highlight">
+    ${talkHighlightMarkMarkup(highlight)}
     ${highlight.tagline ? `<p class="talk-highlight-tagline">${highlight.tagline}</p>` : ""}
     ${talkPodiumMarkup(highlight.podium)}
     ${note}

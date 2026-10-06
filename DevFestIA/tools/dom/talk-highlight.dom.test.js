@@ -50,6 +50,35 @@ test("card do Coding Jam: chip Workshop mais chip Coding Jam, frase, pódio 1º 
   assert.equal(textOf(root.querySelector(".title")), "GDG Campinas Coding Jam");
 });
 
+test("destaque forte: faixa Competição, marca d'água do troféu e chip cheio, só decoração (aria-hidden)", () => {
+  const root = cardOf(jam);
+  assert.equal(textOf(root.querySelector(".talk-ribbon")), "Competição");
+  const mark = root.querySelector(".talk-highlight-mark");
+  assert.equal(mark.getAttribute("aria-hidden"), "true");
+  assert.ok(mark.querySelector("svg.talk-highlight-mark-icon"), "o ícone do dado vira a marca d'água");
+  assert.equal(cardOf({ ...jam, highlight: undefined }).querySelector(".talk-ribbon"), null, "palestra comum não tem faixa");
+});
+
+test("o Coding Jam vale em qualquer trilha e sala: a cor e a sala são sempre as da trilha onde ele cair", () => {
+  const tracks = [
+    { id: "ia", label: "IA", shortLabel: "IA", color: "#3186FF", room: "Sala Observatório" },
+    { id: "webdata", label: "Front/Back/Data", shortLabel: "Front/Back/Data", color: "#FFEC00", room: "Sala Estação" },
+    { id: "mobile", label: "Mobile / Agile", shortLabel: "Mobile/Agile", color: "#34A853", room: "Sala Lagoa do Taquaral" },
+    { id: "mentoring", label: "Carreira", shortLabel: "Carreira", color: "#FC413D", room: "Sala Mercadão Central" },
+  ];
+  tracks.forEach(other => {
+    const root = render(trackCardMarkup(other, jam, { talkKey: "k1" }));
+    const card = root.querySelector(".talk");
+    assert.ok(card.classList.contains("talk--highlight"), `${other.id}: destaque`);
+    assert.equal(card.dataset.track, other.id);
+    assert.match(card.getAttribute("style"), new RegExp(`--track-color:${other.color}`));
+    assert.equal(textOf(root.querySelector(".room-tag")), other.room);
+    assert.ok(root.querySelector(".talk-ribbon"), `${other.id}: faixa (não depende só da cor da trilha)`);
+    const modal = render(talkDetailMarkup(other, jam, { reveal: true, talkKey: "k1", room: other.room }));
+    assert.equal(modal.querySelectorAll(".detail-steps li").length, 4, `${other.id}: modal`);
+  });
+});
+
 test("sem palestrante: o card mostra quem conduz (GDG Campinas) em vez de 'undefined'", () => {
   const html = trackCardMarkup(track, jam, { talkKey: "k1" });
   assert.ok(!html.includes("undefined"));
