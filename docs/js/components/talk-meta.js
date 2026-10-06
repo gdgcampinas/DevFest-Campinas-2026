@@ -8,12 +8,24 @@
 const MAX_TOPICS = 2;
 const MAX_AVATARS = 3;
 
-function talkTagsMarkup(data) {
+function talkTagsMarkup(data, highlight = talkHighlightsRepository.forTalk(data)) {
   const format = talkFormatsRepository.getById(data.format);
-  const chip = format ? `<span class="talk-format">${iconMarkup(format.icon)}${format.label}</span>` : "";
+  const formatChip = format ? `<span class="talk-format">${iconMarkup(format.icon)}${format.label}</span>` : "";
+  const chip = formatChip + (highlight ? talkHighlightChipMarkup(highlight) : "");
   const topics = (data.tags || []).slice(0, MAX_TOPICS).map(tag => `<span>${tag}</span>`).join("");
   if (!chip && !topics) return "";
   return `<div class="talk-tags">${chip}${topics ? `<div class="talk-topics">${topics}</div>` : ""}</div>`;
+}
+
+/**
+ * Quem aparece no card, no modal e na faixa "Agora:": os palestrantes da palestra ou, se não houver nenhum, o `host` do
+ * destaque (ex.: GDG Campinas no Coding Jam). Fica fora de speakerList() de propósito: quem conduz não é palestrante da galeria.
+ */
+function talkWhoList(data) {
+  const speakers = speakerList(data);
+  if (speakers.length) return speakers;
+  const host = talkHighlightsRepository.forTalk(data)?.host;
+  return host ? [host] : [];
 }
 
 /** Sem palestrante revelado, mostra um avatar de interrogação (fallback de iniciais já resolve). */

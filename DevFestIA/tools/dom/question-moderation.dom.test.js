@@ -236,3 +236,23 @@ test("segue a sala sozinha: quando a próxima palestra começa, passa a moderar 
   await settle();
   assert.equal(world.boards.sets.at(-1).key, keyOf(SECOND));
 });
+
+test("sessão com perguntas desligadas (Coding Jam): avisa e não escuta perguntas", async () => {
+  const jam = { start: FIRST.start, end: FIRST.end, talks: { ia: { title: "GDG Campinas Coding Jam", highlight: "codejam" } } };
+  const world = setup({ signedIn: true, pinned: false, schedule: [jam, SECOND] });
+  await settle();
+  assert.match(textOf(world.rootEl), /GDG Campinas Coding Jam: as perguntas ao vivo estão desativadas nesta sessão\./);
+  assert.equal(world.questions.listenCount(), 0, "nenhum listener de perguntas aberto");
+  assert.equal(world.rootEl.querySelectorAll(".question-item--moderation").length, 0);
+});
+
+test("sessão com perguntas desligadas: quando a sala passa pra outra palestra, volta a moderar", async () => {
+  let clock = new Date("2026-11-28T12:10:00Z");
+  const jam = { start: FIRST.start, end: FIRST.end, talks: { ia: { title: "GDG Campinas Coding Jam", highlight: "codejam" } } };
+  const world = setup({ signedIn: true, pinned: false, now: () => clock, schedule: [jam, SECOND], config: { boardPublishMs: 20 } });
+  await settle();
+  assert.equal(world.questions.listenCount(), 0);
+  clock = new Date("2026-11-28T13:10:00Z");
+  await flush(60);
+  assert.equal(world.questions.listenCount(), 1, "a palestra seguinte tem perguntas e passa a ser escutada");
+});

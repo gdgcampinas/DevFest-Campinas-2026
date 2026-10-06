@@ -5,10 +5,10 @@
  * buildSchedule(), então mudar o DAY_PLAN não quebra nada aqui.
  * Palestrantes entram só por `speakerIds` (ids de mock-speakers.js),
  * nunca por cópia dos dados da pessoa. `format` é um id de
- * data/talk-formats.js.
+ * data/talk-formats.js e `highlight` (opcional) é um id de data/talk-highlights.js.
  * Precisa carregar depois de mock-speakers.js e antes de schedule-builder.js.
  */
-const talk = (title, format, tags, speakerIds, description) => ({ title, format, tags, speakerIds, description });
+const talk = (title, format, tags, speakerIds, description, highlight) => ({ title, format, tags, speakerIds, description, ...(highlight && { highlight }) });
 
 const MOCK_TALKS_BY_TRACK = {
   ia: [
@@ -62,8 +62,8 @@ const MOCK_TALKS_BY_TRACK = {
       "Quais cerimônias sustentam entrega e quais são só teatro, e como ajustar com o time."),
     talk("Acessibilidade em apps: o que quase todo mundo esquece", "palestra", ["acessibilidade", "ux"], ["sofia-alvarez"],
       "Leitores de tela, contraste, alvos de toque e testes simples que tornam um app usável por mais pessoas."),
-    talk("Testes em mobile sem sofrimento", "palestra", ["testes", "qualidade"], ["mia-robinson"],
-      "Uma pirâmide de testes possível para apps: o que automatizar, o que deixar manual e como manter estável."),
+    talk("GDG Campinas Coding Jam", "workshop", ["jam", "projetos"], [],
+      "Uma sessão prática de construção: você monta o seu projeto, apresenta para a sala e a turma vota nos três melhores.", "codejam"),
     talk("Kanban, Scrum ou nada: métricas que ajudam", "bate-papo", ["kanban", "métricas"], ["vinicius-barbosa"],
       "Lead time, throughput e outras métricas que orientam decisões sem virar cobrança."),
     talk("Apps offline-first com sincronização confiável", "workshop", ["offline-first", "sincronização"], ["marcus-lee"],

@@ -8,7 +8,7 @@
  * O que mostrar em cada horário é decidido por resolveRoomBoard() (room-board.js, função pura e testada); aqui só se
  * desenha. `boardQuestions` (opcional) é quem lê e mostra as perguntas.
  */
-function initCheckinDisplay(rootEl, { schedule, track, timezone, siteUrl, now = () => new Date(), boardQuestions = null, extraQuery = "", pinnedCode = null }) {
+function initCheckinDisplay(rootEl, { schedule, track, timezone, siteUrl, now = () => new Date(), boardQuestions = null, extraQuery = "", pinnedCode = null, allowsQuestions = talkHighlightsRepository.allowsQuestions }) {
   const bodyEl = rootEl.querySelector(".cd-body");
   let lastSignature = null;
 
@@ -20,20 +20,20 @@ function initCheckinDisplay(rootEl, { schedule, track, timezone, siteUrl, now = 
       bodyEl.innerHTML = [
         talk ? roomTalkHeaderMarkup({ track, talk, timezone }) : `<div class="cd-track" style="--track-color:${track.color}">${escapeHtml(track.label)}</div>`,
         `<div class="${talk ? "cd-main" : "cd-solo"}">`,
-        talk && boardQuestions ? `<section class="cd-questions" id="cdQuestions"></section>` : "",
+        talk && boardQuestions && questionsPhase ? `<section class="cd-questions" id="cdQuestions"></section>` : "", // sem fase = sessão sem perguntas ao vivo (ex.: Coding Jam)
         panels ? `<div class="cd-panels${panels.length > 1 ? " cd-panels--multi" : ""}${talk ? " cd-panels--compact" : ""}">${panels.map(roomPanelMarkup).join("")}</div>` : `<div class="cd-empty">${message}</div>`,
         "</div>",
       ].join("");
       const size = talk ? (panels?.length > 1 ? 150 : 200) : panels?.length > 1 ? 280 : 360;
       (panels ?? []).forEach(panel => new QRCode(document.getElementById(panel.id), { text: panel.url, width: size, height: size, colorDark: "#05060a", colorLight: "#ffffff" }));
     }
-    boardQuestions?.follow(talk ? { mountEl: document.getElementById("cdQuestions"), key: talk.key, phase: questionsPhase } : null);
+    boardQuestions?.follow(talk && questionsPhase ? { mountEl: document.getElementById("cdQuestions"), key: talk.key, phase: questionsPhase } : null);
     const bar = bodyEl.querySelector(".cd-progress b");
     if (bar && talk) bar.style.width = `${Math.round(talk.progress * 100)}%`;
   }
 
   const tick = () => draw(resolveRoomBoard({
-    schedule, track, siteUrl, now: now(), extraQuery, pinnedCode,
+    schedule, track, siteUrl, now: now(), extraQuery, pinnedCode, allowsQuestions,
     keyOf: talkKey,
     codeOf: (slot, trackId) => talkShareCode(slot, trackId, timezone),
   }));

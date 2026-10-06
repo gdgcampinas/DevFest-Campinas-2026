@@ -282,6 +282,29 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
 .talk-topics{display:flex;flex-wrap:wrap;gap:4px 10px;font:500 12px var(--font-body);color:var(--muted)}
 .talk-topics span::before{content:"#";color:var(--track-color);margin-right:1px}
 
+/* destaque de sessão (ex.: Coding Jam): borda, chip e pódio na cor do destaque (--highlight-color inline, vem do dado);
+   nenhuma regra por id de destaque. Convive com favorito (.is-fav), ao vivo (.slot.active) e passado (.slot.past). */
+.talk--highlight{
+  --hl:var(--highlight-color,var(--track-color));
+  border-color:color-mix(in oklab, var(--hl) 55%, var(--card-border));border-top-color:var(--hl); /* oklab: em oklch o amarelo misturado com o cinza-azulado passa pelo verde */
+}
+.talk--highlight:hover,.slot.active .talk--highlight{border-color:var(--hl);box-shadow:0 10px 28px color-mix(in oklch, var(--hl) 22%, transparent)}
+.talk-format--highlight{
+  color:var(--highlight-color);
+  background:color-mix(in oklch, var(--highlight-color) 14%, transparent);
+  border-color:color-mix(in oklch, var(--highlight-color) 45%, transparent);
+}
+.talk-highlight{display:flex;flex-direction:column;gap:10px}
+.talk-highlight-tagline{margin:0;font:500 13px/1.4 var(--font-body);color:oklch(90% 0.01 260)}
+.talk-podium{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.talk-podium-slot{
+  display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 4px;border-radius:9px;text-align:center;
+  background:oklch(14% 0.015 260);border:1px solid var(--card-border);font:500 12px/1.25 var(--font-body);color:var(--muted);
+}
+.talk-podium-slot b{font:800 13px var(--font-display);color:var(--highlight-color)}
+.talk-highlight-note{display:flex;align-items:center;gap:6px;font:600 12px var(--font-body);color:var(--highlight-color)}
+.talk-highlight-note .icon{width:14px;height:14px}
+
 /* palestrante: avatar com anel na cor da trilha, nome, cargo · empresa, LinkedIn */
 .talk-who{display:flex;align-items:center;gap:11px;margin-top:auto}
 .talk-who-text{min-width:0;flex:1}
@@ -784,6 +807,24 @@ footer{max-width:1180px;margin:36px auto 0;padding:0 24px;display:flex;flex-dire
 .detail-desc{margin:0 0 16px;font:500 14px var(--font-body);color:var(--muted);line-height:1.6;white-space:pre-line}
 .detail-meta{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:14px}
 .detail-meta .room-tag{font-size:12.5px;padding:5px 13px}
+
+/* destaque de sessão no modal: etapas, pódio e regras (cor via --highlight-color do .detail) */
+.detail-highlight{
+  display:flex;flex-direction:column;gap:14px;margin:0 0 16px;padding:14px;border-radius:12px;
+  border:1px solid color-mix(in oklab, var(--highlight-color) 40%, var(--card-border));
+  background:color-mix(in oklch, var(--highlight-color) 7%, transparent);
+}
+.detail-highlight-tagline{margin:0;font:700 15px/1.35 var(--font-display);color:var(--highlight-color)}
+.detail-highlight-section h4{margin:0 0 8px;font:700 12px var(--font-body);letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
+.detail-steps{margin:0;padding:0;list-style:none;counter-reset:step;display:grid;gap:10px}
+.detail-steps li{counter-increment:step;display:grid;grid-template-columns:24px 1fr;column-gap:10px;font:400 13.5px/1.4 var(--font-body)}
+.detail-steps li::before{
+  content:counter(step);grid-row:1 / span 2;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font:700 12px var(--font-body);color:oklch(14% 0.01 260);background:var(--highlight-color);
+}
+.detail-steps strong{font-weight:700;color:var(--text)}
+.detail-steps span{color:var(--muted)}
+.detail-rules{margin:0;padding-left:18px;font:400 13.5px/1.5 var(--font-body);color:var(--text)}
 .detail-meta span:not(.room-tag){
   font:600 12.5px var(--font-body);color:var(--text);
   background:rgba(255,255,255,.04);border:1px solid var(--card-border);

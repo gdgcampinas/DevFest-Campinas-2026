@@ -23,6 +23,7 @@ const SITE_BASE = [
   "features/i18n-core.js",
   "features/i18n.js",
   "data/icons.js",
+  "data/talk-highlights.js",
   "components/icon.js",
   "components/escape-html.js",
   "data/persisted-set-repository.js",

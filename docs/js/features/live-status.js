@@ -160,7 +160,7 @@ function createLiveStatus({ schedule, tracks, event, elements = {}, now = () => 
           <div class="talks" data-view="all">${cards}</div>
         </div>`;
       stickyTxt.textContent = reveal
-        ? t("live.nowSpeakers", "Agora: {names}", { names: tracks.map(track => speakerList(slot.talks[track.id]).map(s => s.name).join(" & ")).join(" · ") })
+        ? t("live.nowSpeakers", "Agora: {names}", { names: tracks.map(track => talkWhoList(slot.talks[track.id]).map(s => s.name).join(" & ")).join(" · ") })
         : t("live.nowCheckTrack", "Agora: confira sua trilha");
     }
     stickyPulse.style.display = "inline-block";

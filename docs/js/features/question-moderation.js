@@ -14,17 +14,18 @@
  * `config.boardPublishMs` e quando o conjunto de aprovadas muda, e o quadro só é regravado se a ordem mudou. Por isso a
  * ordem que a plateia vê só anda com esta tela aberta na palestra (aviso no handoff).
  */
-function pickModerationTalk({ schedule, track, now, pinnedSlot = null }) {
-  if (pinnedSlot) return { key: talkKey(pinnedSlot, track.id), title: pinnedSlot.talks[track.id].title };
+function pickModerationTalk({ schedule, track, now, pinnedSlot = null, allowsQuestions = () => true }) {
+  const describe = slot => ({ key: talkKey(slot, track.id), title: slot.talks[track.id].title, questionsEnabled: allowsQuestions(slot.talks[track.id]) });
+  if (pinnedSlot) return describe(pinnedSlot);
   const talkSlots = schedule.filter(slot => slot.talks?.[track.id]);
   const state = resolveEventState(now, schedule);
   const slot = state.phase === "live" && state.activeSlot?.talks?.[track.id]
     ? state.activeSlot
     : talkSlots.filter(candidate => candidate.end <= now).pop();
-  return slot ? { key: talkKey(slot, track.id), title: slot.talks[track.id].title } : null;
+  return slot ? describe(slot) : null;
 }
 
-function initQuestionModeration(rootEl, { schedule, track, config, now = () => new Date(), pinnedCode = null, codeOf, deps = defaultModerationDeps, whenReady = runAfterModules }) {
+function initQuestionModeration(rootEl, { schedule, track, config, now = () => new Date(), pinnedCode = null, codeOf, deps = defaultModerationDeps, whenReady = runAfterModules, allowsQuestions = talkHighlightsRepository.allowsQuestions }) {
   let email = "";
   let watch = null; // { talk, publisher, stopListening, timer } da palestra que está sendo moderada
   let questions = [];
@@ -36,7 +37,7 @@ function initQuestionModeration(rootEl, { schedule, track, config, now = () => n
 
   const draw = data => { rootEl.innerHTML = questionModerationMarkup({ trackLabel: track.label, email, ...data }); };
   const drawReady = () => draw({ phase: "ready", talkTitle: watch.talk.title, message: notice, questions: rankQuestions(questions, counts, { statuses: Object.values(QUESTION_STATUS) }) });
-  const pickTalk = () => pickModerationTalk({ schedule, track, now: now(), pinnedSlot: findTalkSlotByCode(schedule, track, pinnedCode, codeOf) });
+  const pickTalk = () => pickModerationTalk({ schedule, track, now: now(), pinnedSlot: findTalkSlotByCode(schedule, track, pinnedCode, codeOf), allowsQuestions });
 
   /** Conta os votos e regrava o quadro se a ordem mudou; uma publicação por vez (se pediram outra no meio, faz mais uma ao fim). */
   async function publish() {
@@ -81,6 +82,12 @@ function initQuestionModeration(rootEl, { schedule, track, config, now = () => n
     stopWatching();
     const talk = pickTalk();
     if (!talk) return draw({ phase: "empty", message: "Nenhuma palestra nesta sala por enquanto." });
+    if (!talk.questionsEnabled) {
+      // Sessão sem perguntas pelo site (ex.: Coding Jam): avisa e só confere se a sala já passou pra outra palestra.
+      draw({ phase: "empty", message: `${talk.title}: as perguntas ao vivo estão desativadas nesta sessão.` });
+      watch = { talk, stopListening: () => {}, timer: setInterval(() => (pickTalk()?.key !== talk.key ? startWatching() : null), config.boardPublishMs) };
+      return;
+    }
     const { questions: questionsRepo, votes, boards } = deps();
     watch = {
       talk,

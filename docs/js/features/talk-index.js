@@ -32,13 +32,14 @@ function buildTalkIndex(schedule, tracks, timezone) {
 /** Entrada de calendário de uma palestra. `siteUrl` aponta pra grade completa. */
 function talkToCalendarEntry(entry, event, siteUrl) {
   const speakers = speakerList(entry.data).map(speaker => speaker.name).join(` ${t("common.and", "e")} `);
+  const highlight = talkHighlightsRepository.forTalk(entry.data);
   return {
     uid: `${entry.code}@devfestcampinas`,
     title: entry.data.title,
     start: entry.slot.start,
     end: entry.slot.end,
     location: eventLocationLabel(event, entry.track.room),
-    details: [speakers && t("calendar.speakers", "Palestrante(s): {names}", { names: speakers }), t("calendar.track", "Trilha: {track}", { track: entry.track.label }), entry.data.description, t("calendar.fullSchedule", "Grade completa: {url}", { url: siteUrl })]
+    details: [speakers && t("calendar.speakers", "Palestrante(s): {names}", { names: speakers }), t("calendar.track", "Trilha: {track}", { track: entry.track.label }), highlight && [highlight.label, highlight.tagline].filter(Boolean).join(": "), entry.data.description, t("calendar.fullSchedule", "Grade completa: {url}", { url: siteUrl })]
       .filter(Boolean).join("\n"),
     url: siteUrl,
   };

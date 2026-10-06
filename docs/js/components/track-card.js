@@ -7,7 +7,8 @@
  *   duration   → "40 min" no rodapé (opcional)
  *   talkKey    → chave de favorito; sem ela o card não mostra a estrela
  *   favorite   → estado inicial da estrela  |  progress → 0..1 da barra (só live)
- * Formato, tags, LinkedIn e "cargo · empresa" só aparecem se o dado tiver.
+ * Formato, tags, LinkedIn e "cargo · empresa" só aparecem se o dado tiver. Palestra com `highlight` (data/talk-highlights.js)
+ * ganha o card de destaque (chip, frase, pódio) e, sem palestrante, mostra quem conduz (`host`); com `reveal` falso volta ao card comum.
  *
  * Cor de trilha vem 100% de track.color (definido em schedule.js) e é
  * aplicada via --track-color inline — nenhum CSS aqui depende do id
@@ -32,8 +33,9 @@ function trackCardMarkup(track, data, {
   reveal = true, live = false, slotIndex = null,
   startLabel = "", duration = "", talkKey = "", favorite = false, progress = 0,
 } = {}) {
-  const speakers = reveal ? speakerList(data) : [];
-  const speaker = reveal ? speakers.map((s) => s.name).join(" & ") || data.speaker : hiddenSpeakerLabel();
+  const highlight = reveal ? talkHighlightsRepository.forTalk(data) : null;
+  const speakers = reveal ? talkWhoList(data) : [];
+  const speaker = reveal ? speakers.map((s) => s.name).join(" & ") || hiddenSpeakerLabel() : hiddenSpeakerLabel();
   const title = reveal && data.title ? data.title : "";
   const room = reveal ? track.room : "";
   const meta = reveal && speakers.length === 1 ? speakerMetaLine(speakers[0]) : "";
@@ -56,13 +58,14 @@ function trackCardMarkup(track, data, {
   ].filter(Boolean).join(" ");
 
   return `
-    <div class="talk${favorite ? " is-fav" : ""}" data-track="${track.id}" style="--track-color:${track.color}" ${attrs}>
+    <div class="talk${favorite ? " is-fav" : ""}${highlight ? " talk--highlight" : ""}" data-track="${track.id}" style="--track-color:${track.color}${highlight ? `;--highlight-color:${highlight.color}` : ""}" ${attrs}>
       <div class="talk-top">
         <span class="track-label"><span class="dot" style="background:${track.color}"></span>${track.shortLabel ?? track.label}</span>
         ${statusTag}
       </div>
       <div class="title${title ? "" : " title--pending"}">${title || hiddenTitleLabel()}</div>
-      ${reveal ? talkTagsMarkup(data) : ""}
+      ${reveal ? talkTagsMarkup(data, highlight) : ""}
+      ${highlight ? talkHighlightBodyMarkup(highlight) : ""}
       <div class="talk-who">
         ${talkAvatarsMarkup(speakers)}
         <div class="talk-who-text">
@@ -86,7 +89,8 @@ function speakerMetaLine(speaker) {
 }
 
 function talkDetailMarkup(track, data, { reveal = true, timeRange = "", room = "", talkKey = "", favorite = false, calendarHtml = "" } = {}) {
-  const speakers = reveal ? speakerList(data) : [];
+  const highlight = reveal ? talkHighlightsRepository.forTalk(data) : null;
+  const speakers = reveal ? talkWhoList(data) : [];
   const title = reveal ? data.title : t("card.talkTbd", "Palestra a confirmar");
   const description = reveal && data.description ? data.description : "";
   const roomLabel = reveal ? room : "";
@@ -111,18 +115,19 @@ function talkDetailMarkup(track, data, { reveal = true, timeRange = "", room = "
     : `<div class="detail-speaker">${hiddenSpeakerLabel()}</div>`;
 
   return `
-    <div class="detail" data-track="${track.id}" style="--track-color:${track.color}">
+    <div class="detail" data-track="${track.id}" style="--track-color:${track.color}${highlight ? `;--highlight-color:${highlight.color}` : ""}">
       <div class="detail-top">
         <span class="track-label"><span class="dot" style="background:${track.color}"></span>${track.label}</span>
         ${talkKey ? favoriteButtonMarkup({ key: talkKey, active: favorite }) : ""}
       </div>
       <h3 class="detail-title">${title}</h3>
-      ${reveal ? talkTagsMarkup(data) : ""}
+      ${reveal ? talkTagsMarkup(data, highlight) : ""}
       ${description ? `<p class="detail-desc">${description}</p>` : ""}
+      ${highlight ? talkHighlightDetailMarkup(highlight) : ""}
       ${metaItems ? `<div class="detail-meta">${metaItems}</div>` : ""}
       ${reveal ? calendarHtml : ""}
       ${speakerLine}
-      ${reveal && talkKey ? `<div class="talk-feedback-slot"></div><div class="talk-questions-slot"></div>` : ""}
+      ${reveal && talkKey ? `<div class="talk-feedback-slot"></div>${talkHighlightsRepository.allowsQuestions(data) ? `<div class="talk-questions-slot"></div>` : ""}` : ""}
     </div>`;
 }
 

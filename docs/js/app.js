@@ -294,6 +294,7 @@ const LOCALIZED_DATASETS = [
   () => eventFeedbackFormRepository.getAll(),
   () => quizRepository.getAll(),
   () => talkFormatsRepository.getAll(),
+  () => talkHighlightsRepository.getAll(),
   () => installGuidesRepository.getAll(),
   () => videoRepository.getAll(),
   () => highlightsRepository.getAll(),

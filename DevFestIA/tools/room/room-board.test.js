@@ -114,3 +114,19 @@ test("findTalkSlotByCode acha a palestra da trilha pelo código curto", () => {
   assert.equal(findTalkSlotByCode(schedule, track, "9.mobile", params.codeOf), null);
   assert.equal(findTalkSlotByCode(schedule, track, null, params.codeOf), null);
 });
+
+test("palestra que não aceita perguntas (allowsQuestions): sem fase de perguntas, mas os QR de check-in e avaliação continuam", () => {
+  const noQuestions = data => data.title !== "Primeira";
+  const during = resolveRoomBoard({ ...params, now: at("09:10"), allowsQuestions: noQuestions });
+  assert.equal(during.questionsPhase, null);
+  assert.ok(panelIds(during).includes("cdCheckin"), "o check-in (que libera o voto) continua no quadro");
+  const after = resolveRoomBoard({ ...params, now: at("09:42"), allowsQuestions: noQuestions });
+  assert.equal(after.questionsPhase, null, "também depois que a sessão acabou");
+  assert.ok(panelIds(after).includes("cdRate"));
+  const next = resolveRoomBoard({ ...params, now: at("09:50"), allowsQuestions: noQuestions });
+  assert.equal(next.questionsPhase, "open", "a palestra seguinte volta a aceitar perguntas");
+});
+
+test("sem allowsQuestions o padrão é aceitar perguntas (nada muda pra quem não passa a função)", () => {
+  assert.equal(board("09:10").questionsPhase, "open");
+});

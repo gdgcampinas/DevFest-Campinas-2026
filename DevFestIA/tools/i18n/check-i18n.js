@@ -18,9 +18,9 @@ const read = file => fs.readFileSync(path.join(docs, file), "utf8");
 const errors = [];
 const fail = message => errors.push(message);
 
-const KEEP_AS_IS = new Set(["Meetup", "Instagram", "LinkedIn", "Linktree", "VIP", "GDG Campinas", "DevFest Campinas", "EloTech 2026", "gdgcampinascontato@gmail.com", "Campinas, SP", "Sympla", "Links", "Networking", "Workshop", "Front-end / Back-end / Data", "Front/Back/Data", "Mobile / Agile", "Mobile/Agile", "Google Sans"]);
+const KEEP_AS_IS = new Set(["Coding Jam", "Meetup", "Instagram", "LinkedIn", "Linktree", "VIP", "GDG Campinas", "DevFest Campinas", "EloTech 2026", "gdgcampinascontato@gmail.com", "Campinas, SP", "Sympla", "Links", "Networking", "Workshop", "Front-end / Back-end / Data", "Front/Back/Data", "Mobile / Agile", "Mobile/Agile", "Google Sans"]);
 // Campos dos dados que não são texto de tela (ids, endereços, cores, arquivos, textos já gerados por t()).
-const SKIP_KEYS = new Set(["id", "url", "href", "color", "trackColor", "icon", "date", "start", "end", "timezone", "utcOffset", "image", "logo", "photo", "file", "youtubeId", "tier", "shape", "endpoint", "provider", "alt", "waitlistUrl", "price", "value", "min", "max"]);
+const SKIP_KEYS = new Set(["id", "noteIcon", "url", "href", "color", "trackColor", "icon", "date", "start", "end", "timezone", "utcOffset", "image", "logo", "photo", "file", "youtubeId", "tier", "shape", "endpoint", "provider", "alt", "waitlistUrl", "price", "value", "min", "max"]);
 const isTechnical = value => /^(https?:|mailto:|var\(|assets\/|js\/|#)/.test(value) || /^[\d\s+.,%/-]+$/.test(value);
 
 // ---------- 1 e 2: chaves usadas no código ----------
@@ -96,7 +96,7 @@ const appSource = read("js/app.js");
 const datasetThunks = appSource.match(/const LOCALIZED_DATASETS = \[([\s\S]*?)\n\];/)[1].split("\n").map(line => line.replace(/\s\/\/.*$/, "").trim().replace(/,$/, "")).filter(Boolean);
 const datasetStrings = new Set();
 const collect = (node, visited = new WeakSet()) => {
-  if (typeof node === "string") return datasetStrings.add(node);
+  if (typeof node === "string") return node.trim() && datasetStrings.add(node);
   if (node === null || typeof node !== "object" || visited.has(node)) return;
   if (!(Array.isArray(node) || Object.getPrototypeOf(node) === Object.prototype || node.constructor?.name === "Object")) return;
   visited.add(node);

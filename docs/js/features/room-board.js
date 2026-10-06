@@ -13,6 +13,8 @@
  *                  ainda pode responder as perguntas já aprovadas). Depois do fim do evento não há palestra na sala.
  *   questionsPhase "open" (palestra rolando) | "closed" (acabou) | null
  *   panels         QR (mesma forma de sempre) ou `message` quando não há nada pra mostrar.
+ * `allowsQuestions(data)` (opcional, padrão: sempre) diz se a palestra aceita perguntas ao vivo; se não, `questionsPhase` é null
+ * (o Coding Jam, por exemplo, tem as perguntas feitas no microfone) e o quadro não monta o bloco de perguntas.
  * `pinnedCode` (opcional, `?palestra=<código>` na tela) fixa uma palestra da sala: ela vira a palestra "ao vivo" em qualquer dia
  * e horário (teste em DEV, sem depender do relógio); código que não é desta sala é ignorado e vale o relógio.
  */
@@ -26,7 +28,7 @@ function findTalkSlotByCode(schedule, track, code, codeOf) {
   return schedule.find(slot => slot.talks?.[track.id] && codeOf(slot, track.id) === code) ?? null;
 }
 
-function resolveRoomBoard({ schedule, track, siteUrl, now, keyOf, codeOf, extraQuery = "", pinnedCode = null }) {
+function resolveRoomBoard({ schedule, track, siteUrl, now, keyOf, codeOf, extraQuery = "", pinnedCode = null, allowsQuestions = () => true }) {
   const eventStart = schedule[0].start;
   const eventEnd = schedule[schedule.length - 1].end;
   const pinned = findTalkSlotByCode(schedule, track, pinnedCode, codeOf);
@@ -52,7 +54,7 @@ function resolveRoomBoard({ schedule, track, siteUrl, now, keyOf, codeOf, extraQ
   if (eventOver) {
     panels.push({ id: "cdEvent", kind: "rate", heading: "Avalie o evento", title: "DevFest Campinas", hint: "Obrigado por participar! Conte como foi", url: roomRateEventUrl(siteUrl, extraQuery) });
   }
-  const questionsPhase = !talk ? null : talk.kind === "live" ? "open" : "closed";
+  const questionsPhase = !talk || !allowsQuestions(talk.data) ? null : talk.kind === "live" ? "open" : "closed";
   return panels.length ? { panels, talk, questionsPhase } : { message: "Nenhuma palestra agora nesta sala.", talk, questionsPhase };
 }
 

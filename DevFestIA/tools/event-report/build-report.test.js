@@ -59,3 +59,16 @@ test("texto do relatório traz os números e não quebra sem dados", () => {
   const empty = formatEventReport(buildEventReport({ stats: { total: 0, checkedIn: 0 }, checkins: [], talkFeedback: [], eventFeedback: [], talks: new Map(), form }), { edition: "2026" });
   assert.match(empty, /nota geral \*\*-\*\*/);
 });
+
+test("relatório: palestra sem palestrante (Coding Jam) entra com nota e comentários, sem 'undefined' e sem linha de palestrante", () => {
+  const jamTalks = new Map([["j|mobile", { title: "GDG Campinas Coding Jam", track: "Mobile", time: "14:15", speakers: [] }]]);
+  const report = buildEventReport({
+    ...input, talks: jamTalks, checkins: [{ entryKey: "j|mobile" }],
+    talkFeedback: [{ entryKey: "j|mobile", rating: 5, highlight: "Muito bom" }, { entryKey: "j|mobile", rating: 4 }],
+  });
+  assert.equal(report.talks[0].title, "GDG Campinas Coding Jam");
+  assert.equal(report.talks[0].average, 4.5);
+  assert.deepEqual(report.speakers, [], "sem palestrante, nenhuma nota por palestrante");
+  const text = formatEventReport(report, { edition: "2026" });
+  assert.ok(text.includes("GDG Campinas Coding Jam") && !text.includes("undefined"));
+});
