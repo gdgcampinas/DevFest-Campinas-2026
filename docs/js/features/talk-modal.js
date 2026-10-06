@@ -31,7 +31,7 @@ const CARD_INNER_CONTROLS = ".fav-btn, a";
 /** Qualquer elemento que aponte pra uma palestra (card da agenda, do hero ou da galeria de palestrantes). */
 const TALK_TRIGGER = "[data-slot-index][data-track]";
 
-function initTalkDetails(rootEl, { schedule, tracks, timezone, reveal, modal, favorites = null, calendar = null, feedback = null, questions = null }) {
+function initTalkDetails(rootEl, { schedule, tracks, timezone, reveal, modal, favorites = null, calendar = null, feedback = null, questions = null, contest = null }) {
   rootEl.addEventListener("click", event => {
     if (event.target.closest(CARD_INNER_CONTROLS)) return;
     const card = event.target.closest(TALK_TRIGGER);
@@ -47,7 +47,7 @@ function initTalkDetails(rootEl, { schedule, tracks, timezone, reveal, modal, fa
     openFromCard(card);
   });
 
-  /** Abre o modal da palestra (slot x trilha) e preenche os blocos de feedback e de perguntas dela. */
+  /** Abre o modal da palestra (slot x trilha) e preenche os blocos de feedback, de perguntas e do concurso dela. */
   function openTalk(slot, track, { feedbackMessage = "" } = {}) {
     if (!slot || !track || !slot.talks) return;
     const key = talkKey(slot, track.id);
@@ -64,6 +64,8 @@ function initTalkDetails(rootEl, { schedule, tracks, timezone, reveal, modal, fa
     if (feedback && entry && feedbackSlot) feedback.render(feedbackSlot, entry, { message: feedbackMessage });
     const questionsSlot = modal.el.querySelector(".talk-questions-slot");
     if (questions && entry && questionsSlot) questions.render(questionsSlot, entry);
+    const contestSlot = modal.el.querySelector(".talk-contest-slot");
+    if (contest && entry && contestSlot) contest.render(contestSlot, entry);
   }
 
   function openFromCard(card) {

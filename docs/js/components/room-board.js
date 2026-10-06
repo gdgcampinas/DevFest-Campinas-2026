@@ -39,3 +39,13 @@ function boardQuestionsMarkup({ questions, phase, offline = false }) {
   return `<div class="cd-questions-head"><h2 class="cd-questions-title">${title}</h2>${offline ? `<span class="cd-offline">sem conexão, tentando de novo</span>` : ""}</div>
     <p class="cd-questions-hint">${hint}</p>${list}`;
 }
+
+/**
+ * Pódio do concurso da sessão (Coding Jam) no quadro da sala: os lugares do destaque (components/talk-highlight.js) vazios até o
+ * moderador publicar o resultado, e depois com o projeto e a pessoa de cada um. `winners` = [{ place, project, name }].
+ */
+function boardContestMarkup({ podium = [], winners = [], offline = false }) {
+  const hint = winners.length ? "Parabéns a quem subiu ao pódio!" : "O resultado aparece aqui quando a organização publicar.";
+  return `<div class="cd-questions-head"><h2 class="cd-questions-title">Pódio</h2>${offline ? `<span class="cd-offline">sem conexão, tentando de novo</span>` : ""}</div>
+    <p class="cd-questions-hint">${hint}</p>${talkPodiumMarkup(podium, winners)}`;
+}

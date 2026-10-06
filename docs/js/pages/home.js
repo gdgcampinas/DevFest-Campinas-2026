@@ -11,8 +11,8 @@ function initHome() {
 
   const modal = createTalkModal();
   const calendar = initCalendarActions(document.body, { schedule: SCHEDULE, tracks: TRACKS, event: EVENT, favorites: favoritesRepository });
-  const { feedback, eventFeedback, questions } = initFeedbackFlow({ calendar, reveal, createModal });
-  initTalkDetails(document.body, { schedule: SCHEDULE, tracks: TRACKS, timezone: EVENT.timezone, reveal, modal, favorites: favoritesRepository, calendar, feedback, questions });
+  const { feedback, eventFeedback, questions, contest } = initFeedbackFlow({ calendar, reveal, createModal });
+  initTalkDetails(document.body, { schedule: SCHEDULE, tracks: TRACKS, timezone: EVENT.timezone, reveal, modal, favorites: favoritesRepository, calendar, feedback, questions, contest });
   initFavorites(document.body, favoritesRepository);
 
   renderStats(statsRepository.getAll(), document.getElementById("statsSection"), document.querySelector(".stats-grid"));

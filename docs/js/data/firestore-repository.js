@@ -13,7 +13,7 @@
  * primeiro — é isso que trava "1 registro por pessoa por entrada",
  * não uma checagem no cliente (que dá pra burlar).
  */
-import { collection, doc, setDoc, getDoc, getDocs, getCountFromServer, onSnapshot, updateDoc, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+import { collection, doc, setDoc, getDoc, getDocs, getCountFromServer, onSnapshot, updateDoc, deleteDoc, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
 function createFirestoreRepository({ db, collectionName, edition }) {
   const col = () => collection(db, collectionName);
@@ -78,6 +78,10 @@ function createFirestoreRepository({ db, collectionName, edition }) {
     /** Atualiza campos de um documento por id; só passa se a regra permitir (hoje: moderação ocultar pergunta). */
     async update(id, fields) {
       await updateDoc(doc(col(), id), fields);
+    },
+    /** Apaga um documento por id; só passa se a regra permitir (hoje: o moderador apagar um projeto do concurso). */
+    async remove(id) {
+      await deleteDoc(doc(col(), id));
     },
     /** Todos os registros de uma chave (ex.: todo feedback de uma palestra), só leitura agregada — sem dado de outra pessoa individual. */
     async getAllFor(entryKey) {

@@ -11,7 +11,7 @@ const { createFakeQuestions, createFakeVotes, createFakeBoards, denied } = requi
 const KEY = "2026-11-28T12:00:00.000Z|ia";
 const site = loadSite({
   scripts: [...SITE_BASE, "data/talk-questions.js", "features/question-window.js", "features/question-slots.js", "features/question-ranking.js",
-    "components/talk-questions.js", "features/talk-feedback.js", "features/talk-questions.js"],
+    "components/talk-questions.js", "features/talk-feedback.js", "features/modal-block.js", "features/talk-questions.js"],
 });
 const { window, document } = site;
 test.after(() => window.close()); // solta os timers da janela de mentira (senão o processo não termina)

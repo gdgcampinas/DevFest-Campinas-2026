@@ -54,7 +54,7 @@ body{
 .cd-talk-meta{margin:0;font:600 clamp(16px,1.6vw,24px) var(--font-body);color:var(--muted)}
 .cd-progress{height:6px;border-radius:3px;background:oklch(26% 0.01 260)}
 .cd-progress b{display:block;height:100%;border-radius:3px;background:var(--track-color);transition:width 1s linear}
-.cd-questions{flex:1;min-height:0}
+.cd-questions,.cd-contest{flex:1;min-height:0}
 .cd-questions-head{display:flex;align-items:baseline;gap:16px}
 .cd-questions-title{margin:0;font:800 clamp(20px,2vw,32px) var(--font-display);color:var(--track-color);text-transform:uppercase;letter-spacing:.5px}
 .cd-offline{font:600 14px var(--font-body);color:var(--muted)}
@@ -67,6 +67,13 @@ body{
 .cd-question-text{margin:0;font:600 clamp(20px,2.2vw,34px)/1.3 var(--font-body);color:oklch(97% 0.005 260);overflow-wrap:anywhere}
 .cd-question-author{margin:4px 0 0;font:500 clamp(14px,1.3vw,20px) var(--font-body);color:var(--muted)}
 .cd-question-empty{margin:24px 0;font:600 clamp(20px,2vw,30px) var(--font-body);color:var(--muted)}
+/* pódio do concurso da sessão (Coding Jam), em escala de TV; as classes são as do pódio do site (talk-podium*), sem depender do styles.css */
+.cd-contest .talk-podium{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.cd-contest .talk-podium-slot{display:flex;flex-direction:column;align-items:center;gap:6px;padding:20px 12px;border:1px solid oklch(30% 0.01 260);border-radius:16px;background:oklch(14% 0.015 260);text-align:center;font:600 clamp(14px,1.3vw,20px) var(--font-body);color:var(--muted)}
+.cd-contest .talk-podium-slot b{font:800 clamp(22px,2.4vw,38px) var(--font-display);color:var(--google-yellow, #ffec00)}
+.cd-contest .talk-podium-slot--won{border-color:var(--google-yellow, #ffec00);background:oklch(20% 0.04 100)}
+.cd-contest .talk-podium-project{font:800 clamp(20px,2.2vw,34px)/1.2 var(--font-display);color:oklch(97% 0.005 260);overflow-wrap:anywhere}
+.cd-contest .talk-podium-winner{font:600 clamp(14px,1.4vw,22px) var(--font-body);color:var(--muted);overflow-wrap:anywhere}
 .cd-solo{display:contents}
 .cd-main{display:grid;grid-template-columns:1fr;gap:28px;align-items:start}
 @media(min-width:1000px){.cd-main{grid-template-columns:minmax(0,1fr) 300px}}

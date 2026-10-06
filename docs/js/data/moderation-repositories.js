@@ -47,7 +47,27 @@ const moderationRaffleStateRepository = window.createFirestoreDocumentRepository
   edition: CURRENT_EDITION,
 });
 
+/** Concurso da sessão (Coding Jam), do lado do moderador: lista projetos e votos, apaga projeto e publica o pódio. */
+const moderationContestProjectsRepository = window.createFirestoreRepository({
+  db: window.moderatorClient.db,
+  collectionName: "contest-projects",
+  edition: CURRENT_EDITION,
+});
+const moderationContestVotesRepository = window.createFirestoreRepository({
+  db: window.moderatorClient.db,
+  collectionName: "contest-votes",
+  edition: CURRENT_EDITION,
+});
+const moderationContestResultsRepository = window.createFirestoreDocumentRepository({
+  db: window.moderatorClient.db,
+  collectionName: "contest-results",
+  edition: CURRENT_EDITION,
+});
+
 window.moderationQuestionsRepository = moderationQuestionsRepository;
+window.moderationContestProjectsRepository = moderationContestProjectsRepository;
+window.moderationContestVotesRepository = moderationContestVotesRepository;
+window.moderationContestResultsRepository = moderationContestResultsRepository;
 window.moderationBoardsRepository = moderationBoardsRepository;
 window.moderationVotesRepository = moderationVotesRepository;
 window.moderationRaffleEntriesRepository = moderationRaffleEntriesRepository;

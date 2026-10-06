@@ -36,14 +36,16 @@ function moderationSectionMarkup(section, questions) {
 }
 
 /**
- * `phase`: "signin" (falta entrar com Google), "empty" (sem palestra agora), "ready" ou "error". `email` é a conta
- * logada, quando há; `talkTitle` a palestra que está sendo moderada.
+ * `phase`: "signin" (falta entrar com Google), "empty" (sem palestra agora), "ready", "contest" (sessão com concurso em vez de
+ * perguntas, ver components/contest-moderation.js) ou "error". `email` é a conta logada, quando há; `talkTitle` a palestra que
+ * está sendo moderada.
  */
-function questionModerationMarkup({ phase, trackLabel, talkTitle = "", questions = [], email = "", message = "" }) {
+function questionModerationMarkup({ phase, trackLabel, talkTitle = "", questions = [], email = "", message = "", contest = null }) {
   const head = `<h1 class="mod-title">${escapeHtml(trackLabel)}</h1>`;
   if (phase === "signin") return `${head}${moderatorSignInMarkup({ hint: message || "Entre com a conta de moderador pra aprovar as perguntas." })}`;
   const account = moderatorAccountMarkup(email);
   if (phase === "empty") return `${head}${account}<p class="mod-hint">${message}</p>`;
   if (phase === "error") return `${head}${account}<p class="form-error" role="alert">${message}</p>`;
+  if (phase === "contest") return `${head}${account}<h2 class="mod-talk">${escapeHtml(talkTitle)}</h2>${contestModerationMarkup(contest)}`;
   return `${head}${account}<h2 class="mod-talk">${escapeHtml(talkTitle)}</h2>${message ? `<p class="form-error" role="alert">${message}</p>` : ""}${MODERATION_SECTIONS.map(section => moderationSectionMarkup(section, questions)).join("")}`;
 }

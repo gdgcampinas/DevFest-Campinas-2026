@@ -15,7 +15,7 @@
  * ordem que a plateia vê só anda com esta tela aberta na palestra (aviso no handoff).
  */
 function pickModerationTalk({ schedule, track, now, pinnedSlot = null, allowsQuestions = () => true }) {
-  const describe = slot => ({ key: talkKey(slot, track.id), title: slot.talks[track.id].title, questionsEnabled: allowsQuestions(slot.talks[track.id]) });
+  const describe = slot => ({ key: talkKey(slot, track.id), title: slot.talks[track.id].title, data: slot.talks[track.id], questionsEnabled: allowsQuestions(slot.talks[track.id]) });
   if (pinnedSlot) return describe(pinnedSlot);
   const talkSlots = schedule.filter(slot => slot.talks?.[track.id]);
   const state = resolveEventState(now, schedule);
@@ -25,7 +25,7 @@ function pickModerationTalk({ schedule, track, now, pinnedSlot = null, allowsQue
   return slot ? describe(slot) : null;
 }
 
-function initQuestionModeration(rootEl, { schedule, track, config, now = () => new Date(), pinnedCode = null, codeOf, deps = defaultModerationDeps, whenReady = runAfterModules, allowsQuestions = talkHighlightsRepository.allowsQuestions }) {
+function initQuestionModeration(rootEl, { schedule, track, config, now = () => new Date(), pinnedCode = null, codeOf, deps = defaultModerationDeps, whenReady = runAfterModules, allowsQuestions = talkHighlightsRepository.allowsQuestions, contest = null, hasContest = talkHighlightsRepository.hasContest }) {
   let email = "";
   let watch = null; // { talk, publisher, stopListening, timer } da palestra que está sendo moderada
   let questions = [];
@@ -78,16 +78,21 @@ function initQuestionModeration(rootEl, { schedule, track, config, now = () => n
     draw({ phase: "error", message: error.code === "permission-denied" ? "Sem permissão: essa conta não está na lista de moderadores." : "Não foi possível carregar agora. Tentando de novo em instantes." });
   }
 
+  /**
+   * Sessão sem perguntas pelo site (ex.: Coding Jam): se ela tem concurso, liga o painel dele (features/contest-moderation.js);
+   * senão só avisa. Nos dois casos confere de tempos em tempos se a sala já passou pra outra palestra.
+   */
+  function startWithoutQuestions(talk) {
+    const contestSession = contest && hasContest(talk.data) ? contest.start({ talk, draw: data => draw({ phase: "contest", talkTitle: talk.title, ...data }) }) : null;
+    if (!contestSession) draw({ phase: "empty", message: `${talk.title}: as perguntas ao vivo estão desativadas nesta sessão.` });
+    watch = { talk, stopListening: () => contestSession?.stop(), timer: setInterval(() => (pickTalk()?.key !== talk.key ? startWatching() : null), config.boardPublishMs) };
+  }
+
   function startWatching() {
     stopWatching();
     const talk = pickTalk();
     if (!talk) return draw({ phase: "empty", message: "Nenhuma palestra nesta sala por enquanto." });
-    if (!talk.questionsEnabled) {
-      // Sessão sem perguntas pelo site (ex.: Coding Jam): avisa e só confere se a sala já passou pra outra palestra.
-      draw({ phase: "empty", message: `${talk.title}: as perguntas ao vivo estão desativadas nesta sessão.` });
-      watch = { talk, stopListening: () => {}, timer: setInterval(() => (pickTalk()?.key !== talk.key ? startWatching() : null), config.boardPublishMs) };
-      return;
-    }
+    if (!talk.questionsEnabled) return startWithoutQuestions(talk);
     const { questions: questionsRepo, votes, boards } = deps();
     watch = {
       talk,

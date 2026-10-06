@@ -27,10 +27,6 @@ function initTalkQuestions(rootEl, { index, config, myCheckins, myVotes, myAsked
   const containerOf = element => element.closest("[data-questions-container]");
   const entryOf = element => index.get(containerOf(element).dataset.questionsContainer);
 
-  /** Só continua atualizando enquanto o bloco existe e está visível (modal aberto). */
-  const isOnScreen = containerEl => containerEl.isConnected && containerEl.getClientRects().length > 0;
-  const isTyping = containerEl => Boolean(containerEl.querySelector("textarea:focus, input:focus"));
-
   function stopSession(containerEl) {
     const session = sessions.get(containerEl);
     if (!session) return;
@@ -46,7 +42,7 @@ function initTalkQuestions(rootEl, { index, config, myCheckins, myVotes, myAsked
   function paint(containerEl, { force = false, message = "" } = {}) {
     const session = sessions.get(containerEl);
     if (!session?.ready) return;
-    if (!force && isTyping(containerEl)) { session.dirty = true; return; }
+    if (!force && isTypingInBlock(containerEl)) { session.dirty = true; return; }
     session.dirty = false;
     const { entry } = session;
     const windowState = questionWindowState(entry.slot, now(), { enforce: config.enforceWindow });
@@ -91,7 +87,7 @@ function initTalkQuestions(rootEl, { index, config, myCheckins, myVotes, myAsked
   async function tick(containerEl) {
     const session = sessions.get(containerEl);
     if (!session) return;
-    if (!isOnScreen(containerEl)) return stopSession(containerEl);
+    if (!isBlockOnScreen(containerEl)) return stopSession(containerEl);
     if (hasPending(session) && Date.now() - session.lastMineMs >= config.mineRefreshMs) await refreshMine(session).catch(() => {});
     paint(containerEl);
   }
@@ -106,17 +102,6 @@ function initTalkQuestions(rootEl, { index, config, myCheckins, myVotes, myAsked
     startSession(containerEl, entry);
   }
 
-  /** Roda `action`; se o banco recusar (check-in do uid atual ausente), refaz o check-in e tenta mais uma vez. */
-  async function withCheckinRetry(entry, action) {
-    try {
-      return await action();
-    } catch (error) {
-      if (error.code !== "permission-denied") throw error;
-      await ensureCheckin(entry);
-      return action();
-    }
-  }
-
   /** Cria a pergunta no primeiro espaço livre da pessoa nessa palestra; sem espaço, o limite acabou. */
   async function addQuestion(entry, { text, name }) {
     const { questions, getUid } = deps();
@@ -125,14 +110,14 @@ function initTalkQuestions(rootEl, { index, config, myCheckins, myVotes, myAsked
     const slot = firstFreeQuestionSlot(used, entry.key, config.maxPerPerson);
     if (!slot) throw new Error("question-limit");
     const entryKey = questionEntryKey(entry.key, slot);
-    await withCheckinRetry(entry, () => questions.add(uid, entryKey, { entryKey, talkKey: entry.key, uid, text, name, status: QUESTION_STATUS.pending }));
+    await withCheckinRetry(ensureCheckin, entry, () => questions.add(uid, entryKey, { entryKey, talkKey: entry.key, uid, text, name, status: QUESTION_STATUS.pending }));
   }
 
   // Check-in feito agora (feedback-flow dispara o evento): destrava os blocos abertos.
   rootEl.addEventListener(FEEDBACK_CHANGED_EVENT, () => {
     rootEl.querySelectorAll("[data-questions-container]").forEach(containerEl => {
       const entry = index.get(containerEl.dataset.questionsContainer);
-      if (entry && isOnScreen(containerEl)) render(containerEl, entry);
+      if (entry && isBlockOnScreen(containerEl)) render(containerEl, entry);
     });
   });
 
@@ -148,7 +133,7 @@ function initTalkQuestions(rootEl, { index, config, myCheckins, myVotes, myAsked
       const questionId = voteBtn.dataset.questionVote;
       // "permission-denied" pode ser "já votou" (a regra recusa o segundo voto) OU outra recusa (palestra encerrada, pergunta que saiu
       // do ar...): só conta como "Votado" se o voto existe mesmo no banco; senão o erro sobe e a pessoa vê o aviso.
-      await withCheckinRetry(entry, () => votes.add(uid, questionId, { entryKey: questionId, talkKey: entry.key }))
+      await withCheckinRetry(ensureCheckin, entry, () => votes.add(uid, questionId, { entryKey: questionId, talkKey: entry.key }))
         .catch(async error => { if (error.code !== "permission-denied" || !(await votes.has(uid, questionId))) throw error; });
       myVotes.addAll([questionId]);
       paint(containerEl, { force: true });

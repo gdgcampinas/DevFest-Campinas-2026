@@ -6,14 +6,16 @@
  *   - os QR: "Check-in nesta palestra" (a que está rolando), "Avalie esta palestra" (a última terminada, até a
  *     próxima começar; quem escaneia já faz o check-in junto) e "Avalie o evento" (depois do fim).
  * O que mostrar em cada horário é decidido por resolveRoomBoard() (room-board.js, função pura e testada); aqui só se
- * desenha. `boardQuestions` (opcional) é quem lê e mostra as perguntas.
+ * desenha. `boardQuestions` (opcional) é quem lê e mostra as perguntas; `boardContest` (opcional) mostra o pódio do concurso
+ * (Coding Jam) no lugar das perguntas, nas sessões que têm concurso (`hasContest`).
  */
-function initCheckinDisplay(rootEl, { schedule, track, timezone, siteUrl, now = () => new Date(), boardQuestions = null, extraQuery = "", pinnedCode = null, allowsQuestions = talkHighlightsRepository.allowsQuestions }) {
+function initCheckinDisplay(rootEl, { schedule, track, timezone, siteUrl, now = () => new Date(), boardQuestions = null, boardContest = null, extraQuery = "", pinnedCode = null, allowsQuestions = talkHighlightsRepository.allowsQuestions, hasContest = talkHighlightsRepository.hasContest, highlightOf = talkHighlightsRepository.forTalk }) {
   const bodyEl = rootEl.querySelector(".cd-body");
   let lastSignature = null;
 
   function draw(board) {
     const { panels, message, talk, questionsPhase } = board;
+    const withContest = Boolean(talk && boardContest && hasContest(talk.data));
     const signature = [panels ? panels.map(panel => panel.url).join("|") : message, talk?.key, questionsPhase].join("#");
     if (signature !== lastSignature) { // nada mudou desde o último tick: não redesenha (evita piscar o QR)
       lastSignature = signature;
@@ -21,6 +23,7 @@ function initCheckinDisplay(rootEl, { schedule, track, timezone, siteUrl, now = 
         talk ? roomTalkHeaderMarkup({ track, talk, timezone }) : `<div class="cd-track" style="--track-color:${track.color}">${escapeHtml(track.label)}</div>`,
         `<div class="${talk ? "cd-main" : "cd-solo"}">`,
         talk && boardQuestions && questionsPhase ? `<section class="cd-questions" id="cdQuestions"></section>` : "", // sem fase = sessão sem perguntas ao vivo (ex.: Coding Jam)
+        withContest ? `<section class="cd-contest" id="cdContest"></section>` : "",
         panels ? `<div class="cd-panels${panels.length > 1 ? " cd-panels--multi" : ""}${talk ? " cd-panels--compact" : ""}">${panels.map(roomPanelMarkup).join("")}</div>` : `<div class="cd-empty">${message}</div>`,
         "</div>",
       ].join("");
@@ -28,6 +31,7 @@ function initCheckinDisplay(rootEl, { schedule, track, timezone, siteUrl, now = 
       (panels ?? []).forEach(panel => new QRCode(document.getElementById(panel.id), { text: panel.url, width: size, height: size, colorDark: "#05060a", colorLight: "#ffffff" }));
     }
     boardQuestions?.follow(talk && questionsPhase ? { mountEl: document.getElementById("cdQuestions"), key: talk.key, phase: questionsPhase } : null);
+    boardContest?.follow(withContest ? { mountEl: document.getElementById("cdContest"), key: talk.key, highlight: highlightOf(talk.data) } : null);
     const bar = bodyEl.querySelector(".cd-progress b");
     if (bar && talk) bar.style.width = `${Math.round(talk.progress * 100)}%`;
   }

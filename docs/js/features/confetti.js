@@ -51,6 +51,8 @@ function createConfetti({
     if (canvas) return;
     canvas = doc.createElement("canvas");
     canvas.className = "raffle-confetti";
+    // Estilo no próprio canvas (não numa folha de estilo): o papel picado também roda no quadro da sala, que tem outra folha de estilo.
+    canvas.style.cssText = "position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2500";
     canvas.setAttribute("aria-hidden", "true");
     doc.body.appendChild(canvas);
   }

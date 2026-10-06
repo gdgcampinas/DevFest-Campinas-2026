@@ -9,6 +9,8 @@
  *   tagline   frase do card e do modal  |  note = aviso curto do card, com `noteIcon` (opcionais)
  *   host      quem conduz a sessão quando ela não tem palestrante (nome e foto opcional)
  *   questions false desliga as perguntas ao vivo dessa sessão (modal, quadro da sala e moderação)
+ *   contest   true liga o concurso da sessão: cada pessoa com check-in cadastra o projeto, a turma vota (um voto por check-in) e o
+ *             moderador publica o pódio (features/talk-contest.js, contest-moderation.js; regras contest-* do Firestore)
  *   podium    1º, 2º e 3º lugar; `prize` (opcional) aparece no card e no modal quando preenchido
  *   steps     etapas da sessão  |  rules = regras curtas
  * `slots` (quantos slots da mesma trilha a sessão ocupa) fica pra quando o jam passar de 1 slot: a grade e o cálculo do fim
@@ -26,6 +28,7 @@ const TALK_HIGHLIGHTS = [
     noteIcon: "laptop",
     host: { name: "GDG Campinas", photo: "assets/brand/gdg-icon.svg" },
     questions: false,
+    contest: true,
     podium: [
       { place: "1º lugar", prize: "" },
       { place: "2º lugar", prize: "" },
@@ -51,4 +54,6 @@ const talkHighlightsRepository = createRepository(TALK_HIGHLIGHTS, {
   forTalk: data => talkHighlightsRepository.getById(data?.highlight),
   /** Perguntas ao vivo valem, a menos que o destaque da palestra as desligue. */
   allowsQuestions: data => talkHighlightsRepository.forTalk(data)?.questions !== false,
+  /** A sessão tem concurso (projetos, votos e pódio)? */
+  hasContest: data => Boolean(talkHighlightsRepository.forTalk(data)?.contest),
 });

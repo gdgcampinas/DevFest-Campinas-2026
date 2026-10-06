@@ -128,7 +128,7 @@ function talkDetailMarkup(track, data, { reveal = true, timeRange = "", room = "
       ${metaItems ? `<div class="detail-meta">${metaItems}</div>` : ""}
       ${reveal ? calendarHtml : ""}
       ${speakerLine}
-      ${reveal && talkKey ? `<div class="talk-feedback-slot"></div>${talkHighlightsRepository.allowsQuestions(data) ? `<div class="talk-questions-slot"></div>` : ""}` : ""}
+      ${reveal && talkKey ? `<div class="talk-feedback-slot"></div>${talkHighlightsRepository.allowsQuestions(data) ? `<div class="talk-questions-slot"></div>` : ""}${talkHighlightsRepository.hasContest(data) ? `<div class="talk-contest-slot"></div>` : ""}` : ""}
     </div>`;
 }
 

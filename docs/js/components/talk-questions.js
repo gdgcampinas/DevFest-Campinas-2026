@@ -12,13 +12,17 @@ function questionStatusLabel(status) {
   }[status];
 }
 
-/** Pergunta aprovada na lista da plateia; `voteEnabled` falso (palestra encerrada) tira o botão. */
-function questionItemMarkup(question, { voteEnabled = true } = {}) {
+/**
+ * Pergunta aprovada na lista da plateia; `voteEnabled` falso (palestra encerrada) tira o botão. `voteAttribute` é o atributo
+ * que o clique lê (o concurso da sessão reusa este item pros projetos, com `data-contest-vote`); `question.locked` desliga o botão
+ * sem marcar como votado (já votou em outro).
+ */
+function questionItemMarkup(question, { voteEnabled = true, voteAttribute = "data-question-vote" } = {}) {
   // O número só existe quando o quadro publica votos (config publishVotes); sem ele a lista mostra só a ordem.
   const hasVotes = typeof question.votes === "number";
   const votes = hasVotes ? `<span class="question-votes" aria-label="${tn("q.votes", question.votes, "{count} voto", "{count} votos")}">${question.votes}</span>` : "";
   const action = voteEnabled
-    ? `<button type="button" class="chip-btn question-vote" data-question-vote="${escapeHtml(question.id)}" aria-pressed="${question.voted}"${question.voted || question.mine ? " disabled" : ""}>${iconMarkup("thumbs-up")}${question.voted ? t("q.voted", "Votado") : t("q.vote", "Votar")}</button>`
+    ? `<button type="button" class="chip-btn question-vote" ${voteAttribute}="${escapeHtml(question.id)}" aria-pressed="${question.voted}"${question.voted || question.mine || question.locked ? " disabled" : ""}>${iconMarkup("thumbs-up")}${question.voted ? t("q.voted", "Votado") : t("q.vote", "Votar")}</button>`
     : "";
   return `<li class="question-item${question.mine ? " is-mine" : ""}${hasVotes ? "" : " question-item--no-votes"}">
     ${votes}

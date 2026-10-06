@@ -10,6 +10,7 @@
 // cinco (ver firestore-repository.js): id do documento = "<uid>_<entryKey>",
 // sempre CRIADO (nunca editado) pelo client, sempre com `edition` e
 // `createdAt` (server timestamp, não confia no relógio do navegador).
+// O concurso da sessão (contest-projects, contest-votes) segue o mesmo formato; contest-results é um documento do moderador.
 //
 // KNOWN_EDITIONS precisa espelhar `KNOWN_EDITIONS` em
 // docs/js/data/firebase-config.js — atualizar as duas juntas a cada
@@ -228,6 +229,57 @@ service cloud.firestore {
         && request.resource.data.edition is string && isKnownEdition(request.resource.data.edition)
         && request.resource.data.updatedAt == request.time
         && request.resource.data.questions is list && request.resource.data.questions.size() <= 100;
+      allow delete: if false;
+    }
+
+    // ---- Concurso da sessão (Coding Jam): projetos, votos e pódio ----
+    // Projeto: uma pessoa com check-in cadastra o PRÓPRIO projeto durante a sessão (nome da pessoa e do projeto). O id é
+    // "<uid>_<talkKey>": um projeto por check-in, e sem edição (erro de digitação: o moderador apaga e a pessoa cadastra de
+    // novo). Lista quem tem check-in naquela sessão (consulta filtrando talkKey) e o moderador. ESPELHAR `maxLength` de
+    // docs/js/data/talk-contest.js (80 = "size() < 81").
+    match /contest-projects/{docId} {
+      allow get: if request.auth != null;
+      allow list: if request.auth != null && (isModerator() || hasCheckin(resource.data.talkKey));
+      allow create: if isOwnDoc(docId) && idMatchesEntry(docId) && hasValidBaseFields()
+        && request.resource.data.keys().hasOnly(['edition', 'entryKey', 'talkKey', 'uid', 'createdAt', 'name', 'project'])
+        && request.resource.data.talkKey == request.resource.data.entryKey
+        && request.resource.data.uid == request.auth.uid
+        && requiredText(request.resource.data, 'name', 81)
+        && requiredText(request.resource.data, 'project', 81)
+        && talkIsLive(request.resource.data.talkKey)
+        && hasCheckin(request.resource.data.talkKey);
+      allow update: if false;
+      allow delete: if isModerator();
+    }
+
+    // Voto no projeto: 1 por check-in (o id é o MESMO do check-in, "<uid>_<talkKey>"), sem desfazer. Só em projeto da mesma
+    // sessão, nunca no próprio (o projeto de quem vota tem o mesmo id do voto), com check-in e durante a sessão. Só o
+    // moderador lista/conta: a plateia nunca vê o placar.
+    match /contest-votes/{docId} {
+      allow get: if isOwnDoc(docId);
+      allow list: if isModerator();
+      allow create: if isOwnDoc(docId) && idMatchesEntry(docId) && hasValidBaseFields()
+        && request.resource.data.keys().hasOnly(['edition', 'entryKey', 'talkKey', 'projectId', 'createdAt'])
+        && request.resource.data.talkKey == request.resource.data.entryKey
+        && request.resource.data.projectId is string
+        && request.resource.data.projectId != docId
+        && talkIsLive(request.resource.data.talkKey)
+        && hasCheckin(request.resource.data.talkKey)
+        && exists(/databases/$(database)/documents/contest-projects/$(request.resource.data.projectId))
+        && get(/databases/$(database)/documents/contest-projects/$(request.resource.data.projectId)).data.talkKey == request.resource.data.talkKey;
+      allow update, delete: if false;
+    }
+
+    // Pódio da sessão: gravado SÓ pelo moderador, de uma vez, quando decide mostrar o resultado; lido por qualquer pessoa
+    // autenticada, por id (a chave da sessão). Ninguém lista. Formato: { edition, updatedAt, podium: [{ place, project, name }] }.
+    match /contest-results/{talkKey} {
+      allow get: if request.auth != null;
+      allow list: if false;
+      allow create, update: if isModerator() && validTalkKey(talkKey)
+        && request.resource.data.keys().hasOnly(['edition', 'updatedAt', 'podium'])
+        && request.resource.data.edition is string && isKnownEdition(request.resource.data.edition)
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.podium is list && request.resource.data.podium.size() <= 10;
       allow delete: if false;
     }
 

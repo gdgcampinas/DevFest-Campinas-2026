@@ -17,8 +17,8 @@ function initPalestrantes() {
   initFavorites(document.body, favoritesRepository);
   const modal = createTalkModal();
   const calendar = initCalendarActions(document.body, { schedule: SCHEDULE, tracks: TRACKS, event: EVENT, favorites: favoritesRepository });
-  const { feedback, questions } = initFeedbackFlow({ calendar, reveal, createModal });
-  initTalkDetails(document.body, { schedule: SCHEDULE, tracks: TRACKS, timezone: EVENT.timezone, reveal, modal, favorites: favoritesRepository, calendar, feedback, questions });
+  const { feedback, questions, contest } = initFeedbackFlow({ calendar, reveal, createModal });
+  initTalkDetails(document.body, { schedule: SCHEDULE, tracks: TRACKS, timezone: EVENT.timezone, reveal, modal, favorites: favoritesRepository, calendar, feedback, questions, contest });
 }
 
 initPalestrantes();

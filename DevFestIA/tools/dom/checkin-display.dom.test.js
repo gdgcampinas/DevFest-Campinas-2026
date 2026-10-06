@@ -28,11 +28,13 @@ const schedule = (talk) => [
 function setup(talk) {
   document.body.innerHTML = `<div id="cdScreen"><div class="cd-body"></div></div>`;
   const follows = [];
+  const contestFollows = [];
   initCheckinDisplay(document.getElementById("cdScreen"), {
     schedule: schedule(talk), track, timezone: "America/Sao_Paulo", siteUrl: "https://site/", now: () => at("2026-11-28T17:20:00Z"),
     boardQuestions: { follow: arg => follows.push(arg) },
+    boardContest: { follow: arg => contestFollows.push(arg) },
   });
-  return { follows, body: document.querySelector(".cd-body") };
+  return { follows, contestFollows, body: document.querySelector(".cd-body") };
 }
 
 test("palestra comum: monta a coluna de perguntas e as acompanha", () => {
@@ -49,4 +51,19 @@ test("Coding Jam (perguntas desligadas): sem coluna de perguntas, mas com o QR d
   assert.ok(body.querySelector(".cd-panel--checkin"), "o check-in continua, é ele que libera o voto");
   assert.match(textOf(body), /GDG Campinas Coding Jam/);
   assert.ok(!textOf(body).includes("PERGUNTAS"));
+});
+
+test("Coding Jam: o quadro monta o lugar do pódio e segue o resultado da sessão com os lugares do destaque", () => {
+  const { contestFollows, body } = setup({ title: "GDG Campinas Coding Jam", speakers: [], highlight: "codejam" });
+  assert.ok(body.querySelector("#cdContest"));
+  const followed = contestFollows.at(-1);
+  assert.match(followed.key, /\|mobile$/);
+  assert.equal(followed.highlight.id, "codejam");
+  assert.equal(followed.mountEl, body.querySelector("#cdContest"));
+});
+
+test("palestra comum: sem lugar de pódio e o concurso não segue nada", () => {
+  const { contestFollows, body } = setup({ title: "Compose avançado", speakers: [{ name: "Ana" }] });
+  assert.equal(body.querySelector("#cdContest"), null);
+  assert.equal(contestFollows.at(-1), null);
 });

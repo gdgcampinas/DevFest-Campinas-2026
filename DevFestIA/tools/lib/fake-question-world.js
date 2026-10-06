@@ -30,6 +30,7 @@ function createFakeQuestions() {
       notify();
     },
     async update(id, fields) { Object.assign(docs.find(doc => doc.id === id), fields); notify(); },
+    async remove(id) { const at = docs.findIndex(doc => doc.id === id); if (at >= 0) docs.splice(at, 1); notify(); },
     listen(filters, onNext) {
       const send = () => onNext(docs.filter(doc => matches(doc, filters)).map(doc => ({ ...doc })));
       listeners.add(send);

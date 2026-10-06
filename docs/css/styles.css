@@ -315,6 +315,9 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
   background:oklch(14% 0.015 260);border:1px solid var(--card-border);font:500 12px/1.25 var(--font-body);color:var(--muted);
 }
 .talk-podium-slot b{font:800 13px var(--font-display);color:var(--highlight-color)}
+.talk-podium-slot--won{border-color:color-mix(in oklab, var(--highlight-color) 55%, var(--card-border));background:color-mix(in oklab, var(--highlight-color) 10%, oklch(14% 0.015 260))}
+.talk-podium-project{font-weight:700;color:var(--text);overflow-wrap:anywhere}
+.talk-podium-winner{font-size:11.5px;color:var(--muted);overflow-wrap:anywhere}
 .talk-highlight-note{display:flex;align-items:center;gap:6px;font:600 12px var(--font-body);color:var(--highlight-color)}
 .talk-highlight-note .icon{width:14px;height:14px}
 
@@ -1344,9 +1347,6 @@ body.raffle-telao-open{overflow:hidden}
   .raffle-mod.raffle-telao{--raffle-wheel-size:min(58vh,90vw)}
   .raffle-telao .raffle-layout{grid-template-columns:1fr;grid-template-rows:auto auto auto;grid-template-areas:"stage" "side" "drawn";align-items:start}
 }
-
-/* Papel picado do sorteio (features/confetti.js): canvas do tamanho da tela, por cima de tudo (inclusive do modo telão), sem clique */
-.raffle-confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2500}
 
 /* Reset de emergência do sorteio (caixa de confirmação inline; some no modo telão, onde nunca deve aparecer no palco) */
 .raffle-reset-open{color:oklch(78% 0.12 25);border-color:color-mix(in oklch, var(--google-red) 40%, var(--card-border))}

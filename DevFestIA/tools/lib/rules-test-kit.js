@@ -17,12 +17,13 @@ const moderatorEmail = rules.match(/request\.auth\.token\.email in \['([^']+)'/)
 
 // ---------- cenário ----------
 let counter = 0;
-const nextId = prefix => `${prefix}${Date.now().toString(36)}${counter++}`;
+// O `pid` entra nos ids: os arquivos de teste rodam em processos paralelos contra o MESMO emulador, e sem ele dois processos podiam gerar o mesmo id no mesmo milissegundo.
+const nextId = prefix => `${prefix}${process.pid.toString(36)}${Date.now().toString(36)}${counter++}`;
 const person = () => anonymous(nextId("u"));
 const moderator = () => google(nextId("m"), moderatorEmail);
 
 /** Trilha única por chamada (só letras, como o formato da chave exige): cada teste tem a sua palestra, sem dados de outro teste. */
-const uniqueTrack = () => `t${Date.now().toString(36)}${counter++}`.replace(/[0-9]/g, digit => "abcdefghij"[digit]);
+const uniqueTrack = () => `t${process.pid.toString(36)}${Date.now().toString(36)}${counter++}`.replace(/[0-9]/g, digit => "abcdefghij"[digit]);
 
 /** Chave de palestra que COMEÇOU há `startedMinAgo` minutos (negativo = começa daqui a N). Duração de 40 min, como na grade. */
 function talkKeyStarted(startedMinAgo, track = uniqueTrack()) {

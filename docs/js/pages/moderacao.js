@@ -14,10 +14,12 @@ function initModeracaoPage() {
     return;
   }
   document.documentElement.style.setProperty("--track-color", track.color);
+  const contestConfig = talkContestConfigRepository.getAll();
   initQuestionModeration(bodyEl, {
     schedule: SCHEDULE,
     track,
     config: talkQuestionsConfigRepository.getAll(),
+    contest: contestConfig.enabled ? createContestModeration({ rootEl: bodyEl, config: contestConfig }) : null,
     now: resolveNow(),
     pinnedCode: getParam("palestra"),
     codeOf: (slot, trackId) => talkShareCode(slot, trackId, EVENT.timezone),

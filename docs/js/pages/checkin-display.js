@@ -24,8 +24,10 @@ function initCheckinDisplay_page() {
   }
 
   const questionsConfig = talkQuestionsConfigRepository.getAll();
+  const contestConfig = talkContestConfigRepository.getAll();
   initCheckinDisplay(document.getElementById("cdScreen"), {
     boardQuestions: questionsConfig.enabled ? createBoardQuestions({}) : null,
+    boardContest: contestConfig.enabled ? createBoardContest() : null,
     extraQuery: rehearsal.query,
     pinnedCode: getParam("palestra"),
     schedule: SCHEDULE,
