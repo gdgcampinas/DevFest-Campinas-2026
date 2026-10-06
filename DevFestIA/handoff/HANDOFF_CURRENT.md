@@ -22,6 +22,9 @@ normal da grade (workshop + `highlight: "codejam"`): herda favorito, Minha agend
 (3) pedir acesso de organizador no codingjam.dev (o e-mail pra `gca-americas@google.com` voltou: grupo inexistente; a mensagem do LinkedIn pra Christina Lin foi rascunhada);
 (4) testar o lado do moderador do concurso (login Google, o Claude não consegue): abrir `moderacao.html?trilha=mobile` no horário do Jam (ou com `?palestra=1415.mobile`), ver os projetos e votos, Publicar pódio;
 (5) os 6 e-mails dos moderadores (ver acima).
+**Regras publicadas e conferidas (2026-10-06):** o Renato colou as regras e o Claude rodou 21 verificações contra o banco REAL como plateia anônima (check-in, cadastro, lista, voto, voto duplicado,
+voto no próprio projeto, placar fechado, pódio só leitura): todas passaram. Ficaram dados de teste no banco, na sessão inventada `2026-11-28T17:15:00.000Z|zzteste` (2 check-ins, 1 projeto, 1 voto):
+a limpeza ("🧹 Limpar dados de teste") agora apaga as coleções `contest-*` também. O lado do moderador (publicar pódio) continua só testado no emulador e com jsdom.
 **Cancelado/adiado:** a página `codejam.html` com envio de projetos (o envio é direto no Google); Jam de 2 slots (campo `slots`, só anotado).
 **Armadilhas novas:** `tools/check-lineup.js` e `tools/check-calendar.js` já estavam quebrados antes (listas de arquivos defasadas, fora do CI); a cobertura vem dos testes jsdom. No Node 24
 `node --test <diretório>` falha: passe os arquivos (o CI usa outra versão). Os testes das regras agora põem o `pid` nos ids (os arquivos rodam em paralelo no mesmo emulador e colidiam às vezes).
@@ -93,7 +96,7 @@ endpoints de ESCRITA de check-in de porta (decidido NÃO usar agora; análise em
 - **Cadastro:** a janela é o tempo em que o QR está na tela da organização (sem QR visível ele expira em 1 a 2 min). Recomendado:
   abrir de manhã/começo da tarde e fechar 10 a 15 min antes do sorteio. **Horários de abrir/fechar: o Renato ainda não definiu.**
 - **Notebook do telão:** tomada, sem repouso, logado, QR visível (se dormir o QR expira); testar áudio HDMI e volume no ensaio.
-- **Antes do evento:** rodar "🧹 Limpar dados de teste" (agora cobre as coleções do sorteio, `raffle-session` e `raffle-state`):
+- **Antes do evento:** rodar "🧹 Limpar dados de teste" (agora cobre as coleções do sorteio, `raffle-session` e `raffle-state`, e as do concurso da sessão, `contest-projects`, `contest-votes` e `contest-results`):
   hoje há mais de 75 cadastros fictícios no banco (72 voluntários x4 + "Teste Claude", "Teste Pos Regras", "Teste Rodadas").
 - **Decisões do Renato (não reabrir sem motivo):** ausente sai de vez; exigir o e-mail do ingresso do Sympla; reset NÃO apaga nem
   baixa nada; som "mais festa"; confete = explosão do cartão + chuva do topo; telão = notebook no HDMI. **Em aberto:** prêmios
