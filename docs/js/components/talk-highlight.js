@@ -20,7 +20,7 @@ function talkPodiumMarkup(podium = [], winners = []) {
   return slots ? `<ol class="talk-podium">${slots}</ol>` : "";
 }
 
-/** Faixa no topo do card (primeiro filho, sangra até as bordas): rótulo de modalidade do destaque, ex.: "Competição". */
+/** Faixa no topo do card (primeiro filho, sangra até as bordas): rótulo de modalidade do destaque, ex.: "Mão na massa". */
 function talkHighlightRibbonMarkup(highlight) {
   return highlight.ribbon ? `<div class="talk-ribbon">${iconMarkup(highlight.icon)}${highlight.ribbon}</div>` : "";
 }

@@ -11,7 +11,7 @@ mural da hashtag, área administrativa e votação das salas descartados; certif
 **Pendente do Renato:** passar os 6 e-mails (contas Google com e-mail verificado) e confirmar `gdgcampinascontato@gmail.com`; o Claude edita `isModerator()`,
 roda `bash DevFestIA/tools/questions/run-rules-tests.sh` e o Renato cola as regras no console, uma vez.
 
-**Coding Jam (feito no código, 2026-10-06):** card de destaque na grade (faixa "Competição" no topo, chip cheio, borda com brilho, marca d'água de troféu, pódio 1º, 2º, 3º com
+**Coding Jam (feito no código, 2026-10-06):** card de destaque na grade (faixa "Mão na massa" no topo, chip cheio, borda com brilho, marca d'água de troféu, pódio 1º, 2º, 3º com
 prêmio opcional por dado, "Traga seu notebook", GDG Campinas como quem conduz), modal com etapas e regras, perguntas ao vivo DESLIGADAS (no microfone), avaliação mantida. É uma palestra
 normal da grade (workshop + `highlight: "codejam"`): herda favorito, Minha agenda, `?agenda=`, calendário, "agora", check-in e relatório, e vale em qualquer trilha e sala.
 **Concurso da sessão (cadastro do projeto, votação e pódio): FEITO, mas depende de regras novas.** Quem tem check-in cadastra o próprio projeto (nome da pessoa e do projeto), a turma vota

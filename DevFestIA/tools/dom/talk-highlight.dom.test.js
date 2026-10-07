@@ -50,9 +50,9 @@ test("card do Coding Jam: chip Workshop mais chip Coding Jam, frase, pódio 1º 
   assert.equal(textOf(root.querySelector(".title")), "GDG Campinas Coding Jam");
 });
 
-test("destaque forte: faixa Competição, marca d'água do troféu e chip cheio, só decoração (aria-hidden)", () => {
+test("destaque forte: faixa Mão na massa, marca d'água do troféu e chip cheio, só decoração (aria-hidden)", () => {
   const root = cardOf(jam);
-  assert.equal(textOf(root.querySelector(".talk-ribbon")), "Competição");
+  assert.equal(textOf(root.querySelector(".talk-ribbon")), "Mão na massa");
   const mark = root.querySelector(".talk-highlight-mark");
   assert.equal(mark.getAttribute("aria-hidden"), "true");
   assert.ok(mark.querySelector("svg.talk-highlight-mark-icon"), "o ícone do dado vira a marca d'água");

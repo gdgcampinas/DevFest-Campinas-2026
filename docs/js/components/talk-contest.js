@@ -19,7 +19,7 @@ const contestRefreshMarkup = () => `<button type="button" class="chip-btn" data-
  * saber em qual); `podium` é [{ place, project, name }] (ou null) e `highlight` traz os lugares/prêmios (data/talk-highlights.js).
  */
 function talkContestMarkup({ phase, entryKey, projects = [], mine = null, votedId = "", alreadyVoted = false, name = "", message = "", maxLength, podium = null, highlight = null }) {
-  const title = `<p class="talk-feedback-title">${iconMarkup(highlight?.icon ?? "trophy")}${t("contest.title", "Concurso: cadastre seu projeto e vote")}</p>`;
+  const title = `<p class="talk-feedback-title">${iconMarkup(highlight?.icon ?? "trophy")}${t("contest.title", "Cadastre seu projeto e vote")}</p>`;
   const wrap = body => `<div class="talk-feedback">${title}${body}</div>`;
   if (phase === "locked") return wrap(`<p class="talk-feedback-hint">${t("contest.locked", "Faça o check-in nessa sessão pra cadastrar seu projeto e votar.")}</p>`);
   if (phase === "loading") return `<div class="talk-feedback talk-feedback--loading">${title}${t("contest.loading", "Carregando os projetos…")}</div>`;

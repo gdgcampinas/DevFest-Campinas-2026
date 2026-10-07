@@ -5,7 +5,7 @@
  *
  *   id        valor de `highlight` na palestra
  *   label     chip do card ("Coding Jam"); icon = nome de data/icons.js (também a marca d'água); color = cor do destaque (token CSS)
- *   ribbon    faixa no topo do card ("Competição", opcional)
+ *   ribbon    faixa no topo do card ("Mão na massa", opcional)
  *   tagline   frase do card e do modal  |  note = aviso curto do card, com `noteIcon` (opcionais)
  *   host      quem conduz a sessão quando ela não tem palestrante (nome e foto opcional)
  *   questions false desliga as perguntas ao vivo dessa sessão (modal, quadro da sala e moderação)
@@ -22,7 +22,7 @@ const TALK_HIGHLIGHTS = [
     label: "Coding Jam",
     icon: "trophy",
     color: "var(--google-yellow)",
-    ribbon: "Competição",
+    ribbon: "Mão na massa",
     tagline: "Monte seu projeto, apresente e dispute o pódio",
     note: "Traga seu notebook",
     noteIcon: "laptop",
