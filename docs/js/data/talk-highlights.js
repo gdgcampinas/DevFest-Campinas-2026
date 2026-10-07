@@ -7,6 +7,7 @@
  *   label     chip do card ("Coding Jam"); icon = nome de data/icons.js (também a marca d'água); color = cor do destaque (token CSS)
  *   ribbon    faixa no topo do card ("Mão na massa", opcional)
  *   tagline   frase do card e do modal  |  note = aviso curto do card, com `noteIcon` (opcionais)
+ *   tools     ferramentas recomendadas pra sessão: { label: "Recomendamos usar", items: ["Antigravity", ...] } (opcional; card e modal)
  *   host      quem conduz a sessão quando ela não tem palestrante (nome e foto opcional)
  *   questions false desliga as perguntas ao vivo dessa sessão (modal, quadro da sala e moderação)
  *   contest   true liga o concurso da sessão: cada pessoa com check-in cadastra o projeto, a turma vota (um voto por check-in) e o
@@ -26,6 +27,7 @@ const TALK_HIGHLIGHTS = [
     tagline: "Monte seu projeto, apresente e dispute o pódio",
     note: "Traga seu notebook",
     noteIcon: "laptop",
+    tools: { label: "Recomendamos usar", items: ["Antigravity", "Antigravity IDE", "Gemini"] },
     host: { name: "GDG Campinas", photo: "assets/brand/gdg-icon.svg" },
     questions: false,
     contest: true,

@@ -16,7 +16,7 @@
  * os testes passam substitutos). Desligado (`config.enabled` falso), não faz nada.
  */
 function initTalkContest(rootEl, { index, config, enforceWindow, myCheckins, myVotes, myName, now = () => new Date(), deps = defaultContestDeps, ensureCheckin = async () => {}, highlightOf = talkHighlightsRepository.forTalk }) {
-  const sessions = new WeakMap(); // container -> { entry, uid, projects, podium, lastLoadMs, alreadyVoted, state, ready, dirty, timer }
+  const sessions = new WeakMap(); // container -> { entry, uid, projects, podium, lastLoadMs, alreadyVoted, state, ready, dirty, notice, timer }
   const containerOf = element => element.closest("[data-contest-container]");
   const entryOf = element => index.get(containerOf(element).dataset.contestContainer);
   const windowStateOf = entry => questionWindowState(entry.slot, now(), { enforce: enforceWindow });
@@ -32,10 +32,15 @@ function initTalkContest(rootEl, { index, config, enforceWindow, myCheckins, myV
   const draw = (containerEl, entry, data) => { containerEl.innerHTML = talkContestMarkup({ entryKey: entry.key, maxLength: config.maxLength, highlight: highlightOf(entry.data), ...data }); };
   const drawLoadError = (containerEl, entry) => draw(containerEl, entry, { phase: "error", message: t("contest.loadError", "Não foi possível carregar os projetos agora. Confira sua conexão.") });
 
-  /** Redesenha com o que já está na memória (sem ler nada). Enquanto a pessoa digita só marca "sujo" e espera; `force` = ação dela. */
-  function paint(containerEl, { force = false, message = "" } = {}) {
+  /**
+   * Redesenha com o que já está na memória (sem ler nada). Enquanto a pessoa digita só marca "sujo" e espera; `force` = ação dela.
+   * `message` (aviso de uma ação: erro, "aguarde") fica guardado na sessão e sobrevive aos redesenhos automáticos até a próxima ação,
+   * que o troca (ou limpa, com ""); os redesenhos do ciclo não passam `message` e só reaproveitam o último.
+   */
+  function paint(containerEl, { force = false, message } = {}) {
     const session = sessions.get(containerEl);
     if (!session?.ready) return;
+    if (message !== undefined) session.notice = message;
     if (!force && isTypingInBlock(containerEl)) { session.dirty = true; return; }
     session.dirty = false;
     const { entry } = session;
@@ -51,7 +56,7 @@ function initTalkContest(rootEl, { index, config, enforceWindow, myCheckins, myV
       alreadyVoted: session.alreadyVoted,
       podium: session.podium,
       name: myName.get(),
-      message,
+      message: session.notice,
     });
   }
 
@@ -85,7 +90,7 @@ function initTalkContest(rootEl, { index, config, enforceWindow, myCheckins, myV
   }
 
   async function startSession(containerEl, entry) {
-    const session = { entry, uid: null, projects: [], podium: null, lastLoadMs: 0, alreadyVoted: false, state: null, ready: false, dirty: false, timer: null };
+    const session = { entry, uid: null, projects: [], podium: null, lastLoadMs: 0, alreadyVoted: false, state: null, ready: false, dirty: false, notice: "", timer: null };
     sessions.set(containerEl, session);
     const isCurrent = () => sessions.get(containerEl) === session;
     try {
@@ -139,7 +144,7 @@ function initTalkContest(rootEl, { index, config, enforceWindow, myCheckins, myV
       if (Date.now() - session.lastLoadMs < config.refreshMinMs) return paint(containerEl, { force: true, message: t("contest.refreshWait", "Aguarde alguns segundos pra atualizar de novo.") });
       try {
         await loadFor(session, windowStateOf(session.entry));
-        paint(containerEl, { force: true });
+        paint(containerEl, { force: true, message: "" });
       } catch {
         paint(containerEl, { force: true, message: t("contest.loadError", "Não foi possível carregar os projetos agora. Confira sua conexão.") });
       }
@@ -158,7 +163,7 @@ function initTalkContest(rootEl, { index, config, enforceWindow, myCheckins, myV
         .catch(async error => { if (error.code !== "permission-denied" || !(await votes.has(uid, entry.key))) throw error; alreadyVoted = true; });
       if (alreadyVoted) session.alreadyVoted = true;
       else myVotes.addAll([projectId]);
-      paint(containerEl, { force: true });
+      paint(containerEl, { force: true, message: "" });
     } catch {
       paint(containerEl, { force: true, message: t("contest.voteError", "Não foi possível votar agora. Tente de novo.") });
     }
@@ -183,11 +188,11 @@ function initTalkContest(rootEl, { index, config, enforceWindow, myCheckins, myV
       await withCheckinRetry(ensureCheckin, entry, () => projects.add(uid, entry.key, { entryKey: entry.key, talkKey: entry.key, uid, name, project }));
       rememberName(myName, name);
       await loadProjects(session);
-      paint(containerEl, { force: true });
+      paint(containerEl, { force: true, message: "" });
     } catch {
       // Se o projeto já existia (cadastrado antes, em outro momento), a recusa some ao reler a lista e a pessoa o vê como "Seu projeto".
       await loadProjects(session).catch(() => {});
-      if (session.projects.some(candidate => candidate.id === myProjectId(session))) return paint(containerEl, { force: true });
+      if (session.projects.some(candidate => candidate.id === myProjectId(session))) return paint(containerEl, { force: true, message: "" });
       submitBtn.disabled = false;
       showFormError(form, submitBtn, t("contest.sendError", "Não foi possível cadastrar. Confira o check-in, sua conexão e o horário da sessão."));
     }

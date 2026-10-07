@@ -19,7 +19,8 @@ test.after(() => window.close()); // solta os timers da janela de mentira (senã
 const initTalkContest = site.get("initTalkContest");
 const createSet = site.get("createPersistedSetRepository");
 const createValue = site.get("createPersistedValueRepository");
-const baseConfig = { ...site.get("TALK_CONTEST"), pollMs: 40, refreshMinMs: 0 };
+// Ciclo automático longo por padrão: os avisos e a lista só mudam por ação da pessoa; os testes do ciclo pedem `pollMs` curto.
+const baseConfig = { ...site.get("TALK_CONTEST"), pollMs: 100000, refreshMinMs: 0 };
 
 const slot = { start: new Date("2026-11-28T12:00:00Z"), end: new Date("2026-11-28T12:40:00Z") };
 const entry = { key: KEY, slot, data: { title: "GDG Campinas Coding Jam", highlight: "codejam" } };
@@ -190,7 +191,7 @@ test("nome e projeto vindos da plateia nunca viram HTML", async () => {
 });
 
 test("leituras: a lista é lida uma vez ao abrir e NÃO se atualiza sozinha; só o botão Atualizar relê", async () => {
-  const world = setup();
+  const world = setup({ config: { pollMs: 40 } });
   world.projects.seed(projectDoc("ana", "Projeto da Ana", "Ana"));
   await world.open();
   await flush(200); // vários ciclos de `pollMs`
@@ -203,11 +204,13 @@ test("leituras: a lista é lida uma vez ao abrir e NÃO se atualiza sozinha; só
 });
 
 test("Atualizar respeita o intervalo mínimo entre leituras", async () => {
-  const world = setup({ config: { refreshMinMs: 60000 } });
+  const world = setup({ config: { refreshMinMs: 60000, pollMs: 40 } });
   await world.open();
   world.containerEl.querySelector("[data-contest-refresh]").click();
   await settle();
   assert.equal(world.projects.reads.length, 1, "não leu de novo");
+  assert.match(textOf(world.containerEl), /Aguarde alguns segundos/);
+  await flush(120); // os redesenhos automáticos (a cada `pollMs`) não apagam o aviso
   assert.match(textOf(world.containerEl), /Aguarde alguns segundos/);
 });
 
@@ -241,7 +244,7 @@ test("antes de a sessão começar (trava de horário ligada): só o aviso, sem l
 
 test("a sessão abre sozinha: no ciclo seguinte aparece o formulário e a lista é lida uma vez", async () => {
   let clock = new Date("2026-11-28T11:59:00Z");
-  const world = setup({ enforceWindow: true, now: () => clock });
+  const world = setup({ enforceWindow: true, now: () => clock, config: { pollMs: 40 } });
   await world.open();
   assert.equal(world.projects.reads.length, 0);
   clock = new Date("2026-11-28T12:01:00Z");

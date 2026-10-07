@@ -30,13 +30,26 @@ function talkHighlightMarkMarkup(highlight) {
   return `<span class="talk-highlight-mark" aria-hidden="true">${iconMarkup(highlight.icon, "talk-highlight-mark-icon")}</span>`;
 }
 
-/** Corpo do card: marca d'água, frase, pódio e aviso curto (cada parte só aparece se o dado tiver). */
+/** "A, B ou C": junta nomes com vírgula e "ou" antes do último (o "ou" vem do dicionário do idioma). */
+function listWithOr(items) {
+  return items.length < 2 ? items.join("") : `${items.slice(0, -1).join(", ")} ${t("common.or", "ou")} ${items[items.length - 1]}`;
+}
+
+/** Frase das ferramentas recomendadas ("Recomendamos usar Antigravity, Antigravity IDE ou Gemini."), ou "" sem dado. */
+function talkHighlightToolsText(highlight) {
+  const items = highlight.tools?.items ?? [];
+  return items.length ? `${highlight.tools.label} ${listWithOr(items)}.` : "";
+}
+
+/** Corpo do card: marca d'água, frase, pódio, ferramentas recomendadas e aviso curto (cada parte só aparece se o dado tiver). */
 function talkHighlightBodyMarkup(highlight) {
+  const tools = talkHighlightToolsText(highlight);
   const note = highlight.note ? `<div class="talk-highlight-note">${highlight.noteIcon ? iconMarkup(highlight.noteIcon) : ""}${highlight.note}</div>` : "";
   return `<div class="talk-highlight">
     ${talkHighlightMarkMarkup(highlight)}
     ${highlight.tagline ? `<p class="talk-highlight-tagline">${highlight.tagline}</p>` : ""}
     ${talkPodiumMarkup(highlight.podium)}
+    ${tools ? `<p class="talk-highlight-tools">${iconMarkup("sparkles")}<span>${tools}</span></p>` : ""}
     ${note}
   </div>`;
 }
@@ -48,6 +61,7 @@ function talkHighlightDetailMarkup(highlight) {
   const rules = (highlight.rules ?? []).map(rule => `<li>${rule}</li>`).join("");
   return `<div class="detail-highlight">
     ${highlight.tagline ? `<p class="detail-highlight-tagline">${highlight.tagline}</p>` : ""}
+    ${section(t("highlight.tools", "Ferramentas recomendadas"), talkHighlightToolsText(highlight) && `<p class="detail-highlight-tools">${talkHighlightToolsText(highlight)}</p>`)}
     ${section(t("highlight.steps", "Como funciona"), steps && `<ol class="detail-steps">${steps}</ol>`)}
     ${section(t("highlight.podium", "Pódio"), talkPodiumMarkup(highlight.podium))}
     ${section(t("highlight.rules", "Regras"), rules && `<ul class="detail-rules">${rules}</ul>`)}

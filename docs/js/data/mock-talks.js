@@ -17,7 +17,7 @@ const MOCK_TALKS_BY_TRACK = {
     talk("RAG sem dor de cabeça: busca, contexto e avaliação", "palestra", ["rag", "llm"], ["james-carter"],
       "Como montar um pipeline de recuperação que responde bem, quanto contexto enviar ao modelo e como medir a qualidade das respostas."),
     talk("GDG Campinas Coding Jam", "workshop", ["antigravity", "gemini"], [],
-      "Uma sessão prática de construção com Antigravity e Gemini: você monta o seu projeto, apresenta para a sala e a turma vota nos três melhores.", "codejam"),
+      "Uma sessão prática de construção: você monta o seu projeto, apresenta para a sala e a turma vota nos três melhores.", "codejam"),
     talk("Contexto é o novo prompt", "palestra", ["prompts", "llm"], ["priya-nair"],
       "Por que montar bom contexto importa mais do que frases mágicas, e como estruturar instruções, exemplos e ferramentas."),
     talk("IA responsável: viés, privacidade e o que fazer na segunda-feira", "painel", ["ética", "privacidade"], ["fatima-al-sayed", "chen-wei"],

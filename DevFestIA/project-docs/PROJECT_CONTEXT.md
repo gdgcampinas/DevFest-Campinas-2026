@@ -330,7 +330,7 @@ Uma palestra da grade pode ganhar `highlight: "<id>"` (ex.: em `mock-talks.js`, 
 **sem deixar de ser uma palestra normal**: trilha, slot, favorito (estrela, Minha agenda, `?agenda=`), calendário (.ics e Google), "acontecendo
 agora" (tag AGORA e barra), filtro por trilha, check-in por QR, avaliação (nota 1 a 5) e relatório do evento funcionam sozinhos, pela mesma chave
 `<início>|<trilha>`. Tudo que muda vem do dado, em `data/talk-highlights.js` (repository: `forTalk(data)`, `allowsQuestions(data)`), sem CSS ou JS por id:
-`label`/`icon`/`color` (chip e cor, via `--highlight-color` inline), `tagline`, `note`/`noteIcon`, `host` (quem conduz quando não há palestrante), `podium`
+`label`/`icon`/`color` (chip e cor, via `--highlight-color` inline), `ribbon` (faixa do topo, "Mão na massa"), `tagline`, `note`/`noteIcon`, `tools` (ferramentas recomendadas: "Recomendamos usar Antigravity, Antigravity IDE ou Gemini.", no card e no modal), `host` (quem conduz quando não há palestrante), `podium`
 (1º, 2º, 3º com `prize` opcional, aparece no card e no modal quando preenchido), `steps`, `rules` e `questions: false`.
 - **Coding Jam:** `format: "workshop"` (conta como o workshop obrigatório do e-mail de patrocínio dos organizadores; confirmar com o programa) mais
   `highlight: "codejam"`. Título "GDG Campinas Coding Jam", frase "Monte seu projeto, apresente e dispute o pódio". Hoje é MOCK em `mock-talks.js`

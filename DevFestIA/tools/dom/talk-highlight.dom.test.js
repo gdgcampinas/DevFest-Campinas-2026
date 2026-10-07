@@ -79,6 +79,30 @@ test("o Coding Jam vale em qualquer trilha e sala: a cor e a sala são sempre as
   });
 });
 
+test("ferramentas recomendadas: o card e o modal dizem 'Recomendamos usar Antigravity, Antigravity IDE ou Gemini.'", () => {
+  const sentence = "Recomendamos usar Antigravity, Antigravity IDE ou Gemini.";
+  assert.equal(textOf(cardOf(jam).querySelector(".talk-highlight-tools")), sentence);
+  const modal = render(talkDetailMarkup(track, jam, { reveal: true, timeRange: "10:30", room: track.room, talkKey: "k1" }));
+  assert.equal(textOf(modal.querySelector(".detail-highlight-tools")), sentence);
+  assert.ok(texts(modal, ".detail-highlight-section h4").includes("Ferramentas recomendadas"));
+});
+
+test("sem ferramentas no dado (ou com 1 só), o card não mostra a linha e a frase concorda", () => {
+  const highlight = site.run("TALK_HIGHLIGHTS[0]");
+  const original = highlight.tools;
+  try {
+    highlight.tools = undefined;
+    assert.equal(cardOf(jam).querySelector(".talk-highlight-tools"), null);
+    assert.ok(!texts(render(talkDetailMarkup(track, jam, { reveal: true, talkKey: "k1" })), ".detail-highlight-section h4").includes("Ferramentas recomendadas"));
+    highlight.tools = { label: "Recomendamos usar", items: ["Gemini"] };
+    assert.equal(textOf(cardOf(jam).querySelector(".talk-highlight-tools")), "Recomendamos usar Gemini.");
+    highlight.tools = { label: "Recomendamos usar", items: ["A", "B"] };
+    assert.equal(textOf(cardOf(jam).querySelector(".talk-highlight-tools")), "Recomendamos usar A ou B.");
+  } finally {
+    highlight.tools = original;
+  }
+});
+
 test("sem palestrante: o card mostra quem conduz (GDG Campinas) em vez de 'undefined'", () => {
   const html = trackCardMarkup(track, jam, { talkKey: "k1" });
   assert.ok(!html.includes("undefined"));
@@ -142,7 +166,7 @@ test("modal do Coding Jam: etapas, pódio e regras; avaliação sim, perguntas a
   const root = render(talkDetailMarkup(track, jam, { reveal: true, timeRange: "14:15 às 14:55", room: track.room, talkKey: "k1" }));
   assert.equal(root.querySelectorAll(".detail-steps li").length, 4);
   assert.deepEqual(texts(root, ".detail-steps li strong"), ["Intro e setup", "Construção", "Apresentação", "Votação e pódio"]);
-  assert.deepEqual(texts(root, ".detail-highlight-section h4"), ["Como funciona", "Pódio", "Regras"]);
+  assert.deepEqual(texts(root, ".detail-highlight-section h4"), ["Ferramentas recomendadas", "Como funciona", "Pódio", "Regras"]);
   assert.equal(root.querySelectorAll(".detail-rules li").length, 3);
   assert.deepEqual(texts(root, ".talk-podium-slot"), ["1º lugar", "2º lugar", "3º lugar"]);
   assert.deepEqual(texts(root, ".talk-format"), ["Workshop", "Coding Jam"]);

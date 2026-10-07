@@ -83,7 +83,8 @@ test("entrar: mostra a conta, a palestra e as perguntas por seção, ouvindo o b
 });
 
 test("aprovar move a pergunta pro ar e publica o quadro da palestra com ela", async () => {
-  const world = setup();
+  // Ciclo de recontagem longo: aqui só vale a publicação disparada pela aprovação (com o ciclo curto, em máquina lenta ele publicava antes).
+  const world = setup({ config: { boardPublishMs: 600000 } });
   world.seed("p1", "Como medir agentes?", "pending");
   await world.signIn();
   assert.equal(world.lastBoard(), undefined); // nada aprovado: nada publicado ainda

@@ -320,6 +320,9 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
 .talk-podium-winner{font-size:11.5px;color:var(--muted);overflow-wrap:anywhere}
 .talk-highlight-note{display:flex;align-items:center;gap:6px;font:600 12px var(--font-body);color:var(--highlight-color)}
 .talk-highlight-note .icon{width:14px;height:14px}
+.talk-highlight-tools{display:flex;align-items:flex-start;gap:6px;margin:0;font:600 12.5px/1.4 var(--font-body);color:var(--text)}
+.talk-highlight-tools .icon{width:14px;height:14px;flex:0 0 auto;margin-top:2px;color:var(--highlight-color)}
+.detail-highlight-tools{margin:0;font:600 14px/1.5 var(--font-body);color:var(--text)}
 
 /* palestrante: avatar com anel na cor da trilha, nome, cargo · empresa, LinkedIn */
 .talk-who{display:flex;align-items:center;gap:11px;margin-top:auto}
