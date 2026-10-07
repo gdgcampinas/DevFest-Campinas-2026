@@ -42,7 +42,7 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .mf-status[hidden]{display:none}
 .mf-clock{font:800 calc(var(--u) * 3) var(--font-display);color:var(--text);font-variant-numeric:tabular-nums}
 
-.mural-diag{position:absolute;left:var(--m);top:var(--m);z-index:50;background:oklch(8% .01 260 / .88);border:1px solid oklch(40% .02 260);border-radius:calc(var(--u) * 1);padding:calc(var(--u) * 1.2);font:500 calc(var(--u) * 1.5) var(--font-body);max-width:48%}
+.mural-diag{position:absolute;right:var(--m);top:var(--m);z-index:50;opacity:.92;background:oklch(8% .01 260 / .88);border:1px solid oklch(40% .02 260);border-radius:calc(var(--u) * 1);padding:calc(var(--u) * 1.2);font:500 calc(var(--u) * 1.2) var(--font-body);max-width:34%}
 .mural-diag[hidden]{display:none}
 .mural-diag table{border-collapse:collapse}
 .mural-diag th{text-align:left;color:var(--muted);padding-right:calc(var(--u) * 1.2);font-weight:600}

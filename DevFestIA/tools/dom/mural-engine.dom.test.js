@@ -190,6 +190,19 @@ test("o dispose da cena roda quando ela sai (relógio, listener, animação não
   mural.stop();
 });
 
+test("mount que devolve algo que não é função (ex.: instância do QR) não vira dispose nem quebra a troca", async () => {
+  const { clock, mural, active, events } = setup({
+    scenes: [okScene("a", { type: "obj" }), okScene("b")],
+    registry: { obj: { render: () => ({ markup: "<p>O</p>", mount: () => ({ instancia: true }) }) } },
+  });
+  mural.start();
+  await clock.tick(10000);
+  assert.equal(active(), "b");
+  assert.equal(events.failures.length, 0);
+  assert.equal(mural.state().lastError, null);
+  mural.stop();
+});
+
 test("dispose que lança não derruba o rodízio", async () => {
   const { clock, mural, active } = setup({
     scenes: [okScene("a", { type: "live" }), okScene("b")],

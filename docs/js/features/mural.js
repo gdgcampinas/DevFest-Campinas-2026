@@ -76,7 +76,8 @@ function createMural({
     contentEl.appendChild(el);
     let dispose = null;
     try {
-      dispose = view.mount?.(el, sceneDeps) ?? null;
+      const result = view.mount?.(el, sceneDeps);
+      dispose = typeof result === "function" ? result : null; // só função vale como dispose (um mount que devolve outra coisa não derruba a troca)
     } catch (error) {
       el.remove();
       throw error;

@@ -12,7 +12,7 @@ function createQrScene({ siteUrl, extraQuery = () => "", qr }) {
       const url = `${siteUrl}${params.path}${extraQuery()}`;
       return {
         markup: `<section class="ms ms-qr"><div class="ms-qr-text">${muralHeadMarkup({ kicker: params.kicker, title: params.heading })}<p class="ms-hint">${escapeHtml(params.hint)}</p><p class="ms-url">${escapeHtml(`${siteUrl}${params.path}`.replace(/^https?:\/\//, ""))}</p></div><div class="ms-qr-code" data-qr></div></section>`,
-        mount: el => qr.draw(el.querySelector("[data-qr]"), url),
+        mount: el => { qr.draw(el.querySelector("[data-qr]"), url); },
       };
     },
   };
