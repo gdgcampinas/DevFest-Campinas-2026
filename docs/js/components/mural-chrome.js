@@ -8,10 +8,11 @@ function updateMuralFooter(footerEl, { time, online }) {
   footerEl.querySelector("[data-status]").hidden = online;
 }
 
-/** Painel de diagnóstico (`?diag=1`, só pro ensaio): saúde do mural numa olhada. `snapshot` vem pronto de pages/mural.js. */
+/** Painel de diagnóstico (`?diag=1`, só pro ensaio): uma linha discreta no canto; a tabela completa abre ao passar o mouse. `snapshot` vem pronto de pages/mural.js. */
 function muralDiagMarkup(snapshot) {
   const row = (label, value) => `<tr><th>${escapeHtml(label)}</th><td>${escapeHtml(String(value))}</td></tr>`;
-  return `<table>${[
+  const line = [snapshot.scene ?? "-", `falhas ${snapshot.failures}`, snapshot.online ? "internet ok" : "SEM internet", snapshot.degraded ? "DEGRADADO" : "saudável"].join(" · ");
+  return `<p class="md-line">diag: ${escapeHtml(line)}</p><table>${[
     row("Cena", snapshot.scene ?? "-"),
     row("No ar há", `${snapshot.sceneSeconds ?? 0}s`),
     row("Cenas mostradas", snapshot.shown),

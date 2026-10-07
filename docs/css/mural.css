@@ -42,9 +42,11 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .mf-status[hidden]{display:none}
 .mf-clock{font:800 calc(var(--u) * 3) var(--font-display);color:var(--text);font-variant-numeric:tabular-nums}
 
-.mural-diag{position:absolute;right:var(--m);top:var(--m);z-index:50;opacity:.92;background:oklch(8% .01 260 / .88);border:1px solid oklch(40% .02 260);border-radius:calc(var(--u) * 1);padding:calc(var(--u) * 1.2);font:500 calc(var(--u) * 1.2) var(--font-body);max-width:34%}
+.mural-diag{position:absolute;right:var(--m);top:calc(var(--m) * .3);z-index:50;font:500 calc(var(--u) * 1.2) var(--font-body);max-width:40%;text-align:right}
 .mural-diag[hidden]{display:none}
-.mural-diag table{border-collapse:collapse}
+.md-line{margin:0;display:inline-block;padding:calc(var(--u) * .3) calc(var(--u) * .9);border-radius:99px;background:oklch(8% .01 260 / .8);color:var(--muted)}
+.mural-diag table{display:none;margin-top:calc(var(--u) * .5);border-collapse:collapse;text-align:left;background:oklch(8% .01 260 / .94);border:1px solid oklch(40% .02 260);border-radius:calc(var(--u) * 1);padding:calc(var(--u) * 1.2)}
+.mural-diag:hover table{display:table}
 .mural-diag th{text-align:left;color:var(--muted);padding-right:calc(var(--u) * 1.2);font-weight:600}
 .mural-diag td{color:var(--text)}
 
