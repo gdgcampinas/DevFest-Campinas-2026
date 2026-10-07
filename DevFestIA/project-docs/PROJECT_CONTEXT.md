@@ -375,6 +375,43 @@ agora" (tag AGORA e barra), filtro por trilha, check-in por QR, avaliação (not
   `event-report/build-report.test.js`. O harness (`tools/lib/dom-harness.js`) carrega `data/talk-highlights.js` na base. Páginas que renderizam card, quadro, moderação ou o
   modal carregam os scripts novos (script tags e `?v=`).
 
+## Mural do telão de LED (PLANEJADO na sessão 11, 2026-10-07; nada implementado ainda)
+
+Página interna `mural.html` (fora do menu, do sitemap e do `check-meta.js` como `INTERNAL_PAGES`, `noindex`, sem header/nav/footer), em tela cheia, que roda no Chrome de um computador plugado no telão de LED.
+Mesmo espírito do quadro da sala (`checkin-display.html`, que já roda o dia inteiro numa TV) e do modo telão do sorteio. **Requisitos decididos pelo Renato:**
+- **Autônomo e que se corrige sozinho (requisito número 1):** ninguém opera. Não dormir, esconder o cursor, passar as cenas sem clique, recarregar se travar, voltar sozinho se a internet cair.
+- **Tempo real:** o que acontece no evento aparece na hora (foto nova, aviso, pódio do Coding Jam, virada de sessão), por escuta do Firestore (`onSnapshot`) a partir do computador do telão
+  (poucas leituras, cabe no plano grátis).
+- **Sem som** (a fênix, por ora). **Proporção e resolução do telão desconhecidas:** o palco usa unidades relativas e reorganiza o layout pela proporção (container queries); `?tela=LxA` e
+  `?proporcao=3:1` SIMULAM (palco enquadrado com moldura e margem segura), sem parâmetro ocupa a janela inteira; `?diag=1` mostra saúde (última cena, erros, conexão) só pro ensaio;
+  `?cenas=a,b` filtra e ordena. Mockup aprovado em conversa: cena "Agora e próximas" em 16:9 (4 salas em colunas, "a seguir" embaixo, rodapé com QR e inscritos) e em 3:1 (uma linha).
+
+**Arquitetura (mesmo padrão do site, tudo por dado e injetável):** `data/mural-scenes.js` (repository: cenas com `id`, `type`, `seconds`, `enabled`, `priority` e parâmetros; mais a config do vigia), componentes
+PUROS de cena em `components/` (um desenhador por tipo, num registro por tipo, nada de HTML por cena), `features/mural.js` (rodízio: pré-carrega a próxima, aceita INTERRUPÇÕES por prioridade com tempo de vida),
+`features/mural-health.js` (vigia e autocorreção), `features/kiosk.js` (Wake Lock, cursor escondido), `features/mural-stage.js` (palco e simulação), `features/mural-live.js` (fontes ao vivo), `pages/mural.js`,
+`css/mural.css` (folha própria, como `checkin-display.css`). **Fontes ao vivo = repositories com contrato único (`listen`)**: foto, aviso, pódio, contador; trocáveis e desligáveis por dado.
+**Cenas da Fase 1:** agora e próximas por sala (reusa `SCHEDULE` e `resolveEventState`), fotos de edições antigas (as 16 de 2025 já estão em `assets/img/highlights`, mas a 900 px: pro LED precisa dos originais),
+patrocinadores (`data/sponsors.js`, mock até os reais; tempo de tela por cota), QR gigante (avaliar o evento `index.html?avaliar=1`, cartão `ingressos.html?cartao=1`), número de inscritos (`event-stats`, o único
+número público), dicas e avisos (texto no repositório; aviso por celular é Fase 2), fênix estática (Gumbleton, `../../../Design/mascote-gumbleton-2026/`), contagem regressiva e agradecimento, **pódio do
+Coding Jam ao vivo** (escuta `contest-results/<talkKey>`, com papel picado; entra na frente) e uma **cena de reserva que não depende de rede** (galáxia, logo, hora e "agora").
+**Motor de autocorreção (escrever PRIMEIRO, com testes de falha):**
+| Falha | Detecção | Correção automática |
+|---|---|---|
+| Rodízio trava | vigia INDEPENDENTE (Worker/relógio separado; `requestAnimationFrame` NÃO dispara em aba oculta, nada crítico pode depender dele) | recarrega e volta pra cena em que estava |
+| Cena dá erro | cada cena num bloco protegido (`try/catch`, `error`, `unhandledrejection`) | pula a cena, tenta de novo depois, o rodízio segue |
+| Foto 404 / não carrega | pré-carregamento com tempo limite | tira do rodízio por um tempo, nunca mostra imagem quebrada |
+| Internet cai | eventos online/offline e checagem periódica | segue com o que está em memória; reconecta com espera crescente; ao voltar relê o que perdeu e, se ficou fora muito tempo, recarrega |
+| Escuta do banco cai ou fica muda | callback de erro e silêncio longo | reabre com espera crescente; fotos: SÓ as já aprovadas/conhecidas, nunca algo novo sem passar pelas regras |
+| Vazamento de memória em 8 h | tempo de execução e contagem de erros | recarga preventiva entre cenas, a cada ~2 h |
+| Versão nova publicada no evento | confere a versão de tempos em tempos | recarrega na virada de cena |
+| Computador dorme | Wake Lock + ajuste do sistema | reacorda |
+Testes: jsdom (rodízio, prioridade, cena que falha, vigia que dispara a recarga, queda e volta da rede, palco em várias proporções, cena desligada não atrapalha) + teste de resistência em acelerado +
+ensaio de 1 h ou mais no computador e no telão de verdade, desligando o Wi-Fi no meio. **Checklist do computador (o site não faz):** sem suspensão e sem protetor de tela, na tomada, sem atualização
+que reinicia, notificações silenciadas, Chrome em `--kiosk`, rede com reserva (cabo ou 4G) se possível. Controle remoto (Fase 2): tela no celular com o login de moderador pra recarregar o mural, fixar
+uma cena, pausar e escrever um aviso com tempo de vida; o computador só LÊ, nunca é tocado.
+**Fase 2 (a lapidar, ver `IDEAS_BACKLOG.md`, "Mural com fotos das pessoas"):** foto ao vivo (caminho técnico em aberto: nosso site ou álbum do Google Fotos lido por intermediário), aviso por celular,
+controle remoto. **Fase 3:** fênix animada (precisa do arquivo; sem som). **Fase 4:** ensaio no hardware real. O iframe do álbum do Google Fotos NÃO funciona (cabeçalho `x-frame-options: SAMEORIGIN`).
+
 ## Quiz "Monte sua trilha" (sessão 7)
 
 Página `quiz.html` (fora do menu, CTA na seção "Trilhas" da home; sitemap e OG como as demais),

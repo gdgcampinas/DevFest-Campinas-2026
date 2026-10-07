@@ -1,10 +1,13 @@
 # Handoff — Current State
 
-**Last updated:** 2026-10-06, sessão 11 (ideias reorganizadas, Coding Jam na grade, Fase 1). Antes: fim da sessão 10 (Sorteio fechado no código, Time público, análise do
+**Last updated:** 2026-10-07, fim da sessão 11 (ideias reorganizadas, Coding Jam com card e concurso, decisões do mural do telão). Antes: fim da sessão 10 (Sorteio fechado no código, Time público, análise do
 Sincronizar Sympla). Abrir chat novo pra próxima task, use `NEW_CHAT_PROMPT.md`. Antes de confiar neste texto, rode
 `git status --short --branch` e `git log --oneline --decorate -30` (o git não mente; cada commit tem mensagem descritiva).
 
-## Sessão 11 (2026-10-06): ideias, Coding Jam na grade (Fase 1)
+## Sessão 11 (2026-10-06 e 10-07): ideias, Coding Jam (card e concurso), decisões do mural do telão
+
+**PRÓXIMA TASK (decidida com o Renato): MURAL DO TELÃO, FASE 1.** Leia "Mural do telão de LED" no `PROJECT_CONTEXT.md` (decisões, arquitetura e tabela de autocorreção) e as duas seções do `IDEAS_BACKLOG.md` (mural e foto ao vivo). Resumo: `mural.html` interno, computador plugado no telão rodando o Chrome, NINGUÉM opera, tempo real, sem som, proporção desconhecida (simulada por `?tela=`/`?proporcao=`); escrever PRIMEIRO o motor autônomo com testes de falha, depois as cenas (agora e próximas, fotos antigas, patrocinadores, QR gigante, inscritos, dicas e avisos, fênix estática, pódio do Coding Jam, reserva sem rede). A Fase 1 NÃO depende das decisões em aberto abaixo (a foto ao vivo é módulo desligável, Fase 2). Mockup aprovado em conversa (16:9 e 3:1). O plano da Fase 1 foi apresentado ao Renato mas ele AINDA NÃO disse "autorizado": confirmar a autorização antes de codar (Diretiva Master).
+**Em aberto do mural (Renato):** link de um álbum colaborativo de TESTE do Google Fotos (pra decidir entre foto pelo nosso site ou álbum lido por intermediário); logos em alta e cotas dos patrocinadores; originais em alta das fotos de edições antigas; fênix (arquivo: vídeo, sprites ou só imagem); dicas e avisos reais (Wi-Fi, estacionamento, comida); se o sorteio usa o mesmo telão; proporção/resolução quando souber.
 
 **Decisões de ideias:** ver "Decisões de 2026-10-06" mais abaixo e "Descartadas" no `IDEAS_BACKLOG.md` (nota média pública nunca; credencial digital, mentorias,
 mural da hashtag, área administrativa e votação das salas descartados; certificado só DEPOIS do evento). Moderadores: 6 e-mails fixos (1 por trilha + 2 reservas).
@@ -26,7 +29,7 @@ normal da grade (workshop + `highlight: "codejam"`): herda favorito, Minha agend
 voto no próprio projeto, placar fechado, pódio só leitura): todas passaram. Ficaram dados de teste no banco, na sessão inventada `2026-11-28T17:15:00.000Z|zzteste` (2 check-ins, 1 projeto, 1 voto):
 a limpeza ("🧹 Limpar dados de teste") agora apaga as coleções `contest-*` também. O lado do moderador (publicar pódio) continua só testado no emulador e com jsdom.
 **Cancelado/adiado:** a página `codejam.html` com envio de projetos (o envio é direto no Google); Jam de 2 slots (campo `slots`, só anotado).
-**Armadilhas novas:** `tools/check-lineup.js` e `tools/check-calendar.js` já estavam quebrados antes (listas de arquivos defasadas, fora do CI); a cobertura vem dos testes jsdom. No Node 24
+**Armadilhas novas:** (a) as telas internas (`moderacao.html`, `checkin-display.html`, `reset-teste.html`, e o futuro `mural.html`) NÃO têm versão `/DEV/` (só as páginas públicas têm; `/DEV/moderacao.html` dá 404): use `moderacao.html?trilha=ia&palestra=1030.ia&lineup=1` na raiz; (b) a faixa do card do Coding Jam é "Mão na massa" (não "Competição") e o card diz "Recomendamos usar Antigravity, Antigravity IDE ou Gemini"; (c) testes de tela com `setInterval` curto (40 ms) falham em máquina muito carregada: use `waitFor` (em `tools/lib/dom-harness.js`) e intervalos longos quando o relógio não for o assunto; dois testes antigos (perguntas e moderação) ainda podem falhar sob carga extrema: `gh run rerun <id> --failed`; (d) `tools/check-lineup.js` e `tools/check-calendar.js` já estavam quebrados antes (listas de arquivos defasadas, fora do CI); a cobertura vem dos testes jsdom. No Node 24
 `node --test <diretório>` falha: passe os arquivos (o CI usa outra versão). Os testes das regras agora põem o `pid` nos ids (os arquivos rodam em paralelo no mesmo emulador e colidiam às vezes).
 O emulador local guarda os dados sob o projeto `devfest-campinas` (não `demo-devfest`, que é o dos testes de regras): pra semear dado na mão use esse projeto na URL REST.
 
@@ -349,6 +352,7 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
 
 - **Sorteio (sessão 10):** ver "Sorteio no dia do evento: checklist e decisões" no topo deste arquivo (ausente sai de vez; e-mail do ingresso obrigatório; reset = nova rodada sem apagar; som de festa; confete explosão + chuva; telão no notebook/HDMI).
 - **Time público em PROD** (decisão do Renato em 2026-10-01); cargo dos organizadores em aberto.
+- **Mural do telão (2026-10-07):** computador plugado (Chrome), ninguém opera, autônomo e que se corrige sozinho, tempo real, sem som, proporção simulada; foto ao vivo SEM aprovação antes, qualquer moderador tira do ar, sem limite rígido por pessoa, nome opcional, exportar em zip pro Google Fotos, módulo desligável; o iframe do álbum do Google Fotos não funciona.
 - **Decisões de 2026-10-06 (ideias):** nota média por palestra NUNCA é pública (só no relatório interno); credencial digital com QR, mentorias com agendamento e mural da hashtag DESCARTADOS (ver "Descartadas" em `IDEAS_BACKLOG.md`); certificado é enviado DEPOIS do evento, a todos que participaram; mapa do local, álbum ao vivo, mural do LED e cartão "Eu vou!" com a Minha agenda MANTIDOS. Sorteio considerado fechado pelo Renato (restam o texto "aguarde até 10 minutos" e os interruptores do dia). **Área administrativa DESCARTADA** (line-up chega pronto, só o Renato preenche; 6 moderadores = 1 por trilha + 2 reservas). **Pendente: o Renato passa os 6 e-mails (contas Google com e-mail verificado); o Claude põe em `isModerator()`, roda `bash DevFestIA/tools/questions/run-rules-tests.sh` e o Renato cola as regras no console, uma vez, antes do evento.** Confirmar também se `gdgcampinascontato@gmail.com` continua sendo admin.
 
 - Nada de backend pra conteúdo; Firebase só pra feedback/check-in e leitura pública do total,
@@ -422,7 +426,7 @@ Arquitetura e decisões completas: `project-docs/PROJECT_CONTEXT.md` (seções "
     ou as duas), carga horária, nome (o digitado ou o do Sympla), se precisa de validação por QR, texto
     e assinaturas. Com isso o mockup sai; aprová-lo com o Renato antes de codar. Reusa o SVG
     `gdg-logo-light.svg` (fundo claro).
-11. **Mural eletrônico do telão de LED:** página interna em tela cheia com cenas em rodízio (agora/próximas,
+11. **Mural eletrônico do telão de LED (DECIDIDO na sessão 11, ver o topo deste arquivo e `PROJECT_CONTEXT.md` "Mural do telão de LED"; as perguntas abaixo estão respondidas ou viraram Fase 2):** página interna em tela cheia com cenas em rodízio (agora/próximas,
     álbum, fênix, patrocinadores, QR, números ao vivo, dicas, avisos, a galáxia). PERGUNTE ao Renato antes
     de desenhar: tamanho e proporção do painel, entrada (HDMI de notebook ou navegador), origem das fotos
     ao vivo, arquivo da fênix (vídeo, sprites ou animação, com som?), quem opera.

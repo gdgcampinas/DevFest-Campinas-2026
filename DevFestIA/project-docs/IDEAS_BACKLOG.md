@@ -34,25 +34,16 @@ por servidor), deploy automático das regras do Firestore.
 
 ## Telão / painel de LED no dia do evento
 
-### Mural eletrônico (aba do site em tela cheia) — TASK ANOTADA, não iniciada
-Pedido do Renato (2026-09-23): o evento vai ter um painel de LED; queremos uma
-"aba" do site pra rodar nele, passando álbum do evento, o mascote e conteúdo
-ao vivo. **Não fazer agora**, só registrado.
+### Mural eletrônico (aba do site em tela cheia) — DECISÕES DE 2026-10-07, Fase 1 PRONTA PRA IMPLEMENTAR (ver PROJECT_CONTEXT, seção "Mural do telão")
+Pedido do Renato (2026-09-23): o evento vai ter um telão de LED; queremos uma página do site pra rodar nele com várias coisas em rodízio. **Decisões da sessão 11 (2026-10-07):** o telão é um
+**computador plugado, rodando o site no Chrome em tela cheia**; **ninguém opera** (tem que funcionar sozinho o dia inteiro e se corrigir sozinho); **em tempo real** (o que acontece no evento aparece
+na hora); **sem som** (fênix sem som, por ora); **proporção e resolução desconhecidas**, então o mural é feito pra qualquer proporção e SIMULADO por URL (`?tela=1920x1080`, `?proporcao=3:1`),
+como o modo telão do sorteio. Conteúdo: agora e próximas, fotos de edições antigas (o Renato manda os originais), patrocinadores (o Renato manda logos e cotas), QR gigante, números ao vivo,
+dicas e avisos, fênix, pódio do Coding Jam e fotos ao vivo (Fase 2).
 
-**Álbum ao vivo integrado ao mural (2026-09-28):** a cena "álbum" deste mural e a task
-"Mural com fotos das pessoas" (abaixo) são a MESMA coisa, não duas separadas. Fonte das
-fotos: **álbum colaborativo do Google Photos** (QR aponta pra ele, sem app nosso, sem
-Cloud Storage — que hoje exige Blaze, já descartado). Como aparece no telão: o modo
-apresentação (slideshow com avanço automático) do próprio álbum, dentro de uma
-`<iframe>` na cena "Álbum ao vivo" do `mural.html`, misturada no rodízio com as outras
-cenas. Moderação: manual, dentro do app do Google Photos — álbum colaborativo deixa
-qualquer participante remover foto de qualquer pessoa; alguém da organização com o
-app aberto vigia (atraso de minutos, não instantâneo, igual à fila das perguntas mas
-sem fila nossa). Zero Firestore, zero custo de leitura extra. Trava: **o painel precisa
-aceitar navegador** (não só HDMI de notebook), senão a `<iframe>` não roda — decisão em
-aberto, ver "Perguntas em aberto" abaixo. Se um dia quiser moderação automática antes
-de ir ao ar (como as perguntas), precisaria de fila no Firestore com link externo —
-mais trabalho, não recomendado pro primeiro ano.
+**CORREÇÃO sobre o álbum (2026-10-07):** a ideia antiga "iframe do álbum do Google Fotos dentro do mural" NÃO funciona: `photos.app.goo.gl` e `photos.google.com` respondem com
+`x-frame-options: SAMEORIGIN` (testado com `curl -I`; só com links de exemplo, não com um álbum real) e a API oficial do Google Fotos desde 2025 só lê o que o PRÓPRIO app criou, não álbum
+compartilhado. Ver a seção "Mural com fotos das pessoas" abaixo pros caminhos que funcionam.
 
 **Mascote:** uma **fênix** está sendo feita (inspirada na capivara dançando que
 o Google fez). Ela entra como cena animada do mural. Depende do arquivo
@@ -161,12 +152,17 @@ escopo parecido com o check-in ao vivo (`checkin-display.html`), mas com
 escrita em tempo real (Firestore já suporta listener `onSnapshot`, não
 usado ainda no projeto).
 
-### Mural com fotos das pessoas (álbum ao vivo) — TASK ANOTADA, não iniciada
-Pedido do Renato (2026-09-28): plateia sobe fotos que tirou do evento e elas aparecem no
-telão. **Não fazer agora**, só registrado. **Ver a análise e o desenho completos na task
-"Mural eletrônico" acima ("Álbum ao vivo integrado ao mural")** — as duas tasks viraram
-uma só: fonte = álbum colaborativo do Google Photos, exibição = slideshow do álbum numa
-cena do mural, moderação = manual no app do Google Photos.
+### Mural com fotos das pessoas (foto ao vivo) — FASE 2 DO MURAL, a lapidar (decisões parciais de 2026-10-07)
+Pedido do Renato: a plateia tira fotos e elas aparecem no telão, sem ninguém operar. **Decidido:** SEM aprovação antes de aparecer; qualquer moderador tira do ar com um toque ("Tirar do ar") e
+pode apagar; SEM limite rígido de fotos por pessoa (só uma pausa curta entre envios, ~10 s, pra segurar robô, e um TETO DE EXIBIÇÃO no telão: no máximo uma "foto nova" de destaque a cada ~15 s,
+as outras entram direto no rodízio); nome OPCIONAL; depois do evento, baixar as fotos em zip e subir num álbum do Google Fotos; o módulo precisa ser DESLIGÁVEL por dado (cena com `enabled`, fonte
+de fotos trocável por repository, envio e moderação em arquivos próprios, e um campo de controle pra pausar envios e esconder fotos sem deploy).
+**Caminho técnico EM ABERTO (decidir com um teste):** (1) **nosso site**: página `foto.html`, a foto é reduzida no celular (~1600 px, JPEG, ~200 a 300 KB) e guardada como texto num documento do
+Firestore (cabe em 1 MB, não precisa do plano pago), coleção `mural-photos` (nasce visível; moderador tira do ar), o mural escuta e mostra na hora; ~300 fotos custam ~90 MB e ~300 gravações (folga
+no plano grátis). OU (2) **álbum colaborativo do Google Fotos lido por um intermediário** (um Worker do Cloudflare gratuito lê a página pública do álbum e devolve a lista de fotos, que
+`lh3.googleusercontent.com` deixa usar em `<img>`): a plateia usa o Fotos que já conhece e o álbum já fica pronto depois, MAS é leitura não oficial (o Google pode mudar a página e quebrar, e fica
+fora das regras do serviço), com ~20 a 30 s de atraso, e o Worker é infra nova. **Próximo passo:** o Renato cria um álbum colaborativo de TESTE e manda o link; o Claude testa o iframe e a leitura da
+lista de fotos. Descartado: pasta pública do Drive (plateia precisa de conta e o upload no celular é pior).
 
 ### Passaporte DevFest com QR nos estandes
 Quem visita cada estande dos patrocinadores escaneia um QR, junta
