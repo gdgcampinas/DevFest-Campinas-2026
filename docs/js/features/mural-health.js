@@ -9,8 +9,8 @@
  *
  * Motivos de recarga: "stuck" (o rodízio não bateu no prazo), "scene-failures" (cenas falhando em sequência), "preventive" (tempo de execução, pra
  * não acumular memória em 8 h), "version" (saiu versão nova), "offline-recovery" (a internet voltou depois de muito tempo fora). Os três últimos só
- * valem NA TROCA de cena (`atBoundary`), pra não cortar uma cena no meio. Trava anti-laço: recargas demais em pouco tempo = não recarrega,
- * marca `degraded` e o mural segue na cena de reserva.
+ * valem NA TROCA de cena (`atBoundary`), pra não cortar uma cena no meio. Trava anti-laço: recargas demais em pouco tempo = não recarrega e marca
+ * `degraded` (aparece no painel de diagnóstico); o rodízio segue, e se as cenas continuarem falhando é a cena de reserva que sustenta a tela.
  */
 function evaluateHealth(snapshot, config) {
   const { now, startedAt, beatDueAt, atBoundary = false, failures = 0, pending = [] } = snapshot;

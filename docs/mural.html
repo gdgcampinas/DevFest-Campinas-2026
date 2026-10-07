@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mural do telão • DevFest Campinas 2026</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#05060a">
+<link rel="icon" href="assets/brand/gdg-icon.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/google-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/fonts.css?v=1">
+<link rel="stylesheet" href="css/tokens.css?v=3">
+<link rel="stylesheet" href="css/mural.css?v=1">
+</head>
+<body>
+
+<div class="mural-backdrop">
+  <div class="mural-stage" id="muralStage" data-shape="wide">
+    <main class="mural-content" id="muralContent">
+      <div class="mural-scene is-active" data-scene="boot"><section class="ms ms-reserve"><h2 class="ms-title">DevFest Campinas 2026</h2></section></div>
+    </main>
+    <footer class="mural-footer" id="muralFooter"></footer>
+    <aside class="mural-diag" id="muralDiag" hidden></aside>
+  </div>
+</div>
+
+<!-- Rede de segurança do mural: se o JavaScript não chegar a iniciar (script que não carregou, erro na partida), recarrega sozinho. -->
+<script>setTimeout(function () { if (!window.__muralBooted) location.reload(); }, 45000);</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="js/data/repository.js?v=1"></script>
+<script src="js/data/i18n/languages.js?v=1"></script>
+<script src="js/data/i18n/en.js?v=28"></script>
+<script src="js/features/i18n-core.js?v=1"></script>
+<script src="js/features/i18n.js?v=1"></script>
+<script src="js/data/firebase-config.js?v=1"></script>
+<script type="module" src="js/data/firebase-client.js?v=6"></script>
+<script type="module" src="js/data/firestore-document-repository.js?v=1"></script>
+<script type="module" src="js/data/contest-results-repository.js?v=1"></script>
+<script type="module" src="js/data/public-lookup-repository.js?v=1"></script>
+<script type="module" src="js/data/event-stats-repository.js?v=1"></script>
+<script src="js/data/mock-links.js?v=1"></script>
+<script src="js/data/mock-photo.js?v=1"></script>
+<script src="js/data/mock-logo.js?v=2"></script>
+<script src="js/data/mock-speakers.js?v=5"></script>
+<script src="js/data/mock-talks.js?v=5"></script>
+<script src="js/data/schedule-builder.js?v=3"></script>
+<script src="js/data/schedule.dev.js" onerror="this.onerror=null;document.write('\x3Cscript src=&quot;js/data/schedule.js?v=24&quot;\x3E\x3C/script\x3E')"></script>
+<script src="js/data/persisted-set-repository.js?v=2"></script>
+<script src="js/data/favorites.js?v=1"></script>
+<script src="js/data/icons.js?v=8"></script>
+<script src="js/data/talk-highlights.js?v=6"></script>
+<script src="js/data/sponsors.js?v=4"></script>
+<script src="js/data/highlights.js?v=6"></script>
+<script src="js/data/raffle-confetti.js?v=1"></script>
+<script src="js/data/mural-config.js?v=1"></script>
+<script src="js/data/mural-scenes.js?v=1"></script>
+<script src="js/data/mural-sources.js?v=1"></script>
+<script src="js/data/mural-tips.js?v=1"></script>
+<script src="js/components/escape-html.js?v=1"></script>
+<script src="js/components/icon.js?v=1"></script>
+<script src="js/components/talk-highlight.js?v=6"></script>
+<script src="js/components/mural-chrome.js?v=1"></script>
+<script src="js/components/mural-scenes/mural-scene-kit.js?v=1"></script>
+<script src="js/components/mural-scenes/mural-now-next-scene.js?v=1"></script>
+<script src="js/components/mural-scenes/mural-photos-scene.js?v=1"></script>
+<script src="js/components/mural-scenes/mural-sponsors-scene.js?v=1"></script>
+<script src="js/components/mural-scenes/mural-qr-scene.js?v=1"></script>
+<script src="js/components/mural-scenes/mural-registered-scene.js?v=1"></script>
+<script src="js/components/mural-scenes/mural-tips-scene.js?v=1"></script>
+<script src="js/components/mural-scenes/mural-phoenix-scene.js?v=1"></script>
+<script src="js/components/mural-scenes/mural-podium-scene.js?v=1"></script>
+<script src="js/components/mural-scenes/mural-event-phase-scene.js?v=1"></script>
+<script src="js/components/mural-scenes/mural-reserve-scene.js?v=1"></script>
+<script src="js/features/scheduler.js?v=1"></script>
+<script src="js/features/backoff.js?v=1"></script>
+<script src="js/features/publish-detector.js?v=1"></script>
+<script src="js/features/agenda.js?v=6"></script>
+<script src="js/features/talk-index.js?v=3"></script>
+<script src="js/features/live-status.js?v=11"></script>
+<script src="js/features/rehearsal.js?v=2"></script>
+<script src="js/features/confetti-engine.js?v=1"></script>
+<script src="js/features/confetti.js?v=2"></script>
+<script src="js/features/image-preload.js?v=1"></script>
+<script src="js/features/qr-renderer.js?v=1"></script>
+<script src="js/features/kiosk.js?v=1"></script>
+<script src="js/features/mural-playlist.js?v=1"></script>
+<script src="js/features/mural-photo-pool.js?v=1"></script>
+<script src="js/features/mural-now-next.js?v=1"></script>
+<script src="js/features/mural-stage.js?v=1"></script>
+<script src="js/features/mural-health.js?v=1"></script>
+<script src="js/features/mural-network.js?v=1"></script>
+<script src="js/features/mural-version.js?v=1"></script>
+<script src="js/features/mural-live.js?v=1"></script>
+<script src="js/features/mural-live-sources.js?v=1"></script>
+<script src="js/features/mural-live-bindings.js?v=1"></script>
+<script src="js/features/mural.js?v=1"></script>
+<script src="js/app.js?v=27"></script>
+<script src="js/pages/mural.js?v=1"></script>
+</body>
+</html>

@@ -65,7 +65,7 @@ function mountStage({ stageEl, spec, shapes, win = window }) {
       top: `${box.top}px`,
       transform: box.scale === 1 ? "" : `scale(${box.scale})`,
     });
-    stageEl.style.setProperty("--safe-margin", `${spec.safeMarginPct}%`);
+    stageEl.style.setProperty("--safe-margin", String(spec.safeMarginPct));
     stageEl.dataset.shape = box.shape;
     stageEl.dataset.framed = String(box.framed);
     stageEl.dataset.size = `${box.width}x${box.height}`;
