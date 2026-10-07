@@ -56,12 +56,14 @@ docs/
   checkin-display.html                      internal tool: QUADRO DA SALA (talk + live approved questions + QR), not a public page — see "Perguntas ao vivo, moderação e quadro da sala"
   moderacao.html                            internal tool (moderador de perguntas por sala), see "Perguntas ao vivo, moderação e quadro da sala"
   reset-teste.html                          internal tool (clears THIS browser's local test data), not a public page — see "Limpeza dos dados de teste"
+  mural.html                                internal tool: MURAL DO TELÃO DE LED (rodízio de cenas autônomo, ninguém opera), not a public page, no /DEV/ version — see "Mural do telão de LED"
   DEV/index.html, DEV/grade.html, ... , DEV/dev-loader.js   DEV shortcut, see "PROD x DEV"
   PROD/index.html                           DEV-exit shortcut, see "PROD x DEV"
   css/fonts.css                              @font-face for the self-hosted Google Sans (loads first)
   css/tokens.css                             design tokens ONLY: brand palette, per-track colors, accent, fonts (loads first)
   css/styles.css                             all visual rules; consumes tokens, no literal brand color or font name
   css/checkin-display.css                    standalone "presentation mode" styles for checkin-display.html only
+  css/mural.css                              standalone styles for mural.html (container units: --u = 1cqmin; layout by data-shape)
   assets/brand/                               logo oficial em SVG: gdg-icon.svg (4 cores), gdg-logo-dark.svg / gdg-logo-light.svg (horizontal, texto claro/escuro)
   assets/icons/, assets/img/highlights/       favicons e ícones do app (gerados do SVG), event photos
   js/
@@ -149,14 +151,20 @@ docs/
       person-card.js                 person card (team/speakers); clickable when the person has `bio`
       person-detail.js               modal content "Descubra mais sobre" (photo, name, role, bio, LinkedIn)
       raffle-arrivals.js             contador ao vivo + faixa "acabaram de entrar" do sorteio (modo telão)
+      mural-chrome.js                rodapé do mural (marca, aviso de sem internet, relógio) e painel de diagnóstico (?diag=1)
+      mural-scenes/                  um desenhador por tipo de cena do mural, fábricas com tudo injetado: mural-now-next-scene, -photos-, -sponsors-, -qr-, -registered-,
+                                     -tips-, -phoenix-, -podium-, -event-phase-, -reserve-scene.js + mural-scene-kit.js (cabeçalho e horário que todas reusam)
     features/                data + template + behavior, one section each
       agenda.js, track-filter.js, a11y.js, pwa.js, install-platform.js, starfield.js, talk-feedback.js, event-feedback.js, my-talks.js, feedback-nudge.js, feedback-flow.js, hero-galaxy.js, share-card.js, registration-gate.js, registration-counter.js, reveal-gate.js, checkin-display.js, analytics.js, calendar.js, talk-index.js, calendar-actions.js, agenda-share.js, live-status.js, talk-modal.js, favorites.js, favorites-filter.js, speakers.js,
       featured-speakers.js, sponsors.js, partner-communities.js,
       team.js, cod.js, seo.js, stats.js, about.js, highlights.js,
       video.js, realizacao.js, tickets.js, footer.js,
       tracks-overview.js, testimonials.js, ticker.js, patrocinio.js
+      mural (ver "Mural do telão de LED"): scheduler.js (defaultSchedule/scheduleEvery/withTimeout), backoff.js, publish-detector.js (também usado por board-contest.js),
+        mural.js (motor), mural-playlist.js, mural-health.js, mural-network.js, mural-version.js, mural-live.js, mural-live-sources.js, mural-live-bindings.js,
+        mural-stage.js, mural-now-next.js, mural-photo-pool.js, kiosk.js, image-preload.js, qr-renderer.js
     pages/                   one bootstrap per page (see table above)
-      home.js, grade.js, palestrantes.js, ingressos.js, time.js, patrocinio.js, cod.js, checkin-display.js
+      home.js, grade.js, palestrantes.js, ingressos.js, time.js, patrocinio.js, cod.js, checkin-display.js, mural.js
     app.js                   initShell(): header, ticker, nav, footer, SEO,
                               ?demo=/?lineup= overrides — shared by every page
 
@@ -166,6 +174,7 @@ DevFestIA/                  ← AI continuity and dev tooling, not part of the s
   handoff/HANDOFF_CURRENT.md
   firebase/firestore.rules  security rules, paste manually into the Firebase console — see "Firebase (Firestore)"
   tools/                     check-meta.js (CI), check-install.js (CI), check-lineup.js, check-calendar.js, e2e-offline.js, e2e-kill-switch.js
+    mural/                     testes puros do mural (playlist, health, network/live/version, stage, scenes-logic, bindings); NÃO estão no validate.yml (precisa do OK do Renato). Os de tela (tools/dom/mural-*.dom.test.js) estão no CI
     purge-test-data/           limpeza dos dados de teste no Firestore (plano com as travas, caso de uso, raiz de composição) + testes (CI)
     lib/                       google-auth.js (JWT de conta de serviço), firestore-rest.js (repository do Firestore via REST), zero npm
     sympla-sync/               sync Sympla -> Firestore (repository do Sympla, reconcile puro, caso de uso, raiz de composição) + testes (CI)
@@ -375,7 +384,9 @@ agora" (tag AGORA e barra), filtro por trilha, check-in por QR, avaliação (not
   `event-report/build-report.test.js`. O harness (`tools/lib/dom-harness.js`) carrega `data/talk-highlights.js` na base. Páginas que renderizam card, quadro, moderação ou o
   modal carregam os scripts novos (script tags e `?v=`).
 
-## Mural do telão de LED (PLANEJADO na sessão 11, 2026-10-07; nada implementado ainda)
+## Mural do telão de LED (FASE 1 FEITA na sessão 12, 2026-10-07; Fase 2 e 3 por fazer)
+
+**Estado (sessão 12):** a Fase 1 está implementada, testada e no `development` (ver "Implementação da Fase 1" no fim desta seção). O texto abaixo é o plano decidido; onde diz "planejado", leia "feito" salvo o que a Fase 2 e a 3 listam.
 
 Página interna `mural.html` (fora do menu, do sitemap e do `check-meta.js` como `INTERNAL_PAGES`, `noindex`, sem header/nav/footer), em tela cheia, que roda no Chrome de um computador plugado no telão de LED.
 Mesmo espírito do quadro da sala (`checkin-display.html`, que já roda o dia inteiro numa TV) e do modo telão do sorteio. **Requisitos decididos pelo Renato:**
@@ -411,6 +422,35 @@ que reinicia, notificações silenciadas, Chrome em `--kiosk`, rede com reserva 
 uma cena, pausar e escrever um aviso com tempo de vida; o computador só LÊ, nunca é tocado.
 **Fase 2 (a lapidar, ver `IDEAS_BACKLOG.md`, "Mural com fotos das pessoas"):** foto ao vivo (caminho técnico em aberto: nosso site ou álbum do Google Fotos lido por intermediário), aviso por celular,
 controle remoto. **Fase 3:** fênix animada (precisa do arquivo; sem som). **Fase 4:** ensaio no hardware real. O iframe do álbum do Google Fotos NÃO funciona (cabeçalho `x-frame-options: SAMEORIGIN`).
+
+**Implementação da Fase 1 (sessão 12).** Raiz de composição: `pages/mural.js` (só liga as peças; nenhuma regra). Tudo é dado ou injetado:
+- **Dados** (repositories): `data/mural-config.js` (tempos, vigia, rede, palco), `data/mural-scenes.js` (as cenas: `id`, `type`, `seconds`, `enabled`, `from`/`until`, `requires: { reveal, phases, live }`, `params`),
+  `data/mural-sources.js` (fontes ao vivo e o que cada uma faz: `bind.live`, `pick`, `interrupt`, `celebrate`), `data/mural-tips.js` (dicas e avisos, com janela de datas; Wi-Fi, estacionamento e comida
+  estão `enabled: false` até a organização mandar o texto).
+- **Motor** `features/mural.js` (`createMural`): rodízio com cada cena num bloco protegido, `prepare` com tempo limite, `MURAL_SKIP` (cena sem nada pra mostrar: castigo curto, não conta como falha), cena de
+  reserva e HTML de emergência, interrupções por prioridade (`pushInterrupt`, `immediate` corta a cena atual), `reportError` (erro solto da página castiga a cena), retomada na cena de antes da recarga (`ledger`).
+- **Regras puras** (dual, testadas no Node): `mural-playlist.js` (qual cena vem, castigo, `?cenas=`), `mural-health.js` (`evaluateHealth`: motivos `stuck`, `scene-failures`, `preventive`, `version`,
+  `offline-recovery`; trava anti-laço de recargas; ledger em sessionStorage; relógio num Worker com queda pro setInterval), `mural-network.js` (sonda de internet com espera crescente, NÃO confia no evento `online`;
+  sonda = `fetch` no-cors de `https://www.gstatic.com/generate_204`, de fora do site de propósito: o service worker só trata a mesma origem e devolveria cache), `mural-version.js` (assinatura dos `?v=N` do próprio HTML, a cada 10 min),
+  `mural-live.js` (`createResilientListener` + `createLiveHub`: reabre com espera crescente, ignora callback da escuta antiga, silêncio longo reabre, `reconnect()` quando a rede volta), `mural-live-sources.js`
+  (adaptadores `poll` e `document`, resolvem repositories e chaves por nome), `mural-live-bindings.js` (dado ao vivo -> estado das cenas, interrupção e papel picado só na publicação AO VIVO, via
+  `publish-detector.js`, que o quadro da sala também usa), `mural-stage.js` (`?tela=`, `?proporcao=`, `?margem=`, `data-shape`), `mural-now-next.js`, `mural-photo-pool.js`.
+- **Cenas feitas** (ids em `data/mural-scenes.js`): `agora`/`agora-2` (agora e próximas por sala; usa mock, logo só com o line-up revelado), `fotos-1`/`fotos-2` (fotos de 2025, foto que falha sai por 10 min),
+  `patrocinio-master`/`patrocinio-demais` (mock, só revelado), `qr-cartao` (ingressos.html?cartao=1), `qr-avaliar` (index.html?avaliar=1, entra a partir das 17:15), `inscritos` (`event-stats`, só com total >= `EVENT.tickets.counterMin`),
+  `dicas`, `fenix` (imagem estática `assets/img/gumbleton.png`, 833x1000, do mascote aprovado), `podio-jam` (pódio do Coding Jam ao vivo, mock, só revelado), `contagem` (fase antes), `obrigado` (fase depois) e a
+  `reserva` (sem rede, fora da lista; sustenta a tela quando nada mais pode). Ligar/desligar/reordenar = editar o dado.
+- **Palco:** `.mural-stage` é um contêiner de tamanho; todo tamanho é múltiplo de `--u` (1cqmin). A forma (`ultrawide` >= 2.4, `wide` >= 1.5, `standard` >= 1.1, `tall`) só troca o arranjo no CSS. Verificado no navegador em
+  1920x1080, 3:1, 4:3 e 1080x1920. Sem parâmetro ocupa a janela (telão de verdade) e liga o modo quiosque (cursor escondido, Wake Lock); com `?tela=`/`?proporcao=`/`?diag=1` o cursor fica. **Margem segura 2%.**
+- **Parâmetros:** `?lineup=1` (mostra o mock), `?demo=AAAA-MM-DDTHH:MM` (relógio simulado), `?ensaio=0` (limpa o ensaio guardado na aba; sem isso um `?ensaio=agora` anterior desloca a grade e quebra o `?demo=`),
+  `?cenas=a,b`, `?diag=1` (painel: cena, falhas, castigo, último erro, internet, fontes ao vivo, tempo ligado, recargas, pendências, degradado, palco), `?tela=LxA`, `?proporcao=3:1`, `?margem=N`.
+- **Rede de segurança na página:** um `<script>` inline recarrega a página se o JavaScript não chegar a iniciar em 45 s (`window.__muralBooted`); a tela de partida (logo e nome) está no HTML.
+- **Testes:** puros em `tools/mural/*.test.js` (playlist, health, network/live/version, stage, scenes-logic, bindings; 52 testes), de tela em `tools/dom/mural-engine.dom.test.js` (21, com relógio falso
+  `tools/lib/fake-clock.js`, inclui 8 h de resistência), `mural-scenes.dom.test.js` (12) e `mural-page.dom.test.js` (10, carrega os scripts do próprio `mural.html` na ordem dele; confere a lista de scripts da página).
+  Armadilha: em teste de tela, array vindo de dentro do jsdom não é `deepEqual` de array do teste (outro realm): espalhe `[...x]`.
+- **Ainda NÃO verificado (depende do hardware/do Renato):** o ensaio de 1 h ou mais no computador e no telão de verdade com o Wi-Fi desligado no meio; recarga real por `stuck` (nos testes é decisão pura, o `location.reload` não roda no jsdom);
+  o Wake Lock num Chrome de verdade; a proporção real do LED; o pódio ao vivo com login de moderador (só emulado). **Falta também o OK do Renato** pra incluir `tools/mural/` no `validate.yml`.
+- **Pós-queda de energia sem internet:** se o computador ligar sem rede o Chrome mostra a página de erro e o JavaScript do mural nem existe; a página de "sem internet" do Chrome recarrega sozinha quando a rede volta, mas
+  testar isso no ensaio (e deixar o endereço do mural como página inicial do Chrome em `--kiosk`).
 
 ## Quiz "Monte sua trilha" (sessão 7)
 

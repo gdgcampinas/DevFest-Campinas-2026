@@ -73,7 +73,7 @@ verificado, o que depende dele. Armadilhas e como testar: seção "Como
 trabalhar e testar aqui" do handoff (bump de ?v=N, cache do
 schedule.dev.js, painel do app sem service worker, etc.).
 
-ESTADO EM 2026-10-07, fim da sessão 11 (detalhes no handoff, seção "Sessão 11" no topo)
+ESTADO EM 2026-10-07, fim da sessão 12 (detalhes no handoff, seções "Sessão 12" e "Sessão 11" no topo)
 Site de 8 páginas (Principal, Grade, Palestrantes, Ingressos, Time — PÚBLICO em PROD, 23 pessoas reais, 17 bios —, Patrocínio, Sorteio — atrás de `devOnly`, só em DEV —, Código de Conduta);
 em PROD, Grade, Palestrantes e Patrocínio abrem mas mostram "será revelado em breve" no lugar do conteúdo mock (line-up, patrocinadores, comunidades, valores), que só aparece em `/DEV/<página>` ou
 `?lineup=1`. Há também o quiz e ferramentas internas, que NÃO têm versão `/DEV/` (use na raiz): quadro da sala (`checkin-display.html?trilha=<id>`), moderação (`moderacao.html?trilha=<id>`) e
@@ -83,18 +83,19 @@ horário das perguntas DESLIGADA de propósito (teste em DEV): LIGAR antes do ev
 **Sessão 11:** (1) o CODING JAM entrou na grade como card de destaque (`highlight: "codejam"`, mock na trilha IA às 10:30, "Mão na massa", "Recomendamos usar Antigravity, Antigravity IDE ou Gemini",
 perguntas ao vivo desligadas, avaliação mantida) e tem CONCURSO feito: quem tem check-in cadastra o projeto, a turma vota (um voto por check-in), o moderador publica o pódio (modal, cards, quadro da sala com
 papel picado). As regras do Firestore do concurso JÁ estão publicadas e conferidas contra o banco real; o lado do moderador (login Google) ainda não foi testado pelo Renato. (2) Ideias reorganizadas:
-descartadas nota média pública, credencial digital, mentorias, mural da hashtag, área administrativa, votação das salas e a página `codejam.html` (o envio é no Google). (3) MURAL DO TELÃO DECIDIDO:
-ver abaixo.
+descartadas nota média pública, credencial digital, mentorias, mural da hashtag, área administrativa, votação das salas e a página `codejam.html` (o envio é no Google). (3) MURAL DO TELÃO DECIDIDO.
+**Sessão 12:** o MURAL DO TELÃO, FASE 1, está FEITO e no ar (`mural.html`, interno, sem versão `/DEV/`: abra na raiz com `?lineup=1`). Motor autônomo com vigia, cena isolada, rede por sonda, escutas que reabrem e
+cena de reserva, 14 cenas por dado (agora e próximas, fotos, patrocinadores, QR, inscritos, dicas, fênix estática, pódio do Coding Jam ao vivo, contagem, obrigado), palco que serve a qualquer proporção
+(testado em 16:9, 3:1, 4:3 e vertical). Testes: `tools/mural/*.test.js` (52, puros, fora do CI), `tools/dom/mural-*.dom.test.js` (43, no CI, com relógio falso e 8 h de resistência). Detalhes e parâmetros
+(`?tela=`, `?proporcao=`, `?cenas=`, `?diag=1`, `?demo=`, `?ensaio=0`) no PROJECT_CONTEXT, "Mural do telão de LED", subseção "Implementação da Fase 1".
 
-PRÓXIMO TRABALHO (ver "Sessão 11" no handoff e "Mural do telão de LED" no PROJECT_CONTEXT)
-1) **MURAL DO TELÃO, FASE 1** (`mural.html`): um computador plugado no telão de LED rodando o Chrome em tela cheia, NINGUÉM opera, então tem que ser AUTÔNOMO e SE CORRIGIR SOZINHO (vigia que recarrega,
-cena isolada que não derruba o rodízio, queda de internet, recarga preventiva, tela de reserva sem rede), em TEMPO REAL, SEM SOM, proporção desconhecida (simular com `?tela=1920x1080` e `?proporcao=3:1`,
-palco responsivo). Escrever PRIMEIRO o motor com testes de falha; depois as cenas: agora e próximas, fotos antigas, patrocinadores, QR gigante, inscritos, dicas e avisos, fênix estática, pódio do Coding Jam
-ao vivo, reserva. Cenas por dado (`data/mural-scenes.js`), fontes ao vivo por repository, tudo desligável. O plano foi apresentado (com mockup em 16:9 e 3:1) e o Renato ainda NÃO disse "autorizado":
-mostrar o plano de novo, resumido, e pedir o sim. A Fase 1 não depende das decisões em aberto.
+PRÓXIMO TRABALHO (ver "Sessão 12" no handoff e "Mural do telão de LED" no PROJECT_CONTEXT)
+1) **Mural, o que depende do Renato:** (a) abrir `mural.html` (links no handoff) e dizer o que ajustar no visual e no tempo de cada cena; (b) mandar logos em alta e cotas reais dos patrocinadores, originais em alta das fotos de
+2025 (hoje 900 px, vão pixelar no LED), texto de Wi-Fi, estacionamento e comida (as dicas estão `enabled: false`), a proporção/resolução do telão quando souber, e se o sorteio usa o mesmo telão; (c) o ENSAIO de 1 h ou mais no
+computador e no telão de verdade, desligando o Wi-Fi no meio (checklist no PROJECT_CONTEXT); (d) dar OK pra incluir `tools/mural/`, `tools/raffle/`, `tools/contest/` e `tools/room/` no `validate.yml`.
 2) **Fase 2 do mural (lapidar com o Renato):** foto ao vivo (SEM aprovação antes, qualquer moderador tira do ar, sem limite rígido por pessoa, nome opcional, exportar zip pro Google Fotos, módulo
-desligável; caminho em aberto: nosso site ou álbum do Google Fotos lido por intermediário, decidir com um álbum de TESTE que o Renato vai mandar), aviso e controle remoto pelo celular. O iframe do álbum
-do Google Fotos NÃO funciona. Fase 3: fênix animada (arquivo do Renato).
+desligável; caminho em aberto: nosso site ou álbum do Google Fotos lido por intermediário, decidir com um álbum de TESTE que o Renato vai mandar), aviso e controle remoto pelo celular. O motor já tem o contrato
+de fonte ao vivo (`open(onData, onError)`) e a cena é só um tipo novo no registro de `pages/mural.js`. O iframe do álbum do Google Fotos NÃO funciona. Fase 3: fênix animada (arquivo do Renato).
 3) Pendências do Renato do Coding Jam: horário/sala/prêmios reais (hoje mock), confirmar que conta como workshop obrigatório do e-mail dos organizadores, acesso de organizador no codingjam.dev (mensagem pra
 Christina Lin no LinkedIn rascunhada), testar o lado do moderador, passar os 6 e-mails dos moderadores (1 por trilha + 2 reservas) e confirmar `gdgcampinascontato@gmail.com`.
 4) Sorteio: o Renato testar o lado do moderador; decisões abertas (horários de abrir/fechar o cadastro, prêmios, quando tirar o `devOnly`). Corrigir o texto "aguarde até 10 minutos" do cadastro por ingresso

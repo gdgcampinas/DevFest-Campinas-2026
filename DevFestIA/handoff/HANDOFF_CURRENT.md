@@ -1,12 +1,32 @@
 # Handoff — Current State
 
-**Last updated:** 2026-10-07, fim da sessão 11 (ideias reorganizadas, Coding Jam com card e concurso, decisões do mural do telão). Antes: fim da sessão 10 (Sorteio fechado no código, Time público, análise do
+**Last updated:** 2026-10-07, fim da sessão 12 (mural do telão, Fase 1 feita). Antes: fim da sessão 11 (ideias reorganizadas, Coding Jam com card e concurso, decisões do mural do telão) e da sessão 10 (Sorteio fechado no código, Time público, análise do
 Sincronizar Sympla). Abrir chat novo pra próxima task, use `NEW_CHAT_PROMPT.md`. Antes de confiar neste texto, rode
 `git status --short --branch` e `git log --oneline --decorate -30` (o git não mente; cada commit tem mensagem descritiva).
 
+## Sessão 12 (2026-10-07): MURAL DO TELÃO, FASE 1 (feita)
+
+Renato autorizou o plano ("autorizado todos") e a Fase 1 foi entregue, um commit por melhoria: (1) motor autônomo com testes de falha, (2) página e cenas. Arquitetura e parâmetros: `PROJECT_CONTEXT.md`, "Mural do telão de LED",
+subseção "Implementação da Fase 1". Resumo do que existe:
+- **`mural.html`** (interno, fora do menu e do sitemap, `noindex`, SEM versão `/DEV/`: abrir na raiz). Links pro Renato testar (cada um é uma tela simulada; o relógio simulado `?demo=` e `?ensaio=0` evitam depender da hora):
+  `https://gdgcampinas.github.io/DevFest-Campinas-2026/mural.html?lineup=1&ensaio=0&demo=2026-11-28T09:10&diag=1` (rodízio completo com painel de saúde),
+  `.../mural.html?lineup=1&ensaio=0&proporcao=3:1&demo=2026-11-28T09:10` (faixa ultra larga), `.../mural.html?lineup=1&ensaio=0&tela=1920x1080&cenas=qr-cartao` (uma cena só). Sem `?lineup=1` só entram as cenas com dado real
+  (fotos, QR, inscritos, dicas, fênix, contagem, obrigado, reserva).
+- **Autocorreção testada** (jsdom + relógio falso): cena que erra no prepare/render/mount/dispose, prepare que trava, cena sem nada pra mostrar, tipo de cena inexistente, erro solto da página, reserva e HTML de emergência,
+  interrupção, retomada na cena de antes da recarga, prazo do vigia, trava anti-laço de recargas, sonda de internet, escuta do banco que cai/fica muda/o login falha, versão nova publicada, 8 h de resistência.
+- **Fontes ao vivo ligadas:** `registered` (poll de `event-stats` a cada 5 min) e `podium` (escuta de `contest-results/<talkKey>` das sessões com concurso). Pódio publicado AO VIVO entra na frente com papel picado;
+  pódio já publicado ao abrir só entra no rodízio. **O lado do moderador (publicar o pódio de verdade, com login Google) o Claude não testou**, só o emulador e o jsdom.
+- **Mascote:** `docs/assets/img/gumbleton.png` (833x1000, copiado de `Design/mascote-gumbleton-2026/gdg-campinas-mascote-isolado-transparente.png`, uso autorizado pelo Renato na cena da fênix).
+- **Verificação no navegador do app (desktop):** 16:9, 3:1, 4:3 e vertical (1080x1920), todas as cenas, painel de diagnóstico, fontes ao vivo lendo o Firestore de verdade e rodízio completo. Não é página pra celular.
+**O Renato precisa FAZER:** (1) olhar o mural e dizer o que ajustar; (2) os itens de "Em aberto do mural" abaixo; (3) o ensaio no hardware real (computador do telão, `--kiosk`, tomada, sem repouso, Wi-Fi desligado no meio,
+testar a volta depois de ligar sem internet); (4) OK pra mexer no `validate.yml` (incluir `tools/mural/`, `tools/raffle/`, `tools/contest/`, `tools/room/`).
+**Armadilhas novas:** (a) `?ensaio=` fica guardado na aba: um `?ensaio=agora` antigo desloca a grade e o `?demo=` deixa de bater; use `?ensaio=0`; (b) em teste de tela, array criado dentro do jsdom não é `deepEqual` de array do teste
+(use `[...x]`); (c) o servidor local em 8080 serve `docs/` com cache do navegador: pra ver CSS novo faça `fetch(url, { cache: "reload" })` e recarregue, ou bump do `?v=`; (d) o mural usa `?v=1` em todos os arquivos novos e
+`css/mural.css?v=1`: ao mudar um deles depois de publicado, subir o N em `mural.html` (e o mural em produção recarrega sozinho na troca de cena quando a assinatura dos `?v=` muda).
+
 ## Sessão 11 (2026-10-06 e 10-07): ideias, Coding Jam (card e concurso), decisões do mural do telão
 
-**PRÓXIMA TASK (decidida com o Renato): MURAL DO TELÃO, FASE 1.** Leia "Mural do telão de LED" no `PROJECT_CONTEXT.md` (decisões, arquitetura e tabela de autocorreção) e as duas seções do `IDEAS_BACKLOG.md` (mural e foto ao vivo). Resumo: `mural.html` interno, computador plugado no telão rodando o Chrome, NINGUÉM opera, tempo real, sem som, proporção desconhecida (simulada por `?tela=`/`?proporcao=`); escrever PRIMEIRO o motor autônomo com testes de falha, depois as cenas (agora e próximas, fotos antigas, patrocinadores, QR gigante, inscritos, dicas e avisos, fênix estática, pódio do Coding Jam, reserva sem rede). A Fase 1 NÃO depende das decisões em aberto abaixo (a foto ao vivo é módulo desligável, Fase 2). Mockup aprovado em conversa (16:9 e 3:1). O plano da Fase 1 foi apresentado ao Renato mas ele AINDA NÃO disse "autorizado": confirmar a autorização antes de codar (Diretiva Master).
+**(FEITA na sessão 12, ver acima) MURAL DO TELÃO, FASE 1.** Leia "Mural do telão de LED" no `PROJECT_CONTEXT.md` (decisões, arquitetura e tabela de autocorreção) e as duas seções do `IDEAS_BACKLOG.md` (mural e foto ao vivo). Resumo: `mural.html` interno, computador plugado no telão rodando o Chrome, NINGUÉM opera, tempo real, sem som, proporção desconhecida (simulada por `?tela=`/`?proporcao=`); escrever PRIMEIRO o motor autônomo com testes de falha, depois as cenas (agora e próximas, fotos antigas, patrocinadores, QR gigante, inscritos, dicas e avisos, fênix estática, pódio do Coding Jam, reserva sem rede). A Fase 1 NÃO depende das decisões em aberto abaixo (a foto ao vivo é módulo desligável, Fase 2). Mockup aprovado em conversa (16:9 e 3:1). O plano da Fase 1 foi apresentado ao Renato mas ele AINDA NÃO disse "autorizado": confirmar a autorização antes de codar (Diretiva Master).
 **Em aberto do mural (Renato):** link de um álbum colaborativo de TESTE do Google Fotos (pra decidir entre foto pelo nosso site ou álbum lido por intermediário); logos em alta e cotas dos patrocinadores; originais em alta das fotos de edições antigas; fênix (arquivo: vídeo, sprites ou só imagem); dicas e avisos reais (Wi-Fi, estacionamento, comida); se o sorteio usa o mesmo telão; proporção/resolução quando souber.
 
 **Decisões de ideias:** ver "Decisões de 2026-10-06" mais abaixo e "Descartadas" no `IDEAS_BACKLOG.md` (nota média pública nunca; credencial digital, mentorias,
@@ -110,8 +130,8 @@ endpoints de ESCRITA de check-in de porta (decidido NÃO usar agora; análise em
 - **Mascote e comunicação:** Gumbleton (Gumble), a fênix do GDG Campinas, foi consolidado em `../../../Design/mascote-gumbleton-2026/`. O inventário e as regras de uso estão em `../../../docs/Marca_e_Mascote_2026.md`. Nenhum arquivo do site, deploy, Firebase ou workflow foi alterado por essa consolidação; aplicar o mascote no site requer autorização explícita do Renato.
 
 - Site estático de **8 páginas** (Principal, Grade, Palestrantes, Ingressos, Time, Patrocínio, Sorteio,
-  Código de Conduta — Sorteio ainda só em modo DEV, ver "Sorteio" abaixo; Time já é público) mais 2 ferramentas internas
-  (`checkin-display.html`, `reset-teste.html`),
+  Código de Conduta — Sorteio ainda só em modo DEV, ver "Sorteio" abaixo; Time já é público) mais 4 ferramentas internas
+  (`checkin-display.html`, `moderacao.html`, `reset-teste.html`, `mural.html`),
   sem build. Publicado por GitHub Pages a partir de `docs/` no `main`; trabalho no
   `development`, o CI valida e promove sozinho (push no `development` = vai pro ar em minutos).
 - **Backend mínimo, todo grátis (plano Spark, sem Blaze, sem servidor nosso):** Firebase
