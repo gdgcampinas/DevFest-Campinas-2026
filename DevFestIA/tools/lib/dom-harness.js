@@ -62,7 +62,16 @@ function memoryStorage(initial = {}) {
 const flush = (ms = 0) => new Promise(resolve => setTimeout(resolve, ms));
 const settle = async (times = 4) => { for (let i = 0; i < times; i++) await flush(); };
 
+/** Espera até `condition()` ficar verdadeira (ou estoura o tempo): evita sleeps fixos que falham em máquina lenta ou CI carregado. */
+async function waitFor(condition, { timeout = 3000, step = 10 } = {}) {
+  const limit = Date.now() + timeout;
+  while (!condition()) {
+    if (Date.now() > limit) throw new Error(`waitFor: a condição não ficou verdadeira em ${timeout} ms`);
+    await flush(step);
+  }
+}
+
 /** Texto visível de um elemento, sem quebras de linha soltas (jsdom não tem innerText). */
 const textOf = element => element.textContent.replace(/\s+/g, " ").trim();
 
-module.exports = { loadSite, SITE_BASE, memoryStorage, flush, settle, textOf };
+module.exports = { loadSite, SITE_BASE, memoryStorage, flush, settle, waitFor, textOf };

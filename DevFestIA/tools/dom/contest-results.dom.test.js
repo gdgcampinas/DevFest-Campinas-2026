@@ -6,7 +6,7 @@
  */
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { loadSite, SITE_BASE, flush, settle, textOf } = require("../lib/dom-harness.js");
+const { loadSite, SITE_BASE, flush, settle, waitFor, textOf } = require("../lib/dom-harness.js");
 const { createFakeBoards } = require("../lib/fake-question-world.js");
 
 const KEY = "2026-11-28T17:15:00.000Z|mobile";
@@ -79,13 +79,14 @@ test("sem pódio ainda: lê de novo a cada conferência; quando sai, preenche e 
 
 test("o ciclo automático confere sozinho até o pódio aparecer", async () => {
   const world = await setup({ pollMs: 30 });
-  await flush(100);
+  await waitFor(() => world.reads.length >= 2);
   assert.ok(world.reads.length >= 2, "relê sozinho enquanto não há pódio");
   world.results.emit(KEY, { podium: PODIUM });
-  await flush(100);
+  await waitFor(() => /App da Ana/.test(world.slots()[0]));
+  await flush(60); // deixa terminar uma leitura que estava em andamento
   const reads = world.reads.length;
   assert.match(world.slots()[0], /App da Ana/);
-  await flush(100);
+  await flush(120);
   assert.equal(world.reads.length, reads, "achou: parou de ler");
 });
 

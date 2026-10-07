@@ -84,7 +84,7 @@ cada minuto e 1 ingresso = 1 cadastro (e-mail do Sympla) — estes DOIS atrás d
 aviso de nomes repetidos. O Renato JÁ publicou as regras (versão do commit `135c56a`). Trava de horário das perguntas DESLIGADA de
 propósito (teste em DEV): LIGAR antes do evento.
 
-NOVO (sessão 11, 2026-10-06): o Coding Jam entrou na grade como card de destaque (mock em Mobile/Agile 14:15) e o CONCURSO da sessão está feito no código: cadastro do
+NOVO (sessão 11, 2026-10-06): o Coding Jam entrou na grade como card de destaque (mock na trilha IA às 10:30, com Antigravity e Gemini; o Jam será sempre na IA) e o CONCURSO da sessão está feito no código: cadastro do
 projeto, votação (um voto por check-in) e pódio (modal, cards, quadro da sala com papel picado, tela do moderador). Ver "Destaque de sessão" no PROJECT_CONTEXT e "Sessão 11" no
 handoff. FALTA o Renato: colar as regras do Firestore de novo, definir horário/sala/prêmios, confirmar que conta como workshop obrigatório, pedir acesso no codingjam.dev, testar o lado do
 moderador (login Google) e passar os 6 e-mails dos moderadores. Descartadas (ver "Descartadas" no IDEAS_BACKLOG): nota média pública, credencial digital, mentorias, mural da hashtag, área

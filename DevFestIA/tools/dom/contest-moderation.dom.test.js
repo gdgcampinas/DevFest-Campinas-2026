@@ -6,7 +6,7 @@
  */
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { loadSite, SITE_BASE, flush, settle, textOf } = require("../lib/dom-harness.js");
+const { loadSite, SITE_BASE, flush, settle, waitFor, textOf } = require("../lib/dom-harness.js");
 const { createFakeQuestions, createFakeBoards, denied } = require("../lib/fake-question-world.js");
 
 const site = loadSite({
@@ -151,7 +151,7 @@ test("quando a sala passa pra outra palestra: para de contar o concurso e volta 
   await settle(6);
   assert.equal(world.questions.listenCount(), 0);
   clock = new Date("2026-11-28T13:10:00Z");
-  await flush(120);
+  await waitFor(() => world.questions.listenCount() === 1);
   assert.equal(world.questions.listenCount(), 1, "a palestra seguinte tem perguntas");
   assert.match(textOf(world.rootEl), /RAG na prática/);
   assert.equal(world.rootEl.querySelector("[data-contest-publish]"), null);

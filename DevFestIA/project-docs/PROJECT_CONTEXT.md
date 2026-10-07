@@ -334,7 +334,7 @@ agora" (tag AGORA e barra), filtro por trilha, check-in por QR, avaliação (not
 (1º, 2º, 3º com `prize` opcional, aparece no card e no modal quando preenchido), `steps`, `rules` e `questions: false`.
 - **Coding Jam:** `format: "workshop"` (conta como o workshop obrigatório do e-mail de patrocínio dos organizadores; confirmar com o programa) mais
   `highlight: "codejam"`. Título "GDG Campinas Coding Jam", frase "Monte seu projeto, apresente e dispute o pódio". Hoje é MOCK em `mock-talks.js`
-  (trilha Mobile/Agile, 14:15, 1 slot de 40 min); o horário e a sala reais ainda não foram definidos pelo Renato.
+  (trilha IA, 10:30, Sala Observatório, 1 slot de 40 min, tags antigravity e gemini, "com Antigravity e Gemini" na descrição); decisão do Renato em 2026-10-07: será SEMPRE na trilha de IA, às 10:30. Prêmios ainda não definidos.
 - **Perguntas ao vivo desligadas** (decisão do Renato: as perguntas do Jam são ao vivo, no microfone): o modal não cria o bloco de perguntas
   (`talkDetailMarkup`); `resolveRoomBoard({ allowsQuestions })` devolve `questionsPhase: null` e o quadro da sala não monta a coluna de perguntas
   (mas MANTÉM o QR de check-in, que vai liberar o voto); a moderação mostra "perguntas desativadas nesta sessão" e volta a moderar quando a sala

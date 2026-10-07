@@ -6,7 +6,7 @@
  */
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { loadSite, SITE_BASE, memoryStorage, flush, settle, textOf } = require("../lib/dom-harness.js");
+const { loadSite, SITE_BASE, memoryStorage, flush, settle, waitFor, textOf } = require("../lib/dom-harness.js");
 const { createFakeQuestions, createFakeVotes, createFakeBoards, denied } = require("../lib/fake-question-world.js");
 
 const KEY = "2026-11-28T12:00:00.000Z|mobile";
@@ -245,7 +245,7 @@ test("a sessão abre sozinha: no ciclo seguinte aparece o formulário e a lista 
   await world.open();
   assert.equal(world.projects.reads.length, 0);
   clock = new Date("2026-11-28T12:01:00Z");
-  await flush(120);
+  await waitFor(() => world.containerEl.querySelector("[data-contest-form]"));
   assert.ok(world.containerEl.querySelector("[data-contest-form]"));
   assert.equal(world.projects.reads.length, 1);
 });

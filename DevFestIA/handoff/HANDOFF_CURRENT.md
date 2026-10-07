@@ -16,11 +16,11 @@ prêmio opcional por dado, "Traga seu notebook", GDG Campinas como quem conduz),
 normal da grade (workshop + `highlight: "codejam"`): herda favorito, Minha agenda, `?agenda=`, calendário, "agora", check-in e relatório, e vale em qualquer trilha e sala.
 **Concurso da sessão (cadastro do projeto, votação e pódio): FEITO, mas depende de regras novas.** Quem tem check-in cadastra o próprio projeto (nome da pessoa e do projeto), a turma vota
 (um voto por check-in, nunca no próprio) só durante a sessão, o moderador publica o pódio (mostrado no modal, nos cards e no quadro da sala com papel picado). Detalhes e decisões em
-`PROJECT_CONTEXT.md`, seção "Destaque de sessão". Hoje é MOCK (Mobile/Agile, 14:15, 1 slot de 40 min).
+`PROJECT_CONTEXT.md`, seção "Destaque de sessão". Hoje é MOCK (trilha IA, 10:30, Sala Observatório, 1 slot de 40 min, com Antigravity e Gemini; decisão do Renato em 2026-10-07: o Jam será sempre na trilha de IA, às 10:30).
 **O Renato precisa FAZER:** (1) **colar as regras do Firestore de novo** (`pbcopy < DevFestIA/firebase/firestore.rules` e Firestore > Regras > Publicar): sem elas o cadastro e o voto são recusados;
 (2) definir horário, sala e prêmios do Coding Jam (hoje mock) e se ele conta como o workshop obrigatório do e-mail dos organizadores (sem workshop o patrocínio não é pago);
 (3) pedir acesso de organizador no codingjam.dev (o e-mail pra `gca-americas@google.com` voltou: grupo inexistente; a mensagem do LinkedIn pra Christina Lin foi rascunhada);
-(4) testar o lado do moderador do concurso (login Google, o Claude não consegue): abrir `moderacao.html?trilha=mobile` no horário do Jam (ou com `?palestra=1415.mobile`), ver os projetos e votos, Publicar pódio;
+(4) testar o lado do moderador do concurso (login Google, o Claude não consegue): abrir `moderacao.html?trilha=ia` no horário do Jam (ou com `?palestra=1030.ia`), ver os projetos e votos, Publicar pódio;
 (5) os 6 e-mails dos moderadores (ver acima).
 **Regras publicadas e conferidas (2026-10-06):** o Renato colou as regras e o Claude rodou 21 verificações contra o banco REAL como plateia anônima (check-in, cadastro, lista, voto, voto duplicado,
 voto no próprio projeto, placar fechado, pódio só leitura): todas passaram. Ficaram dados de teste no banco, na sessão inventada `2026-11-28T17:15:00.000Z|zzteste` (2 check-ins, 1 projeto, 1 voto):
