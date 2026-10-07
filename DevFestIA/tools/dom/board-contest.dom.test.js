@@ -9,7 +9,7 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, settle, textOf } = require("../lib/dom-harness.js");
 const { createFakeBoards } = require("../lib/fake-question-world.js");
 
-const site = loadSite({ scripts: [...SITE_BASE, "components/talk-highlight.js", "components/room-board.js", "features/board-contest.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "components/talk-highlight.js", "components/room-board.js", "features/publish-detector.js", "features/board-contest.js"] });
 const { window, document } = site;
 test.after(() => window.close());
 const createBoardContest = site.get("createBoardContest");

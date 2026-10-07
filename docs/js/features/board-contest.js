@@ -10,11 +10,10 @@
  * `follow(null)` para. Mesmo `key` com outro `mountEl` (a tela foi redesenhada) só troca o lugar de desenhar. Tudo por parâmetro:
  * `deps()` ({ results, getUid }), `whenReady` (só liga o listener depois dos módulos do Firebase) e `confetti` ({ fire }).
  */
-function createBoardContest({ deps = defaultBoardContestDeps, whenReady = runAfterModules, confetti = createConfetti() } = {}) {
+function createBoardContest({ deps = defaultBoardContestDeps, whenReady = runAfterModules, confetti = createConfetti(), publishDetector = createFreshPublishDetector() } = {}) {
   let target = null;
   let stopListening = null;
   let winners = [];
-  let sawEmpty = false; // viu a sessão sem pódio nesta tela: só então o resultado novo ganha papel picado
 
   function draw(offline = false) {
     if (target?.mountEl) target.mountEl.innerHTML = boardContestMarkup({ podium: target.highlight?.podium ?? [], winners, offline });
@@ -30,7 +29,7 @@ function createBoardContest({ deps = defaultBoardContestDeps, whenReady = runAft
     stopListening?.();
     stopListening = null;
     winners = [];
-    sawEmpty = false;
+    publishDetector.reset(); // só comemora o resultado que chega DEPOIS de ver a sessão sem pódio nesta tela
   }
 
   async function listenTo(key) {
@@ -43,8 +42,7 @@ function createBoardContest({ deps = defaultBoardContestDeps, whenReady = runAft
         doc => {
           if (target?.key !== key) return;
           const next = doc?.podium ?? [];
-          const justPublished = sawEmpty && !winners.length && next.length > 0;
-          if (!next.length) sawEmpty = true;
+          const justPublished = publishDetector.observe(next);
           winners = next;
           draw();
           if (justPublished) celebrate();
