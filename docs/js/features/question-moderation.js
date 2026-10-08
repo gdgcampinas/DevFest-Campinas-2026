@@ -14,17 +14,6 @@
  * `config.boardPublishMs` e quando o conjunto de aprovadas muda, e o quadro só é regravado se a ordem mudou. Por isso a
  * ordem que a plateia vê só anda com esta tela aberta na palestra (aviso no handoff).
  */
-function pickModerationTalk({ schedule, track, now, pinnedSlot = null, allowsQuestions = () => true }) {
-  const describe = slot => ({ key: talkKey(slot, track.id), title: slot.talks[track.id].title, data: slot.talks[track.id], questionsEnabled: allowsQuestions(slot.talks[track.id]) });
-  if (pinnedSlot) return describe(pinnedSlot);
-  const talkSlots = schedule.filter(slot => slot.talks?.[track.id]);
-  const state = resolveEventState(now, schedule);
-  const slot = state.phase === "live" && state.activeSlot?.talks?.[track.id]
-    ? state.activeSlot
-    : talkSlots.filter(candidate => candidate.end <= now).pop();
-  return slot ? describe(slot) : null;
-}
-
 function initQuestionModeration(rootEl, { schedule, track, config, now = () => new Date(), pinnedCode = null, codeOf, deps = defaultModerationDeps, whenReady = runAfterModules, allowsQuestions = talkHighlightsRepository.allowsQuestions, contest = null, hasContest = talkHighlightsRepository.hasContest }) {
   let email = "";
   let watch = null; // { talk, publisher, stopListening, timer } da palestra que está sendo moderada

@@ -12,7 +12,7 @@ const { createFakeQuestions, createFakeBoards, denied } = require("../lib/fake-q
 const site = loadSite({
   scripts: [...SITE_BASE, "data/talk-questions.js", "data/talk-contest.js", "data/favorites.js", "features/live-status.js", "features/room-board.js", "features/question-ranking.js",
     "features/board-snapshot.js", "features/board-publisher.js", "components/talk-questions.js", "components/moderator-login.js", "components/question-moderation.js",
-    "components/contest-moderation.js", "features/moderator-login.js", "features/question-moderation.js", "features/contest-ranking.js", "features/contest-moderation.js"],
+    "components/contest-moderation.js", "features/moderator-login.js", "features/moderation-talk.js", "features/question-moderation.js", "features/contest-ranking.js", "features/contest-moderation.js"],
 });
 const { window, document } = site;
 test.after(() => window.close());
