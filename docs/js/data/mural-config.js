@@ -13,6 +13,9 @@
  *   motion               animações, todas por dado: `defaultTransition` (entrada das cenas: "rise", "slide" ou "zoom"; cada cena pode trocar com `transition`),
  *                        `staggerMs` (espera entre um cartão e o seguinte quando entram em sequência), `podiumStepMs` (espera entre um lugar do pódio e o seguinte,
  *                        do último pro primeiro), `countUpMs`/`countUpStepMs` (número que sobe). Só opacity e transform (roda na placa de vídeo, não pesa em computador fraco)
+ *   holdCheckMs          com o rodízio parado numa cena (fixar, pausar, emergência) de quanto em quanto tempo o motor olha se o prazo acabou (e renova o prazo do vigia)
+ *   control              controle remoto do mural (features/mural-control.js): `docKey` (documento `mural-control/<docKey>`), limites de aviso (`maxNotices`, `maxTextLength`, `maxEmergencyLength`),
+ *                        as durações que o moderador escolhe (`noticeMinutes`, `holdMinutes`) e o que o mural faz com o aviso novo (`emergencyScene`, `noticeInterrupt`)
  *   albums               álbuns do Google Fotos (data/mural-albums.js): `proxyUrl` = endereço do intermediário (DevFestIA/tools/album-proxy, publicado como Cloudflare Worker na conta do GDG; VAZIO = álbuns desligados, o mural segue
  *                        sem cenas de foto; `?albuns=<endereço>` na URL liga só pra teste), `timeoutMs` = quanto esperar o intermediário, `quarantineMs` = quanto uma foto que
  *                        não carregou fica de fora
@@ -27,6 +30,7 @@ const MURAL_CONFIG = {
   retryDelayMs: 500,
   reserveSeconds: 20,
   idleRetryMs: 5000,
+  holdCheckMs: 5000,
   watchdogSlackMs: 6000,
   imageTimeoutMs: 6000,
   speakerPhotoTimeoutMs: 2500,
@@ -46,6 +50,16 @@ const MURAL_CONFIG = {
     probeEveryMs: 30000,
     probeTimeoutMs: 5000,
     backoff: { baseMs: 2000, maxMs: 60000, factor: 2, jitter: 0.3 },
+  },
+  control: {
+    docKey: "current",
+    maxNotices: 5,
+    maxTextLength: 140,
+    maxEmergencyLength: 160,
+    noticeMinutes: [2, 5, 15, 60],
+    holdMinutes: [5, 15, 30, 60],
+    emergencyScene: "emergencia",
+    noticeInterrupt: { sceneId: "aviso", priority: 90, ttlMs: 60000, immediate: true },
   },
   albums: {
     proxyUrl: "https://devfest-album-proxy.gdgcampinas-devfest.workers.dev",

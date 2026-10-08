@@ -71,6 +71,14 @@ const moderationMuralHiddenRepository = window.createFirestoreDocumentRepository
   edition: CURRENT_EDITION,
 });
 
+/** Controle remoto do mural (`mural-control/current`), do lado do moderador: lê o estado e regrava o documento inteiro (aviso, fixar, pausar, recarregar, emergência). */
+const moderationMuralControlRepository = window.createFirestoreDocumentRepository({
+  db: window.moderatorClient.db,
+  collectionName: "mural-control",
+  edition: CURRENT_EDITION,
+});
+
+window.moderationMuralControlRepository = moderationMuralControlRepository;
 window.moderationMuralHiddenRepository = moderationMuralHiddenRepository;
 window.moderationQuestionsRepository = moderationQuestionsRepository;
 window.moderationContestProjectsRepository = moderationContestProjectsRepository;

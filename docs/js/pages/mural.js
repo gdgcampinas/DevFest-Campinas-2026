@@ -44,6 +44,7 @@ function initMural() {
   // ---------- estado compartilhado ----------
   const live = {}; // último dado de cada fonte ao vivo, lido pelas cenas (ctx.live)
   const pending = new Set(); // motivos de recarga que esperam a próxima troca de cena
+  const urgent = new Set(); // motivos de recarga que valem NA HORA (o moderador pediu pelo controle remoto)
   let degraded = false;
   let watchdog = null;
   let hub = null;
@@ -85,6 +86,8 @@ function initMural() {
     art: createArtScene({ repository: muralArtsRepository, preload }),
     selfie: createSelfieScene({ preload, arts: muralArtsRepository, mascotUrl: "assets/img/gumbleton.png", logoSrc, title, subtitle: eventDateLabel(SCHEDULE, EVENT.timezone) }),
     sponsors: createSponsorsScene({ repository: sponsorsRepository, preload }),
+    notice: createNoticeScene({ nowMs }),
+    emergency: createEmergencyScene(),
     qr: createQrScene({ targets: createQrTargets({ siteUrl: EVENT.url, extraQuery: () => rehearsal.query, albumProxyUrl: proxyUrl }), qr: createQrRenderer() }),
     registered: createRegisteredScene({ motion: config.motion }),
     tips: createTipsScene({ repository: muralTipsRepository }),
@@ -99,6 +102,7 @@ function initMural() {
     contentEl, registry, config, schedule, nowMs, ledger,
     scenes: filterScenesByIds(muralScenesRepository.getAll(), (params.get("cenas") ?? "").split(",").filter(Boolean)),
     reserveScene: muralScenesRepository.reserve(),
+    emergencyScene: muralScenesRepository.emergency(),
     emergencyMarkup: `<section class="ms ms-reserve"><h2 class="ms-title">${escapeHtml(title)}</h2></section>`,
     sceneDeps: { schedule, clock },
     getContext: () => {
@@ -113,13 +117,20 @@ function initMural() {
   // ---------- vigia ----------
   watchdog = createWatchdog({
     ticker: createIndependentTicker({ intervalMs: config.health.checkEveryMs }),
-    snapshot: () => ({ ...mural.state(), pending: [...pending] }),
+    snapshot: () => ({ ...mural.state(), pending: [...pending], urgent: [...urgent], held: mural.state().held !== null }),
     config: config.health, ledger, nowMs,
     reload: () => location.reload(),
     onDecision: decision => { degraded = decision.degraded; },
   });
   window.addEventListener("error", event => mural.reportError(event.error ?? new Error(event.message)));
   window.addEventListener("unhandledrejection", event => mural.reportError(event.reason ?? new Error("promise rejeitada")));
+
+  // ---------- controle remoto (avisos, fixar, pausar, recarregar, emergência): o moderador grava, o mural só obedece ----------
+  const control = createMuralControl({
+    mural, live, limits: config.control, spec: config.control, nowMs, schedule,
+    requestReload: reason => { urgent.add(reason); watchdog.check(); },
+    reloadStore: { read: ledger.controlToken, write: ledger.saveControlToken },
+  });
 
   // ---------- versão nova publicada ----------
   const versionChecker = createVersionChecker({
@@ -130,6 +141,7 @@ function initMural() {
   // ---------- fontes ao vivo ----------
   const bindings = createLiveBindings({
     definitions: muralSourcesRepository.getAll(), live, mural, schedule, nowMs,
+    handlers: { control: doc => control.apply(doc) },
     celebrate: () => createConfetti().fire({ origin: { x: window.innerWidth / 2, y: window.innerHeight / 2 }, force: true }),
   });
   runAfterModules(() => {
@@ -137,7 +149,7 @@ function initMural() {
       schedule, nowMs, backoff: config.network.backoff, onUpdate: bindings,
       sources: buildLiveSources({
         definitions: muralSourcesRepository.getAll(), schedule,
-        repositories: { eventStats: () => window.eventStatsRepository, contestResults: () => window.contestResultsRepository, albums: () => albumsRepository, muralHidden: () => window.muralHiddenRepository },
+        repositories: { eventStats: () => window.eventStatsRepository, contestResults: () => window.contestResultsRepository, albums: () => albumsRepository, muralHidden: () => window.muralHiddenRepository, muralControl: () => window.muralControlRepository },
         keyResolvers: {
           albums: () => albumKeys().map(entry => entry.key),
           "live-albums": () => albumKeys(true),
@@ -169,6 +181,7 @@ function initMural() {
       sources: hub?.statuses() ?? {}, uptimeMin: Math.round((nowMs() - state.startedAt) / 60000),
       reloads: ledger.recentReloads().filter(time => nowMs() - time < config.health.reloadStormWindowMs).length,
       pending: [...pending], degraded, stage: stageEl.dataset.size,
+      held: state.held, notices: live.notices?.length ?? 0, emergency: Boolean(live.emergency),
     });
   }
 

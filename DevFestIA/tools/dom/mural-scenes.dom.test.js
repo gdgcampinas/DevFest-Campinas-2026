@@ -8,7 +8,7 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 const { createFakeClock } = require("../lib/fake-clock.js");
 
-const SCENES = ["mural-scene-kit", "mural-now-next-scene", "mural-sponsors-scene", "mural-qr-scene", "mural-registered-scene", "mural-tips-scene", "mural-phoenix-scene", "mural-podium-scene", "mural-event-phase-scene", "mural-reserve-scene", "mural-spotlight-scene", "mural-selfie-scene", "mural-art-scene", "mural-album-scene"].map(name => `components/mural-scenes/${name}.js`);
+const SCENES = ["mural-scene-kit", "mural-now-next-scene", "mural-sponsors-scene", "mural-qr-scene", "mural-registered-scene", "mural-tips-scene", "mural-phoenix-scene", "mural-podium-scene", "mural-event-phase-scene", "mural-reserve-scene", "mural-spotlight-scene", "mural-selfie-scene", "mural-art-scene", "mural-album-scene", "mural-notice-scene"].map(name => `components/mural-scenes/${name}.js`);
 const site = loadSite({
   scripts: [...SITE_BASE, "features/scheduler.js", "features/agenda.js", "features/mural-now-next.js", "features/mural-photo-pool.js", "features/mural.js", "features/mural-playlist.js", "components/talk-highlight.js", "data/mural-tips.js", "data/mural-arts.js", "data/mural-albums.js", "data/mural-album-models.js", "features/album-photo-url.js", "features/album-models.js", "components/mural-scenes/album-models/album-model-collage.js", "components/mural-scenes/album-models/album-model-portrait-strip.js", "components/mural-scenes/album-models/album-model-polaroid.js", "components/mural-scenes/album-models/album-model-feature.js", "components/mural-scenes/album-models/album-model-mosaic.js", ...SCENES, "features/live-status.js", "features/count-up.js", "components/avatar.js"],
 });
@@ -509,4 +509,32 @@ test("álbum: ordem 'shuffle' embaralha uma vez e 'newest' mantém a lista como 
   assert.notDeepEqual([...shuffled.map(p => p.id)], photos.map(p => p.id));
   const { scene } = albumScene();
   await assert.rejects(scene.prepare({ album: "ao-vivo", model: "inventado" }, albumCtx({ "ao-vivo": liveAlbum(landscapes(3)) })), /modelo de álbum desconhecido/);
+});
+
+// ---------- controle remoto: avisos e emergência ----------
+const notice = (id, text, kind = "info", until = 10_000) => ({ id, text, kind, until });
+
+test("aviso: o mais novo grande e os outros embaixo; alerta ganha destaque; aviso vencido não entra; sem aviso vivo a cena não aparece; o texto do moderador é escapado", async () => {
+  const scene = g("createNoticeScene")({ nowMs: () => 5000 });
+  assert.equal(scene.prepare({}, ctx()), MURAL_SKIP, "sem aviso nenhum");
+  assert.equal(scene.prepare({}, ctx({ live: { notices: [notice("a", "venceu", "info", 4000)] } })), MURAL_SKIP, "só o vencido");
+  const live = { notices: [notice("a", "Achado e perdido: chave azul"), notice("b", "Sala B começa em 5 min", "alert"), notice("c", "<img src=x onerror=alert(1)>")] };
+  const el = html(scene.render(scene.prepare({}, ctx({ live }))).markup);
+  assert.equal(el.querySelector(".ms-notice").dataset.kind, "info");
+  assert.match(textOf(el.querySelector(".ms-notice-text")), /<img src=x/, "o texto aparece como texto, não vira HTML");
+  assert.equal(el.querySelector(".ms-notice img"), null);
+  assert.deepEqual([...el.querySelectorAll(".ms-notice-item")].map(item => textOf(item)), ["Sala B começa em 5 min", "Achado e perdido: chave azul"], "o mais novo é o grande, os outros em ordem do mais novo pro mais antigo");
+  const alert = html(scene.render(scene.prepare({}, ctx({ live: { notices: [notice("x", "Atraso de 15 min", "alert")] } }))).markup);
+  assert.equal(alert.querySelector(".ms-notice").dataset.kind, "alert");
+  assert.match(textOf(alert), /Atenção.*Atraso de 15 min/);
+  assert.equal(alert.querySelector(".ms-notice-list"), null, "um aviso só: sem lista vazia");
+});
+
+test("emergência: um texto em tela cheia (escapado), a cena não aparece sem emergência armada", () => {
+  const scene = g("createEmergencyScene")();
+  assert.equal(scene.prepare({}, ctx()), MURAL_SKIP);
+  const el = html(scene.render(scene.prepare({}, ctx({ live: { emergency: { text: "Evacuação: sigam <b>as saídas</b>", since: 1 } } }))).markup);
+  assert.equal(el.querySelector(".ms-emergency").getAttribute("role"), "alert");
+  assert.match(textOf(el), /Atenção.*Evacuação: sigam <b>as saídas<\/b>/);
+  assert.equal(el.querySelector("b"), null);
 });

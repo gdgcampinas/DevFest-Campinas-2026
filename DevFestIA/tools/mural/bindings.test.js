@@ -162,3 +162,14 @@ test("foto nova: um aviso mais novo não é apagado pelo prazo do anterior; álb
   assert.equal(live.newPhoto.key, "outro");
   assert.equal(pushed.length, 3);
 });
+
+test("tratador (bind.handle): o documento inteiro vai pro tratador injetado por nome (o controle remoto), sem mexer no estado das cenas", () => {
+  const received = [];
+  const live = {};
+  const onUpdate = createLiveBindings({ definitions: [{ id: "control", bind: { handle: "control" } }], live, mural: { pushInterrupt: () => {} }, handlers: { control: doc => received.push(doc) } });
+  onUpdate("control", { reload: 5 });
+  onUpdate("control", null);
+  assert.deepEqual(received, [{ reload: 5 }, null], "inclusive o documento apagado (null)");
+  assert.deepEqual(live, {});
+  assert.doesNotThrow(() => createLiveBindings({ definitions: [{ id: "control", bind: { handle: "control" } }], live, mural: {} })("control", {}), "sem tratador registrado não quebra");
+});

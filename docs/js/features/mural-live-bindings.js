@@ -8,9 +8,10 @@
  * (ex.: `ids` das fotos escondidas), e documento que não existe vira lista vazia.
  * `bind.notifyNew` avisa FOTO NOVA numa lista que chega várias vezes (álbum ao vivo): a primeira leitura é a base; as novas vão pra `live[notifyNew.live]` ({ key, photo, photos }, a mais
  * nova primeiro) por `expireMs`, e a cena de destaque entra na frente do rodízio no máximo uma vez a cada `minGapMs` (as outras só entram no rodízio normal, sem enchê-lo de interrupções).
- * Tudo injetado: `definitions`, `live` (objeto de estado), `mural` (pushInterrupt), `celebrate`, `schedule`, `nowMs`, `createDetector`, `createNewDetector`. Dual (navegador e Node).
+ * `bind.handle` entrega o documento inteiro a um TRATADOR injetado por nome (`handlers`: ex.: o controle remoto, features/mural-control.js).
+ * Tudo injetado: `definitions`, `live` (objeto de estado), `mural` (pushInterrupt), `handlers`, `celebrate`, `schedule`, `nowMs`, `createDetector`, `createNewDetector`. Dual (navegador e Node).
  */
-function createLiveBindings({ definitions, live, mural, celebrate = () => {}, schedule = fn => { fn(); return () => {}; }, nowMs = () => Date.now(), createDetector = createFreshPublishDetector, createNewDetector = createNewItemsDetector }) {
+function createLiveBindings({ definitions, live, mural, handlers = {}, celebrate = () => {}, schedule = fn => { fn(); return () => {}; }, nowMs = () => Date.now(), createDetector = createFreshPublishDetector, createNewDetector = createNewItemsDetector }) {
   const detectors = new Map();
   const newDetectors = new Map();
   const lastNotified = new Map();
@@ -38,6 +39,10 @@ function createLiveBindings({ definitions, live, mural, celebrate = () => {}, sc
     const definition = definitions.find(item => sourceId === item.id || sourceId.startsWith(`${item.id}:`));
     const bind = definition?.bind;
     if (!bind) return;
+    if (bind.handle) {
+      handlers[bind.handle]?.(value);
+      return;
+    }
     if (bind.collect) {
       const key = sourceId.slice(definition.id.length + 1);
       const field = bind.collect.field;

@@ -89,6 +89,21 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .ms-talk--empty .ms-tag{background:transparent;color:var(--muted);border:calc(var(--u) * .2) solid oklch(40% .02 260)}
 .ms-col:has(.ms-talk--empty.ms-talk--now) .ms-talk--next{flex:1;justify-content:center}
 
+/* ---------- avisos e emergência (controle remoto) ---------- */
+.ms-notice{justify-content:center;gap:calc(var(--u) * 3)}
+.ms-notice-text{margin:0;font:800 calc(var(--u) * 8.5) / 1.12 var(--font-display);color:oklch(97% .005 260);text-wrap:balance}
+.ms-notice[data-kind="alert"] .ms-kicker{color:var(--google-yellow)}
+.ms-notice[data-kind="alert"] .ms-notice-text{color:var(--google-yellow)}
+.ms-notice-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:calc(var(--u) * 1.2)}
+.ms-notice-item{padding:calc(var(--u) * 1.2) calc(var(--u) * 2);border-radius:calc(var(--u) * 1.4);background:oklch(22% .02 260);font:700 calc(var(--u) * 3.2) var(--font-body);color:var(--text)}
+/* a emergência cobre o palco inteiro (moldura e rodapé também), pra ninguém confundir com uma cena do rodízio */
+.ms-emergency{position:absolute;inset:calc(var(--m) * -1) calc(var(--m) * -1) calc((var(--m) + var(--footer-h)) * -1);z-index:40;height:auto;align-items:center;justify-content:center;text-align:center;padding:calc(var(--u) * 6);background:oklch(48% .22 27);color:#fff}
+.mural-scene:has(.ms-emergency){z-index:60}
+.ms-emergency::after{content:"";position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;animation:ms-emergency-pulse 2.4s ease-in-out infinite}
+.ms-emergency-label{font:800 calc(var(--u) * 4) var(--font-display);text-transform:uppercase;letter-spacing:.2em}
+.ms-emergency-text{margin:0;font:800 calc(var(--u) * 10) / 1.12 var(--font-display);text-wrap:balance}
+@keyframes ms-emergency-pulse{0%,100%{opacity:0}50%{opacity:.22}}
+
 /* ---------- patrocinadores ---------- */
 .ms-tiers{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:calc(var(--u) * 3)}
 .ms-tier-name{margin:0 0 calc(var(--u) * 1.2);font:800 calc(var(--u) * 2.4) var(--font-display);text-transform:uppercase;letter-spacing:.14em;color:var(--google-yellow)}

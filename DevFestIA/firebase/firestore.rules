@@ -62,6 +62,16 @@ service cloud.firestore {
         && request.auth.token.email in ['gdgcampinascontato@gmail.com'];
     }
 
+    // Aviso do CONTROLE REMOTO do mural (`mural-control/current`, lista `notices`): na posição i da lista (a lista tem no máximo 5, sem laço nas regras: confere cada posição).
+    function noticeOk(list, i) {
+      return list.size() <= i || (list[i] is map
+        && list[i].keys().hasOnly(['id', 'text', 'kind', 'until'])
+        && list[i].id is string && list[i].id.size() > 0 && list[i].id.size() <= 40
+        && list[i].text is string && list[i].text.size() > 0 && list[i].text.size() <= 140
+        && list[i].kind in ['info', 'alert']
+        && list[i].until is number);
+    }
+
     // Aspectos do feedback do evento: ESPELHAR os ids de docs/js/data/event-feedback-form.js.
     function validAspects(data) {
       return 'aspects' in data && data.aspects is map
@@ -332,6 +342,31 @@ service cloud.firestore {
         && request.resource.data.edition is string && isKnownEdition(request.resource.data.edition)
         && request.resource.data.updatedAt == request.time
         && request.resource.data.ids is list && request.resource.data.ids.size() <= 500;
+      allow delete: if false;
+    }
+
+    // CONTROLE REMOTO do mural do telão (avisos, fixar/pausar, recarregar, emergência): UM documento `mural-control/current`. O mural (login anônimo) só LÊ pelo id, com escuta; só o moderador grava
+    // (o app regrava o documento inteiro). Ninguém lista nem apaga. Formato fechado: no máximo 5 avisos de até 140 caracteres, emergência de até 160 caracteres, pausa com cena de até 40.
+    match /mural-control/{docId} {
+      allow get: if request.auth != null;
+      allow list: if false;
+      allow create, update: if isModerator() && docId == 'current'
+        && request.resource.data.keys().hasOnly(['edition', 'updatedAt', 'notices', 'emergency', 'hold', 'reload'])
+        && request.resource.data.keys().hasAll(['edition', 'updatedAt', 'notices', 'emergency', 'hold', 'reload'])
+        && request.resource.data.edition is string && isKnownEdition(request.resource.data.edition)
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.notices is list && request.resource.data.notices.size() <= 5
+        && noticeOk(request.resource.data.notices, 0) && noticeOk(request.resource.data.notices, 1) && noticeOk(request.resource.data.notices, 2)
+        && noticeOk(request.resource.data.notices, 3) && noticeOk(request.resource.data.notices, 4)
+        && (request.resource.data.emergency == null || (request.resource.data.emergency is map
+          && request.resource.data.emergency.keys().hasOnly(['text', 'since'])
+          && request.resource.data.emergency.text is string && request.resource.data.emergency.text.size() > 0 && request.resource.data.emergency.text.size() <= 160
+          && request.resource.data.emergency.since is number))
+        && (request.resource.data.hold == null || (request.resource.data.hold is map
+          && request.resource.data.hold.keys().hasOnly(['sceneId', 'until'])
+          && (request.resource.data.hold.sceneId == null || (request.resource.data.hold.sceneId is string && request.resource.data.hold.sceneId.size() <= 40))
+          && request.resource.data.hold.until is number))
+        && request.resource.data.reload is number;
       allow delete: if false;
     }
 

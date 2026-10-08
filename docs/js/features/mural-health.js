@@ -7,17 +7,18 @@
  *   createIndependentTicker  relógio num Worker (não é freado em aba oculta); sem Worker cai no setInterval
  *   createWatchdog    a cada batida chama evaluateHealth e, se for o caso, recarrega
  *
- * Motivos de recarga: "stuck" (o rodízio não bateu no prazo), "scene-failures" (cenas falhando em sequência), "preventive" (tempo de execução, pra
+ * Motivos de recarga: "remote-reload" (o moderador pediu, vale na hora), "stuck" (o rodízio não bateu no prazo), "scene-failures" (cenas falhando em sequência), "preventive" (tempo de execução, pra
  * não acumular memória em 8 h), "version" (saiu versão nova), "offline-recovery" (a internet voltou depois de muito tempo fora). Os três últimos só
  * valem NA TROCA de cena (`atBoundary`), pra não cortar uma cena no meio. Trava anti-laço: recargas demais em pouco tempo = não recarrega e marca
  * `degraded` (aparece no painel de diagnóstico); o rodízio segue, e se as cenas continuarem falhando é a cena de reserva que sustenta a tela.
  */
 function evaluateHealth(snapshot, config) {
-  const { now, startedAt, beatDueAt, atBoundary = false, failures = 0, pending = [] } = snapshot;
+  const { now, startedAt, beatDueAt, atBoundary = false, failures = 0, pending = [], urgent = [], held = false } = snapshot;
   const reasons = [];
   if (now > beatDueAt) reasons.push("stuck");
   if (failures >= config.maxConsecutiveFailures) reasons.push("scene-failures");
-  if (atBoundary) {
+  urgent.forEach(reason => reasons.push(reason)); // pedido do moderador (recarregar agora): não espera a troca de cena
+  if (atBoundary && !held) { // com o rodízio parado numa cena (fixada, pausada, emergência) a recarga preventiva e as pendentes esperam: ninguém corta um aviso de emergência
     if (now - startedAt >= config.preventiveReloadMs) reasons.push("preventive");
     pending.forEach(reason => reasons.push(reason));
   }
@@ -50,6 +51,8 @@ function createReloadLedger({ storage, key = "devfest-campinas-2026:mural" } = {
     recentReloads: () => read().reloads,
     lastSceneId: () => read().lastSceneId,
     lastReason: () => read().lastReason,
+    controlToken: () => read().controlToken ?? null, // último pedido de "recarregar" do controle remoto já visto (features/mural-control.js)
+    saveControlToken: token => write({ ...read(), controlToken: token }),
     saveScene: sceneId => write({ ...read(), lastSceneId: sceneId }),
     recordReload: (reason, now) => write({ ...read(), reloads: [...read().reloads.slice(-19), now], lastReason: reason }),
   };

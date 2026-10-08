@@ -18,7 +18,7 @@ const MURAL_SKIP = site.get("MURAL_SKIP");
 const createReloadLedger = site.get("createReloadLedger");
 const evaluateHealth = site.get("evaluateHealth");
 
-const config = { defaultSeconds: 10, transitionMs: 600, prepareTimeoutMs: 8000, failureCooldownMs: 120000, skipCooldownMs: 60000, retryDelayMs: 500, reserveSeconds: 20, idleRetryMs: 5000, watchdogSlackMs: 5000, maxConsecutiveFailures: 6, preventiveReloadMs: 2 * 3600000, reloadStormWindowMs: 600000, reloadStormMax: 3 };
+const config = { defaultSeconds: 10, holdCheckMs: 5000, transitionMs: 600, prepareTimeoutMs: 8000, failureCooldownMs: 120000, skipCooldownMs: 60000, retryDelayMs: 500, reserveSeconds: 20, idleRetryMs: 5000, watchdogSlackMs: 5000, maxConsecutiveFailures: 6, preventiveReloadMs: 2 * 3600000, reloadStormWindowMs: 600000, reloadStormMax: 3 };
 const okScene = (id, extra = {}) => ({ id, type: "ok", params: { label: id }, ...extra });
 const okImpl = { render: (_prepared, params) => ({ markup: `<p>${params.label}</p>` }) };
 const reserveScene = { id: "reserva", type: "reserve", params: {} };
@@ -364,4 +364,116 @@ test("RESISTÊNCIA: 8 horas de telão com cenas que falham, travam e voltam; sem
   assert.ok(clock.pending() <= 3, `timers sobrando: ${clock.pending()}`);
   mural.stop();
   assert.equal(clock.pending() <= 1, true);
+});
+
+// ---------- controle remoto: fixar, pausar e emergência (hold) ----------
+const emergencyScene = { id: "emergencia", type: "emergency", params: {} };
+const emergencyImpl = { render: () => ({ markup: "<p>EMERGENCIA AO VIVO</p>" }) };
+
+test("fixar: o rodízio PARA na cena pedida (entra na hora), segue o prazo do vigia sem redesenhar e, ao soltar, continua pela fila", async () => {
+  const { clock, mural, active, contentEl } = setup({ scenes: [okScene("a", { seconds: 10 }), okScene("b", { seconds: 5 }), okScene("c", { seconds: 5 })] });
+  mural.start();
+  await clock.tick(0);
+  assert.equal(active(), "a");
+  mural.hold({ sceneId: "b" });
+  await clock.tick(0);
+  assert.equal(active(), "b", "a cena fixada entra na hora");
+  assert.equal(mural.state().held, "b");
+  const drawn = contentEl.querySelector('[data-scene="b"]');
+  await clock.tick(10 * 60000);
+  assert.equal(active(), "b", "10 minutos depois continua nela");
+  assert.equal(contentEl.querySelector('[data-scene="b"]'), drawn, "e é a MESMA cena: não redesenhou");
+  assert.ok(mural.state().beatDueAt > clock.nowMs(), "o prazo do vigia continua sendo renovado (parado de propósito não é travado)");
+  mural.release();
+  await clock.tick(0);
+  assert.equal(mural.state().held, null);
+  assert.equal(active(), "c", "solta: segue pela fila depois da fixada");
+  mural.stop();
+});
+
+test("pausar (sem cena) fixa a que está no ar; o prazo solta sozinho; cena que não existe não faz nada", async () => {
+  const { clock, mural, active } = setup({ scenes: [okScene("a", { seconds: 10 }), okScene("b", { seconds: 10 })] });
+  mural.start();
+  await clock.tick(0);
+  mural.hold({ untilMs: clock.nowMs() + 30000 });
+  assert.equal(mural.state().held, "a");
+  await clock.tick(25000);
+  assert.equal(active(), "a", "ainda pausada");
+  await clock.tick(10000);
+  assert.equal(mural.state().held, null, "o prazo acabou e o telão voltou a rodar sozinho");
+  assert.equal(active(), "b");
+  mural.hold({ sceneId: "nao-existe" });
+  assert.equal(mural.state().held, null, "cena inexistente é ignorada");
+  mural.stop();
+});
+
+test("interrupção (pódio publicado) não corta a cena fixada: o moderador mandou parar", async () => {
+  const { clock, mural, active } = setup({ scenes: [okScene("a"), okScene("b"), okScene("podio")] });
+  mural.start();
+  await clock.tick(0);
+  mural.hold({ sceneId: "a" });
+  mural.pushInterrupt({ sceneId: "podio", priority: 100, ttlMs: 60000, immediate: true });
+  await clock.tick(30000);
+  assert.equal(active(), "a");
+  mural.stop();
+});
+
+test("cena fixada que não tem nada pra mostrar ou que falha é SOLTA: o rodízio volta em vez de travar num laço", async () => {
+  const skipping = setup({ scenes: [okScene("a"), okScene("vazia", { type: "empty" }), okScene("b")], registry: { empty: { prepare: () => MURAL_SKIP, render: () => ({ markup: "" }) } } });
+  skipping.mural.start();
+  await skipping.clock.tick(0);
+  skipping.mural.hold({ sceneId: "vazia" });
+  await skipping.clock.tick(1000);
+  assert.equal(skipping.mural.state().held, null);
+  assert.ok(["a", "b"].includes(skipping.active()), "voltou ao rodízio");
+  skipping.mural.stop();
+  const failing = setup({ scenes: [okScene("a"), okScene("quebra", { type: "boom" })], registry: { boom: { render: () => { throw new Error("quebrou"); } } } });
+  failing.mural.start();
+  await failing.clock.tick(0);
+  failing.mural.hold({ sceneId: "quebra" });
+  await failing.clock.tick(2000);
+  assert.equal(failing.mural.state().held, null);
+  assert.equal(failing.active(), "a");
+  failing.mural.stop();
+});
+
+test("EMERGÊNCIA: a cena fica fora do rodízio (e do filtro ?cenas=), entra por ordem, para tudo, não é solta sozinha e a falha dela é segurada pelo HTML de emergência", async () => {
+  const live = setup({ scenes: [okScene("a", { seconds: 10 })], registry: { emergency: emergencyImpl }, extra: { emergencyScene } });
+  live.mural.start();
+  await live.clock.tick(0);
+  assert.equal(live.active(), "a");
+  live.mural.hold({ sceneId: "emergencia", critical: true });
+  await live.clock.tick(0);
+  assert.equal(live.active(), "emergencia");
+  assert.match(live.text(), /EMERGENCIA AO VIVO/);
+  await live.clock.tick(3 * 3600000);
+  assert.equal(live.active(), "emergencia", "3 horas depois continua: a emergência não vence sozinha");
+  live.mural.release();
+  await live.clock.tick(0);
+  assert.equal(live.active(), "a", "desarmada: o rodízio volta");
+  live.mural.stop();
+
+  let broken = true;
+  const failing = setup({ scenes: [okScene("a")], registry: { emergency: { render: () => { if (broken) throw new Error("render da emergência quebrou"); return { markup: "<p>VOLTOU</p>" }; } } }, extra: { emergencyScene } });
+  failing.mural.start();
+  await failing.clock.tick(0);
+  failing.mural.hold({ sceneId: "emergencia", critical: true });
+  await failing.clock.tick(1000);
+  assert.equal(failing.mural.state().held, "emergencia", "falhou mas NÃO foi solta");
+  assert.match(failing.text(), /EMERGENCIA/, "o HTML fixo de emergência segura a tela");
+  broken = false;
+  await failing.clock.tick(2000);
+  assert.match(failing.text(), /VOLTOU/, "assim que a cena volta a funcionar ela assume");
+  failing.mural.stop();
+});
+
+test("vigia com o rodízio parado: pausa não vira 'travou'; recarga preventiva e pendências esperam; pedido do moderador recarrega na hora", () => {
+  const config = { maxConsecutiveFailures: 6, preventiveReloadMs: 7200000, reloadStormWindowMs: 600000, reloadStormMax: 3 };
+  const base = { now: 8000000, startedAt: 0, beatDueAt: 9000000, atBoundary: true, pending: ["version"] };
+  assert.equal(evaluateHealth({ ...base, held: false }, config).action, "reload", "sem pausa a recarga preventiva vale");
+  assert.equal(evaluateHealth({ ...base, held: true }, config).action, "none", "parado numa cena ninguém recarrega por tempo ou versão");
+  assert.equal(evaluateHealth({ ...base, held: true, now: 9000001 }, config).reason, "stuck", "mas travar de verdade continua valendo");
+  const remote = evaluateHealth({ ...base, held: true, atBoundary: false, pending: [], urgent: ["remote-reload"] }, config);
+  assert.deepEqual([remote.action, remote.reason], ["reload", "remote-reload"], "o moderador pediu: recarrega agora, fora da troca de cena");
+  assert.equal(evaluateHealth({ ...base, urgent: ["remote-reload"], recentReloads: [7900000, 7910000, 7920000] }, config).action, "none", "a trava anti-laço também vale pro pedido remoto");
 });

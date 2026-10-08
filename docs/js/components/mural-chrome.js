@@ -26,5 +26,6 @@ function muralDiagMarkup(snapshot) {
     row("Pendente", snapshot.pending.join(", ") || "nada"),
     row("Degradado", snapshot.degraded ? "SIM (trava anti-laço)" : "não"),
     row("Palco", snapshot.stage),
+    row("Controle remoto", `${snapshot.emergency ? "EMERGÊNCIA ARMADA" : snapshot.held ? `parado em ${snapshot.held}` : "livre"} · avisos ${snapshot.notices}`),
   ].join("")}</table>`;
 }

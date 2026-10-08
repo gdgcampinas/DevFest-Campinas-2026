@@ -15,11 +15,14 @@
  *   - o rodízio avisa o vigia (features/mural-health.js) do prazo da próxima troca; se o prazo estourar, é ele que recarrega a página;
  *   - voltando de uma recarga, retoma na cena em que estava (ledger).
  * Interrupções (`pushInterrupt`): uma cena com prioridade entra na frente da fila, uma vez (ex.: o pódio do Coding Jam recém-publicado).
+ * Controle remoto (features/mural-control.js): `hold({ sceneId, untilMs, critical })` PARA o rodízio numa cena (fixar, pausar ou a emergência, que usa `emergencyScene`) até `untilMs` ou até `release()`;
+ * com a cena parada o motor só renova o prazo do vigia (nada de redesenhar). Cena fixada que não tem nada pra mostrar (ou falha) é solta e o rodízio volta; a emergência (`critical`) nunca é solta
+ * sozinha: se falhar, o HTML de emergência segura a tela e o motor tenta de novo.
  */
 const MURAL_SKIP = Symbol("mural-skip");
 
 function createMural({
-  contentEl, scenes, registry, reserveScene, emergencyMarkup = "", getContext, config,
+  contentEl, scenes, registry, reserveScene, emergencyScene = null, emergencyMarkup = "", getContext, config,
   schedule = defaultSchedule, nowMs = () => Date.now(), ledger = null, sceneDeps = {},
   onBoundary = () => false, onSceneChange = () => {}, onFailure = () => {},
 }) {
@@ -38,6 +41,9 @@ function createMural({
   let activeEl = null;
   let activeDispose = null;
   let lastSceneId = null;
+  let held = null; // { sceneId, until, critical }: o rodízio está parado nessa cena
+
+  const findScene = id => scenes.find(scene => scene.id === id) ?? (emergencyScene?.id === id ? emergencyScene : null);
 
   const later = ms => {
     cancelTimer();
@@ -100,13 +106,15 @@ function createMural({
     if (stopped) return;
     cancelTimer();
     if (onBoundary()) return; // a página vai recarregar
+    if (held && (nowMs() >= held.until || !findScene(held.sceneId))) held = null;
+    if (held && current?.scene.id === held.sceneId && !current.errored) return later(config.holdCheckMs); // já está no ar: só renova o prazo do vigia
     const mine = ++token;
     const ctx = getContext();
-    const picked = pickNextScene({ scenes, currentId: current?.scene.id ?? lastSceneId, interrupts, cooldowns, ctx, nowMs: nowMs() });
-    const scene = picked?.scene ?? reserveScene;
+    const picked = held ? null : pickNextScene({ scenes, currentId: current?.scene.id ?? lastSceneId, interrupts, cooldowns, ctx, nowMs: nowMs() });
+    const scene = held ? findScene(held.sceneId) : picked?.scene ?? reserveScene;
     if (picked?.interrupt) interrupts = pruneInterrupts(interrupts, nowMs(), picked.interrupt);
     const reserve = scene === reserveScene;
-    if (reserve && picked === null && current?.reserve && !current.errored) { // a reserva já está no ar e continua sendo a única opção: não redesenha, só olha de novo daqui a pouco
+    if (reserve && picked === null && !held && current?.reserve && !current.errored) { // a reserva já está no ar e continua sendo a única opção: não redesenha, só olha de novo daqui a pouco
       return later(config.idleRetryMs ?? config.reserveSeconds * 1000);
     }
     const seconds = reserve ? config.reserveSeconds : scene.seconds ?? config.defaultSeconds;
@@ -118,6 +126,7 @@ function createMural({
       const prepared = await withTimeout(impl.prepare?.(params, ctx), config.prepareTimeoutMs, schedule, "prepare demorou demais");
       if (mine !== token || stopped) return;
       if (prepared === MURAL_SKIP) {
+        if (held) held = null; // cena fixada sem nada pra mostrar: solta e o rodízio volta
         cooldowns = withCooldown(cooldowns, scene.id, nowMs(), config.skipCooldownMs);
         lastSceneId = scene.id;
         return later(0);
@@ -127,6 +136,11 @@ function createMural({
       if (mine !== token || stopped) return;
       fail(scene, error);
       lastSceneId = scene.id;
+      if (held?.critical) {
+        showEmergency(); // a emergência nunca é solta sozinha: o HTML fixo segura a tela e tenta de novo
+        return later(config.retryDelayMs);
+      }
+      if (held) held = null;
       if (reserve) {
         showEmergency();
         return later(config.reserveSeconds * 1000);
@@ -177,8 +191,23 @@ function createMural({
       fail(current.scene, error);
       run();
     },
+    /** Para o rodízio numa cena (`sceneId` null = a que estiver no ar) até `untilMs`; a nova cena entra na hora. `critical` = emergência. */
+    hold({ sceneId = null, untilMs = Infinity, critical = false }) {
+      const target = sceneId ?? current?.scene.id ?? null;
+      if (stopped || !target || !findScene(target)) return;
+      held = { sceneId: target, until: untilMs, critical };
+      if (current?.scene.id !== target || current.errored) run();
+      else later(config.holdCheckMs);
+    },
+    /** Solta a cena fixada e o rodízio segue pela fila. */
+    release() {
+      if (!held) return;
+      held = null;
+      run();
+    },
     skip: run,
     state: () => ({
+      held: held ? held.sceneId : null,
       startedAt,
       beatDueAt,
       failures,

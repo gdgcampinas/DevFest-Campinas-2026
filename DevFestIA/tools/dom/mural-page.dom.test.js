@@ -23,6 +23,7 @@ const BODY = `<!doctype html><html><body><div class="mural-backdrop"><div class=
 function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => true, registered = { total: 120 }, initialPodium = null, albums = null }) {
   const contestListeners = new Map();
   const hiddenListeners = new Map();
+  const controlListeners = new Map();
   const globals = {
     QRCode: qr ? function QRCode(el, options) { el.dataset.qrText = options.text; el.innerHTML = "<img>"; } : undefined,
     Image: class { set src(url) { setTimeout(() => this.onload?.(), 0); } },
@@ -37,6 +38,7 @@ function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => t
     firebaseClient: { ensureAnonymousUid: async () => "uid" },
     eventStatsRepository: { get: async () => registered },
     muralHiddenRepository: { listen: (key, onNext) => { hiddenListeners.set(key, onNext); onNext(null); return () => hiddenListeners.delete(key); } },
+    muralControlRepository: { listen: (key, onNext) => { controlListeners.set(key, onNext); onNext(null); return () => controlListeners.delete(key); } },
     contestResultsRepository: { listen: (key, onNext) => { contestListeners.set(key, onNext); onNext(initialPodium ? { podium: initialPodium } : null); return () => contestListeners.delete(key); } },
   };
   const site = loadSite({ scripts: SCRIPTS, html: BODY, url: `http://localhost/mural.html?lineup=1&demo=${demo}&${search}`, globals });
@@ -47,6 +49,7 @@ function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => t
     Object.assign(MURAL_CONFIG.network, { probeEveryMs: 25, backoff: { baseMs: 20, maxMs: 40, factor: 1, jitter: 0 } });
     Object.assign(MURAL_CONFIG.motion, { countUpMs: 60, countUpStepMs: 20 });
     MURAL_ALBUMS.forEach(album => { album.pollMs = 40; });
+    MURAL_CONFIG.holdCheckMs = 30;
     MURAL_CONFIG.albums.proxyUrl = ""; // os testes ligam o intermediário (de mentira) só com ?albuns=, nunca o de produção
     MURAL_SOURCES.find(source => source.id === "podium").bind.celebrateDelayMs = 30;
     globalThis.__confetti = 0;
@@ -55,7 +58,7 @@ function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => t
   site.run(PAGE, "pages/mural.js");
   const document = site.document;
   return {
-    site, document, contestListeners, hiddenListeners,
+    site, document, contestListeners, hiddenListeners, controlListeners,
     active: () => document.querySelector(".mural-scene.is-active")?.dataset.scene ?? null,
     activeText: () => textOf(document.querySelector(".mural-scene.is-active") ?? document.body),
     confetti: () => site.run("__confetti"),
@@ -276,5 +279,70 @@ test("diagnóstico (?diag=1) mostra a saúde do mural", async () => {
   await waitFor(() => /Cenas mostradas/.test(textOf(diag)) && /registered: live/.test(textOf(diag)));
   assert.equal(diag.hidden, false);
   assert.match(textOf(diag), /Degradado\s*não/);
+  page.site.window.close();
+});
+
+// ---------- controle remoto ----------
+const control = (extra = {}) => ({ notices: [], emergency: null, hold: null, reload: 0, ...extra });
+const inMinutes = minutes => Date.now() + minutes * 60000;
+
+test("aviso do moderador: entra na frente do rodízio na hora, escapado, e some sozinho quando vence", async () => {
+  const page = boot({ search: "cenas=dicas,aviso" });
+  await waitFor(() => page.active() === "dicas");
+  assert.equal(page.document.querySelector('[data-scene="aviso"]'), null, "sem aviso a cena não entra");
+  const emit = page.controlListeners.get("current");
+  emit(control({ notices: [{ id: "n1", text: "Achado e perdido: <b>chave azul</b>", kind: "alert", until: inMinutes(5) }] }));
+  await waitFor(() => page.active() === "aviso");
+  assert.match(page.activeText(), /Achado e perdido: <b>chave azul<\/b>/);
+  assert.equal(page.document.querySelector(".mural-scene.is-active b"), null);
+  emit(control({ notices: [{ id: "n1", text: "x", until: Date.now() + 120 }] }));
+  await waitFor(() => page.document.querySelector('.mural-scene.is-active[data-scene="dicas"]') && !page.document.querySelector('.mural-scene.is-active[data-scene="aviso"]'), { timeout: 3000 });
+  page.site.window.close();
+});
+
+test("fixar e pausar: o telão para na cena pedida (ou na que estava) até soltar; soltar volta a rodar", async () => {
+  const page = boot({ search: "cenas=dicas,inscritos,agora" });
+  await waitFor(() => page.active() !== null);
+  const emit = page.controlListeners.get("current");
+  emit(control({ hold: { sceneId: "dicas", until: inMinutes(10) } }));
+  await waitFor(() => page.active() === "dicas");
+  await new Promise(resolve => setTimeout(resolve, 600));
+  assert.equal(page.active(), "dicas", "ficou parado, mesmo com o tempo de tela de 0,15 s");
+  emit(control());
+  await waitFor(() => page.active() !== "dicas", { timeout: 3000 });
+  page.site.window.close();
+});
+
+test("EMERGÊNCIA: tela cheia com o texto, o rodízio para, nenhum pódio ou aviso corta, e ao desarmar o telão volta", async () => {
+  const page = boot({ search: "cenas=dicas,inscritos" });
+  await waitFor(() => page.active() !== null);
+  const emit = page.controlListeners.get("current");
+  emit(control({ emergency: { text: "Evacuação: sigam as saídas de emergência", since: Date.now() } }));
+  await waitFor(() => page.active() === "emergencia");
+  assert.match(page.activeText(), /Evacuação: sigam as saídas de emergência/);
+  const [, podium] = [...page.contestListeners][0];
+  podium({ podium: PODIUM });
+  emit(control({ emergency: { text: "Evacuação: sigam as saídas de emergência", since: Date.now() }, notices: [{ id: "n", text: "outro", until: inMinutes(5) }] }));
+  await new Promise(resolve => setTimeout(resolve, 600));
+  assert.equal(page.active(), "emergencia", "nada corta a emergência");
+  emit(control());
+  await waitFor(() => page.active() !== "emergencia", { timeout: 3000 });
+  page.site.window.close();
+});
+
+test("recarregar pelo celular: a primeira leitura é só o ponto de partida; pedido novo recarrega UMA vez e fica guardado (sem laço)", async () => {
+  const page = boot({ search: "cenas=dicas" });
+  await waitFor(() => page.active() === "dicas");
+  const emit = page.controlListeners.get("current");
+  const saved = () => JSON.parse(page.site.window.sessionStorage.getItem("devfest-campinas-2026:mural") ?? "{}");
+  assert.equal(saved().controlToken, 0, "a primeira leitura (documento ainda vazio) virou o ponto de partida");
+  emit(control({ notices: [] }));
+  assert.ok(!saved().lastReason, "e leitura sem pedido novo não recarrega");
+  emit(control({ reload: 222 }));
+  assert.equal(saved().controlToken, 222);
+  assert.equal(saved().lastReason, "remote-reload", "recarregou, e o motivo ficou registrado");
+  assert.equal(saved().reloads.length, 1);
+  emit(control({ reload: 222 }));
+  assert.equal(saved().reloads.length, 1, "o mesmo pedido lido de novo não recarrega outra vez");
   page.site.window.close();
 });
