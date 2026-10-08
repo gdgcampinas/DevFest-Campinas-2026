@@ -47,6 +47,7 @@ function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => t
     Object.assign(MURAL_CONFIG.network, { probeEveryMs: 25, backoff: { baseMs: 20, maxMs: 40, factor: 1, jitter: 0 } });
     Object.assign(MURAL_CONFIG.motion, { countUpMs: 60, countUpStepMs: 20 });
     MURAL_ALBUMS.forEach(album => { album.pollMs = 40; });
+    MURAL_CONFIG.albums.proxyUrl = ""; // os testes ligam o intermediário (de mentira) só com ?albuns=, nunca o de produção
     MURAL_SOURCES.find(source => source.id === "podium").bind.celebrateDelayMs = 30;
     globalThis.__confetti = 0;
     createConfetti = () => ({ fire: () => { __confetti++; return true; } });

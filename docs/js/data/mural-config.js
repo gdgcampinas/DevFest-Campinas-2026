@@ -14,7 +14,7 @@
  *                        `staggerMs` (espera entre um cartão e o seguinte quando entram em sequência), `podiumStepMs` (espera entre um lugar do pódio e o seguinte,
  *                        do último pro primeiro), `countUpMs`/`countUpStepMs` (número que sobe), `kenBurns` (zoom lento das fotos: ponto de origem e escala inicial/final,
  *                        em rodízio a cada foto). Só opacity e transform (roda na placa de vídeo, não pesa em computador fraco)
- *   albums               álbuns do Google Fotos (data/mural-albums.js): `proxyUrl` = endereço do intermediário (DevFestIA/tools/album-proxy; VAZIO = álbuns desligados, o mural segue
+ *   albums               álbuns do Google Fotos (data/mural-albums.js): `proxyUrl` = endereço do intermediário (DevFestIA/tools/album-proxy, publicado como Cloudflare Worker na conta do GDG; VAZIO = álbuns desligados, o mural segue
  *                        com as fotos locais; `?albuns=<endereço>` na URL liga só pra teste), `timeoutMs` = quanto esperar o intermediário, `quarantineMs` = quanto uma foto que
  *                        não carregou fica de fora
  *   stage                margem segura (%) e as formas do palco por proporção, do mais largo ao mais alto (data-shape; o CSS escolhe o desenho)
@@ -50,7 +50,7 @@ const MURAL_CONFIG = {
     backoff: { baseMs: 2000, maxMs: 60000, factor: 2, jitter: 0.3 },
   },
   albums: {
-    proxyUrl: "",
+    proxyUrl: "https://devfest-album-proxy.gdgcampinas-devfest.workers.dev",
     timeoutMs: 8000,
     quarantineMs: 10 * 60000,
   },
