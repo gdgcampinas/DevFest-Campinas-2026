@@ -12,10 +12,9 @@
  *   network              sonda de internet (um endereço minúsculo de fora do site) e espera crescente entre tentativas
  *   motion               animações, todas por dado: `defaultTransition` (entrada das cenas: "rise", "slide" ou "zoom"; cada cena pode trocar com `transition`),
  *                        `staggerMs` (espera entre um cartão e o seguinte quando entram em sequência), `podiumStepMs` (espera entre um lugar do pódio e o seguinte,
- *                        do último pro primeiro), `countUpMs`/`countUpStepMs` (número que sobe), `kenBurns` (zoom lento das fotos: ponto de origem e escala inicial/final,
- *                        em rodízio a cada foto). Só opacity e transform (roda na placa de vídeo, não pesa em computador fraco)
+ *                        do último pro primeiro), `countUpMs`/`countUpStepMs` (número que sobe). Só opacity e transform (roda na placa de vídeo, não pesa em computador fraco)
  *   albums               álbuns do Google Fotos (data/mural-albums.js): `proxyUrl` = endereço do intermediário (DevFestIA/tools/album-proxy, publicado como Cloudflare Worker na conta do GDG; VAZIO = álbuns desligados, o mural segue
- *                        com as fotos locais; `?albuns=<endereço>` na URL liga só pra teste), `timeoutMs` = quanto esperar o intermediário, `quarantineMs` = quanto uma foto que
+ *                        sem cenas de foto; `?albuns=<endereço>` na URL liga só pra teste), `timeoutMs` = quanto esperar o intermediário, `quarantineMs` = quanto uma foto que
  *                        não carregou fica de fora
  *   stage                margem segura (%) e as formas do palco por proporção, do mais largo ao mais alto (data-shape; o CSS escolhe o desenho)
  */
@@ -31,7 +30,6 @@ const MURAL_CONFIG = {
   watchdogSlackMs: 6000,
   imageTimeoutMs: 6000,
   speakerPhotoTimeoutMs: 2500,
-  photoQuarantineMs: 10 * 60000,
   clockEveryMs: 1000,
   kioskEnsureEveryMs: 60000,
   health: {
@@ -60,12 +58,6 @@ const MURAL_CONFIG = {
     podiumStepMs: 900,
     countUpMs: 1800,
     countUpStepMs: 40,
-    kenBurns: [
-      { origin: "50% 50%", from: 1, to: 1.08 },
-      { origin: "30% 40%", from: 1.1, to: 1 },
-      { origin: "70% 60%", from: 1, to: 1.09 },
-      { origin: "50% 30%", from: 1.08, to: 1 },
-    ],
   },
   stage: {
     safeMarginPct: 2,

@@ -1,7 +1,8 @@
 /**
- * Cena de ÁLBUM do Google Fotos: mostra X fotos de um álbum no MODELO escolhido. Tudo por dado: `params.album` (data/mural-albums.js), `params.model` (single, collage, portrait-strip,
- * polaroid, feature ou "auto", que escolhe pela orientação das fotos do álbum), `params.count` (quantas fotos; padrão do modelo), `params.badge` (selo, ex.: "Nova foto da galera") e
- * `params.latest` (mostra a foto mais nova que acabou de chegar, `ctx.live.newPhoto`, em foto única).
+ * Cena de ÁLBUM do Google Fotos: mostra X fotos de um álbum no MODELO escolhido. Tudo por dado: `params.album` (data/mural-albums.js), `params.model` (collage, portrait-strip,
+ * polaroid, feature, mosaic ou "auto", que escolhe pela orientação das fotos do álbum), `params.count` (quantas fotos; padrão do modelo), `params.badge` (selo, ex.: "Nova foto da galera") e
+ * `params.latest` (a foto mais nova que acabou de chegar, `ctx.live.newPhoto`, em destaque grande no modelo "feature", com as mais recentes ao lado).
+ * NUNCA uma foto sozinha: cada modelo tem um mínimo (`min`, data/mural-album-models.js) e com menos fotos que isso a cena não aparece (MURAL_SKIP) até o álbum encher.
  * A lista de fotos vem da fonte ao vivo (`ctx.live.albums[id]`, lida do intermediário a cada 45 s no ao vivo); fotos que o moderador escondeu (`ctx.live.hidden[id]`, lista de ids) não entram.
  * Cada foto é pré-carregada NO TAMANHO que o modelo usa, com tempo limite; a que falha vai de castigo e é trocada por outra na mesma preparação, então nunca aparece imagem quebrada.
  * Sem lista (intermediário fora do ar e nada guardado) a cena não aparece (MURAL_SKIP) e o rodízio segue com as outras.
@@ -44,15 +45,16 @@ function createAlbumScene({ albums, models, autoRules, renderers, createPool, pr
       if (params.latest) {
         const latest = ctx.live.newPhoto;
         if (!latest || latest.key !== meta.id || hidden.has(latest.photo.id)) return MURAL_SKIP;
-        model = { id: "single", ...models.single };
-        candidates = [latest.photo];
+        model = chooseAlbumModel({ model: "feature", photos, models, autoRules });
+        candidates = [latest.photo, ...photos.filter(photo => photo.id !== latest.photo.id)].slice(0, params.count ?? model.count);
       } else {
         model = chooseAlbumModel({ model: params.model, photos, models, autoRules });
         pool = poolFor(meta, photos);
         candidates = pool.take(params.count ?? model.count, acceptFor(model.prefer));
       }
+      const min = Math.min(model.min ?? 1, params.count ?? model.count);
+      if (photos.length < min) return MURAL_SKIP;
 
-      const want = params.count ?? model.count;
       const items = [];
       const tried = new Set();
       for (let attempt = 0; attempt < 2 && candidates.length; attempt++) {
@@ -67,6 +69,7 @@ function createAlbumScene({ albums, models, autoRules, renderers, createPool, pr
         candidates = missing && pool ? pool.take(missing, acceptFor(model.prefer)).filter(photo => !tried.has(photo.id)) : [];
       }
       if (!items.length) throw new Error("nenhuma foto do álbum carregou");
+      if (items.length < min) return MURAL_SKIP;
       return { meta, model, items, badge: params.badge ?? "" };
     },
     render({ meta, model, items, badge }) {

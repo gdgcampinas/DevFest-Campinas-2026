@@ -8,18 +8,18 @@
  *   requires   reveal: true    só com o line-up revelado (a cena usa dado mock: aparece em /DEV ou com ?lineup=1, nunca em PROD enquanto for mock)
  *              phases: [...]   só nessas fases do evento ("before", "live", "after")
  *              live: "nome"    só quando a fonte ao vivo com esse nome já tem dado (data/mural-sources.js)
- * `?cenas=agora,fotos-1` na URL mostra só essas, na ordem pedida (ensaio e teste).
+ * `?cenas=agora,album-2025` na URL mostra só essas, na ordem pedida (ensaio e teste).
  *
  * "Rolando agora" (spotlight): uma entrada por posição de sala (`params.slot`); o rodízio passa só pelas salas com palestra no ar. Texto curto = campo `blurb` da palestra
  * (opcional, ~110 caracteres) ou, sem ele, a descrição. "Selfie": o telão como painel de foto pra plateia (arte de fundo em `params.art`, hashtag ainda vazia; fixe com `?cenas=selfie`).
  * "Arte" (`type: "art"`): peça pronta de design em tela cheia, `params.art` = id em data/mural-arts.js (que decide como ela se adapta a qualquer proporção de telão).
  * O convite ("abertura") só entra ANTES do evento: ele chama pra comprar ingresso, e durante o evento todo mundo já está lá.
  *
- * "Álbum" (`type: "album"`): X fotos de um álbum do Google Fotos (data/mural-albums.js) no modelo de `params.model` (single, collage, portrait-strip, polaroid, feature ou auto, que escolhe pela
- * orientação das fotos). `foto-nova` aparece sozinha quando chega foto nova no álbum ao vivo (e fica no rodízio por 2 min). Sem o intermediário ligado (MURAL_CONFIG.albums.proxyUrl vazio) nenhuma aparece.
+ * "Álbum" (`type: "album"`): X fotos de um álbum do Google Fotos (data/mural-albums.js) no modelo de `params.model` (collage, portrait-strip, polaroid, feature, mosaic ou auto, que escolhe pela
+ * orientação das fotos). REGRA: o telão NUNCA mostra uma foto sozinha (só a arte do selfie é uma imagem só): cada modelo tem um mínimo de fotos e a cena some até o álbum encher. `foto-nova` aparece sozinha quando chega foto nova no álbum ao vivo (grande, com as mais recentes ao lado; fica no rodízio por 2 min). Sem o intermediário ligado (MURAL_CONFIG.albums.proxyUrl vazio) nenhuma aparece.
  *
- * Tempo de tela por cota de patrocínio: cada cota é uma cena (Master mais tempo, as demais agrupadas). Fotos: cada cena mostra a próxima foto
- * da fila, então repetir a cena mostra mais fotos. Fotos da edição 2025 hoje estão a 900 px (fotos em alta resolução ficam pra quando o Renato mandar).
+ * Tempo de tela por cota de patrocínio: cada cota é uma cena (Master mais tempo, as demais agrupadas). Fotos: cada cena de álbum mostra as próximas da fila,
+ * então repetir a cena mostra mais fotos.
  */
 const MURAL_SCENES = [
   { id: "abertura", type: "art", seconds: 10, transition: "zoom", requires: { phases: ["before"] }, params: { art: "invite" } },
@@ -30,13 +30,13 @@ const MURAL_SCENES = [
   { id: "rolando-3", type: "spotlight", seconds: 8, requires: { reveal: true, phases: ["live"] }, params: { slot: 3 } },
   { id: "album-ao-vivo", type: "album", seconds: 14, requires: { live: "albums" }, params: { album: "ao-vivo", model: "auto" } },
   { id: "foto-nova", type: "album", seconds: 10, transition: "zoom", requires: { live: "newPhoto" }, params: { album: "ao-vivo", latest: true, badge: "Nova foto da galera" } },
-  { id: "fotos-1", type: "photos", seconds: 9, transition: "zoom", params: {} },
+  { id: "album-2025-mosaico", type: "album", seconds: 14, transition: "zoom", requires: { live: "albums" }, params: { album: "devfest-2025", model: "mosaic" } },
   { id: "patrocinio-master", type: "sponsors", seconds: 12, requires: { reveal: true }, params: { tiers: ["Master"], title: "Quem faz o DevFest acontecer" } },
   { id: "qr-cartao", type: "qr", seconds: 14, transition: "slide", params: { kicker: "Compartilhe", heading: "Monte seu cartão Eu vou!", hint: "Escaneie, gere o seu e mostre que você está no DevFest", path: "ingressos.html?cartao=1" } },
   { id: "inscritos", type: "registered", seconds: 9, requires: { live: "registered" }, params: { min: EVENT.tickets.counterMin } },
   { id: "album-elotech", type: "album", seconds: 14, requires: { live: "albums" }, params: { album: "elotech-agibank", model: "auto" } },
   { id: "agora-2", type: "now-next", seconds: 22, requires: { reveal: true, phases: ["before", "live"] }, params: {} },
-  { id: "fotos-2", type: "photos", seconds: 9, transition: "zoom", params: {} },
+  { id: "album-2025-polaroid", type: "album", seconds: 14, requires: { live: "albums" }, params: { album: "devfest-2025", model: "polaroid" } },
   { id: "album-ao-vivo-2", type: "album", seconds: 14, requires: { live: "albums" }, params: { album: "ao-vivo", model: "polaroid" } },
   { id: "dicas", type: "tips", seconds: 16, params: { title: "Aproveite o DevFest" } },
   { id: "album-2025", type: "album", seconds: 14, requires: { live: "albums" }, params: { album: "devfest-2025", model: "auto" } },

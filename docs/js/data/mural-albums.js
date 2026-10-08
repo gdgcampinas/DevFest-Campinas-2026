@@ -4,7 +4,7 @@
  *   live     álbum ao vivo (etiqueta com bolinha "ao vivo"; foto nova entra em destaque, ver data/mural-sources.js)
  *   pollMs   de quanto em quanto tempo o mural relê a lista (ao vivo: 45 s; antigos: 10 min)
  *   order    "newest" (a que entrou por último primeiro), "oldest" ou "shuffle" (embaralha uma vez)
- * Cada cena `album` (data/mural-scenes.js) escolhe o álbum por `params.album`, o modelo (`single`, `collage`, `portrait-strip`, `polaroid`, `feature` ou `auto`) e quantas fotos mostrar.
+ * Cada cena `album` (data/mural-scenes.js) escolhe o álbum por `params.album`, o modelo (`collage`, `portrait-strip`, `polaroid`, `feature`, `mosaic` ou `auto`) e quantas fotos mostrar.
  */
 const MURAL_ALBUMS = [
   { id: "ao-vivo", label: "DevFest 2026 ao vivo", live: true, pollMs: 45000, order: "newest" },

@@ -89,13 +89,6 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .ms-talk--empty .ms-tag{background:transparent;color:var(--muted);border:calc(var(--u) * .2) solid oklch(40% .02 260)}
 .ms-col:has(.ms-talk--empty.ms-talk--now) .ms-talk--next{flex:1;justify-content:center}
 
-/* ---------- fotos ---------- */
-.ms-photo{position:relative;border-radius:calc(var(--u) * 2);overflow:hidden;background:#000}
-.ms-photo-bg{position:absolute;inset:-6%;background-size:cover;background-position:center;filter:blur(calc(var(--u) * 2.2)) brightness(.45)}
-.ms-photo-img{position:relative;width:100%;height:100%;object-fit:contain;transform-origin:var(--kb-origin,50% 50%);animation:ms-kenburns calc(var(--scene-ms,10000) * 1ms) ease-in-out .3s both}
-@keyframes ms-kenburns{from{transform:scale(var(--kb-from,1))}to{transform:scale(var(--kb-to,1.08))}}
-.ms-photo-caption{position:absolute;left:calc(var(--u) * 2);bottom:calc(var(--u) * 1.6);margin:0;padding:calc(var(--u) * .7) calc(var(--u) * 1.8);border-radius:99px;background:oklch(8% .01 260 / .72);font:700 calc(var(--u) * 2.4) var(--font-body);color:#fff}
-
 /* ---------- patrocinadores ---------- */
 .ms-tiers{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:calc(var(--u) * 3)}
 .ms-tier-name{margin:0 0 calc(var(--u) * 1.2);font:800 calc(var(--u) * 2.4) var(--font-display);text-transform:uppercase;letter-spacing:.14em;color:var(--google-yellow)}
@@ -225,6 +218,7 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .ms-album--feature[data-count="1"] .ms-album-grid{grid-template-columns:minmax(0,1fr)}
 .ms-album--feature[data-count="1"] .ms-album-tile:first-child{grid-row:1 / span 3}
 /* mural de polaroides: fotos soltas com borda branca e um giro diferente cada (--rot vem do dado do modelo) */
+.ms-album--mosaic .ms-album-grid{grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:calc(var(--u) * .8)}
 .ms-album--polaroid .ms-album-grid{display:block;position:relative}
 .ms-album--polaroid .ms-album-tile{position:absolute;width:30%;height:56%;padding:calc(var(--u) * 1) calc(var(--u) * 1) calc(var(--u) * 4);background:#f6f4ee;border-radius:calc(var(--u) * .4);transform:rotate(var(--rot,0deg));box-shadow:0 calc(var(--u) * .8) calc(var(--u) * 2) oklch(0% 0 0 / .45);animation:ms-drop .6s cubic-bezier(.2,1.2,.4,1) both;animation-delay:calc(.5s + var(--i,0) * var(--stagger-step,120ms))}
 .ms-album--polaroid .ms-album-tile img{border-radius:calc(var(--u) * .2)}
@@ -283,3 +277,5 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .mural-stage[data-shape="tall"] .ms-album--feature .ms-album-tile:first-child{grid-row:auto}
 .mural-stage[data-shape="ultrawide"] .ms-album--collage .ms-album-grid{grid-template-columns:repeat(6,minmax(0,1fr))}
 .mural-stage[data-shape="ultrawide"] .ms-album--polaroid .ms-album-tile{width:20%;height:70%}
+.mural-stage[data-shape="ultrawide"] .ms-album--mosaic .ms-album-grid{grid-template-columns:repeat(6,minmax(0,1fr))}
+.mural-stage[data-shape="tall"] .ms-album--mosaic .ms-album-grid{grid-template-columns:repeat(3,minmax(0,1fr))}

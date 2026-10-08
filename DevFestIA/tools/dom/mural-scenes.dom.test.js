@@ -8,9 +8,9 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 const { createFakeClock } = require("../lib/fake-clock.js");
 
-const SCENES = ["mural-scene-kit", "mural-now-next-scene", "mural-photos-scene", "mural-sponsors-scene", "mural-qr-scene", "mural-registered-scene", "mural-tips-scene", "mural-phoenix-scene", "mural-podium-scene", "mural-event-phase-scene", "mural-reserve-scene", "mural-spotlight-scene", "mural-selfie-scene", "mural-art-scene", "mural-album-scene"].map(name => `components/mural-scenes/${name}.js`);
+const SCENES = ["mural-scene-kit", "mural-now-next-scene", "mural-sponsors-scene", "mural-qr-scene", "mural-registered-scene", "mural-tips-scene", "mural-phoenix-scene", "mural-podium-scene", "mural-event-phase-scene", "mural-reserve-scene", "mural-spotlight-scene", "mural-selfie-scene", "mural-art-scene", "mural-album-scene"].map(name => `components/mural-scenes/${name}.js`);
 const site = loadSite({
-  scripts: [...SITE_BASE, "features/scheduler.js", "features/agenda.js", "features/mural-now-next.js", "features/mural-photo-pool.js", "features/mural.js", "features/mural-playlist.js", "components/talk-highlight.js", "data/mural-tips.js", "data/mural-arts.js", "data/mural-albums.js", "data/mural-album-models.js", "features/album-photo-url.js", "features/album-models.js", "components/mural-scenes/album-models/album-model-single.js", "components/mural-scenes/album-models/album-model-collage.js", "components/mural-scenes/album-models/album-model-portrait-strip.js", "components/mural-scenes/album-models/album-model-polaroid.js", "components/mural-scenes/album-models/album-model-feature.js", ...SCENES, "features/live-status.js", "features/count-up.js", "components/avatar.js"],
+  scripts: [...SITE_BASE, "features/scheduler.js", "features/agenda.js", "features/mural-now-next.js", "features/mural-photo-pool.js", "features/mural.js", "features/mural-playlist.js", "components/talk-highlight.js", "data/mural-tips.js", "data/mural-arts.js", "data/mural-albums.js", "data/mural-album-models.js", "features/album-photo-url.js", "features/album-models.js", "components/mural-scenes/album-models/album-model-collage.js", "components/mural-scenes/album-models/album-model-portrait-strip.js", "components/mural-scenes/album-models/album-model-polaroid.js", "components/mural-scenes/album-models/album-model-feature.js", "components/mural-scenes/album-models/album-model-mosaic.js", ...SCENES, "features/live-status.js", "features/count-up.js", "components/avatar.js"],
 });
 const { window, document } = site;
 test.after(() => window.close());
@@ -19,24 +19,6 @@ const MURAL_SKIP = g("MURAL_SKIP");
 const html = markup => { const el = document.createElement("div"); el.innerHTML = markup; return el; };
 const ctx = (extra = {}) => ({ now: new Date("2026-11-28T12:00:00Z"), reveal: true, phase: "live", live: {}, ...extra });
 const at = hhmm => new Date(`2026-11-28T${hhmm}:00-03:00`);
-
-test("fotos: uma foto de cada vez em rodízio; foto que não carrega é trocada pela próxima na mesma preparação", async () => {
-  let time = 0;
-  const pool = g("createPhotoPool")({ photos: [{ file: "a.jpg", alt: "A" }, { file: "b.jpg", alt: "B" }, { file: "c.jpg", alt: "C" }], nowMs: () => time, quarantineMs: 1000 });
-  const scene = g("createPhotosScene")({ pool, preload: async url => { if (url === "a.jpg") throw new Error("404"); }, caption: "Veja como foi 2025" });
-  const photo = await scene.prepare();
-  assert.equal(photo.file, "b.jpg", "pulou a quebrada");
-  const view = html(scene.render(photo).markup);
-  assert.equal(view.querySelector("img").getAttribute("src"), "b.jpg");
-  assert.match(textOf(view), /Veja como foi 2025/);
-  assert.equal(pool.usable(), 2, "a foto quebrada ficou de castigo");
-});
-
-test("fotos: se nenhuma carregar, a cena falha (e descansa) em vez de mostrar imagem quebrada", async () => {
-  const pool = g("createPhotoPool")({ photos: [{ file: "a.jpg" }, { file: "b.jpg" }], nowMs: () => 0, quarantineMs: 1000 });
-  const scene = g("createPhotosScene")({ pool, preload: async () => { throw new Error("sem rede"); }, caption: "x" });
-  await assert.rejects(scene.prepare(), /nenhuma foto carregou/);
-});
 
 test("patrocinadores: só as cotas pedidas, logo que não carrega vira nome, cota vazia não gera cena", async () => {
   const repository = { getAll: () => [
@@ -170,19 +152,6 @@ test("agora e próximas: antes do evento mostra a hora da abertura e só 'a segu
   assert.match(lunch, /até 13:00/);
   const live = textOf(html(scene.render(null, {}, ctx({ now: at("09:10") })).markup));
   assert.match(live, /Agentes.*Ana.*09:00 às 09:40/);
-});
-
-test("fotos: o zoom lento (Ken Burns) alterna entre os movimentos do dado a cada foto", async () => {
-  const photos = [{ file: "a.jpg" }, { file: "b.jpg" }, { file: "c.jpg" }];
-  const pool = g("createPhotoPool")({ photos, nowMs: () => 0, quarantineMs: 1000 });
-  const kenBurns = [{ origin: "50% 50%", from: 1, to: 1.08 }, { origin: "30% 40%", from: 1.1, to: 1 }];
-  const scene = g("createPhotosScene")({ pool, preload: async () => {}, caption: "x", kenBurns });
-  const style = async () => html(scene.render(await scene.prepare()).markup).querySelector("img").getAttribute("style");
-  assert.equal(await style(), "--kb-origin:50% 50%;--kb-from:1;--kb-to:1.08");
-  assert.equal(await style(), "--kb-origin:30% 40%;--kb-from:1.1;--kb-to:1");
-  assert.equal(await style(), "--kb-origin:50% 50%;--kb-from:1;--kb-to:1.08", "volta ao primeiro");
-  const plain = g("createPhotosScene")({ pool, preload: async () => {}, caption: "x" });
-  assert.equal(html(plain.render({ file: "z.jpg" }).markup).querySelector("img").getAttribute("style"), null, "sem movimentos no dado, sem zoom");
 });
 
 test("cartões entram em sequência: cada item leva a sua posição (--i), nas salas, nas dicas e nos patrocinadores", async () => {
@@ -381,8 +350,7 @@ const portraits = count => Array.from({ length: count }, (_, i) => albumPhoto(`P
 function albumScene({ preload = async () => {}, nowMs = () => 0 } = {}) {
   const models = g("muralAlbumModelsRepository");
   const renderers = {
-    single: g("createSingleAlbumModel")({ moves: g("createMoveCycle")([{ origin: "50% 50%", from: 1, to: 1.08 }]) }),
-    collage: g("albumCollageModel"), "portrait-strip": g("albumPortraitStripModel"), feature: g("albumFeatureModel"),
+    collage: g("albumCollageModel"), "portrait-strip": g("albumPortraitStripModel"), feature: g("albumFeatureModel"), mosaic: g("albumMosaicModel"),
     polaroid: g("createPolaroidAlbumModel")({ rotations: models.getAll().polaroid.rotations }),
   };
   const requested = [];
@@ -402,8 +370,8 @@ test("álbum: sem lista (intermediário fora do ar e nada guardado) a cena não 
   assert.equal(await scene.prepare({ album: "ao-vivo" }, ctx()), MURAL_SKIP);
   assert.equal(await scene.prepare({ album: "ao-vivo" }, albumCtx({})), MURAL_SKIP);
   await assert.rejects(scene.prepare({ album: "nao-existe" }, albumCtx({ "ao-vivo": liveAlbum(landscapes(3)) })), /álbum desconhecido/);
-  const prepared = await scene.prepare({ album: "ao-vivo", model: "collage", count: 3 }, albumCtx({ "ao-vivo": liveAlbum(landscapes(3)) }, { hidden: { "ao-vivo": ["L0", "L1"] } }));
-  assert.deepEqual([...prepared.items.map(item => item.photo.id)], ["L2"]);
+  const prepared = await scene.prepare({ album: "ao-vivo", model: "collage", count: 4 }, albumCtx({ "ao-vivo": liveAlbum(landscapes(6)) }, { hidden: { "ao-vivo": ["L0", "L1"] } }));
+  assert.deepEqual([...prepared.items.map(item => item.photo.id)].sort(), ["L2", "L3", "L4", "L5"]);
   assert.equal(await scene.prepare({ album: "ao-vivo" }, albumCtx({ "ao-vivo": liveAlbum(landscapes(2)) }, { hidden: { "ao-vivo": ["L0", "L1"] } })), MURAL_SKIP, "tudo escondido");
 });
 
@@ -416,9 +384,9 @@ test("álbum: cada modelo mostra a quantidade do dado, pede ao Google o tamanho 
   assert.deepEqual([...collage.querySelectorAll(".ms-stagger")].map(item => item.getAttribute("style").match(/--i:(\d+)/)[1]), ["0", "1", "2", "3", "4", "5"]);
 
   requested.length = 0;
-  const single = await render(scene, { album: "ao-vivo", model: "single" }, albumCtx(album));
-  assert.equal(single.querySelectorAll("img.ms-photo-img").length, 1);
-  assert.match(requested[0], /=w1920-h1080$/);
+  const mosaic = await render(scene, { album: "ao-vivo", model: "mosaic" }, albumCtx(album));
+  assert.equal(mosaic.querySelectorAll(".ms-album--mosaic .ms-album-tile").length, 12);
+  assert.ok(requested.every(url => url.endsWith("=w640-h640")), "o mosaico pede quadros pequenos");
 
   const strip = await render(scene, { album: "ao-vivo", model: "portrait-strip" }, albumCtx(album));
   assert.equal(strip.querySelectorAll(".ms-album--strip .ms-album-tile").length, 4);
@@ -431,8 +399,22 @@ test("álbum: cada modelo mostra a quantidade do dado, pede ao Google o tamanho 
   assert.equal(tiles.length, 5);
   assert.equal(new Set(tiles.map(tile => tile.getAttribute("style").match(/--rot:(-?\d+)deg/)[1])).size, 5, "cada polaroide com um giro diferente");
 
-  const few = await render(scene, { album: "ao-vivo", model: "collage", count: 2 }, albumCtx({ "ao-vivo": liveAlbum(landscapes(2)) }));
-  assert.equal(few.querySelectorAll(".ms-album-tile").length, 2, "álbum com menos fotos que o modelo mostra as que tem");
+  const fewer = await render(scene, { album: "ao-vivo", model: "collage" }, albumCtx({ "ao-vivo": liveAlbum(landscapes(4)) }));
+  assert.equal(fewer.querySelectorAll(".ms-album-tile").length, 4, "álbum com menos fotos que o modelo mostra as que tem, desde que passe do mínimo");
+});
+
+test("álbum: NUNCA uma foto sozinha nem grade capenga: abaixo do mínimo do modelo a cena não aparece até o álbum encher", async () => {
+  const { scene, requested } = albumScene();
+  for (const [model, min] of [["collage", 4], ["portrait-strip", 3], ["polaroid", 3], ["feature", 4], ["mosaic", 8]]) {
+    assert.equal(await scene.prepare({ album: "ao-vivo", model }, albumCtx({ "ao-vivo": liveAlbum(landscapes(min - 1)) })), MURAL_SKIP, `${model} com ${min - 1} fotos`);
+    assert.ok((await scene.prepare({ album: "ao-vivo", model }, albumCtx({ "ao-vivo": liveAlbum(landscapes(min)) }))).items.length >= min, `${model} com ${min} fotos`);
+  }
+  assert.equal(await scene.prepare({ album: "ao-vivo", model: "auto" }, albumCtx({ "ao-vivo": liveAlbum(landscapes(1)) })), MURAL_SKIP, "uma foto só: nada aparece");
+  requested.length = 0;
+  await scene.prepare({ album: "ao-vivo", model: "mosaic" }, albumCtx({ "ao-vivo": liveAlbum(landscapes(3)) }));
+  assert.equal(requested.length, 0, "abaixo do mínimo nem baixa foto");
+  const fails = albumScene({ preload: async url => { if (!url.includes("/L0=")) throw new Error("404"); } });
+  assert.equal(await fails.scene.prepare({ album: "ao-vivo", model: "collage" }, albumCtx({ "ao-vivo": liveAlbum(landscapes(5)) })), MURAL_SKIP, "só sobrou uma foto que carrega: não mostra sozinha");
 });
 
 test("álbum: o modelo automático olha as fotos: retratos viram faixa de retratos e escolhe retratos primeiro, paisagens viram colagem", async () => {
@@ -470,7 +452,7 @@ test("álbum: foto que não carrega é trocada por outra na mesma preparação; 
 test("álbum: a etiqueta mostra o nome, a bolinha 'ao vivo' só no álbum ao vivo e o selo quando pedido", async () => {
   const { scene } = albumScene();
   const album = { "ao-vivo": liveAlbum(landscapes(4)), "devfest-2025": { id: "devfest-2025", photos: landscapes(4) } };
-  const live = await render(scene, { album: "ao-vivo", model: "single", badge: "Nova foto da galera" }, albumCtx(album));
+  const live = await render(scene, { album: "ao-vivo", model: "feature", badge: "Nova foto da galera" }, albumCtx(album));
   assert.match(textOf(live.querySelector(".ms-album-caption")), /DevFest 2026 ao vivo.*Nova foto da galera/);
   assert.ok(live.querySelector(".ms-live-dot"));
   const old = await render(scene, { album: "devfest-2025", model: "collage" }, albumCtx(album));
@@ -478,16 +460,19 @@ test("álbum: a etiqueta mostra o nome, a bolinha 'ao vivo' só no álbum ao viv
   assert.equal(old.querySelector(".ms-live-dot"), null);
 });
 
-test("foto nova (latest): mostra a que acabou de chegar em foto única com o selo; só do álbum certo e se não estiver escondida", async () => {
+test("foto nova (latest): a que acabou de chegar em destaque grande com as mais recentes ao lado e o selo; só do álbum certo e se não estiver escondida", async () => {
   const { scene, requested } = albumScene();
   const album = { "ao-vivo": liveAlbum(landscapes(5)) };
   const newest = albumPhoto("RECEM", 4032, 3024);
   assert.equal(await scene.prepare({ album: "ao-vivo", latest: true }, albumCtx(album)), MURAL_SKIP, "sem foto nova nada aparece");
   const withNew = albumCtx(album, { newPhoto: { key: "ao-vivo", photo: newest, photos: [newest] } });
   const el = await render(scene, { album: "ao-vivo", latest: true, badge: "Nova foto da galera" }, withNew);
-  assert.equal(el.querySelector("img.ms-photo-img").getAttribute("src"), "https://lh3.googleusercontent.com/pw/RECEM=w1920-h1080");
+  const tiles = [...el.querySelectorAll(".ms-album--feature .ms-album-tile img")].map(img => img.getAttribute("src"));
+  assert.equal(tiles.length, 4, "nunca sozinha: destaque + 3");
+  assert.equal(tiles[0], "https://lh3.googleusercontent.com/pw/RECEM=w1400-h1000", "a nova é a grande");
+  assert.ok(!tiles.slice(1).some(url => url.includes("RECEM")), "e não repete nas pequenas");
   assert.match(textOf(el), /Nova foto da galera/);
-  assert.equal(requested.length, 1);
+  assert.equal(requested.length, 4);
   assert.equal(await scene.prepare({ album: "elotech-agibank", latest: true }, albumCtx({ "elotech-agibank": liveAlbum(landscapes(2)) }, { newPhoto: { key: "ao-vivo", photo: newest, photos: [newest] } })), MURAL_SKIP, "foto nova de outro álbum");
   assert.equal(await scene.prepare({ album: "ao-vivo", latest: true }, albumCtx(album, { newPhoto: { key: "ao-vivo", photo: newest, photos: [newest] }, hidden: { "ao-vivo": ["RECEM"] } })), MURAL_SKIP, "o moderador tirou do ar");
 });

@@ -5,7 +5,7 @@
  *
  * Roda num computador plugado no telão, sem ninguém operando. Parâmetros de URL (todos opcionais, pro ensaio e teste):
  *   ?tela=1920x1080  ?proporcao=3:1  ?margem=2   simulam o telão e a margem segura (features/mural-stage.js)
- *   ?cenas=agora,fotos-1                          só essas cenas, na ordem pedida
+ *   ?cenas=agora,album-2025                          só essas cenas, na ordem pedida
  *   ?diag=1                                       painel de saúde (cena, falhas, rede, fontes, recargas)
  *   ?lineup=1 | ?demo=AAAA-MM-DDTHH:MM | ?ensaio=HH:MM   os mesmos modos de teste do resto do site (app.js)
  */
@@ -68,24 +68,22 @@ function initMural() {
   const preload = url => preloadImage(url, { timeoutMs: config.imageTimeoutMs, schedule });
   const talkIndex = buildTalkIndex(SCHEDULE, TRACKS, EVENT.timezone);
   const grid = { schedule: SCHEDULE, tracks: TRACKS, timezone: EVENT.timezone, phaseOf: resolveEventState };
-  const highlights = highlightsRepository.getAll();
   const registry = {
     "now-next": createNowNextScene(grid),
     album: createAlbumScene({
       albums: muralAlbumsRepository, models: muralAlbumModelsRepository.getAll(), autoRules: muralAlbumModelsRepository.auto(), preload, orderPhotos: orderAlbumPhotos,
       createPool: photos => createPhotoPool({ photos, nowMs, quarantineMs: config.albums.quarantineMs, keyOf: photo => photo.id }),
       renderers: {
-        single: createSingleAlbumModel({ moves: createMoveCycle(config.motion.kenBurns) }),
         collage: albumCollageModel,
         "portrait-strip": albumPortraitStripModel,
         polaroid: createPolaroidAlbumModel({ rotations: muralAlbumModelsRepository.getAll().polaroid.rotations }),
         feature: albumFeatureModel,
+        mosaic: albumMosaicModel,
       },
     }),
     spotlight: createSpotlightScene({ ...grid, preloadPhoto: url => preloadImage(url, { timeoutMs: config.speakerPhotoTimeoutMs, schedule }), hostOf: id => talkHighlightsRepository.getById(id)?.host ?? null }),
     art: createArtScene({ repository: muralArtsRepository, preload }),
     selfie: createSelfieScene({ preload, arts: muralArtsRepository, mascotUrl: "assets/img/gumbleton.png", logoSrc, title, subtitle: eventDateLabel(SCHEDULE, EVENT.timezone) }),
-    photos: createPhotosScene({ pool: createPhotoPool({ photos: highlights.photos, nowMs, quarantineMs: config.photoQuarantineMs }), preload, caption: highlights.title, kenBurns: config.motion.kenBurns }),
     sponsors: createSponsorsScene({ repository: sponsorsRepository, preload }),
     qr: createQrScene({ siteUrl: EVENT.url, extraQuery: () => rehearsal.query, qr: createQrRenderer() }),
     registered: createRegisteredScene({ motion: config.motion }),

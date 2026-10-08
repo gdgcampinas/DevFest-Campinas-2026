@@ -78,7 +78,7 @@ test("detector de foto nova: a primeira leitura é a base; depois só o que não
   assert.deepEqual(detector.observe([photo("x", 1, 1)]), [], "depois do reset recomeça da base");
 });
 
-const models = { single: { count: 1 }, collage: { count: 6 }, "portrait-strip": { count: 4 }, feature: { count: 4 } };
+const models = { mosaic: { count: 12 }, collage: { count: 6 }, "portrait-strip": { count: 4 }, feature: { count: 4 } };
 const autoRules = { portraitMin: 0.6, landscapeMin: 0.6, portrait: "portrait-strip", landscape: "collage", mixed: "feature" };
 
 test("modelo automático: álbum de retratos vira faixa de retratos, de paisagens vira colagem, misto vira destaque", () => {
@@ -90,6 +90,6 @@ test("modelo automático: álbum de retratos vira faixa de retratos, de paisagen
 });
 
 test("modelo escolhido por nome vale como está; nome que não existe é erro (a cena falha e descansa)", () => {
-  assert.deepEqual(chooseAlbumModel({ model: "single", photos: [], models, autoRules }), { id: "single", count: 1 });
+  assert.deepEqual(chooseAlbumModel({ model: "mosaic", photos: [], models, autoRules }), { id: "mosaic", count: 12 });
   assert.throws(() => chooseAlbumModel({ model: "inventado", photos: [], models, autoRules }), /modelo de álbum desconhecido/);
 });

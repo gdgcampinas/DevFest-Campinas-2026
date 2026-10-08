@@ -141,15 +141,15 @@ test("álbuns: intermediário fora do ar sem lista guardada: o mural não quebra
 });
 
 test("foto escondida pelo moderador some do telão (a lista vem do banco por escuta) e volta quando o moderador a devolve", async () => {
-  const albums = { "ao-vivo": albumBody("Ao vivo", ["a", "b", "c", "d"]) };
+  const albums = { "ao-vivo": albumBody("Ao vivo", ["a", "b", "c", "d", "e", "f"]) };
   const page = boot({ search: "cenas=album-ao-vivo&albuns=https://proxy.test", albums });
   await waitFor(() => page.active() === "album-ao-vivo");
   const shown = () => [...page.document.querySelectorAll(".mural-scene.is-active .ms-album-tile img")].map(img => img.getAttribute("src").match(/pw\/(\w)=/)[1]).sort().join("");
-  await waitFor(() => shown() === "abcd");
+  await waitFor(() => shown() === "abcdef");
   page.hiddenListeners.get("ao-vivo")({ ids: ["a", "c"] });
-  await waitFor(() => shown() === "bd");
+  await waitFor(() => shown() === "bdef");
   page.hiddenListeners.get("ao-vivo")({ ids: [] });
-  await waitFor(() => shown() === "abcd");
+  await waitFor(() => shown() === "abcdef");
   page.site.window.close();
 });
 
@@ -161,7 +161,7 @@ test("foto nova no álbum ao vivo: entra em destaque na frente do rodízio com o
   assert.equal(page.document.querySelector('[data-scene="foto-nova"]'), null, "as 3 fotos que já estavam lá não são novas");
   albums["ao-vivo"] = albumBody("Ao vivo", ["NOVA", "a", "b", "c"]);
   await waitFor(() => page.active() === "foto-nova");
-  assert.equal(page.document.querySelector("img.ms-photo-img").getAttribute("src"), "https://lh3.googleusercontent.com/pw/NOVA=w1920-h1080");
+  assert.equal(page.document.querySelector(".ms-album--feature .ms-album-tile img").getAttribute("src"), "https://lh3.googleusercontent.com/pw/NOVA=w1400-h1000", "a nova é a grande, com mais 3 ao lado");
   assert.match(page.activeText(), /Nova foto da galera/);
   page.site.window.close();
 });
