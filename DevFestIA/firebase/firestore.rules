@@ -52,14 +52,25 @@ service cloud.firestore {
       return !(field in data) || (data[field] is string && data[field].size() < max);
     }
 
-    // Moderadores das perguntas: entram com Google (tablet da sala) e o e-mail precisa estar na lista.
-    // PREENCHER com os e-mails dos moderadores antes de ligar as perguntas (lista vazia = ninguém modera).
+    // MODERADORES: o DONO (e-mail fixo aqui, sempre pode tudo e nunca se tranca fora) e os moderadores
+    // cadastrados na coleção `moderators` (um documento por e-mail em minúsculas, criado e apagado só pelo
+    // dono, pela tela do admin). Todos entram com Google (tablet da sala, celular) e o e-mail precisa estar verificado.
     // Ativar o provedor Google em Authentication e autorizar o domínio gdgcampinas.github.io no console.
-    function isModerator() {
+    function isGoogleVerified() {
       return request.auth != null
         && request.auth.token.firebase.sign_in_provider == 'google.com'
-        && request.auth.token.email_verified == true
+        && request.auth.token.email_verified == true;
+    }
+    function isOwner() {
+      return isGoogleVerified()
         && request.auth.token.email in ['gdgcampinascontato@gmail.com'];
+    }
+    function isListedModerator() {
+      return isGoogleVerified()
+        && exists(/databases/$(database)/documents/moderators/$(request.auth.token.email.lower()));
+    }
+    function isModerator() {
+      return isOwner() || isListedModerator();
     }
 
     // Aviso do CONTROLE REMOTO do mural (`mural-control/current`, lista `notices`): na posição i da lista (a lista tem no máximo 5, sem laço nas regras: confere cada posição).
@@ -343,6 +354,20 @@ service cloud.firestore {
         && request.resource.data.updatedAt == request.time
         && request.resource.data.ids is list && request.resource.data.ids.size() <= 500;
       allow delete: if false;
+    }
+
+    // LISTA DE MODERADORES (`moderators/<e-mail em minúsculas>`): só o DONO lista, cadastra e apaga (a tela do admin).
+    // Formato fechado: { email (igual ao id), addedBy (o dono), createdAt (horário do servidor) }.
+    match /moderators/{email} {
+      allow get, list: if isOwner();
+      allow create, update: if isOwner()
+        && email == email.lower() && email.size() <= 254 && email.matches('^[^@ ]+@[^@ ]+[.][^@ ]+$')
+        && request.resource.data.keys().hasOnly(['email', 'addedBy', 'createdAt'])
+        && request.resource.data.keys().hasAll(['email', 'addedBy', 'createdAt'])
+        && request.resource.data.email == email
+        && request.resource.data.addedBy == request.auth.token.email
+        && request.resource.data.createdAt == request.time;
+      allow delete: if isOwner();
     }
 
     // CONTROLE REMOTO do mural do telão (avisos, fixar/pausar, recarregar, emergência): UM documento `mural-control/current`. O mural (login anônimo) só LÊ pelo id, com escuta; só o moderador grava
