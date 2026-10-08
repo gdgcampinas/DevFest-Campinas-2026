@@ -1,6 +1,6 @@
-# Plano da área de admin/moderação (apresentado em 2026-10-08, AINDA NÃO AUTORIZADO)
+# Plano da área de admin/moderação (apresentado em 2026-10-08; AUTORIZADO e FEITO na sessão 14)
 
-**Status:** só plano. NÃO implementar sem o "autorizado" do Renato. "Vamos para o plano" não é autorização.
+**Status:** FEITO (6 commits). O estado atual e o que depende do Renato estão no bloco "SESSÃO 14" do `HANDOFF_CURRENT.md` e em "Área de admin" no `PROJECT_CONTEXT.md`. Ajuste feito na implementação: `reset-teste.html` ficou fora do menu (só link em Atalhos). O texto abaixo é o plano original.
 
 ## O que o Renato pediu (palavras dele, 2026-10-08)
 "A ideia da área de admin era isso aqui. Ter a parte do controle do telão, mais as coisas de palestras, as partes de moderação. Não era para fazer tudo dinâmico. Era mais uma área de CONTROLE, não por agora uma parte de config e de alimentação do site."
