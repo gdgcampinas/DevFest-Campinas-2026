@@ -8,10 +8,11 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, waitFor, textOf } = require("../lib/dom-harness.js");
 const { createFakeClock } = require("../lib/fake-clock.js");
 
-const site = loadSite({ scripts: [...SITE_BASE, "features/scheduler.js", "features/album-photo-url.js", "components/moderator-login.js", "components/mural-photo-moderation.js", "features/moderator-login.js", "features/mural-photo-moderation.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "features/scheduler.js", "data/mural-albums.js", "data/albums-repository.js", "features/album-photo-url.js", "components/moderator-login.js", "components/mural-photo-moderation.js", "features/moderator-login.js", "features/mural-photo-moderation.js"] });
 const { window, document } = site;
 test.after(() => window.close());
 const initMuralPhotoModeration = site.get("initMuralPhotoModeration");
+const mountMuralPhotoModeration = site.get("mountMuralPhotoModeration");
 
 const photo = (id, addedAt) => ({ id, url: `https://lh3.googleusercontent.com/pw/${id}`, width: 4000, height: 3000, addedAt });
 const album = { id: "ao-vivo", label: "DevFest 2026 ao vivo" };
@@ -154,4 +155,44 @@ test("id de foto vindo do Google nunca vira HTML", async () => {
   await signIn();
   assert.equal(rootEl.querySelectorAll("img").length, 1, "só a miniatura, nenhuma imagem injetada");
   assert.equal(rootEl.querySelector("[data-photo-toggle]").dataset.photoToggle, '"><img src=x onerror=alert(1)>');
+});
+
+test("dentro da área de admin (embedded): sem porta de entrada, conta nem título; lê o álbum e o banco na hora e stop() desliga tudo", async () => {
+  document.body.innerHTML = `<main id="modBody"></main>`;
+  const rootEl = document.getElementById("modBody");
+  const clock = createFakeClock();
+  const listeners = [];
+  let reads = 0;
+  const view = initMuralPhotoModeration(rootEl, {
+    album, embedded: true, schedule: clock.schedule, refreshMs: 30000, whenReady: task => task(),
+    hiddenRepository: { listen: (id, onNext) => { listeners.push(id); onNext({ ids: ["b"] }); return () => listeners.pop(); }, set: async () => {} },
+    albumsRepository: { get: async () => { reads++; return { photos: [photo("c", 3), photo("b", 2)] }; } },
+  });
+  await waitFor(() => rootEl.querySelectorAll(".mf-tile").length === 2);
+  assert.equal(rootEl.querySelector("[data-mod-signin]"), null);
+  assert.equal(rootEl.querySelector(".mod-title"), null);
+  assert.equal(rootEl.querySelector(".mod-account"), null);
+  assert.match(textOf(rootEl), /1 fora do ar/);
+  view.stop();
+  const readsAfterStop = reads;
+  await clock.tick(120000);
+  assert.equal(reads, readsAfterStop, "não relê o álbum depois do stop");
+  assert.equal(listeners.length, 0, "parou de escutar o banco");
+});
+
+test("montagem pronta (usada pela página e pelo admin): álbum desconhecido lista os que existem; sem intermediário avisa; com os dois, lê o álbum pelo intermediário", async () => {
+  document.body.innerHTML = `<main id="modBody"></main>`;
+  const rootEl = document.getElementById("modBody");
+  const hiddenRepository = { listen: (id, onNext) => { onNext(null); return () => {}; }, set: async () => {} };
+  mountMuralPhotoModeration(rootEl, { album: null, proxyUrl: "https://proxy.test", albumIds: ["ao-vivo", "<b>x</b>"], hiddenRepository });
+  assert.match(textOf(rootEl), /Álbum desconhecido\. Use \?album= com um destes: ao-vivo, <b>x<\/b>/);
+  assert.equal(rootEl.querySelector("b"), null, "ids escapados");
+  mountMuralPhotoModeration(rootEl, { album, proxyUrl: "", hiddenRepository });
+  assert.match(textOf(rootEl), /intermediário de álbuns ainda não está ligado/);
+  const asked = [];
+  window.fetch = async url => { asked.push(url); return { ok: true, json: async () => ({ photos: [photo("a", 1)] }) }; };
+  const view = mountMuralPhotoModeration(rootEl, { album, proxyUrl: "https://proxy.test", hiddenRepository, timeoutMs: 1000, embedded: true, formatTime: () => "" });
+  await waitFor(() => rootEl.querySelectorAll(".mf-tile").length === 1);
+  assert.deepEqual(asked, ["https://proxy.test/albums/ao-vivo"]);
+  view.stop();
 });

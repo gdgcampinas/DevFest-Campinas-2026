@@ -4,12 +4,16 @@
  */
 function initAdminPage() {
   const sections = adminSectionsRepository.getAll();
+  const muralConfig = muralConfigRepository.getAll();
+  const liveAlbum = muralAlbumsRepository.enabled({ live: true })[0] ?? null; // o álbum onde o público do evento adiciona fotos: o que o moderador vigia
   initAdminShell(document.getElementById("adminBody"), {
     session: createAdminSession(),
     router: createHashRouter({ routes: sections.map(section => section.id), fallback: sections[0].id }),
     navEl: document.getElementById("adminNav"),
     sections,
     mounts: {
+      telao: containerEl => initMuralControlPanel(containerEl, { ...defaultMuralControlPanelDeps(), embedded: true }),
+      fotos: containerEl => mountMuralPhotoModeration(containerEl, { album: liveAlbum, proxyUrl: muralConfig.albums.proxyUrl, albumIds: muralAlbumsRepository.getAll().map(album => album.id), timeoutMs: muralConfig.albums.timeoutMs, embedded: true }),
       atalhos: containerEl => initAdminShortcuts(containerEl, { shortcuts: adminShortcutsRepository.getAll() }),
     },
   });

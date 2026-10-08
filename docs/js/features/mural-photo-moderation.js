@@ -3,8 +3,9 @@
  * e deixa o moderador "Tirar do ar" / "Voltar ao ar" com um toque: a escolha vira a lista de ids em `mural-hidden/<álbum>` (Firestore), que o mural escuta e aplica na hora. Só o e-mail Google da lista de
  * moderadores das regras consegue gravar; outra conta vê "sem permissão" (a regra é a defesa, a tela só avisa). Retoma o login que já estava feito.
  * Tudo por parâmetro: `album` (data/mural-albums.js), `albumsRepository` (lê a lista), `hiddenRepository` ({ listen, set }), `login` (defaultModeratorLoginDeps), `schedule`, `refreshMs`, `limit`.
+ * `embedded` (dentro da área de admin, que faz o login uma vez): sem porta de entrada, conta nem título; liga na hora, já logado. Devolve `{ stop }` (desliga a escuta e a releitura).
  */
-function initMuralPhotoModeration(rootEl, { album, albumsRepository, hiddenRepository, login = defaultModeratorLoginDeps(), schedule = defaultSchedule, refreshMs = 30000, limit = 60, formatTime = () => "", thumbSize = { width: 400, height: 400 }, whenReady = runAfterModules }) {
+function initMuralPhotoModeration(rootEl, { album, albumsRepository, hiddenRepository, login = defaultModeratorLoginDeps(), schedule = defaultSchedule, refreshMs = 30000, limit = 60, formatTime = () => "", thumbSize = { width: 400, height: 400 }, whenReady = runAfterModules, embedded = false }) {
   let email = "";
   let photos = [];
   let hidden = new Set();
@@ -15,7 +16,7 @@ function initMuralPhotoModeration(rootEl, { album, albumsRepository, hiddenRepos
   let active = false;
 
   const draw = phase => {
-    rootEl.innerHTML = muralPhotoModerationMarkup({ phase, email, albumLabel: album.label, message, photos: photos.slice(0, limit), hidden, pending, formatTime, thumbUrl: photo => albumPhotoUrl(photo, thumbSize) });
+    rootEl.innerHTML = muralPhotoModerationMarkup({ phase, email, albumLabel: album.label, embedded, message, photos: photos.slice(0, limit), hidden, pending, formatTime, thumbUrl: photo => albumPhotoUrl(photo, thumbSize) });
   };
   const drawReady = () => draw("ready");
 
@@ -88,9 +89,33 @@ function initMuralPhotoModeration(rootEl, { album, albumsRepository, hiddenRepos
     }
   });
 
-  draw("signin");
-  whenReady(async () => {
-    email = (await login.restore().catch(() => null)) ?? "";
-    if (email) start();
+  if (embedded) {
+    start();
+  } else {
+    draw("signin");
+    whenReady(async () => {
+      email = (await login.restore().catch(() => null)) ?? "";
+      if (email) start();
+    });
+  }
+  return { stop };
+}
+
+/**
+ * Liga a moderação de fotos a um álbum e ao intermediário de álbuns (ou mostra por que não dá): o que mural-fotos.html e a seção Fotos da área de admin usam, pra não repetir a montagem.
+ * Tudo por parâmetro: `album` (data/mural-albums.js, ou null), `proxyUrl` (endereço do intermediário, vazio = desligado), `albumIds` (pra listar na mensagem de álbum desconhecido), `timeoutMs`,
+ * `embedded`, `hiddenRepository` e `formatTime` (padrões do site). Devolve `{ stop }`.
+ */
+function mountMuralPhotoModeration(rootEl, { album, proxyUrl, albumIds = [], timeoutMs, embedded = false, hiddenRepository = window.moderationMuralHiddenRepository, formatTime = photo => (photo.addedAt ? formatEventTime(new Date(photo.addedAt), EVENT.timezone) : "") }) {
+  if (!album || !proxyUrl) {
+    rootEl.innerHTML = muralPhotoModerationUnavailableMarkup({ hasAlbum: Boolean(album), albumIds });
+    return { stop: () => {} };
+  }
+  return initMuralPhotoModeration(rootEl, {
+    album,
+    albumsRepository: createAlbumsRepository({ baseUrl: proxyUrl, storage: null, timeoutMs, schedule: defaultSchedule }),
+    hiddenRepository,
+    formatTime,
+    embedded,
   });
 }

@@ -191,6 +191,49 @@ test("a página admin.html inteira: abre logado na seção Atalhos com os links 
   site.window.close();
 });
 
+/** admin.html inteira, logada, com o banco e o intermediário de álbuns de mentira. */
+function bootAdminPage(hash) {
+  const controlListeners = [];
+  const hiddenListeners = [];
+  const site = loadSite({
+    scripts: SCRIPTS,
+    html: BODY,
+    url: `http://localhost/admin.html${hash}`,
+    globals: {
+      moderatorClient: { restoreModerator: async () => "mod@gmail.com", signInWithGoogle: async () => "mod@gmail.com", signOutModerator: async () => {} },
+      moderationMuralControlRepository: { listen: (key, onNext) => { controlListeners.push(key); onNext(null); return () => controlListeners.pop(); }, set: async () => {} },
+      moderationMuralHiddenRepository: { listen: (id, onNext) => { hiddenListeners.push(id); onNext({ ids: [] }); return () => hiddenListeners.pop(); }, set: async () => {} },
+      fetch: async url => ({ ok: true, json: async () => ({ title: String(url), photos: [{ id: "p1", url: "https://lh3.googleusercontent.com/pw/p1", width: 4000, height: 3000, addedAt: 1 }] }) }),
+    },
+  });
+  site.run(PAGE, "pages/admin.js");
+  return { site, controlListeners, hiddenListeners, body: site.document.getElementById("adminBody") };
+}
+
+test("a página admin.html: a seção Telão traz o controle do telão SEM um segundo login nem título repetido, e sair da seção desliga a escuta", async () => {
+  const { site, controlListeners, body } = bootAdminPage("#telao");
+  await waitFor(() => body.querySelector("[data-notice-publish]"));
+  assert.equal(body.querySelectorAll("[data-mod-signin]").length, 0);
+  assert.equal(body.querySelectorAll(".mod-account").length, 1, "uma conta só, a do casco");
+  assert.equal(body.querySelectorAll("h1").length, 1, "um título só, o do casco");
+  assert.equal(body.querySelector("[data-admin-title]").textContent, "Telão");
+  assert.deepEqual(controlListeners, ["current"]);
+  site.window.location.hash = "#atalhos";
+  site.window.dispatchEvent(new site.window.Event("hashchange"));
+  assert.equal(controlListeners.length, 0, "a escuta do controle do telão foi desligada ao sair da seção");
+  site.window.close();
+});
+
+test("a página admin.html: a seção Fotos lê o álbum ao vivo pelo intermediário e escuta a lista de fotos fora do ar", async () => {
+  const { site, hiddenListeners, body } = bootAdminPage("#fotos");
+  await waitFor(() => body.querySelectorAll(".mf-tile").length === 1);
+  assert.deepEqual(hiddenListeners, ["ao-vivo"]);
+  assert.equal(body.querySelectorAll("[data-mod-signin]").length, 0);
+  assert.equal(body.querySelectorAll("h1").length, 1);
+  assert.match(textOf(body), /As 1 fotos mais novas/);
+  site.window.close();
+});
+
 test("equipe.html leva pra área de admin (Atalhos)", () => {
   const html = fs.readFileSync(path.join(DOCS, "equipe.html"), "utf8");
   assert.match(html, /url=admin\.html#atalhos/);

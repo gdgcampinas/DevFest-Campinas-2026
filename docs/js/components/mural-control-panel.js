@@ -2,13 +2,13 @@
  * Marcação da tela do moderador do CONTROLE do mural (mural-controle.html). Duas peças:
  *   muralControlShellMarkup   o esqueleto do formulário, desenhado UMA vez (quem digita não perde o texto quando o estado do mural muda); cada área viva é um `data-slot`
  *   muralControlSlots         o conteúdo de cada área viva (estado, avisos no ar, parada do telão, emergência), refeito a cada mudança
- * Só texto escapado e classes do styles.css (.mod, .chip-btn, .feedback-input) e do css/mod-tools.css. Os hooks de clique são `data-*` (features/mural-control-panel.js).
+ * `embedded` (dentro da área de admin, que já tem a conta e o título) omite a conta e o título. Só texto escapado e classes do styles.css (.mod, .chip-btn, .feedback-input) e do css/mod-tools.css. Os hooks de clique são `data-*` (features/mural-control-panel.js).
  */
-function muralControlShellMarkup({ email, limits, scenes, templates }) {
+function muralControlShellMarkup({ email, limits, scenes, templates, embedded = false }) {
   const chips = (attr, values, selected, label) => values.map(value => `<button type="button" class="chip-btn${value === selected ? " chip-btn--primary" : ""}" ${attr}="${value}">${label(value)}</button>`).join("");
   const templateButtons = (list, attr) => list.map(text => `<button type="button" class="chip-btn" ${attr}="${escapeHtml(text)}">${escapeHtml(text)}</button>`).join("");
-  return `${moderatorAccountMarkup(email)}
-    <h1 class="mod-title">Controle do telão</h1>
+  return `${embedded ? "" : `${moderatorAccountMarkup(email)}
+    <h1 class="mod-title">Controle do telão</h1>`}
     <div data-slot="status"></div>
     <section class="mod-section mc-card">
       <h2 class="mod-section-title">Aviso ao vivo</h2>

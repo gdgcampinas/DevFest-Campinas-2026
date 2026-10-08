@@ -5,8 +5,9 @@
  * O formulário é desenhado UMA vez (quem digita não perde o texto quando o estado muda); só as áreas vivas (`data-slot`) são refeitas. A emergência exige dois toques (o primeiro pede confirmação
  * e vale `confirmMs`). Tudo por parâmetro: `repository` ({ listen, set }), `rules` (as regras puras de features/mural-control.js), `limits` (MURAL_CONFIG.control), `scenes` ([{ id, label }]),
  * `templates` (data/mural-notices.js), `login`, `nowMs`, `makeId`, `schedule`, `formatTime`, `refreshMs`, `confirmMs`.
+ * `embedded` (dentro da área de admin, que faz o login uma vez): sem porta de entrada, conta nem título; liga na hora, já logado. Devolve `{ stop }` (desliga a escuta e os temporizadores).
  */
-function initMuralControlPanel(rootEl, { repository, rules, limits, scenes, templates, login = defaultModeratorLoginDeps(), nowMs = () => Date.now(), makeId = () => Math.random().toString(36).slice(2, 10), schedule = defaultSchedule, formatTime = () => "", refreshMs = 15000, confirmMs = 5000, whenReady = runAfterModules }) {
+function initMuralControlPanel(rootEl, { repository, rules, limits, scenes, templates, login = defaultModeratorLoginDeps(), nowMs = () => Date.now(), makeId = () => Math.random().toString(36).slice(2, 10), schedule = defaultSchedule, formatTime = () => "", refreshMs = 15000, confirmMs = 5000, whenReady = runAfterModules, embedded = false }) {
   let email = "";
   let doc = null;
   let busy = false;
@@ -27,7 +28,7 @@ function initMuralControlPanel(rootEl, { repository, rules, limits, scenes, temp
   }
 
   function drawShell() {
-    rootEl.innerHTML = muralControlShellMarkup({ email, limits, scenes, templates });
+    rootEl.innerHTML = muralControlShellMarkup({ email, limits, scenes, templates, embedded });
     drawSlots();
   }
 
@@ -138,9 +139,26 @@ function initMuralControlPanel(rootEl, { repository, rules, limits, scenes, temp
     if (name) actions[name](event.target.closest(`[${name}]`));
   });
 
-  drawSignIn();
-  whenReady(async () => {
-    email = (await login.restore().catch(() => null)) ?? "";
-    if (email) start();
-  });
+  if (embedded) {
+    start();
+  } else {
+    drawSignIn();
+    whenReady(async () => {
+      email = (await login.restore().catch(() => null)) ?? "";
+      if (email) start();
+    });
+  }
+  return { stop };
+}
+
+/** Os parâmetros padrão do painel, montados com os repositories e as regras do site: o que mural-controle.html e a seção Telão da área de admin usam (nos testes, cada parâmetro é trocado por um substituto). */
+function defaultMuralControlPanelDeps() {
+  return {
+    repository: window.moderationMuralControlRepository,
+    rules: { normalize: normalizeControl, addNotice, removeNotice, holdScene, releaseHold, armEmergency, disarmEmergency, orderReload },
+    limits: muralConfigRepository.getAll().control,
+    scenes: muralScenesRepository.options(),
+    templates: muralNoticeTemplatesRepository.getAll(),
+    formatTime: date => formatEventTime(date, EVENT.timezone),
+  };
 }

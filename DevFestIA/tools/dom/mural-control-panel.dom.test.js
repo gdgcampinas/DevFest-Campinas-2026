@@ -8,7 +8,7 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, waitFor, textOf } = require("../lib/dom-harness.js");
 const { createFakeClock } = require("../lib/fake-clock.js");
 
-const site = loadSite({ scripts: [...SITE_BASE, "features/scheduler.js", "data/mural-config.js", "components/moderator-login.js", "components/mural-control-panel.js", "features/moderator-login.js", "features/mural-control.js", "features/mural-control-panel.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "features/scheduler.js", "data/mock-links.js", "data/mock-photo.js", "data/mock-speakers.js", "data/mock-talks.js", "data/schedule-builder.js", "data/schedule.js", "data/mural-config.js", "data/mural-scenes.js", "data/mural-notices.js", "components/moderator-login.js", "components/mural-control-panel.js", "features/moderator-login.js", "features/mural-control.js", "features/mural-control-panel.js"] });
 const { window, document } = site;
 test.after(() => window.close());
 const g = name => site.get(name);
@@ -160,4 +160,32 @@ test("avisos que vencem somem da lista sozinhos (a tela se atualiza de tempos em
   assert.match(textOf(rootEl.querySelector("[data-slot=notices]")), /Chave azul/);
   await clock.tick(60000 + 15000);
   assert.match(textOf(rootEl.querySelector("[data-slot=notices]")), /Nenhum aviso no ar/);
+});
+
+test("dentro da área de admin (embedded): sem porta de entrada, conta nem título; já lê o estado do telão e stop() desliga a escuta e o relógio", async () => {
+  document.body.innerHTML = `<main id="modBody"></main>`;
+  const clock = createFakeClock(NOW);
+  const listeners = [];
+  const rootEl = document.getElementById("modBody");
+  const view = g("initMuralControlPanel")(rootEl, {
+    repository: { listen: (key, onNext) => { listeners.push(key); onNext(null); return () => listeners.pop(); }, set: async () => {} },
+    rules, limits, scenes, templates, nowMs: clock.nowMs, schedule: clock.schedule, formatTime: () => "", whenReady: task => task(), embedded: true,
+  });
+  assert.equal(rootEl.querySelector("[data-mod-signin]"), null);
+  assert.equal(rootEl.querySelector(".mod-title"), null);
+  assert.equal(rootEl.querySelector(".mod-account"), null);
+  assert.ok(rootEl.querySelector("[data-notice-publish]"));
+  assert.match(textOf(rootEl.querySelector("[data-slot=status]")), /Telão normal/);
+  assert.deepEqual(listeners, [limits.docKey]);
+  view.stop();
+  assert.equal(listeners.length, 0, "parou de escutar o banco");
+});
+
+test("os parâmetros padrão do painel (mural-controle.html e admin) juntam repository, regras, limites, cenas e frases prontas do site", () => {
+  const window2 = site.window;
+  window2.moderationMuralControlRepository = { listen() {}, set() {} };
+  const deps = g("defaultMuralControlPanelDeps")();
+  assert.equal(deps.repository, window2.moderationMuralControlRepository);
+  assert.deepEqual(Object.keys(deps.rules).sort(), ["addNotice", "armEmergency", "disarmEmergency", "holdScene", "normalize", "orderReload", "releaseHold", "removeNotice"]);
+  assert.equal(deps.limits.docKey, "current");
 });
