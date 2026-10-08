@@ -8,6 +8,7 @@
  *   ADMIN_OVERVIEW      os cartões da visão geral, na ordem: `id` (liga ao desenhista em features/admin-overview-cards.js), `title` e o ritmo de cada um (`refreshMs`: redesenha; `intervalMs`: relê o banco/intermediário;
  *                       cada leitura conta no plano grátis do Firebase, por isso os intervalos são folgados)
  *   ADMIN_BEFORE_EVENT  a seção "Antes do evento": a limpeza do BANCO (roda no GitHub, com as travas dela) e a limpeza deste APARELHO; só texto e endereço
+ *   ADMIN_MODERATORS    a seção Moderadores: limite da lista, prazo da confirmação de remoção e os textos da tela
  *   ADMIN_TALKS         ritmo da seção Palestras (`refreshMs`: de quanto em quanto tempo ela confere se a palestra da trilha mudou)
  * Todas as telas são internas (fora do menu e do sitemap, sem versão /DEV/): abrem na raiz. As de moderação pedem login Google de moderador.
  */
@@ -44,6 +45,26 @@ const ADMIN_OVERVIEW = [
 
 const ADMIN_TALKS = { refreshMs: 30000 };
 
+const ADMIN_MODERATORS = {
+  max: 30,
+  confirmMs: 5000,
+  text: {
+    intro: "Quem entra aqui com o Google pode moderar perguntas, o telão e as fotos. Só o dono da conta (fixo nas regras do Firestore) cadastra e remove moderadores. O e-mail precisa ser de uma conta Google.",
+    addTitle: "Cadastrar moderador",
+    placeholder: "e-mail do Google (ex.: nome@gmail.com)",
+    addButton: "Cadastrar",
+    removeButton: "Remover",
+    removeConfirm: "Toque de novo para REMOVER",
+    you: "você",
+    empty: "Nenhum moderador cadastrado ainda (o dono sempre pode tudo).",
+    added: "Moderador cadastrado.",
+    removed: "Moderador removido.",
+    ownerOnly: "Sem permissão: só o dono da conta cadastra e remove moderadores.",
+    saveFailed: "Não consegui salvar. Tente de novo.",
+    readFailed: "Não consegui ler a lista de moderadores. Confira a conexão.",
+  },
+};
+
 const ADMIN_BEFORE_EVENT = {
   confirmMs: 5000,
   purge: {
@@ -73,3 +94,4 @@ const adminShortcutsRepository = createRepository(ADMIN_SHORTCUTS);
 const adminTrackLinksRepository = createRepository(ADMIN_TRACK_LINKS);
 const adminOverviewRepository = createRepository(ADMIN_OVERVIEW);
 const adminTalksConfigRepository = createRepository(ADMIN_TALKS);
+const adminModeratorsRepository = createRepository(ADMIN_MODERATORS);

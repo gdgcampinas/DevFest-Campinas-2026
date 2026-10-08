@@ -78,6 +78,13 @@ const moderationMuralControlRepository = window.createFirestoreDocumentRepositor
   edition: CURRENT_EDITION,
 });
 
+/** Lista de moderadores (`moderators/<e-mail>`): só o DONO lista, cadastra e apaga (regras do Firestore); a tela do admin (seção Moderadores) é quem usa. */
+const moderationModeratorsRepository = window.createFirestoreCollectionRepository({
+  db: window.moderatorClient.db,
+  collectionName: "moderators",
+});
+
+window.moderationModeratorsRepository = moderationModeratorsRepository;
 window.moderationMuralControlRepository = moderationMuralControlRepository;
 window.moderationMuralHiddenRepository = moderationMuralHiddenRepository;
 window.moderationQuestionsRepository = moderationQuestionsRepository;
