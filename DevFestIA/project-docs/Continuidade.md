@@ -18,7 +18,7 @@ trabalho sem depender do histórico de uma conversa específica.
 - **[../tools/](../tools/)** — scripts em Node (a única dependência npm é o `jsdom` dos testes de tela em `dom/`, com `package.json` só nesta pasta): verificação (`check-meta.js` e
   `check-install.js` rodam no CI; `check-lineup.js`, `check-calendar.js` e os `e2e-*.js` são manuais),
   `sympla-sync/` (job Sympla -> Firestore), `event-report/` (relatório do evento), `purge-test-data/`
-  (limpeza dos dados de teste), `quiz/`, `questions/`, `room/`, `contest/` (contagem do concurso da sessão, pura), `i18n/` (testes puros no CI), `raffle/` (regras puras do sorteio: amostra da roda, código do QR, rodadas, som, papel picado; `node --test DevFestIA/tools/raffle/*.test.js`, ainda local, fora do CI), `dom/` (testes de tela em jsdom, no CI: `npm ci --prefix DevFestIA/tools && node --test DevFestIA/tools/dom/*.test.js`; `questions/run-rules-tests.sh` testa as
+  (limpeza dos dados de teste), `quiz/`, `questions/`, `room/`, `contest/` (contagem do concurso da sessão, pura), `i18n/` (testes puros no CI), `raffle/` (regras puras do sorteio: amostra da roda, código do QR, rodadas, som, papel picado; `node --test DevFestIA/tools/raffle/*.test.js`, no CI desde 2026-10-08), `mural/` (lógica pura do mural do telão e dos álbuns, no CI), `album-proxy/` (intermediário do Google Fotos, testes `.mjs`, no CI; publicado como Cloudflare Worker, README próprio), `dom/` (testes de tela em jsdom, no CI: `npm ci --prefix DevFestIA/tools && node --test DevFestIA/tools/dom/*.test.js`; `questions/run-rules-tests.sh` testa as
   regras no emulador, local, precisa de Java 21; inclui os cenários dos interruptores do sorteio), `emulator/start.sh` (Firebase local pra testar o site inteiro com `?emulador=1`) e `lib/` (auth Google, cliente REST do
   Firestore e cliente do emulador); os testes de Node rodam no CI. **[../design/](../design/)** — fontes HTML das imagens geradas e o
   `build-brand-assets.sh` que regera favicon, ícones do app e imagem de compartilhamento a partir do
@@ -28,6 +28,12 @@ trabalho sem depender do histórico de uma conversa específica.
   Sympla, 📊 Relatório do evento, 🧹 Limpar dados de teste. Ver PROJECT_CONTEXT ("Inscritos do
   Sympla", "Limpeza dos dados de teste") e o aviso sobre renomear o Validar no handoff.
 - **Este arquivo** — explica como os itens acima se relacionam.
+
+## Protocolo de novo chat (contexto cheio)
+
+Um chat tem limite de contexto. Quando ele chegar perto de 95%, a IA avisa com a frase **"Vou começar o protocolo de um novo chat: este já está cheio em 95%"** e, em
+seguida: atualiza o handoff, documenta o que mudou (PROJECT_CONTEXT e este arquivo), confere git/push/CI, atualiza o `NEW_CHAT_PROMPT.md` e entrega ao Renato o prompt pronto pra
+colar no chat novo. Nada fica só na conversa. Não há medidor exato: a IA estima pelo tamanho do chat e avisa cedo. Texto completo da diretiva em `../CLAUDE.md`.
 
 ## Regra de trabalho
 

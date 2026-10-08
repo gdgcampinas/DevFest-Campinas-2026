@@ -174,7 +174,7 @@ DevFestIA/                  ← AI continuity and dev tooling, not part of the s
   handoff/HANDOFF_CURRENT.md
   firebase/firestore.rules  security rules, paste manually into the Firebase console — see "Firebase (Firestore)"
   tools/                     check-meta.js (CI), check-install.js (CI), check-lineup.js, check-calendar.js, e2e-offline.js, e2e-kill-switch.js
-    mural/                     testes puros do mural (playlist, health, network/live/version, stage, scenes-logic, bindings); NÃO estão no validate.yml (precisa do OK do Renato). Os de tela (tools/dom/mural-*.dom.test.js) estão no CI
+    mural/                     testes puros do mural (playlist, health, network/live/version, stage, scenes-logic, bindings); JÁ ESTÃO no `validate.yml` (passo "Test the pure logic", desde 2026-10-08). Os de tela (tools/dom/mural-*.dom.test.js) estão no CI
     purge-test-data/           limpeza dos dados de teste no Firestore (plano com as travas, caso de uso, raiz de composição) + testes (CI)
     lib/                       google-auth.js (JWT de conta de serviço), firestore-rest.js (repository do Firestore via REST), zero npm
     sympla-sync/               sync Sympla -> Firestore (repository do Sympla, reconcile puro, caso de uso, raiz de composição) + testes (CI)
@@ -462,7 +462,7 @@ controle remoto. **Fase 3:** fênix animada (precisa do arquivo; sem som). **Fas
   `tools/lib/fake-clock.js`, inclui 8 h de resistência), `mural-scenes.dom.test.js` (36) e `mural-photo-moderation.dom.test.js` (11) e `mural-page.dom.test.js` (18, carrega os scripts do próprio `mural.html` na ordem dele; confere a lista de scripts da página).
   Armadilha: em teste de tela, array vindo de dentro do jsdom não é `deepEqual` de array do teste (outro realm): espalhe `[...x]`.
 - **Ainda NÃO verificado (depende do hardware/do Renato):** o ensaio de 1 h ou mais no computador e no telão de verdade com o Wi-Fi desligado no meio; recarga real por `stuck` (nos testes é decisão pura, o `location.reload` não roda no jsdom);
-  o Wake Lock num Chrome de verdade; a proporção real do LED; o pódio ao vivo com login de moderador (só emulado). **Falta também o OK do Renato** pra incluir `tools/mural/` no `validate.yml`.
+  o Wake Lock num Chrome de verdade; a proporção real do LED; o pódio ao vivo com login de moderador (só emulado). 
 - **Pós-queda de energia sem internet:** se o computador ligar sem rede o Chrome mostra a página de erro e o JavaScript do mural nem existe; a página de "sem internet" do Chrome recarrega sozinha quando a rede volta, mas
   testar isso no ensaio (e deixar o endereço do mural como página inicial do Chrome em `--kiosk`).
 

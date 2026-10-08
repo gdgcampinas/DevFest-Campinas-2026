@@ -86,7 +86,7 @@ papel picado). As regras do Firestore do concurso JÁ estão publicadas e confer
 descartadas nota média pública, credencial digital, mentorias, mural da hashtag, área administrativa, votação das salas e a página `codejam.html` (o envio é no Google). (3) MURAL DO TELÃO DECIDIDO.
 **Sessão 12:** o MURAL DO TELÃO, FASE 1, está FEITO e no ar (`mural.html`, interno, sem versão `/DEV/`: abra na raiz com `?lineup=1`). Motor autônomo com vigia, cena isolada, rede por sonda, escutas que reabrem e
 cena de reserva, 14 cenas por dado (agora e próximas, fotos, patrocinadores, QR, inscritos, dicas, fênix estática, pódio do Coding Jam ao vivo, contagem, obrigado), palco que serve a qualquer proporção
-(testado em 16:9, 3:1, 4:3 e vertical) e cenas "rolando agora" (foto do palestrante), álbuns do Google Fotos (5 modelos, foto nova em destaque, tela do moderador `mural-fotos.html` pra esconder foto, coleção `mural-hidden` com regras novas a colar; intermediário em `DevFestIA/tools/album-proxy/` ainda NÃO publicado: falta o Renato fazer o deploy no Cloudflare), "selfie" (painel de foto) e artes de design que se adaptam a qualquer formato de telão (formato AINDA desconhecido), animações por dado (troca em sequência, zoom lento nas fotos, cartões em fila, pódio 3º, 2º, 1º, número que sobe; ignora "Reduzir movimento"). Testes: `tools/mural/*.test.js` (76, puros, fora do CI), `tools/dom/mural-*.dom.test.js` (88, no CI, com relógio falso e 8 h de resistência). Detalhes e parâmetros
+(testado em 16:9, 3:1, 4:3 e vertical) e cenas "rolando agora" (foto do palestrante), álbuns do Google Fotos (5 modelos, foto nova em destaque, tela do moderador `mural-fotos.html` pra esconder foto, coleção `mural-hidden` com regras novas a colar; intermediário em `DevFestIA/tools/album-proxy/` ainda NÃO publicado: falta o Renato fazer o deploy no Cloudflare), "selfie" (painel de foto) e artes de design que se adaptam a qualquer formato de telão (formato AINDA desconhecido), animações por dado (troca em sequência, zoom lento nas fotos, cartões em fila, pódio 3º, 2º, 1º, número que sobe; ignora "Reduzir movimento"). Testes: `tools/mural/*.test.js` (76, puros, no CI), `tools/dom/mural-*.dom.test.js` (88, no CI, com relógio falso e 8 h de resistência). Detalhes e parâmetros
 (`?tela=`, `?proporcao=`, `?cenas=`, `?diag=1`, `?demo=`, `?ensaio=0`) no PROJECT_CONTEXT, "Mural do telão de LED", subseção "Implementação da Fase 1".
 
 PRÓXIMO TRABALHO (ver "Sessão 12" no handoff e "Mural do telão de LED" no PROJECT_CONTEXT)
@@ -99,7 +99,7 @@ de fonte ao vivo (`open(onData, onError)`) e a cena é só um tipo novo no regis
 3) Pendências do Renato do Coding Jam: horário/sala/prêmios reais (hoje mock), confirmar que conta como workshop obrigatório do e-mail dos organizadores, acesso de organizador no codingjam.dev (mensagem pra
 Christina Lin no LinkedIn rascunhada), testar o lado do moderador, passar os 6 e-mails dos moderadores (1 por trilha + 2 reservas) e confirmar `gdgcampinascontato@gmail.com`.
 4) Sorteio: o Renato testar o lado do moderador; decisões abertas (horários de abrir/fechar o cadastro, prêmios, quando tirar o `devOnly`). Corrigir o texto "aguarde até 10 minutos" do cadastro por ingresso
-(pequeno, o Claude faz). Incluir `tools/raffle/`, `tools/contest/` e `tools/room/` no `validate.yml`: SÓ com o OK explícito do Renato (mexe no CI).
+(pequeno, o Claude faz). (os testes de `raffle/`, `contest/`, `mural/` e `album-proxy/` já rodam no CI desde 2026-10-08.)
 5) Time: 6 mini-bios (Carlos, Débora, Laydianne, Lorenzo, Felipe, João Paulo), LinkedIn da Laydianne e do Davi, cargo dos 4 organizadores. Sympla: o sync roda a cada ~4,4 h e leu 0 inscritos (o Renato
 conferir o painel). Outras frentes: dados reais do evento, mapa do local, cartão "Eu vou!" com a Minha agenda, certificado (depois do evento), ES/FR.
 
@@ -124,6 +124,11 @@ COMPLETOS ao Renato. Script externo fixo no `<head>` quebra a navegação dentro
 versão `/DEV/`: links na raiz. Testes de tela: `node --test DevFestIA/tools/dom/*.test.js` (em teste de tela use `waitFor` do `tools/lib/dom-harness.js` em vez de dormir; sleeps curtos falham
 em máquina carregada); puros: `node --test DevFestIA/tools/raffle/*.test.js DevFestIA/tools/contest/*.test.js DevFestIA/tools/room/*.test.js DevFestIA/tools/questions/questions.test.js`; regras (Java 21 instalado):
 `bash DevFestIA/tools/questions/run-rules-tests.sh` (porta 8085 livre).
+
+DIRETIVA DE CONTEXTO CHEIO
+Quando o contexto deste chat chegar perto de 95%, avise com a frase exata "Vou começar o protocolo de um novo chat: este já está cheio em 95%" e execute: atualizar o handoff,
+documentar o que mudou (PROJECT_CONTEXT e Continuidade), conferir git/push/CI, atualizar o NEW_CHAT_PROMPT e entregar ao Renato o prompt pronto pra colar num chat novo. Nada fica só
+na conversa. Não há medidor exato: estime pelo tamanho do chat e avise cedo.
 
 DIRETIVA DE ENGAJAMENTO
 Você é parceiro técnico do projeto, não executor passivo.

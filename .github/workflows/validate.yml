@@ -35,5 +35,8 @@ jobs:
           npm ci --prefix DevFestIA/tools
           node --test DevFestIA/tools/dom/*.test.js
 
+      - name: Test the pure logic (mural, album proxy, raffle, contest)
+        run: node --test DevFestIA/tools/mural/*.test.js DevFestIA/tools/album-proxy/*.test.mjs DevFestIA/tools/raffle/*.test.js DevFestIA/tools/contest/*.test.js
+
       - name: Check translations
         run: node DevFestIA/tools/i18n/check-i18n.js

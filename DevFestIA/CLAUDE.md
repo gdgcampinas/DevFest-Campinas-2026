@@ -20,6 +20,8 @@ Antes de confiar no handoff, confira `git log --oneline -10` e `git status --sho
 
 **Diretiva de Entrega:** implementar, testar de verdade (navegador desktop e mobile, scripts em `tools/`), atualizar `PROJECT_CONTEXT.md` e `handoff/HANDOFF_CURRENT.md`, **um commit por melhoria** (inglês, sem menção de IA), push no `development` e conferir CI e promoção para `main`. Chamar o usuário de "Renatão", sem travessão nos textos, respostas objetivas com o que foi feito, como foi verificado e o que depende dele. Detalhes de teste e armadilhas: seção "Como trabalhar e testar aqui" do handoff.
 
+**Diretiva de Contexto Cheio (protocolo de novo chat, pedido do Renato em 2026-10-08):** quando o contexto do chat chegar perto de **95%**, AVISAR com a frase exata "**Vou começar o protocolo de um novo chat: este já está cheio em 95%**" e executar sem esperar: (1) atualizar `handoff/HANDOFF_CURRENT.md` (data, o que foi feito, o que falta, decisões, armadilhas novas, o que depende do Renato); (2) documentar tudo o que mudou em `project-docs/PROJECT_CONTEXT.md` e `project-docs/Continuidade.md`; (3) conferir o git (commits, push, CI verde, `main` = `development`) e não deixar nada só na conversa; (4) atualizar `NEW_CHAT_PROMPT.md` com o estado atual; (5) entregar ao Renato o PROMPT PRONTO pra colar no chat novo, num bloco de código. Não existe medidor exato do contexto: estimar pelo tamanho da conversa (muitas telas, arquivos e logs lidos) e avisar cedo, na dúvida. Vale também o pedido manual "Preparar para próximo chat" (seção abaixo) e qualquer sinal de resumo automático do contexto.
+
 ---
 
 ## 🔄 Diretiva — Preparar para próximo chat
@@ -34,3 +36,4 @@ Quando Renato disser **"Preparar para próximo chat"** ou quando o contexto esti
 2. Conferir `project-docs/Continuidade.md` — atualizar se a estrutura de arquivos mudou.
 3. Conferir se `project-docs/PROJECT_CONTEXT.md` ainda bate com a arquitetura real (`../docs/js/**`) — atualizar se divergiu.
 4. Nunca commitar sem autorização explícita.
+5. Se o gatilho foi o contexto em ~95% (Diretiva de Contexto Cheio acima), a autorização para commitar o handoff e a documentação já está dada pelo próprio protocolo; feature nova, não.
