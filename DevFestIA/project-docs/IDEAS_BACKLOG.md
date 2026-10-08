@@ -164,6 +164,18 @@ no plano grátis). OU (2) **álbum colaborativo do Google Fotos lido por um inte
 fora das regras do serviço), com ~20 a 30 s de atraso, e o Worker é infra nova. **Próximo passo:** o Renato cria um álbum colaborativo de TESTE e manda o link; o Claude testa o iframe e a leitura da
 lista de fotos. Descartado: pasta pública do Drive (plateia precisa de conta e o upload no celular é pior).
 
+**RESULTADO DO TESTE do álbum (2026-10-08, álbum de teste = o da edição 2025, "DevFest Campinas 2025", o Renato mandou o link no chat; não gravar o link aqui, o repositório é público e a chave do link dá acesso):**
+- **Iframe NÃO funciona** (confirmado de novo: `x-frame-options: SAMEORIGIN` na página do álbum, e o link curto `photos.app.goo.gl` redireciona pra `photos.google.com/share/<id>?key=<chave>`).
+- **Ler a lista de fotos FUNCIONA:** um `GET` comum na página de compartilhamento (com User-Agent de navegador, sem login) devolve ~1,3 MB de HTML com os dados do álbum embutidos: título, e uma entrada por item
+  `["<id AF1Qip...>",["https://lh3.googleusercontent.com/pw/<token>",largura,altura,...]]` mais o horário da foto em ms. Foram **300 itens únicos**, de 1080 a 4032 px (242 paisagem, 58 retrato), sem token de próxima página visível
+  (conferir no app do Google Fotos se o álbum tem mesmo 300; se tiver mais, a leitura paginada é outra chamada interna e mais frágil).
+- **As imagens carregam em `<img>` de outro site:** `lh3.googleusercontent.com/pw/<token>=w1920-h1080` responde 200 com `cross-origin-resource-policy: cross-origin` (testado de `https://gdgcampinas.github.io` num navegador de verdade;
+  de `http://localhost:8080` o Google devolve 429, então teste no site publicado, não no local). Tamanho sob demanda pelo sufixo (`=w800-h600` ~120 KB, `=w1920-h1080` ~240 KB a 1,6 MB conforme a foto).
+- **A página NÃO pode ser lida pelo navegador do mural** (sem CORS): precisa de um intermediário. Caminhos: (A) job do GitHub Actions que lê a página e grava a lista no Firestore (sem infra nova, mas o cron do GitHub atrasa horas: serve pro álbum de 2025, que não muda);
+  (B) Cloudflare Worker gratuito com cache de 30 a 60 s (quase ao vivo, infra nova de ~30 linhas). Leitura NÃO oficial: se o Google mudar a página o intermediário quebra, então o mural guarda a última lista boa e segue com ela.
+- **Bônus:** esse álbum resolve o pedido das "fotos em alta de edições antigas" (hoje são 16 de 900 px): 300 fotos de até 4032 px pra cena de fotos.
+- **Moderação:** foto escondida vira uma lista de ids ocultos (Firestore) que o mural aplica por cima da lista do álbum.
+
 ### Passaporte DevFest com QR nos estandes
 Quem visita cada estande dos patrocinadores escaneia um QR, junta
 "carimbos", troca por brinde no fim. Mesmo mecanismo técnico do check-in de
