@@ -3,9 +3,10 @@
  *   - guarda o dado no estado `live` que as cenas leem (`ctx.live.<nome>`); fonte de várias chaves (pódio por sessão) guarda { key, items } do último com itens;
  *   - quando a lista ACABA DE SER PUBLICADA ao vivo (features/publish-detector.js: viu vazio e depois encheu), empurra a cena de interrupção na frente
  *     do rodízio e dispara a comemoração. Mural aberto com o resultado já publicado não comemora, só mostra a cena no rodízio.
- * Tudo injetado: `definitions`, `live` (objeto de estado), `mural` (pushInterrupt), `celebrate`, `createDetector`. Dual (navegador e Node).
+ * `bind.celebrateDelayMs` espera esse tempo antes do papel picado (o pódio entra do 3º ao 1º: a festa é na hora do 1º lugar).
+ * Tudo injetado: `definitions`, `live` (objeto de estado), `mural` (pushInterrupt), `celebrate`, `schedule`, `createDetector`. Dual (navegador e Node).
  */
-function createLiveBindings({ definitions, live, mural, celebrate = () => {}, createDetector = createFreshPublishDetector }) {
+function createLiveBindings({ definitions, live, mural, celebrate = () => {}, schedule = fn => { fn(); return () => {}; }, createDetector = createFreshPublishDetector }) {
   const detectors = new Map();
   const detectorFor = id => {
     if (!detectors.has(id)) detectors.set(id, createDetector());
@@ -27,7 +28,7 @@ function createLiveBindings({ definitions, live, mural, celebrate = () => {}, cr
     else if (live[bind.live]?.key === key) delete live[bind.live];
     if (!fresh) return;
     if (bind.interrupt) mural.pushInterrupt(bind.interrupt);
-    if (bind.celebrate) celebrate();
+    if (bind.celebrate) schedule(celebrate, bind.celebrateDelayMs ?? 0);
   };
 }
 

@@ -162,7 +162,7 @@ docs/
       tracks-overview.js, testimonials.js, ticker.js, patrocinio.js
       mural (ver "Mural do telão de LED"): scheduler.js (defaultSchedule/scheduleEvery/withTimeout), backoff.js, publish-detector.js (também usado por board-contest.js),
         mural.js (motor), mural-playlist.js, mural-health.js, mural-network.js, mural-version.js, mural-live.js, mural-live-sources.js, mural-live-bindings.js,
-        mural-stage.js, mural-now-next.js, mural-photo-pool.js, kiosk.js, image-preload.js, qr-renderer.js
+        mural-stage.js, mural-now-next.js, mural-photo-pool.js, count-up.js, kiosk.js, image-preload.js, qr-renderer.js
     pages/                   one bootstrap per page (see table above)
       home.js, grade.js, palestrantes.js, ingressos.js, time.js, patrocinio.js, cod.js, checkin-display.js, mural.js
     app.js                   initShell(): header, ticker, nav, footer, SEO,
@@ -439,13 +439,20 @@ controle remoto. **Fase 3:** fênix animada (precisa do arquivo; sem som). **Fas
   `patrocinio-master`/`patrocinio-demais` (mock, só revelado), `qr-cartao` (ingressos.html?cartao=1), `qr-avaliar` (index.html?avaliar=1, entra a partir das 17:15), `inscritos` (`event-stats`, só com total >= `EVENT.tickets.counterMin`),
   `dicas`, `fenix` (imagem estática `assets/img/gumbleton.png`, 833x1000, do mascote aprovado), `podio-jam` (pódio do Coding Jam ao vivo, mock, só revelado), `contagem` (fase antes), `obrigado` (fase depois) e a
   `reserva` (sem rede, fora da lista; sustenta a tela quando nada mais pode). Ligar/desligar/reordenar = editar o dado.
+- **Animações (sessão 12, por dado em `MURAL_CONFIG.motion`; só `opacity` e `transform`, rodam na placa de vídeo e NÃO dependem de `requestAnimationFrame`):** a troca de cena é em SEQUÊNCIA (a que sai some em .3 s, a que entra
+  começa depois; nunca uma em cima da outra), e como a cena entra vem do dado (`transition`: `rise` padrão, `slide`, `zoom`; o motor põe `data-transition` e `--scene-ms` no elemento). Fotos: zoom lento (Ken Burns) durante todo
+  o tempo de tela, movimentos em rodízio (`motion.kenBurns`). Cartões (agora e próximas, dicas, patrocinadores) entram um a um (`.ms-stagger`, `--i` por `muralStagger()`, `--stagger-step` = `motion.staggerMs`). Pódio do Coding Jam:
+  3º, 2º e 1º entram nessa ordem (`talkPodiumMarkup` ganhou o 3º parâmetro `{ slotStyle }`, usado só pelo mural; `--reveal-step` = `motion.podiumStepMs`) e o papel picado espera `celebrateDelayMs` (hoje 2,9 s) pra cair na hora do 1º.
+  Inscritos: o número sobe de 0 até o total (`features/count-up.js`, puro). **O mural IGNORA "Reduzir movimento" do sistema de propósito** (TV sem ninguém na frente; antes, com a opção ligada, a cena antiga ficava 100% visível por baixo da nova na
+  troca): a regra `prefers-reduced-motion` foi removida do `mural.css`. Limite da verificação: no navegador do app a aba fica oculta e o Chrome congela os relógios de animação, então o andamento foi provado avançando `animation.currentTime` à mão
+  (zoom 1.10 -> 1.00 em 9 s; atrasos 0.5, 0.62, 0.74, 0.86 s nos cartões; 0.9, 1.8, 2.7 s no pódio); ver ao vivo no ensaio.
 - **Palco:** `.mural-stage` é um contêiner de tamanho; todo tamanho é múltiplo de `--u` (1cqmin). A forma (`ultrawide` >= 2.4, `wide` >= 1.5, `standard` >= 1.1, `tall`) só troca o arranjo no CSS. Verificado no navegador em
   1920x1080, 3:1, 4:3 e 1080x1920. Sem parâmetro ocupa a janela (telão de verdade) e liga o modo quiosque (cursor escondido, Wake Lock); com `?tela=`/`?proporcao=`/`?diag=1` o cursor fica. **Margem segura 2%.**
 - **Parâmetros:** `?lineup=1` (mostra o mock), `?demo=AAAA-MM-DDTHH:MM` (relógio simulado), `?ensaio=0` (limpa o ensaio guardado na aba; sem isso um `?ensaio=agora` anterior desloca a grade e quebra o `?demo=`),
   `?cenas=a,b`, `?diag=1` (painel: cena, falhas, castigo, último erro, internet, fontes ao vivo, tempo ligado, recargas, pendências, degradado, palco), `?tela=LxA`, `?proporcao=3:1`, `?margem=N`.
 - **Rede de segurança na página:** um `<script>` inline recarrega a página se o JavaScript não chegar a iniciar em 45 s (`window.__muralBooted`); a tela de partida (logo e nome) está no HTML.
-- **Testes:** puros em `tools/mural/*.test.js` (playlist, health, network/live/version, stage, scenes-logic, bindings; 52 testes), de tela em `tools/dom/mural-engine.dom.test.js` (21, com relógio falso
-  `tools/lib/fake-clock.js`, inclui 8 h de resistência), `mural-scenes.dom.test.js` (12) e `mural-page.dom.test.js` (10, carrega os scripts do próprio `mural.html` na ordem dele; confere a lista de scripts da página).
+- **Testes:** puros em `tools/mural/*.test.js` (playlist, health, network/live/version, stage, scenes-logic, bindings, count-up; 56 testes), de tela em `tools/dom/mural-engine.dom.test.js` (23, com relógio falso
+  `tools/lib/fake-clock.js`, inclui 8 h de resistência), `mural-scenes.dom.test.js` (17) e `mural-page.dom.test.js` (10, carrega os scripts do próprio `mural.html` na ordem dele; confere a lista de scripts da página).
   Armadilha: em teste de tela, array vindo de dentro do jsdom não é `deepEqual` de array do teste (outro realm): espalhe `[...x]`.
 - **Ainda NÃO verificado (depende do hardware/do Renato):** o ensaio de 1 h ou mais no computador e no telão de verdade com o Wi-Fi desligado no meio; recarga real por `stuck` (nos testes é decisão pura, o `location.reload` não roda no jsdom);
   o Wake Lock num Chrome de verdade; a proporção real do LED; o pódio ao vivo com login de moderador (só emulado). **Falta também o OK do Renato** pra incluir `tools/mural/` no `validate.yml`.

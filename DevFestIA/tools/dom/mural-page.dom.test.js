@@ -39,6 +39,8 @@ function boot({ search, qr = true, internet = () => true, registered = { total: 
     MURAL_SCENES.forEach(scene => { scene.seconds = 0.15; });
     Object.assign(MURAL_CONFIG, { transitionMs: 20, retryDelayMs: 10, clockEveryMs: 20, reserveSeconds: 0.15, failureCooldownMs: 50, skipCooldownMs: 50, kioskEnsureEveryMs: 1000000, health: { ...MURAL_CONFIG.health, versionCheckEveryMs: 1000000 } });
     Object.assign(MURAL_CONFIG.network, { probeEveryMs: 25, backoff: { baseMs: 20, maxMs: 40, factor: 1, jitter: 0 } });
+    Object.assign(MURAL_CONFIG.motion, { countUpMs: 60, countUpStepMs: 20 });
+    MURAL_SOURCES.find(source => source.id === "podium").bind.celebrateDelayMs = 30;
     globalThis.__confetti = 0;
     createConfetti = () => ({ fire: () => { __confetti++; return true; } });
   `);
@@ -75,6 +77,7 @@ test("o line-up só aparece revelado: sem ?lineup=1 a cena 'agora' (dado mock) n
 test("dado ao vivo: o total de inscritos lido do banco aparece na cena de inscritos", async () => {
   const page = boot({ search: "cenas=inscritos" });
   await waitFor(() => page.active() === "inscritos");
+  await waitFor(() => /120/.test(page.activeText()), { timeout: 3000 }); // o número sobe de 0 até o total
   assert.match(page.activeText(), /120/);
   assert.match(page.activeText(), /Já garantiram a vaga/);
   page.site.window.close();
@@ -102,7 +105,8 @@ test("pódio publicado AO VIVO: entra na frente do rodízio na hora e dispara o 
   assert.match(page.activeText(), /Projeto Foguete/);
   assert.match(page.activeText(), /Ana Souza/);
   assert.match(page.activeText(), /O pódio chegou/);
-  assert.equal(page.confetti(), 1);
+  assert.equal(page.confetti(), 0, "a festa espera o 1º lugar entrar");
+  await waitFor(() => page.confetti() === 1);
   page.site.window.close();
 });
 

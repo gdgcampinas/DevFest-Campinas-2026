@@ -15,7 +15,7 @@ function createSponsorsScene({ repository, preload }) {
       const groups = tiers.map(({ tier, elements }) => `
         <div class="ms-tier" data-count="${elements.length}">
           <h3 class="ms-tier-name">${escapeHtml(tier)}</h3>
-          <ul class="ms-sponsors">${elements.map(sponsor => `<li class="ms-sponsor">${sponsor.logoOk ? `<img src="${escapeHtml(sponsor.imageUrl)}" alt="${escapeHtml(sponsor.name)}">` : `<span>${escapeHtml(sponsor.name)}</span>`}</li>`).join("")}</ul>
+          <ul class="ms-sponsors">${elements.map((sponsor, index) => `<li class="ms-sponsor ms-stagger"${muralStagger(index)}>${sponsor.logoOk ? `<img src="${escapeHtml(sponsor.imageUrl)}" alt="${escapeHtml(sponsor.name)}">` : `<span>${escapeHtml(sponsor.name)}</span>`}</li>`).join("")}</ul>
         </div>`).join("");
       return { markup: `<section class="ms ms-sponsors-scene">${muralHeadMarkup({ kicker: "Patrocínio", title: params.title })}<div class="ms-tiers">${groups}</div></section>` };
     },

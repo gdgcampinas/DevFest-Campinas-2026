@@ -67,11 +67,13 @@ function createMural({
     activeDispose = null;
   }
 
-  function show(scene, view) {
+  function show(scene, view, seconds) {
     const el = doc.createElement("div");
     el.className = "mural-scene is-active";
     el.dataset.scene = scene.id;
     el.dataset.type = scene.type;
+    el.dataset.transition = scene.transition ?? config.motion?.defaultTransition ?? "rise"; // como a cena entra (css/mural.css)
+    el.style.setProperty("--scene-ms", String(seconds * 1000)); // o CSS escala animações longas (zoom da foto) ao tempo de tela da cena
     el.innerHTML = view.markup;
     contentEl.appendChild(el);
     let dispose = null;
@@ -104,6 +106,7 @@ function createMural({
     const scene = picked?.scene ?? reserveScene;
     if (picked?.interrupt) interrupts = pruneInterrupts(interrupts, nowMs(), picked.interrupt);
     const reserve = scene === reserveScene;
+    const seconds = reserve ? config.reserveSeconds : scene.seconds ?? config.defaultSeconds;
     beatDueAt = nowMs() + config.prepareTimeoutMs + config.watchdogSlackMs;
     try {
       const impl = registry[scene.type];
@@ -116,7 +119,7 @@ function createMural({
         lastSceneId = scene.id;
         return later(0);
       }
-      show(scene, impl.render(prepared, params, ctx));
+      show(scene, impl.render(prepared, params, ctx), seconds);
     } catch (error) {
       if (mine !== token || stopped) return;
       fail(scene, error);
@@ -128,7 +131,6 @@ function createMural({
       return later(config.retryDelayMs);
     }
     if (!reserve) failures = 0;
-    const seconds = reserve ? config.reserveSeconds : scene.seconds ?? config.defaultSeconds;
     current = { scene, startedAt: nowMs(), endsAt: nowMs() + seconds * 1000, reserve, errored: false };
     lastSceneId = scene.id;
     shown++;

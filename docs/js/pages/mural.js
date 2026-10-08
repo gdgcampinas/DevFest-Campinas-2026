@@ -30,6 +30,8 @@ function initMural() {
   const spec = parseStageSpec(location.search, config.stage);
   const stage = mountStage({ stageEl, spec, shapes: config.stage.shapes });
   stage.apply();
+  stageEl.style.setProperty("--stagger-step", `${config.motion.staggerMs}ms`);
+  stageEl.style.setProperty("--reveal-step", `${config.motion.podiumStepMs}ms`);
   const diagOn = params.get("diag") === "1";
   if (spec.mode === "fill" && !diagOn) {
     const kiosk = createKiosk(); // telão de verdade: sem cursor e sem tela apagando (na simulação e no diagnóstico o cursor fica)
@@ -63,10 +65,10 @@ function initMural() {
   const highlights = highlightsRepository.getAll();
   const registry = {
     "now-next": createNowNextScene(grid),
-    photos: createPhotosScene({ pool: createPhotoPool({ photos: highlights.photos, nowMs, quarantineMs: config.photoQuarantineMs }), preload, caption: highlights.title }),
+    photos: createPhotosScene({ pool: createPhotoPool({ photos: highlights.photos, nowMs, quarantineMs: config.photoQuarantineMs }), preload, caption: highlights.title, kenBurns: config.motion.kenBurns }),
     sponsors: createSponsorsScene({ repository: sponsorsRepository, preload }),
     qr: createQrScene({ siteUrl: EVENT.url, extraQuery: () => rehearsal.query, qr: createQrRenderer() }),
-    registered: createRegisteredScene(),
+    registered: createRegisteredScene({ motion: config.motion }),
     tips: createTipsScene({ repository: muralTipsRepository }),
     phoenix: createPhoenixScene({ preload, imageUrl: "assets/img/gumbleton.png", title, subtitle: eventDateLabel(SCHEDULE, EVENT.timezone) }),
     podium: createPodiumScene({ talkIndex, highlightOf: talkHighlightsRepository.forTalk }),
@@ -106,7 +108,7 @@ function initMural() {
 
   // ---------- fontes ao vivo ----------
   const bindings = createLiveBindings({
-    definitions: muralSourcesRepository.getAll(), live, mural,
+    definitions: muralSourcesRepository.getAll(), live, mural, schedule,
     celebrate: () => createConfetti().fire({ origin: { x: window.innerWidth / 2, y: window.innerHeight / 2 }, force: true }),
   });
   runAfterModules(() => {

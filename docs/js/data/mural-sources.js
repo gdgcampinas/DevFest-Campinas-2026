@@ -8,7 +8,7 @@
  *   key | keys  documento fixo, ou o nome de um resolvedor de várias chaves (uma escuta por chave: "contest-sessions" = sessões com concurso)
  *   enabled     false desliga a fonte inteira
  *   bind        o que a mudança faz no mural: `live` (nome no contexto das cenas); `pick` (campo do documento que é a lista de itens: o estado vira
- *               { key, items } e só vale com itens); `interrupt` (cena que entra na frente quando a lista acaba de ser publicada ao vivo) e `celebrate` (papel picado)
+ *               { key, items } e só vale com itens); `interrupt` (cena que entra na frente quando a lista acaba de ser publicada ao vivo) e `celebrate` (papel picado, depois de `celebrateDelayMs`: o pódio entra do 3º ao 1º)
  */
 const MURAL_SOURCES = [
   {
@@ -17,7 +17,7 @@ const MURAL_SOURCES = [
   },
   {
     id: "podium", kind: "document", repository: "contestResults", keys: "contest-sessions",
-    bind: { live: "podium", pick: "podium", interrupt: { sceneId: "podio-jam", priority: 100, ttlMs: 3 * 60000, immediate: true }, celebrate: true },
+    bind: { live: "podium", pick: "podium", interrupt: { sceneId: "podio-jam", priority: 100, ttlMs: 3 * 60000, immediate: true }, celebrate: true, celebrateDelayMs: MURAL_CONFIG.motion.podiumStepMs * 2 + 1100 },
   },
 ];
 

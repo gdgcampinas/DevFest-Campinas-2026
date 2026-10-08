@@ -57,6 +57,20 @@ test("rodízio: mostra a primeira cena, troca no tempo de cada uma e dá a volta
   mural.stop();
 });
 
+test("cada cena sai com o tempo de tela (--scene-ms) e a transição de entrada do dado, com padrão da config", async () => {
+  const { clock, mural, contentEl } = setup({ scenes: [okScene("a", { seconds: 7, transition: "zoom" }), okScene("b")], extra: { config: { ...config, motion: { defaultTransition: "rise" } } } });
+  mural.start();
+  await clock.tick(0);
+  const first = contentEl.querySelector('[data-scene="a"]');
+  assert.equal(first.dataset.transition, "zoom");
+  assert.equal(first.style.getPropertyValue("--scene-ms"), "7000");
+  await clock.tick(7000);
+  const second = contentEl.querySelector('[data-scene="b"]');
+  assert.equal(second.dataset.transition, "rise", "sem `transition` na cena vale o padrão da config");
+  assert.equal(second.style.getPropertyValue("--scene-ms"), "10000");
+  mural.stop();
+});
+
 test("cena que erra no render é pulada na hora, vai de castigo e volta depois; as outras seguem", async () => {
   const { clock, mural, active, events } = setup({
     scenes: [okScene("a"), okScene("quebra", { type: "boom" }), okScene("b")],

@@ -11,11 +11,12 @@ function talkHighlightChipMarkup(highlight) {
  * 1º, 2º e 3º lugar. O prêmio só aparece quando está preenchido no dado; `winners` ([{ place, project, name }], o pódio que o
  * moderador publicou) preenche cada lugar com o projeto e a pessoa. Nome e projeto vêm da plateia: passam por escapeHtml.
  */
-function talkPodiumMarkup(podium = [], winners = []) {
+function talkPodiumMarkup(podium = [], winners = [], { slotStyle = () => "" } = {}) {
   const slots = podium.map(({ place, prize }, index) => {
     const winner = winners.find(candidate => candidate.place === index + 1);
     const who = winner ? `<span class="talk-podium-project">${escapeHtml(winner.project)}</span><span class="talk-podium-winner">${escapeHtml(winner.name)}</span>` : "";
-    return `<li class="talk-podium-slot${winner ? " talk-podium-slot--won" : ""}"><b>${place}</b>${who}${prize ? `<span>${prize}</span>` : ""}</li>`;
+    const style = slotStyle(index);
+    return `<li class="talk-podium-slot${winner ? " talk-podium-slot--won" : ""}"${style ? ` style="${style}"` : ""}><b>${place}</b>${who}${prize ? `<span>${prize}</span>` : ""}</li>`;
   }).join("");
   return slots ? `<ol class="talk-podium">${slots}</ol>` : "";
 }

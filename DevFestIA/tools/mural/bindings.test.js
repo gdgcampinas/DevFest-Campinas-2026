@@ -75,3 +75,19 @@ test("duas sessões com concurso têm detectores separados", () => {
   onUpdate("podium:k2", { podium: [{ place: 1 }] });
   assert.equal(pushed.length, 2);
 });
+
+test("a comemoração espera `celebrateDelayMs` (o pódio entra do 3º ao 1º e a festa é na hora do 1º); sem atraso é na hora", async () => {
+  const { createFakeClock } = require("../lib/fake-clock.js");
+  const clock = createFakeClock();
+  let celebrations = 0;
+  const delayed = createLiveBindings({
+    definitions: [{ id: "podium", bind: { live: "podium", pick: "podium", celebrate: true, celebrateDelayMs: 2900 } }],
+    live: {}, mural: { pushInterrupt() {} }, celebrate: () => celebrations++, schedule: clock.schedule,
+  });
+  delayed("podium:k1", null);
+  delayed("podium:k1", { podium: [{ place: 1 }] });
+  await clock.tick(2899);
+  assert.equal(celebrations, 0);
+  await clock.tick(2);
+  assert.equal(celebrations, 1);
+});

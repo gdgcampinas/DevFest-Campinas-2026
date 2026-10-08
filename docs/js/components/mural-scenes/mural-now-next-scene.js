@@ -21,8 +21,8 @@ function createNowNextScene({ schedule, tracks, timezone, phaseOf }) {
       const banner = board.banner
         ? `<p class="ms-banner">${board.banner.room ? `${escapeHtml(board.banner.room)} · ` : ""}até ${formatEventTime(board.banner.end, timezone)}</p>`
         : "";
-      const columns = board.columns.map(({ track, current, next }) => `
-        <article class="ms-col" style="--track-color:${track.color}">
+      const columns = board.columns.map(({ track, current, next }, index) => `
+        <article class="ms-col ms-stagger"${muralStagger(index, `--track-color:${track.color}`)}>
           <h3 class="ms-track"><span>${escapeHtml(track.shortLabel ?? track.label)}</span><small>${escapeHtml(track.room ?? "")}</small></h3>
           ${board.phase === "before" ? "" : muralTalkMarkup(current, { tag: "Agora", modifier: "now", timezone })}
           ${muralTalkMarkup(next, { tag: "A seguir", modifier: "next", timezone })}

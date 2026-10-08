@@ -10,7 +10,7 @@ const { createFakeClock } = require("../lib/fake-clock.js");
 
 const SCENES = ["mural-scene-kit", "mural-now-next-scene", "mural-photos-scene", "mural-sponsors-scene", "mural-qr-scene", "mural-registered-scene", "mural-tips-scene", "mural-phoenix-scene", "mural-podium-scene", "mural-event-phase-scene", "mural-reserve-scene"].map(name => `components/mural-scenes/${name}.js`);
 const site = loadSite({
-  scripts: [...SITE_BASE, "features/scheduler.js", "features/agenda.js", "features/mural-now-next.js", "features/mural-photo-pool.js", "features/mural.js", "features/mural-playlist.js", "components/talk-highlight.js", "data/mural-tips.js", ...SCENES, "features/live-status.js"],
+  scripts: [...SITE_BASE, "features/scheduler.js", "features/agenda.js", "features/mural-now-next.js", "features/mural-photo-pool.js", "features/mural.js", "features/mural-playlist.js", "components/talk-highlight.js", "data/mural-tips.js", ...SCENES, "features/live-status.js", "features/count-up.js"],
 });
 const { window, document } = site;
 test.after(() => window.close());
@@ -170,4 +170,62 @@ test("agora e próximas: antes do evento mostra a hora da abertura e só 'a segu
   assert.match(lunch, /até 13:00/);
   const live = textOf(html(scene.render(null, {}, ctx({ now: at("09:10") })).markup));
   assert.match(live, /Agentes.*Ana.*09:00 às 09:40/);
+});
+
+test("fotos: o zoom lento (Ken Burns) alterna entre os movimentos do dado a cada foto", async () => {
+  const photos = [{ file: "a.jpg" }, { file: "b.jpg" }, { file: "c.jpg" }];
+  const pool = g("createPhotoPool")({ photos, nowMs: () => 0, quarantineMs: 1000 });
+  const kenBurns = [{ origin: "50% 50%", from: 1, to: 1.08 }, { origin: "30% 40%", from: 1.1, to: 1 }];
+  const scene = g("createPhotosScene")({ pool, preload: async () => {}, caption: "x", kenBurns });
+  const style = async () => html(scene.render(await scene.prepare()).markup).querySelector("img").getAttribute("style");
+  assert.equal(await style(), "--kb-origin:50% 50%;--kb-from:1;--kb-to:1.08");
+  assert.equal(await style(), "--kb-origin:30% 40%;--kb-from:1.1;--kb-to:1");
+  assert.equal(await style(), "--kb-origin:50% 50%;--kb-from:1;--kb-to:1.08", "volta ao primeiro");
+  const plain = g("createPhotosScene")({ pool, preload: async () => {}, caption: "x" });
+  assert.equal(html(plain.render({ file: "z.jpg" }).markup).querySelector("img").getAttribute("style"), null, "sem movimentos no dado, sem zoom");
+});
+
+test("cartões entram em sequência: cada item leva a sua posição (--i), nas salas, nas dicas e nos patrocinadores", async () => {
+  const positions = el => [...el.querySelectorAll(".ms-stagger")].map(item => item.getAttribute("style").match(/--i:(\d+)/)[1]);
+  const tracks = [{ id: "ia", label: "IA", color: "blue", room: "A" }, { id: "web", label: "Web", color: "red", room: "B" }];
+  const schedule = [{ talks: { ia: { title: "x", speakers: [] }, web: { title: "y", speakers: [] } }, start: at("09:00"), end: at("09:40") }];
+  const nowNext = g("createNowNextScene")({ schedule, tracks, timezone: "America/Sao_Paulo", phaseOf: g("resolveEventState") });
+  const cols = html(nowNext.render(null, {}, ctx({ now: at("09:10") })).markup);
+  assert.deepEqual(positions(cols), ["0", "1"]);
+  assert.match(cols.querySelector(".ms-col").getAttribute("style"), /--track-color:blue/, "a cor da trilha continua junto");
+
+  const tipItems = [{ id: "a", icon: "check", title: "A", text: "a" }, { id: "b", icon: "star", title: "B", text: "b" }, { id: "c", icon: "chat", title: "C", text: "c" }];
+  const tips = g("createTipsScene")({ repository: { getActive: () => tipItems } });
+  assert.deepEqual(positions(html(tips.render(tipItems, {}).markup)), ["0", "1", "2"]);
+
+  const sponsors = g("createSponsorsScene")({ repository: { getAll: () => [] }, preload: async () => {} });
+  const tiers = [{ tier: "Apoio", elements: [{ name: "A", imageUrl: "" }, { name: "B", imageUrl: "" }] }];
+  assert.deepEqual(positions(html(sponsors.render(tiers, { title: "t" }).markup)), ["0", "1"]);
+});
+
+test("pódio: os lugares entram do último pro primeiro (--i do 3º é 0, do 1º é o maior)", () => {
+  const entry = { key: "k1", data: { title: "Jam", highlight: "codejam" } };
+  const scene = g("createPodiumScene")({ talkIndex: { get: () => entry }, highlightOf: g("talkHighlightsRepository").forTalk });
+  const prepared = scene.prepare({}, ctx({ live: { podium: { key: "k1", items: [{ place: 1, project: "A", name: "a" }, { place: 2, project: "B", name: "b" }, { place: 3, project: "C", name: "c" }] } } }));
+  const slots = [...html(scene.render(prepared).markup).querySelectorAll(".talk-podium-slot")];
+  assert.deepEqual(slots.map(slot => slot.getAttribute("style")), ["--i:2", "--i:1", "--i:0"], "1º lugar por último, 3º primeiro");
+});
+
+test("pódio do site (card, modal, quadro da sala) continua sem estilo extra por lugar", () => {
+  const markup = g("talkPodiumMarkup")([{ place: "1º", prize: "" }], []);
+  assert.ok(!markup.includes("style="));
+});
+
+test("inscritos: o número sobe de 0 até o total e o total já está no HTML se a animação não rodar", async () => {
+  const scene = g("createRegisteredScene")({ motion: { countUpMs: 400, countUpStepMs: 100 } });
+  const view = scene.render(1234);
+  const el = html(view.markup);
+  assert.match(textOf(el), /1\.234/, "o total já está lá");
+  const clock = createFakeClock();
+  const dispose = view.mount(el, { schedule: clock.schedule });
+  assert.equal(el.querySelector("[data-count-up]").textContent, "0");
+  await clock.tick(1000);
+  assert.equal(el.querySelector("[data-count-up]").textContent, "1.234");
+  dispose();
+  assert.equal(clock.pending(), 0);
 });
