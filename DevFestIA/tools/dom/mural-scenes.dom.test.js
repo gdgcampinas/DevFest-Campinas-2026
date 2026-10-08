@@ -8,9 +8,9 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 const { createFakeClock } = require("../lib/fake-clock.js");
 
-const SCENES = ["mural-scene-kit", "mural-now-next-scene", "mural-photos-scene", "mural-sponsors-scene", "mural-qr-scene", "mural-registered-scene", "mural-tips-scene", "mural-phoenix-scene", "mural-podium-scene", "mural-event-phase-scene", "mural-reserve-scene", "mural-spotlight-scene", "mural-selfie-scene"].map(name => `components/mural-scenes/${name}.js`);
+const SCENES = ["mural-scene-kit", "mural-now-next-scene", "mural-photos-scene", "mural-sponsors-scene", "mural-qr-scene", "mural-registered-scene", "mural-tips-scene", "mural-phoenix-scene", "mural-podium-scene", "mural-event-phase-scene", "mural-reserve-scene", "mural-spotlight-scene", "mural-selfie-scene", "mural-art-scene"].map(name => `components/mural-scenes/${name}.js`);
 const site = loadSite({
-  scripts: [...SITE_BASE, "features/scheduler.js", "features/agenda.js", "features/mural-now-next.js", "features/mural-photo-pool.js", "features/mural.js", "features/mural-playlist.js", "components/talk-highlight.js", "data/mural-tips.js", ...SCENES, "features/live-status.js", "features/count-up.js", "components/avatar.js"],
+  scripts: [...SITE_BASE, "features/scheduler.js", "features/agenda.js", "features/mural-now-next.js", "features/mural-photo-pool.js", "features/mural.js", "features/mural-playlist.js", "components/talk-highlight.js", "data/mural-tips.js", "data/mural-arts.js", ...SCENES, "features/live-status.js", "features/count-up.js", "components/avatar.js"],
 });
 const { window, document } = site;
 test.after(() => window.close());
@@ -316,13 +316,59 @@ test("rolando agora: a barra e o 'faltam N min' andam com o relógio da cena", a
   assert.equal(clock.pending(), 0);
 });
 
+const styleVars = el => Object.fromEntries((el.querySelector(".ms-art-img").getAttribute("style") || "").split(";").filter(Boolean).map(pair => pair.split(/:(.*)/s).slice(0, 2)));
+
+test("arte: pré-carrega e desenha em tela cheia; arte desconhecida ou imagem que não carrega falham (e descansam)", async () => {
+  const preloaded = [];
+  const repository = { get: id => ({ sunset: { file: "s.webp", alt: "Pôr do sol", fit: "cover", focus: { default: "50% 50%" } } })[id] ?? null };
+  const scene = g("createArtScene")({ repository, preload: async url => preloaded.push(url) });
+  const art = await scene.prepare({ art: "sunset" });
+  assert.deepEqual(preloaded, ["s.webp"]);
+  const el = html(scene.render(art).markup);
+  assert.equal(el.querySelector("img.ms-art-img").getAttribute("src"), "s.webp");
+  assert.equal(el.querySelector("img.ms-art-img").getAttribute("alt"), "Pôr do sol");
+  await assert.rejects(scene.prepare({ art: "nao-existe" }), /arte desconhecida/);
+  await assert.rejects(g("createArtScene")({ repository, preload: async () => { throw new Error("404"); } }).prepare({ art: "sunset" }));
+});
+
+test("arte: como ela se adapta a qualquer proporção sai do dado, por forma de tela (cover/contain e ponto de foco)", () => {
+  const scene = g("createArtScene")({ repository: { get: () => null }, preload: async () => {} });
+  const vars = styleVars(html(scene.render({ file: "g.webp", fit: { default: "contain", tall: "cover" }, focus: { default: "50% 40%", wide: "65% 50%" } }).markup));
+  assert.equal(vars["--fit"], "contain");
+  assert.equal(vars["--fit-tall"], "cover");
+  assert.equal(vars["--focus"], "50% 40%");
+  assert.equal(vars["--focus-wide"], "65% 50%");
+  const plain = styleVars(html(scene.render({ file: "p.webp" }).markup));
+  assert.deepEqual([plain["--fit"], plain["--focus"]], ["cover", "50% 50%"], "sem dado: preenche e centraliza");
+});
+
+test("as artes do dado: o banner preenche (cover) com foco por forma, as peças com texto aparecem inteiras (contain) e e o Gumbleton (tem o selo com texto) também aparece inteiro", () => {
+  const arts = g("muralArtsRepository");
+  assert.equal(arts.get("sunset").fit, "cover");
+  assert.ok(arts.get("sunset").focus.tall && arts.get("sunset").focus.wide && arts.get("sunset").focus.standard && arts.get("sunset").focus.ultrawide);
+  assert.equal(arts.get("invite").fit, "contain", "arte com texto não pode ser cortada");
+  assert.equal(arts.get("gumbleton").fit, "contain", "o selo GUMBLETON é texto: em tela vertical o cover o cortava");
+  assert.equal(arts.get("nao-existe"), null);
+  Object.values(arts.getAll()).forEach(art => assert.match(art.file, /^assets\/img\/mural-art-[a-z]+\.webp\?v=\d+$/));
+});
+
+test("selfie com arte de fundo: a arte preenche e o nome e a data ficam numa faixa embaixo; sem logo nem fênix duplicados", async () => {
+  const arts = { get: id => (id === "sunset" ? { file: "s.webp", fit: "cover" } : null) };
+  const scene = g("createSelfieScene")({ preload: async () => {}, arts, mascotUrl: "f.png", logoSrc: "logo.svg", title: "DevFest Campinas 2026", subtitle: "28 de novembro de 2026" });
+  const el = html(scene.render(null, { art: "sunset" }).markup);
+  assert.ok(el.querySelector(".ms-selfie--art .ms-art-img"));
+  assert.match(textOf(el.querySelector(".ms-selfie-bar")), /DevFest Campinas 2026.*28 de novembro de 2026/);
+  assert.equal(el.querySelector(".ms-selfie-logo"), null);
+  assert.equal(el.querySelector(".ms-selfie-mascot"), null);
+});
+
 test("selfie: cartão-postal com logo, nome e data grandes, hashtag só quando existir, e falha se a fênix não carregar", async () => {
-  const scene = g("createSelfieScene")({ preload: async () => {}, mascotUrl: "f.png", logoSrc: "logo.svg", title: "DevFest Campinas 2026", subtitle: "28 de novembro de 2026" });
-  await scene.prepare();
+  const scene = g("createSelfieScene")({ preload: async () => {}, arts: { get: () => null }, mascotUrl: "f.png", logoSrc: "logo.svg", title: "DevFest Campinas 2026", subtitle: "28 de novembro de 2026" });
+  await scene.prepare({});
   const plain = html(scene.render(null, { hint: "Tire sua foto aqui" }).markup);
   assert.match(textOf(plain), /DevFest Campinas 2026.*28 de novembro de 2026.*Tire sua foto aqui/);
   assert.equal(plain.querySelector(".ms-selfie-tag"), null, "sem hashtag definida não aparece nada");
   assert.equal(html(scene.render(null, {}).markup).querySelector(".ms-selfie-hint"), null, "sem frase de apoio não sobra parágrafo vazio");
   assert.match(textOf(html(scene.render(null, { hashtag: "#DevFestCampinas" }).markup)), /#DevFestCampinas/);
-  await assert.rejects(g("createSelfieScene")({ preload: async () => { throw new Error("404"); }, mascotUrl: "f.png", logoSrc: "l", title: "", subtitle: "" }).prepare());
+  await assert.rejects(g("createSelfieScene")({ preload: async () => { throw new Error("404"); }, arts: { get: () => null }, mascotUrl: "f.png", logoSrc: "l", title: "", subtitle: "" }).prepare({}));
 });

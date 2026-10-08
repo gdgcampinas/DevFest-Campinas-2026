@@ -189,6 +189,21 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .ms-selfie-hint{margin:0;font:600 calc(var(--u) * 2.6) var(--font-body);color:var(--muted)}
 .ms-selfie-mascot{height:100%;width:auto;max-width:40%;object-fit:contain;filter:drop-shadow(0 0 calc(var(--u) * 4) oklch(70% .2 50 / .5))}
 
+/* ---------- arte em tela cheia ---------- */
+/* como a arte se adapta vem do dado (data/mural-arts.js): --fit e --focus, e as versões por forma do palco (--fit-tall, --focus-wide...) */
+.ms-art{position:relative;border-radius:calc(var(--u) * 1.6);overflow:hidden;background:#000}
+.ms-art-bg{position:absolute;inset:-6%;background-size:cover;background-position:center;filter:blur(calc(var(--u) * 2.4)) brightness(.45)}
+.ms-art-img{position:relative;width:100%;height:100%;object-fit:var(--fit,cover);object-position:var(--focus,50% 50%)}
+.mural-stage[data-shape="ultrawide"] .ms-art-img{object-fit:var(--fit-ultrawide,var(--fit,cover));object-position:var(--focus-ultrawide,var(--focus,50% 50%))}
+.mural-stage[data-shape="wide"] .ms-art-img{object-fit:var(--fit-wide,var(--fit,cover));object-position:var(--focus-wide,var(--focus,50% 50%))}
+.mural-stage[data-shape="standard"] .ms-art-img{object-fit:var(--fit-standard,var(--fit,cover));object-position:var(--focus-standard,var(--focus,50% 50%))}
+.mural-stage[data-shape="tall"] .ms-art-img{object-fit:var(--fit-tall,var(--fit,cover));object-position:var(--focus-tall,var(--focus,50% 50%))}
+/* selfie com arte de fundo: o nome e a data numa faixa embaixo, sobre uma sombra, pra não brigar com o logo que já vem na arte */
+.ms-selfie--art{position:relative;padding:0;border-radius:calc(var(--u) * 1.6);overflow:hidden}
+.ms-selfie-bar{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:baseline;flex-wrap:wrap;gap:calc(var(--u) * 1) calc(var(--u) * 3);padding:calc(var(--u) * 6) calc(var(--u) * 3) calc(var(--u) * 2.4);background:linear-gradient(to top,oklch(8% .01 260 / .85),transparent)}
+.ms-selfie-bar .ms-selfie-title{font-size:calc(var(--u) * 7)}
+.ms-selfie-bar .ms-selfie-date{font-size:calc(var(--u) * 3.6)}
+
 /* ---------- formas do palco ---------- */
 /* faixa ultra larga (3:1): cabeçalho na lateral e as salas lado a lado, uma linha só */
 .mural-stage[data-shape="ultrawide"] .ms-now{flex-direction:row;align-items:stretch}

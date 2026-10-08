@@ -20,7 +20,7 @@ const PAGE = fs.readFileSync(path.join(DOCS, "js", "pages", "mural.js"), "utf8")
 const BODY = `<!doctype html><html><body><div class="mural-backdrop"><div class="mural-stage" id="muralStage"><main id="muralContent"></main><footer id="muralFooter"></footer><aside id="muralDiag" hidden></aside></div></div></body></html>`;
 
 /** Sobe a página com tudo de fora substituído. `search` = parâmetros de URL; `overrides` ajusta o que pode mudar (rede, QR, registered). */
-function boot({ search, qr = true, internet = () => true, registered = { total: 120 }, initialPodium = null }) {
+function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => true, registered = { total: 120 }, initialPodium = null }) {
   const contestListeners = new Map();
   const globals = {
     QRCode: qr ? function QRCode(el, options) { el.dataset.qrText = options.text; el.innerHTML = "<img>"; } : undefined,
@@ -33,7 +33,7 @@ function boot({ search, qr = true, internet = () => true, registered = { total: 
     eventStatsRepository: { get: async () => registered },
     contestResultsRepository: { listen: (key, onNext) => { contestListeners.set(key, onNext); onNext(initialPodium ? { podium: initialPodium } : null); return () => contestListeners.delete(key); } },
   };
-  const site = loadSite({ scripts: SCRIPTS, html: BODY, url: `http://localhost/mural.html?lineup=1&demo=2026-11-28T09:10&${search}`, globals });
+  const site = loadSite({ scripts: SCRIPTS, html: BODY, url: `http://localhost/mural.html?lineup=1&demo=${demo}&${search}`, globals });
   // tempos curtos (o rodízio roda no relógio real aqui) e papel picado espiado
   site.run(`
     MURAL_SCENES.forEach(scene => { scene.seconds = 0.15; });
@@ -72,6 +72,25 @@ test("o line-up só aparece revelado: sem ?lineup=1 a cena 'agora' (dado mock) n
   await waitFor(() => dom.document.querySelector(".mural-scene.is-active")?.dataset.scene === "reserva");
   assert.equal(dom.document.querySelector('[data-scene="agora"]'), null);
   dom.window.close();
+});
+
+test("a arte do convite abre o mural ANTES do evento e não entra durante ele (a reserva segura a tela)", async () => {
+  const before = boot({ search: "cenas=abertura", demo: "2026-11-20T09:10" });
+  await waitFor(() => before.active() === "abertura");
+  assert.equal(before.document.querySelector("img.ms-art-img").getAttribute("src"), "assets/img/mural-art-invite.webp?v=1");
+  before.site.window.close();
+  const during = boot({ search: "cenas=abertura" });
+  await waitFor(() => during.active() === "reserva");
+  assert.equal(during.document.querySelector('[data-scene="abertura"]'), null);
+  during.site.window.close();
+});
+
+test("selfie na página: arte do pôr do sol de fundo, sem frase de apoio", async () => {
+  const page = boot({ search: "cenas=selfie" });
+  await waitFor(() => page.active() === "selfie");
+  assert.equal(page.document.querySelector(".ms-art-img").getAttribute("src"), "assets/img/mural-art-sunset.webp?v=1");
+  assert.ok(!/Tire sua foto/.test(page.activeText()));
+  page.site.window.close();
 });
 
 test("dado ao vivo: o total de inscritos lido do banco aparece na cena de inscritos", async () => {

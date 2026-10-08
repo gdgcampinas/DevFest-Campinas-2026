@@ -15,6 +15,22 @@ function muralStagger(index, extra = "") {
   return ` style="--i:${index};${extra}"`;
 }
 
+/**
+ * Camada de ARTE em tela cheia (imagem desfocada ao fundo + a imagem). Como a arte se encaixa vem do dado (data/mural-arts.js): `fit` e `focus` viram variáveis CSS
+ * (--fit, --focus e as versões por forma do palco: --fit-tall, --focus-wide...) e o CSS escolhe pela forma (data-shape). Reusada pela cena "art" e pelo fundo do selfie.
+ */
+function muralArtMarkup(art) {
+  const vars = [];
+  const spread = (name, value) => {
+    const entries = typeof value === "object" ? Object.entries(value) : [["default", value]];
+    entries.forEach(([shape, item]) => vars.push(`--${name}${shape === "default" ? "" : `-${shape}`}:${item}`));
+  };
+  spread("fit", art.fit ?? "cover");
+  spread("focus", art.focus ?? "50% 50%");
+  const url = escapeHtml(art.file);
+  return `<div class="ms-art-bg" style="background-image:url('${url}')"></div><img class="ms-art-img" src="${url}" alt="${escapeHtml(art.alt ?? "")}" style="${vars.join(";")}">`;
+}
+
 /** "09:00 às 09:40", sempre em 24 h no fuso do evento. */
 function muralTimeRange(start, end, timezone) {
   return `${formatEventTime(start, timezone)} às ${formatEventTime(end, timezone)}`;
