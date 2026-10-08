@@ -5,6 +5,8 @@
  *   ADMIN_SHORTCUTS     links soltos pra telas grandes que continuam na própria página (seção Atalhos): `id`, `title`, `description`, `href`
  *   ADMIN_TRACK_LINKS   o que se abre POR TRILHA (seção Palestras), sempre em aba própria: `href` recebe `?trilha=<id>`; `withTalkCode` junta `&palestra=<código>` da palestra da sala; `requires: "contest"`
  *                       só aparece quando a palestra tem concurso (Coding Jam)
+ *   ADMIN_OVERVIEW      os cartões da visão geral, na ordem: `id` (liga ao desenhista em features/admin-overview-cards.js), `title` e o ritmo de cada um (`refreshMs`: redesenha; `intervalMs`: relê o banco/intermediário;
+ *                       cada leitura conta no plano grátis do Firebase, por isso os intervalos são folgados)
  * Todas as telas são internas (fora do menu e do sitemap, sem versão /DEV/): abrem na raiz. As de moderação pedem login Google de moderador.
  */
 const ADMIN_PAGE = "admin.html";
@@ -29,6 +31,15 @@ const ADMIN_TRACK_LINKS = [
   { id: "codejam", label: "Pódio do Coding Jam", href: "moderacao.html", withTalkCode: true, requires: "contest" },
 ];
 
+const ADMIN_OVERVIEW = [
+  { id: "control", title: "Telão", refreshMs: 15000 },
+  { id: "rooms", title: "Salas agora", refreshMs: 30000 },
+  { id: "pending", title: "Perguntas pendentes", intervalMs: 60000 },
+  { id: "photos", title: "Fotos do telão", intervalMs: 60000 },
+  { id: "registered", title: "Inscritos", intervalMs: 300000 },
+];
+
 const adminSectionsRepository = createRepository(ADMIN_SECTIONS, { page: ADMIN_PAGE, get: id => ADMIN_SECTIONS.find(section => section.id === id) });
 const adminShortcutsRepository = createRepository(ADMIN_SHORTCUTS);
 const adminTrackLinksRepository = createRepository(ADMIN_TRACK_LINKS);
+const adminOverviewRepository = createRepository(ADMIN_OVERVIEW);

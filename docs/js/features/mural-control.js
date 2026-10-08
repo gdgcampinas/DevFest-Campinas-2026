@@ -28,6 +28,17 @@ function normalizeControl(doc, nowMs, limits) {
   return { notices, emergency: emergencyText ? { text: emergencyText, since: Number(doc.emergency.since) || 0 } : null, hold, reload: Number(doc?.reload) || 0 };
 }
 
+/**
+ * O estado do telão em palavras: um texto só pro painel do moderador e pra visão geral do admin (nunca divergem). `state` é o documento normalizado; `sceneLabel(id)` e `formatTime(ms)` são injetados.
+ * Devolve { emergency, headline, holdText, noticeCount, text }.
+ */
+function summarizeControl(state, { sceneLabel = id => id, formatTime = () => "" } = {}) {
+  const holdText = state.hold ? `${state.hold.sceneId ? `fixo em "${sceneLabel(state.hold.sceneId)}"` : "pausado"} até ${formatTime(state.hold.until)}` : "rodando sozinho";
+  const headline = state.emergency ? "EMERGÊNCIA ARMADA" : "Telão normal";
+  const noticeCount = state.notices.length;
+  return { emergency: Boolean(state.emergency), headline, holdText, noticeCount, text: `${headline} · ${holdText} · ${noticeCount} aviso(s) no ar` };
+}
+
 // ---------- regras do moderador (documento -> documento) ----------
 function addNotice(doc, { text, kind = "info", ttlMs, id, nowMs }, limits) {
   const clean = cleanText(text, limits.maxTextLength);
@@ -113,4 +124,4 @@ function createMuralControl({ mural, live, limits, spec, nowMs = () => Date.now(
   return { apply, stop: () => cancelTimer() };
 }
 
-if (typeof module !== "undefined") module.exports = { emptyControl, normalizeControl, addNotice, removeNotice, holdScene, releaseHold, armEmergency, disarmEmergency, orderReload, createMuralControl };
+if (typeof module !== "undefined") module.exports = { emptyControl, normalizeControl, summarizeControl, addNotice, removeNotice, holdScene, releaseHold, armEmergency, disarmEmergency, orderReload, createMuralControl };

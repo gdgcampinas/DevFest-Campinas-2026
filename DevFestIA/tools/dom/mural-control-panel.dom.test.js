@@ -13,7 +13,8 @@ const { window, document } = site;
 test.after(() => window.close());
 const g = name => site.get(name);
 const limits = g("MURAL_CONFIG").control;
-const rules = ["normalizeControl", "addNotice", "removeNotice", "holdScene", "releaseHold", "armEmergency", "disarmEmergency", "orderReload"].reduce((all, name) => ({ ...all, [name === "normalizeControl" ? "normalize" : name]: g(name) }), {});
+const RULE_NAMES = { normalizeControl: "normalize", summarizeControl: "summarize" };
+const rules = ["normalizeControl", "summarizeControl", "addNotice", "removeNotice", "holdScene", "releaseHold", "armEmergency", "disarmEmergency", "orderReload"].reduce((all, name) => ({ ...all, [RULE_NAMES[name] ?? name]: g(name) }), {});
 const scenes = [{ id: "agora", label: "Agora e próximas" }, { id: "dicas", label: "Dicas" }];
 const templates = { notice: ["A próxima palestra começa em 5 minutos"], emergency: ["Evacuação: sigam as saídas de emergência com calma"] };
 
@@ -186,6 +187,6 @@ test("os parâmetros padrão do painel (mural-controle.html e admin) juntam repo
   window2.moderationMuralControlRepository = { listen() {}, set() {} };
   const deps = g("defaultMuralControlPanelDeps")();
   assert.equal(deps.repository, window2.moderationMuralControlRepository);
-  assert.deepEqual(Object.keys(deps.rules).sort(), ["addNotice", "armEmergency", "disarmEmergency", "holdScene", "normalize", "orderReload", "releaseHold", "removeNotice"]);
+  assert.deepEqual(Object.keys(deps.rules).sort(), ["addNotice", "armEmergency", "disarmEmergency", "holdScene", "normalize", "orderReload", "releaseHold", "removeNotice", "summarize"]);
   assert.equal(deps.limits.docKey, "current");
 });

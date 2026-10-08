@@ -6,7 +6,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { load } = require("./load.js");
 const { createFakeClock } = require("../lib/fake-clock.js");
-const { emptyControl, normalizeControl, addNotice, removeNotice, holdScene, releaseHold, armEmergency, disarmEmergency, orderReload, createMuralControl } = load("features/mural-control.js");
+const { emptyControl, normalizeControl, summarizeControl, addNotice, removeNotice, holdScene, releaseHold, armEmergency, disarmEmergency, orderReload, createMuralControl } = load("features/mural-control.js");
 
 const limits = { maxNotices: 3, maxTextLength: 20, maxEmergencyLength: 30 };
 const NOW = 1_000_000;
@@ -133,4 +133,17 @@ test("recarregar: o primeiro valor visto é só o ponto de partida; valor novo p
   const afterReload = setup({ read: 222 });
   afterReload.control.apply(doc({ reload: 333 }));
   assert.deepEqual(afterReload.reloads, ["remote-reload"], "pedido que chegou enquanto a página recarregava não se perde");
+});
+
+test("resumo do estado: telão normal, pausado, fixado numa cena e emergência, com a contagem de avisos (o mesmo texto do painel e da visão geral do admin)", () => {
+  const labels = { agora: "Agora e próximas" };
+  const options = { sceneLabel: id => labels[id] ?? id, formatTime: ms => `t${ms}` };
+  assert.deepEqual(summarizeControl(emptyControl(), options), { emergency: false, headline: "Telão normal", holdText: "rodando sozinho", noticeCount: 0, text: "Telão normal · rodando sozinho · 0 aviso(s) no ar" });
+  const paused = normalizeControl({ hold: { sceneId: null, until: NOW + MIN }, notices: [{ id: "a", text: "oi", until: NOW + MIN }] }, NOW, limits);
+  assert.equal(summarizeControl(paused, options).text, `Telão normal · pausado até t${NOW + MIN} · 1 aviso(s) no ar`);
+  const pinned = normalizeControl({ hold: { sceneId: "agora", until: NOW + MIN } }, NOW, limits);
+  assert.match(summarizeControl(pinned, options).holdText, /^fixo em "Agora e próximas" até /);
+  const emergency = normalizeControl({ emergency: { text: "saiam", since: 1 } }, NOW, limits);
+  assert.deepEqual([summarizeControl(emergency, options).emergency, summarizeControl(emergency, options).headline], [true, "EMERGÊNCIA ARMADA"]);
+  assert.equal(summarizeControl(emptyControl()).holdText, "rodando sozinho", "sem opções também funciona");
 });

@@ -218,6 +218,26 @@ test("fonte por polling: lê já e de tempos em tempos; erro vira onError e pár
   stop();
 });
 
+test("fonte por polling com keepAlive: erro avisa e continua tentando; voltando a ler, volta a entregar", async () => {
+  const clock = createFakeClock();
+  let fail = false;
+  let reads = 0;
+  const values = [];
+  const errors = [];
+  const stop = pollOpen({ read: async () => { if (fail) throw new Error("sem rede"); return ++reads; }, intervalMs: 1000, schedule: clock.schedule, keepAlive: true })(value => values.push(value), error => errors.push(error.message));
+  await clock.tick(1500);
+  fail = true;
+  await clock.tick(2000);
+  assert.ok(errors.length >= 2, "avisou a cada tentativa que falhou");
+  fail = false;
+  await clock.tick(1000);
+  assert.ok(values.length >= 3 && values.at(-1) > 2, "voltou a entregar depois que a leitura voltou");
+  stop();
+  const after = values.length;
+  await clock.tick(5000);
+  assert.equal(values.length, after, "depois do stop não lê mais");
+});
+
 test("fontes montadas pelo dado: uma escuta por chave, repositories e chaves resolvidos por nome, login antes de escutar", async () => {
   const clock = createFakeClock();
   const listened = [];

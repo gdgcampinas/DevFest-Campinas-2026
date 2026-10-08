@@ -43,14 +43,13 @@ function muralControlShellMarkup({ email, limits, scenes, templates, embedded = 
     <div data-slot="message"></div>`;
 }
 
-/** As áreas vivas. `state` já vem normalizado (features/mural-control.js); `ui` é o que a tela escolheu (tipo, durações, confirmação da emergência). */
-function muralControlSlots({ state, ui, limits, sceneLabel, formatTime, busy = false }) {
+/** As áreas vivas. `state` já vem normalizado e `summary` é o resumo em palavras (features/mural-control.js); `ui` é o que a tela escolheu (tipo, durações, confirmação da emergência). */
+function muralControlSlots({ state, summary, ui, limits, formatTime, busy = false }) {
   const disabled = busy ? " disabled" : "";
   const minutes = value => `${value >= 60 ? `${value / 60} h` : `${value} min`}`;
   const choice = (attr, values, selected) => values.map(value => `<button type="button" class="chip-btn${value === selected ? " chip-btn--primary" : ""}" ${attr}="${value}">${minutes(value)}</button>`).join("");
-  const holdText = state.hold ? `${state.hold.sceneId ? `fixo em "${sceneLabel(state.hold.sceneId)}"` : "pausado"} até ${formatTime(state.hold.until)}` : "rodando sozinho";
   return {
-    status: `<p class="mod-hint mc-status${state.emergency ? " is-emergency" : ""}" role="status">${state.emergency ? "EMERGÊNCIA ARMADA" : "Telão normal"} · ${escapeHtml(holdText)} · ${state.notices.length} aviso(s) no ar</p>`,
+    status: `<p class="mod-hint mc-status${summary.emergency ? " is-emergency" : ""}" role="status">${escapeHtml(summary.text)}</p>`,
     kind: `<button type="button" class="chip-btn${ui.kind === "info" ? " chip-btn--primary" : ""}" data-notice-kind="info">Aviso</button><button type="button" class="chip-btn${ui.kind === "alert" ? " chip-btn--danger" : ""}" data-notice-kind="alert">Alerta</button>`,
     durations: `<span class="mod-hint">Fica no ar:</span>${choice("data-notice-minutes", limits.noticeMinutes, ui.noticeMinutes)}`,
     "hold-durations": `<span class="mod-hint">Por quanto tempo:</span>${choice("data-hold-minutes", limits.holdMinutes, ui.holdMinutes)}`,

@@ -20,7 +20,9 @@ function initMuralControlPanel(rootEl, { repository, rules, limits, scenes, temp
   const field = attr => rootEl.querySelector(`[${attr}]`);
 
   function drawSlots() {
-    const slots = muralControlSlots({ state: rules.normalize(doc, nowMs(), limits), ui, limits, sceneLabel, formatTime: ms => formatTime(new Date(ms)), busy });
+    const state = rules.normalize(doc, nowMs(), limits);
+    const formatMs = ms => formatTime(new Date(ms));
+    const slots = muralControlSlots({ state, summary: rules.summarize(state, { sceneLabel, formatTime: formatMs }), ui, limits, formatTime: formatMs, busy });
     Object.entries(slots).forEach(([name, markup]) => {
       const slot = rootEl.querySelector(`[data-slot="${name}"]`);
       if (slot) slot.innerHTML = markup;
@@ -155,7 +157,7 @@ function initMuralControlPanel(rootEl, { repository, rules, limits, scenes, temp
 function defaultMuralControlPanelDeps() {
   return {
     repository: window.moderationMuralControlRepository,
-    rules: { normalize: normalizeControl, addNotice, removeNotice, holdScene, releaseHold, armEmergency, disarmEmergency, orderReload },
+    rules: { normalize: normalizeControl, summarize: summarizeControl, addNotice, removeNotice, holdScene, releaseHold, armEmergency, disarmEmergency, orderReload },
     limits: muralConfigRepository.getAll().control,
     scenes: muralScenesRepository.options(),
     templates: muralNoticeTemplatesRepository.getAll(),

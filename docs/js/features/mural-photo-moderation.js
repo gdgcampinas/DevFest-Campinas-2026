@@ -113,9 +113,14 @@ function mountMuralPhotoModeration(rootEl, { album, proxyUrl, albumIds = [], tim
   }
   return initMuralPhotoModeration(rootEl, {
     album,
-    albumsRepository: createAlbumsRepository({ baseUrl: proxyUrl, storage: null, timeoutMs, schedule: defaultSchedule }),
+    albumsRepository: createModerationAlbumsRepository({ proxyUrl, timeoutMs }),
     hiddenRepository,
     formatTime,
     embedded,
   });
+}
+
+/** O leitor de álbuns do moderador: sempre fresco (sem guardar a última lista no navegador, o moderador precisa ver o que está no álbum AGORA). Usado pela tela de fotos e pela visão geral do admin. */
+function createModerationAlbumsRepository({ proxyUrl, timeoutMs }) {
+  return createAlbumsRepository({ baseUrl: proxyUrl, storage: null, timeoutMs, schedule: defaultSchedule });
 }

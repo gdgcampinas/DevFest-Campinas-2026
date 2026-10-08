@@ -1,11 +1,12 @@
 /**
  * Adaptadores das fontes ao vivo do mural: cada um devolve um `open(onData, onError)` no contrato de features/mural-live.js.
- *   pollOpen           leitura única repetida de tempos em tempos (ex.: total de inscritos, `repository.get`); vira "escuta" por polling
+ *   pollOpen           leitura única repetida de tempos em tempos (ex.: total de inscritos, `repository.get`); vira "escuta" por polling. Erro avisa e PÁRA (o hub do mural reabre com espera);
+ *                      com `keepAlive` avisa e continua tentando (a visão geral do admin)
  *   documentListenOpen escuta de um documento por `repository.listen` (1 leitura por mudança, cabe no plano grátis), depois do login anônimo
  *   buildLiveSources   monta as fontes a partir dos DADOS de data/mural-sources.js, resolvendo repositories e chaves por nome (injetados)
  * Dual (navegador e Node).
  */
-function pollOpen({ read, intervalMs, schedule }) {
+function pollOpen({ read, intervalMs, schedule, keepAlive = false }) {
   return (onData, onError) => {
     let cancel = () => {};
     let stopped = false;
@@ -13,9 +14,9 @@ function pollOpen({ read, intervalMs, schedule }) {
       try {
         onData(await read());
       } catch (error) {
-        stopped = true;
+        if (!keepAlive) stopped = true;
         onError(error);
-        return;
+        if (!keepAlive) return;
       }
       if (!stopped) cancel = schedule(tick, intervalMs);
     };

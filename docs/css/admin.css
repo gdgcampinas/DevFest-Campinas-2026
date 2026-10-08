@@ -10,3 +10,10 @@
 .ad-links{display:flex;flex-wrap:wrap;gap:8px}
 .ad-links .chip-btn{min-height:44px;justify-content:center;text-decoration:none;border-color:var(--track-color,var(--card-border))}
 .ad-links .chip-btn--primary{border-color:var(--accent)}
+/* Visão geral: cartões em grade (1 coluna no celular, mais quando cabe) com o número grande e as linhas de apoio. */
+.ad-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.ad-headline{margin:0;font:800 22px/1.2 var(--font-display);color:oklch(96% .005 260)}
+.ad-headline.is-ok{color:var(--google-green)}
+.ad-headline.is-warn{color:var(--google-yellow)}
+.ad-headline.is-danger{color:var(--google-red)}
+.ad-lines{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font:500 15px/1.4 var(--font-body);color:var(--muted)}

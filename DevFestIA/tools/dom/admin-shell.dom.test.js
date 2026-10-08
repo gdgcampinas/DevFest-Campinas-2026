@@ -203,6 +203,10 @@ function bootAdminPage(hash) {
       moderatorClient: { restoreModerator: async () => "mod@gmail.com", signInWithGoogle: async () => "mod@gmail.com", signOutModerator: async () => {} },
       moderationMuralControlRepository: { listen: (key, onNext) => { controlListeners.push(key); onNext(null); return () => controlListeners.pop(); }, set: async () => {} },
       moderationMuralHiddenRepository: { listen: (id, onNext) => { hiddenListeners.push(id); onNext({ ids: [] }); return () => hiddenListeners.pop(); }, set: async () => {} },
+      moderationQuestionsRepository: { countWhere: async filters => (filters.talkKey.endsWith("|ia") ? 4 : 0) },
+      eventStatsRepository: { get: async () => ({ total: 321 }) },
+      firebaseClient: { ensureAnonymousUid: async () => "uid" },
+      resolveNow: () => () => new Date("2026-11-28T12:10:00Z"), // 09:10 locais, 1ª palestra no ar (no navegador vem do app.js, que não roda aqui)
       fetch: async url => ({ ok: true, json: async () => ({ title: String(url), photos: [{ id: "p1", url: "https://lh3.googleusercontent.com/pw/p1", width: 4000, height: 3000, addedAt: 1 }] }) }),
     },
   });
@@ -231,6 +235,26 @@ test("a página admin.html: a seção Fotos lê o álbum ao vivo pelo intermedi�
   assert.equal(body.querySelectorAll("[data-mod-signin]").length, 0);
   assert.equal(body.querySelectorAll("h1").length, 1);
   assert.match(textOf(body), /As 1 fotos mais novas/);
+  site.window.close();
+});
+
+test("a página admin.html: a visão geral abre por padrão com os 5 cartões do dado, cada um com o seu número, e sair da seção desliga as escutas", async () => {
+  const { site, controlListeners, hiddenListeners, body } = bootAdminPage("");
+  await waitFor(() => body.querySelectorAll("[data-card]").length === 5 && !/Carregando/.test(textOf(body)));
+  assert.deepEqual([...body.querySelectorAll("[data-card]")].map(card => card.dataset.card), ["control", "rooms", "pending", "photos", "registered"]);
+  const card = id => textOf(body.querySelector(`[data-card="${id}"]`));
+  assert.match(card("control"), /Telão normal/);
+  assert.match(card("rooms"), /4 de 4 com palestra no ar/);
+  assert.match(card("pending"), /4 na fila/);
+  assert.match(card("photos"), /1 foto\(s\)/);
+  assert.match(card("registered"), /321/);
+  assert.equal(body.querySelector("[data-admin-title]").textContent, "Visão geral");
+  assert.deepEqual(controlListeners, ["current"]);
+  assert.deepEqual(hiddenListeners, ["ao-vivo"]);
+  site.window.location.hash = "#atalhos";
+  site.window.dispatchEvent(new site.window.Event("hashchange"));
+  assert.equal(controlListeners.length, 0);
+  assert.equal(hiddenListeners.length, 0);
   site.window.close();
 });
 
