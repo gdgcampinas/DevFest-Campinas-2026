@@ -1,0 +1,4 @@
+# Cloudflare Worker do intermediário de álbuns (ver README.md). Os links dos álbuns NÃO ficam aqui: vão no segredo ALBUMS.
+name = "devfest-album-proxy"
+main = "worker.mjs"
+compatibility_date = "2026-01-01"
