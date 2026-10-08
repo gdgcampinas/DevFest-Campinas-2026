@@ -7,6 +7,7 @@
  *   from/until janela de datas (ISO com fuso): fora dela a cena não entra no rodízio
  *   requires   reveal: true    só com o line-up revelado (a cena usa dado mock: aparece em /DEV ou com ?lineup=1, nunca em PROD enquanto for mock)
  *              phases: [...]   só nessas fases do evento ("before", "live", "after")
+ *              moments: [...]  só enquanto esse bloco da GRADE está no ar (`moment` em data/schedule.js: "lunch", "closing"...): mudar o horário do almoço é editar só a grade
  *              live: "nome"    só quando a fonte ao vivo com esse nome já tem dado (data/mural-sources.js)
  * `?cenas=agora,album-2025` na URL mostra só essas, na ordem pedida (ensaio e teste).
  *
@@ -43,6 +44,7 @@ const MURAL_SCENES = [
   { id: "dicas", type: "tips", seconds: 16, params: { title: "Aproveite o DevFest" } },
   { id: "album-2025", type: "album", seconds: 14, requires: { live: "albums" }, params: { album: "devfest-2025", model: "auto" } },
   { id: "patrocinio-demais", type: "sponsors", seconds: 14, requires: { reveal: true }, params: { tiers: ["Especialista", "Senior", "Intern", "Apoio"], title: "Quem faz o DevFest acontecer" } },
+  { id: "agradecimento-patrocinio", type: "sponsors", seconds: 20, transition: "zoom", requires: { reveal: true, moments: ["lunch", "closing"] }, params: { kicker: "Muito obrigado", title: "A quem faz o DevFest acontecer", layout: "thanks" } },
   { id: "selfie", type: "selfie", seconds: 20, transition: "zoom", params: { hashtag: "", art: "sunset" } },
   { id: "arte-gumbleton", type: "art", seconds: 8, transition: "zoom", params: { art: "gumbleton" } },
   { id: "album-bosch", type: "album", seconds: 14, requires: { live: "albums" }, params: { album: "gdg-talks-bosch-2026", model: "auto" } },

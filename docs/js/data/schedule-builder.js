@@ -64,7 +64,7 @@ function catalogTalks(tracks, speakerPool, talkCatalog, talkIndex) {
 
 /**
  * Plano do dia → SCHEDULE. Cada item do plano é:
- *   { banner, room?, start, end }   → sessão combinada (credenciamento, almoço...)
+ *   { banner, moment?, room?, start, end }   → sessão combinada (credenciamento, almoço...); `moment` é o nome estável dela (o mural liga cenas por momento)
  *   { talks: [{start, end}, ...] }  → uma sessão de palestras por janela
  * `talkCatalog` (opcional, ver data/mock-talks.js) traz título, formato, tags
  * e palestrantes por trilha/posição; sem ele, tudo vira placeholder.

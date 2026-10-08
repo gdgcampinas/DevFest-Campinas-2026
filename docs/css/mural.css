@@ -97,6 +97,13 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .ms-sponsor{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--u) * 1);padding:calc(var(--u) * 2);border-radius:calc(var(--u) * 1.6);background:#fff;color:#111;font:700 calc(var(--u) * 2.2) var(--font-body);text-align:center}
 .ms-sponsor img{height:calc(var(--u) * 9);width:auto;max-width:100%;object-fit:contain}
 .ms-tier[data-count="1"] .ms-sponsor img{height:calc(var(--u) * 15)}
+/* agradecimento: todas as cotas na mesma tela, então logos e cartões encolhem */
+.ms-sponsors-scene--thanks .ms-tiers{gap:calc(var(--u) * 1.6)}
+.ms-sponsors-scene--thanks .ms-tier-name{margin-bottom:calc(var(--u) * .6);font-size:calc(var(--u) * 1.9)}
+.ms-sponsors-scene--thanks .ms-sponsors{grid-template-columns:repeat(auto-fit,minmax(calc(var(--u) * 16),1fr));gap:calc(var(--u) * 1)}
+.ms-sponsors-scene--thanks .ms-sponsor{padding:calc(var(--u) * 1.1)}
+.ms-sponsors-scene--thanks .ms-sponsor img,.ms-sponsors-scene--thanks .ms-tier[data-count="1"] .ms-sponsor img{height:calc(var(--u) * 6)}
+.ms-sponsors-scene--thanks .ms-tier[data-count="1"] .ms-sponsors{grid-template-columns:minmax(0,calc(var(--u) * 30))}
 
 /* ---------- QR ---------- */
 .ms-qr{flex-direction:row;align-items:center;gap:calc(var(--u) * 5)}

@@ -166,6 +166,20 @@ test("foto nova no álbum ao vivo: entra em destaque na frente do rodízio com o
   page.site.window.close();
 });
 
+test("agradecimento aos patrocinadores: só no almoço e no encerramento da grade (o momento vem da grade, não de um horário solto)", async () => {
+  const lunch = boot({ search: "cenas=agradecimento-patrocinio,dicas", demo: "2026-11-28T12:30" });
+  await waitFor(() => lunch.active() === "agradecimento-patrocinio");
+  assert.match(lunch.activeText(), /Muito obrigado/);
+  lunch.site.window.close();
+  const talk = boot({ search: "cenas=agradecimento-patrocinio,dicas", demo: "2026-11-28T10:00" });
+  await waitFor(() => talk.active() === "dicas");
+  assert.equal(talk.document.querySelector('[data-scene="agradecimento-patrocinio"]'), null, "em horário de palestra não entra");
+  talk.site.window.close();
+  const closing = boot({ search: "cenas=agradecimento-patrocinio,dicas", demo: "2026-11-28T17:30" });
+  await waitFor(() => closing.active() === "agradecimento-patrocinio");
+  closing.site.window.close();
+});
+
 test("dado ao vivo: o total de inscritos lido do banco aparece na cena de inscritos", async () => {
   const page = boot({ search: "cenas=inscritos" });
   await waitFor(() => page.active() === "inscritos");

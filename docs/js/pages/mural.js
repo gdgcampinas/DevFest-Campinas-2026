@@ -101,7 +101,10 @@ function initMural() {
     reserveScene: muralScenesRepository.reserve(),
     emergencyMarkup: `<section class="ms ms-reserve"><h2 class="ms-title">${escapeHtml(title)}</h2></section>`,
     sceneDeps: { schedule, clock },
-    getContext: () => ({ now: clock(), reveal, phase: resolveEventState(clock(), SCHEDULE).phase, live, network: network.state() }),
+    getContext: () => {
+      const state = resolveEventState(clock(), SCHEDULE);
+      return { now: clock(), reveal, phase: state.phase, moment: state.activeSlot?.moment ?? null, live, network: network.state() };
+    },
     onBoundary: () => watchdog.check({ atBoundary: true }).action === "reload",
     onSceneChange: () => contentEl.querySelector('[data-scene="boot"]')?.remove(),
     onFailure: (scene, error) => console.warn(`[mural] cena ${scene.id} falhou:`, error),

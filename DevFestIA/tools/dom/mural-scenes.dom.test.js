@@ -178,6 +178,23 @@ test("cartões entram em sequência: cada item leva a sua posição (--i), nas s
   assert.deepEqual(positions(html(sponsors.render(tiers, { title: "t" }).markup)), ["0", "1"]);
 });
 
+test("patrocinadores: sem `tiers` mostra todas as cotas; layout e texto de cima vêm do dado (agradecimento)", async () => {
+  const repository = { getAll: () => [
+    { tier: "Master", elements: [{ name: "Tecnova", imageUrl: "" }] },
+    { tier: "Apoio", elements: [{ name: "Café", imageUrl: "" }] },
+    { tier: "Intern", elements: [] },
+  ] };
+  const scene = g("createSponsorsScene")({ repository, preload: async () => {} });
+  const params = { kicker: "Muito obrigado", title: "A quem faz o DevFest acontecer", layout: "thanks" };
+  const view = html(scene.render(await scene.prepare(params), params).markup);
+  assert.deepEqual([...view.querySelectorAll(".ms-tier-name")].map(el => textOf(el)), ["Master", "Apoio"], "cota vazia não aparece");
+  assert.ok(view.querySelector(".ms-sponsors-scene--thanks"));
+  assert.match(textOf(view), /Muito obrigado.*A quem faz o DevFest acontecer/);
+  const plain = html(scene.render(await scene.prepare({ tiers: ["Master"], title: "t" }), { tiers: ["Master"], title: "t" }).markup);
+  assert.match(textOf(plain), /Patrocínio/, "o texto padrão continua");
+  assert.equal(plain.querySelector(".ms-sponsors-scene--thanks"), null);
+});
+
 test("pódio: os lugares entram do último pro primeiro (--i do 3º é 0, do 1º é o maior)", () => {
   const entry = { key: "k1", data: { title: "Jam", highlight: "codejam" } };
   const scene = g("createPodiumScene")({ talkIndex: { get: () => entry }, highlightOf: g("talkHighlightsRepository").forTalk });

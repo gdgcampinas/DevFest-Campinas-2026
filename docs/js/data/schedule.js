@@ -83,17 +83,18 @@ function eventTime(hhmm) {
 /**
  * Plano do dia — palestra = 40 min (com perguntas) + 5 min de troca,
  * via talkWindows() de schedule-builder.js. Almoço 12:00-13:20 mais
- * 10 min pra voltar pra sala. Talks mock vêm do catálogo; sem ele rotacionam o pool
+ * 10 min pra voltar pra sala. `moment` (opcional) é o nome estável do bloco combinado ("registration", "opening", "lunch", "back-to-room", "closing"; um coffee entra
+ * aqui como "coffee"): o mural do telão liga cenas por momento (`requires.moments`), então mudar o horário do almoço é editar SÓ esta grade. Talks mock vêm do catálogo; sem ele rotacionam o pool
  * o catálogo mock (mock-talks.js + mock-speakers.js) até o line-up real ser fechado.
  */
 const DAY_PLAN = [
-  { banner: "Credenciamento", room: "Recepção", start: "08:00", end: "08:30" },
-  { banner: "Abertura: GDG Campinas", room: roomFor("Calçadão Central"), start: "08:30", end: "08:55" },
+  { banner: "Credenciamento", moment: "registration", room: "Recepção", start: "08:00", end: "08:30" },
+  { banner: "Abertura: GDG Campinas", moment: "opening", room: roomFor("Calçadão Central"), start: "08:30", end: "08:55" },
   { talks: talkWindows("09:00", 4) },
-  { banner: "Almoço", start: "12:00", end: "13:20" },
-  { banner: "Retorno para a sala", start: "13:20", end: "13:30" },
+  { banner: "Almoço", moment: "lunch", start: "12:00", end: "13:20" },
+  { banner: "Retorno para a sala", moment: "back-to-room", start: "13:20", end: "13:30" },
   { talks: talkWindows("13:30", 5) },
-  { banner: "Encerramento", room: roomFor("Calçadão Central"), start: "17:15", end: "18:00" },
+  { banner: "Encerramento", moment: "closing", room: roomFor("Calçadão Central"), start: "17:15", end: "18:00" },
 ];
 
 const SCHEDULE = buildSchedule(DAY_PLAN, { eventTime, tracks: TRACKS, speakerPool: mockSpeakersRepository.getAll(), talkCatalog: mockTalksRepository });

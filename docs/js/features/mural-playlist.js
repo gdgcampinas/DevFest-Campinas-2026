@@ -1,12 +1,12 @@
 /**
  * Regras PURAS do rodízio do mural (sem DOM, sem relógio próprio; dual: navegador e Node, testado em DevFestIA/tools/mural).
  * Cada cena é um dado (data/mural-scenes.js). Aqui só se decide QUAL cena vem a seguir:
- *   sceneAvailable      a cena pode aparecer agora? (ligada, janela de datas, line-up revelado, fase do evento, fonte ao vivo pronta)
+ *   sceneAvailable      a cena pode aparecer agora? (ligada, janela de datas, line-up revelado, fase do evento, momento da grade como o almoço, fonte ao vivo pronta)
  *   pickNextScene       interrupção de maior prioridade primeiro; senão a próxima da fila que esteja disponível e fora do castigo
  *   pruneInterrupts     descarta as vencidas e a que acabou de ser usada
  *   withCooldown        põe uma cena de castigo depois de falhar (volta sozinha quando o tempo passa)
  *   filterScenesByIds   `?cenas=a,b` mostra só essas, na ordem pedida
- * `ctx` = { now: Date do evento (pode ser simulado), reveal, phase, live: { [fonte]: valor } }; `nowMs` = relógio real (castigos e vencimentos).
+ * `ctx` = { now: Date do evento (pode ser simulado), reveal, phase, moment (o `moment` do bloco da grade que está no ar, ou null), live: { [fonte]: valor } }; `nowMs` = relógio real (castigos e vencimentos).
  */
 function sceneAvailable(scene, ctx) {
   const requires = scene.requires ?? {};
@@ -16,6 +16,7 @@ function sceneAvailable(scene, ctx) {
     && (!scene.until || time < Date.parse(scene.until))
     && (!requires.reveal || Boolean(ctx.reveal))
     && (!requires.phases || requires.phases.includes(ctx.phase))
+    && (!requires.moments || requires.moments.includes(ctx.moment))
     && (!requires.live || Boolean(ctx.live?.[requires.live]));
 }
 

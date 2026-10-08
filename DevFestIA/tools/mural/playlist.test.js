@@ -28,6 +28,15 @@ test("cena por fase do evento e por fonte ao vivo pronta", () => {
   assert.equal(sceneAvailable(podium, ctx({ live: { podium: { key: "k" } } })), true);
 });
 
+test("cena por momento da grade (almoço, encerramento): só enquanto aquele bloco está no ar", () => {
+  const thanks = scene("t", { requires: { moments: ["lunch", "closing"] } });
+  assert.equal(sceneAvailable(thanks, ctx({ moment: "lunch" })), true);
+  assert.equal(sceneAvailable(thanks, ctx({ moment: "closing" })), true);
+  assert.equal(sceneAvailable(thanks, ctx({ moment: null })), false, "entre blocos ou em palestra não aparece");
+  assert.equal(sceneAvailable(thanks, ctx({ moment: "opening" })), false);
+  assert.equal(sceneAvailable(thanks, ctx()), false, "contexto sem momento (nada no ar) também não");
+});
+
 test("o rodízio segue a ordem e dá a volta", () => {
   const order = [];
   let currentId = null;
