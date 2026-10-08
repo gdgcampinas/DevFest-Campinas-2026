@@ -227,6 +227,7 @@ I18N_DICTIONARIES.en = {
     "home.sponsors": "Sponsors and partners",
     "home.communities": "Partner communities",
     "footer.conduct": "Code of conduct",
+    "footer.team": "Staff area",
     "footer.credits": "DevFest Campinas, organized by",
     "page.home.title": "DevFest Campinas 2026",
     "page.grade.title": "Schedule • DevFest Campinas 2026",
