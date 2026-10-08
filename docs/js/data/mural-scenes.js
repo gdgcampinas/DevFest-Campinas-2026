@@ -13,6 +13,8 @@
  * "Rolando agora" (spotlight): uma entrada por posição de sala (`params.slot`); o rodízio passa só pelas salas com palestra no ar. Texto curto = campo `blurb` da palestra
  * (opcional, ~110 caracteres) ou, sem ele, a descrição. "Selfie": o telão como painel de foto pra plateia (arte de fundo em `params.art`, hashtag ainda vazia; fixe com `?cenas=selfie`).
  * "Arte" (`type: "art"`): peça pronta de design em tela cheia, `params.art` = id em data/mural-arts.js (que decide como ela se adapta a qualquer proporção de telão).
+ * "QR" (`type: "qr"`): `params.path` leva a uma página do site (avaliar o evento) e `params.album` ao CONVITE do álbum colaborativo (pelo intermediário, `/join/<id>`: o link do álbum não fica no site). O QR "Monte seu cartão Eu vou!"
+ * saiu do rodízio (a plateia já está no evento); a página do cartão continua existindo e o QR volta se for preciso, é uma cena nova com `path: "ingressos.html?cartao=1"`.
  * O convite ("abertura") só entra ANTES do evento: ele chama pra comprar ingresso, e durante o evento todo mundo já está lá.
  *
  * "Álbum" (`type: "album"`): X fotos de um álbum do Google Fotos (data/mural-albums.js) no modelo de `params.model` (collage, portrait-strip, polaroid, feature, mosaic ou auto, que escolhe pela
@@ -32,7 +34,7 @@ const MURAL_SCENES = [
   { id: "foto-nova", type: "album", seconds: 10, transition: "zoom", requires: { live: "newPhoto" }, params: { album: "ao-vivo", latest: true, badge: "Nova foto da galera" } },
   { id: "album-2025-mosaico", type: "album", seconds: 14, transition: "zoom", requires: { live: "albums" }, params: { album: "devfest-2025", model: "mosaic" } },
   { id: "patrocinio-master", type: "sponsors", seconds: 12, requires: { reveal: true }, params: { tiers: ["Master"], title: "Quem faz o DevFest acontecer" } },
-  { id: "qr-cartao", type: "qr", seconds: 14, transition: "slide", params: { kicker: "Compartilhe", heading: "Monte seu cartão Eu vou!", hint: "Escaneie, gere o seu e mostre que você está no DevFest", path: "ingressos.html?cartao=1" } },
+  { id: "qr-album", type: "qr", seconds: 16, transition: "slide", requires: { live: "albums" }, params: { kicker: "Participe", heading: "Mande sua foto", hint: "Escaneie, entre no álbum e adicione suas fotos: elas aparecem aqui no telão", album: "ao-vivo" } },
   { id: "inscritos", type: "registered", seconds: 9, requires: { live: "registered" }, params: { min: EVENT.tickets.counterMin } },
   { id: "album-elotech", type: "album", seconds: 14, requires: { live: "albums" }, params: { album: "elotech-agibank", model: "auto" } },
   { id: "agora-2", type: "now-next", seconds: 22, requires: { reveal: true, phases: ["before", "live"] }, params: {} },

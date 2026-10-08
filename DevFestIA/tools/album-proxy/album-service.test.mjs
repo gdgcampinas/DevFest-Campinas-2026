@@ -172,6 +172,21 @@ test("HTTP: preflight, método errado, rota desconhecida e id desconhecido", asy
   assert.equal((await get(handler, "/albums/ao-vivo/")).status, 200, "barra no fim é aceita");
 });
 
+test("HTTP: /join leva ao convite do álbum colaborativo (ao vivo) e NUNCA devolve o link de um álbum de evento passado", async () => {
+  const handler = handlerFor();
+  const join = await get(handler, "/join/ao-vivo");
+  assert.equal(join.status, 302);
+  assert.equal(join.headers.get("location"), LIVE);
+  assert.equal(join.headers.get("cache-control"), "no-store");
+  const old = await get(handler, "/join/antigo");
+  assert.equal(old.status, 404, "álbum que não é colaborativo não tem convite");
+  assert.equal(old.headers.get("location"), null);
+  assert.ok(!JSON.stringify(await old.json()).includes("photos.app.goo.gl"));
+  assert.equal((await get(handler, "/join/nao-existe")).status, 404);
+  assert.equal((await get(handler, "/join/__proto__")).status, 404);
+  assert.equal((await handler(new Request("https://proxy.test/join/ao-vivo", { method: "POST" }))).status, 405);
+});
+
 test("HTTP: Google fora do ar sem lista antiga vira 502 em JSON, sem expor o link", async () => {
   const options = { };
   const built = setup(options);

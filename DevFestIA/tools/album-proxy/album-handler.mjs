@@ -2,6 +2,7 @@
  * Camada HTTP do intermediário, independente de onde roda (Cloudflare Worker, servidor local, função de outro provedor): recebe um `Request` padrão e devolve um `Response` padrão.
  *   GET /albums        -> { albums: ["id", ...] }          (só os ids, nunca os links)
  *   GET /albums/<id>   -> { id, title, fetchedAt, count, photos: [...], stale? }
+ *   GET /join/<id>     -> 302 pro convite do álbum COLABORATIVO (só os `live`): é o endereço do QR "Mande sua foto" no mural. O link do álbum continua fora do código e do repositório; trocar o álbum é trocar o segredo.
  * CORS só pros endereços de `allowedOrigins` (o mural e o ambiente local). `Cache-Control` curto: o navegador e a borda guardam por alguns segundos.
  */
 const json = (body, status, headers) => new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json; charset=utf-8", ...headers } });
@@ -19,6 +20,14 @@ export function createAlbumHandler({ service, allowedOrigins, maxAgeSeconds = 15
     if (request.method !== "GET") return json({ error: "método não permitido" }, 405, cors);
     const path = new URL(request.url).pathname.replace(/\/+$/, "");
     if (path === "/albums") return json({ albums: service.ids() }, 200, { ...cors, "cache-control": `public, max-age=${maxAgeSeconds}` });
+    const join = /^\/join\/([A-Za-z0-9_-]{1,64})$/.exec(path);
+    if (join) {
+      try {
+        return new Response(null, { status: 302, headers: { location: service.joinUrl(join[1]), "cache-control": "no-store", "referrer-policy": "no-referrer" } });
+      } catch (error) {
+        return json({ error: error.message }, error.status ?? 500, cors);
+      }
+    }
     const match = /^\/albums\/([A-Za-z0-9_-]{1,64})$/.exec(path);
     if (!match) return json({ error: "não encontrado" }, 404, cors);
     try {

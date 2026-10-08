@@ -8,6 +8,8 @@ extrai a lista de fotos e a devolve como JSON pro mural. **Leitura não oficial:
 - `GET /albums/<id>` -> `{ id, title, fetchedAt, count, photos: [{ id, url, width, height, takenAt, addedAt }], stale? }`, da foto que entrou por último pra mais antiga.
   `url` é a base; o tamanho se pede com `=w1920-h1080` (o mural monta). `stale: true` = o Google falhou e esta é a última lista boa.
 
+- `GET /join/<id>` -> 302 pro CONVITE do álbum colaborativo (só álbuns com `"live": true`; qualquer outro devolve 404 e nunca o link). É o endereço do QR "Mande sua foto" do mural: o link do álbum fica só no segredo, e trocar o álbum é trocar o segredo, sem tocar no código. O link guardado em `ao-vivo` precisa ser o CONVITE pra colaborar (link só de visualização não deixa ninguém adicionar foto).
+
 Cache por álbum: o álbum ao vivo vale 45 s e os demais 10 min, e pedidos simultâneos dividem UMA busca, então o Google recebe poucas consultas por minuto não importa quantas telas pedirem.
 
 ## Peças (uma responsabilidade por arquivo, tudo injetado)

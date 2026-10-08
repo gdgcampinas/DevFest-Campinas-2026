@@ -3,6 +3,7 @@
  *   - cache por álbum com validade (ao vivo: curta; os demais: longa), então o Google é consultado poucas vezes por minuto, não importa quantas telas pedirem;
  *   - pedidos simultâneos do mesmo álbum compartilham UMA busca;
  *   - se a busca ou a leitura falhar, devolve a última lista boa marcada `stale: true` (até `staleMaxMs`), em vez de erro.
+ * `joinUrl(id)`: o convite pra COLABORAR, só pros álbuns `live` (colaborativos, como o das pessoas do evento): é pra onde o QR do mural leva. Álbum de evento passado nunca devolve o link (404).
  * Tudo injetado: `registry` ({ id: link | { url, live } }), `repository` (google-photos-repository), `cache` ({ get(key), set(key, value) }), `now`, `parse`, `ttl`.
  */
 export class AlbumError extends Error {
@@ -30,6 +31,11 @@ export function createAlbumService({ registry, repository, cache, now = () => Da
 
   return {
     ids: () => Object.keys(registry),
+    joinUrl(id) {
+      const entry = entryOf(id);
+      if (!entry.live) throw new AlbumError(`álbum sem convite: ${id}`, 404);
+      return entry.url;
+    },
     async getAlbum(id) {
       const entry = entryOf(id);
       const cached = await cache.get(id);

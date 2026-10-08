@@ -182,11 +182,13 @@ test("inscritos abaixo do mínimo não viram cena (a reserva segura a tela, sem 
   page.site.window.close();
 });
 
+/** O QR de avaliar só entra depois das 17:15, então estes testes usam um relógio simulado dessa hora. */
+const AFTER_FEEDBACK_OPENS = "2026-11-28T17:30";
 const PODIUM = [{ place: 1, project: "Projeto Foguete", name: "Ana Souza" }, { place: 2, project: "App Bússola", name: "Beto Lima" }];
 
 test("pódio publicado AO VIVO: entra na frente do rodízio na hora e dispara o papel picado", async () => {
-  const page = boot({ search: "cenas=qr-cartao,podio-jam" });
-  await waitFor(() => page.active() === "qr-cartao");
+  const page = boot({ search: "cenas=qr-avaliar,podio-jam", demo: AFTER_FEEDBACK_OPENS });
+  await waitFor(() => page.active() === "qr-avaliar");
   assert.equal(page.contestListeners.size, 1, "uma escuta, na sessão do Coding Jam");
   const [key, emit] = [...page.contestListeners][0];
   assert.match(key, /\|ia$/);
@@ -203,7 +205,7 @@ test("pódio publicado AO VIVO: entra na frente do rodízio na hora e dispara o 
 });
 
 test("pódio que JÁ estava publicado quando o mural abriu: entra no rodízio, mas sem papel picado", async () => {
-  const page = boot({ search: "cenas=qr-cartao,podio-jam", initialPodium: PODIUM });
+  const page = boot({ search: "cenas=qr-avaliar,podio-jam", demo: AFTER_FEEDBACK_OPENS, initialPodium: PODIUM });
   await waitFor(() => page.active() === "podio-jam");
   assert.match(page.activeText(), /Projeto Foguete/);
   assert.equal(page.confetti(), 0);
@@ -211,19 +213,33 @@ test("pódio que JÁ estava publicado quando o mural abriu: entra no rodízio, m
 });
 
 test("cena quebrada não derruba o rodízio: sem a biblioteca de QR a cena de QR falha, descansa, e as outras seguem", async () => {
-  const page = boot({ search: "cenas=qr-cartao,dicas", qr: false });
+  const page = boot({ search: "cenas=qr-avaliar,dicas", demo: AFTER_FEEDBACK_OPENS, qr: false });
   await waitFor(() => page.active() === "dicas");
   assert.match(page.activeText(), /Aproveite o DevFest/);
   await waitFor(() => page.document.querySelector('[data-scene="dicas"]'));
-  assert.equal(page.document.querySelector('[data-scene="qr-cartao"]'), null);
+  assert.equal(page.document.querySelector('[data-scene="qr-avaliar"]'), null);
   page.site.window.close();
 });
 
 test("QR gigante: o endereço do QR é o do site e leva o ensaio junto", async () => {
-  const page = boot({ search: "cenas=qr-cartao&ensaio=0" });
+  const page = boot({ search: "cenas=qr-avaliar&ensaio=0", demo: AFTER_FEEDBACK_OPENS });
   await waitFor(() => page.document.querySelector("[data-qr-text]"));
-  assert.equal(page.document.querySelector("[data-qr-text]").dataset.qrText, "https://gdgcampinas.github.io/DevFest-Campinas-2026/ingressos.html?cartao=1");
+  assert.equal(page.document.querySelector("[data-qr-text]").dataset.qrText, "https://gdgcampinas.github.io/DevFest-Campinas-2026/index.html?avaliar=1");
   page.site.window.close();
+});
+
+test("QR do álbum ao vivo: leva ao convite pelo intermediário (o link do álbum nunca está no site) e só aparece com o intermediário ligado", async () => {
+  const albums = { "ao-vivo": albumBody("Ao vivo", ["a", "b", "c", "d"]) };
+  const page = boot({ search: "cenas=qr-album&albuns=https://proxy.test", albums });
+  await waitFor(() => page.active() === "qr-album");
+  assert.equal(page.document.querySelector("[data-qr-text]").dataset.qrText, "https://proxy.test/join/ao-vivo");
+  assert.match(page.activeText(), /Mande sua foto/);
+  assert.equal(page.document.querySelector(".mural-scene.is-active .ms-url"), null);
+  page.site.window.close();
+  const off = boot({ search: "cenas=qr-album,dicas", albums: {} });
+  await waitFor(() => off.active() === "dicas");
+  assert.equal(off.document.querySelector('[data-scene="qr-album"]'), null);
+  off.site.window.close();
 });
 
 test("queda de internet: o rodapé avisa, o mural segue rodando com o que tem, e o aviso some quando a rede volta", async () => {

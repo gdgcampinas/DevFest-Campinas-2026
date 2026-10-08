@@ -36,17 +36,23 @@ test("patrocinadores: só as cotas pedidas, logo que não carrega vira nome, cot
   assert.equal(await scene.prepare({ tiers: ["Intern"] }), MURAL_SKIP);
 });
 
-test("QR: monta o endereço do site com o ensaio, desenha com o renderizador injetado e some se a biblioteca faltar", () => {
+test("QR: desenha o destino resolvido pelo injetado, mostra o texto só quando existe, não aparece sem destino e some se a biblioteca faltar", () => {
   const drawn = [];
   const qr = { available: () => true, draw: (el, text) => drawn.push(text) };
-  const scene = g("createQrScene")({ siteUrl: "https://site/", extraQuery: () => "&ensaio=09:00", qr });
-  const view = scene.render(null, { kicker: "K", heading: "Avalie", hint: "Escaneie", path: "index.html?avaliar=1" });
+  const targets = { resolve: params => (params.path ? { url: `https://site/${params.path}&ensaio=09:00`, label: `site/${params.path}` } : params.album ? { url: "https://proxy/join/x", label: "" } : null) };
+  const scene = g("createQrScene")({ targets, qr });
+  const params = { kicker: "K", heading: "Avalie", hint: "Escaneie", path: "index.html?avaliar=1" };
+  const view = scene.render(scene.prepare(params), params);
   const el = html(view.markup);
   assert.match(textOf(el), /Avalie/);
   assert.match(textOf(el), /site\/index\.html\?avaliar=1/);
   view.mount(el);
   assert.deepEqual(drawn, ["https://site/index.html?avaliar=1&ensaio=09:00"]);
-  assert.throws(() => g("createQrScene")({ siteUrl: "x", qr: { available: () => false } }).prepare(), /QR indisponível/);
+  const albumParams = { heading: "Mande sua foto", hint: "Escaneie", album: "ao-vivo" };
+  const albumView = scene.render(scene.prepare(albumParams), albumParams);
+  assert.equal(html(albumView.markup).querySelector(".ms-url"), null, "endereço de intermediário não é pra ler");
+  assert.equal(scene.prepare({ album: undefined, hint: "x" }), MURAL_SKIP, "sem destino a cena não aparece");
+  assert.throws(() => g("createQrScene")({ targets, qr: { available: () => false } }).prepare({}), /QR indisponível/);
 });
 
 test("inscritos: só com o total lido e acima do mínimo", () => {
