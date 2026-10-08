@@ -7,6 +7,7 @@ const assert = require("node:assert/strict");
 const { load } = require("./load.js");
 const { createFreshPublishDetector } = load("features/publish-detector.js");
 globalThis.createFreshPublishDetector = createFreshPublishDetector;
+globalThis.createNewItemsDetector = load("features/new-items-detector.js").createNewItemsDetector;
 const { createLiveBindings } = load("features/mural-live-bindings.js");
 
 const definitions = [
@@ -90,4 +91,74 @@ test("a comemoração espera `celebrateDelayMs` (o pódio entra do 3º ao 1º e 
   assert.equal(celebrations, 0);
   await clock.tick(2);
   assert.equal(celebrations, 1);
+});
+
+const albumDefinitions = [{ id: "album", bind: { live: "albums", collect: true, notifyNew: { live: "newPhoto", minGapMs: 15000, expireMs: 120000, interrupt: { sceneId: "foto-nova", priority: 80, ttlMs: 60000, immediate: true } } } }];
+const albumOf = ids => ({ photos: ids.map(id => ({ id, url: `https://lh3/${id}`, width: 1, height: 1 })) });
+
+function albumSetup() {
+  const { createFakeClock } = require("../lib/fake-clock.js");
+  const clock = createFakeClock();
+  const live = {};
+  const pushed = [];
+  const onUpdate = createLiveBindings({ definitions: albumDefinitions, live, mural: { pushInterrupt: interrupt => pushed.push(interrupt) }, schedule: clock.schedule, nowMs: clock.nowMs });
+  return { clock, live, pushed, onUpdate };
+}
+
+test("álbuns: cada álbum guarda a sua lista em live.albums[chave]", () => {
+  const { live, onUpdate } = albumSetup();
+  onUpdate("album:ao-vivo", albumOf(["a"]));
+  onUpdate("album:elotech", albumOf(["x", "y"]));
+  assert.deepEqual(Object.keys(live.albums), ["ao-vivo", "elotech"]);
+  assert.equal(live.albums.elotech.photos.length, 2);
+});
+
+test("foto nova: a primeira leitura é só a base; depois a nova vai pro estado e entra na frente do rodízio", () => {
+  const { live, pushed, onUpdate } = albumSetup();
+  onUpdate("album:ao-vivo", albumOf(["a", "b"]));
+  assert.equal(live.newPhoto, undefined, "as fotos que já estavam lá não são novas");
+  assert.equal(pushed.length, 0);
+  onUpdate("album:ao-vivo", albumOf(["c", "a", "b"]));
+  assert.equal(live.newPhoto.photo.id, "c");
+  assert.equal(live.newPhoto.key, "ao-vivo");
+  assert.equal(pushed.length, 1);
+  assert.equal(pushed[0].sceneId, "foto-nova");
+});
+
+test("foto nova: no máximo uma interrupção a cada 15 s; as demais entram no estado mas não cortam a cena", async () => {
+  const { clock, live, pushed, onUpdate } = albumSetup();
+  onUpdate("album:ao-vivo", albumOf(["a"]));
+  onUpdate("album:ao-vivo", albumOf(["b", "a"]));
+  await clock.tick(5000);
+  onUpdate("album:ao-vivo", albumOf(["c", "b", "a"]));
+  assert.equal(pushed.length, 1, "passaram só 5 s");
+  assert.equal(live.newPhoto.photo.id, "c", "mas o estado já aponta a mais nova");
+  await clock.tick(11000);
+  onUpdate("album:ao-vivo", albumOf(["d", "c", "b", "a"]));
+  assert.equal(pushed.length, 2, "passou de 15 s");
+});
+
+test("foto nova: várias de uma vez devolvem a mais nova primeiro; o aviso some sozinho depois do prazo", async () => {
+  const { clock, live, onUpdate } = albumSetup();
+  onUpdate("album:ao-vivo", albumOf(["a"]));
+  onUpdate("album:ao-vivo", albumOf(["c", "b", "a"]));
+  assert.deepEqual(live.newPhoto.photos.map(photo => photo.id), ["c", "b"]);
+  await clock.tick(119000);
+  assert.ok(live.newPhoto);
+  await clock.tick(2000);
+  assert.equal(live.newPhoto, undefined, "expirou: a cena de destaque sai do rodízio");
+});
+
+test("foto nova: um aviso mais novo não é apagado pelo prazo do anterior; álbuns diferentes têm detectores e intervalos separados", async () => {
+  const { clock, live, pushed, onUpdate } = albumSetup();
+  onUpdate("album:ao-vivo", albumOf(["a"]));
+  onUpdate("album:outro", albumOf(["x"]));
+  onUpdate("album:ao-vivo", albumOf(["b", "a"]));
+  await clock.tick(100000);
+  onUpdate("album:ao-vivo", albumOf(["c", "b", "a"]));
+  await clock.tick(30000);
+  assert.equal(live.newPhoto.photo.id, "c", "o prazo da foto 'b' não apagou o aviso da 'c'");
+  onUpdate("album:outro", albumOf(["y", "x"]));
+  assert.equal(live.newPhoto.key, "outro");
+  assert.equal(pushed.length, 3);
 });

@@ -240,6 +240,22 @@ test("fontes montadas pelo dado: uma escuta por chave, repositories e chaves res
   assert.equal(typeof documentListenOpen, "function");
 });
 
+test("fontes por álbum: cada chave pode ter o seu intervalo de leitura", async () => {
+  const clock = createFakeClock();
+  const reads = [];
+  const sources = buildLiveSources({
+    definitions: [{ id: "album", kind: "poll", repository: "albums", keys: "albums", intervalMs: 600000 }],
+    repositories: { albums: () => ({ get: async key => { reads.push(key); return { key }; } }) },
+    keyResolvers: { albums: () => [{ key: "ao-vivo", intervalMs: 45000 }, { key: "antigo" }] },
+    schedule: clock.schedule,
+  });
+  assert.deepEqual(sources.map(source => source.id), ["album:ao-vivo", "album:antigo"]);
+  sources.forEach(source => source.open(() => {}, () => {}));
+  await clock.tick(100000);
+  assert.equal(reads.filter(key => key === "ao-vivo").length, 3, "lê já, aos 45 s e aos 90 s");
+  assert.equal(reads.filter(key => key === "antigo").length, 1, "o antigo usa os 10 min do padrão");
+});
+
 test("versão: a assinatura muda quando um ?v=N muda; a primeira leitura é a base; falha de rede não é mudança", async () => {
   const html = n => `<script src="js/a.js?v=${n}"></script><link href="css/b.css?v=2"><script src="js/fixo.js"></script>`;
   assert.equal(assetSignature(html(1)), "css/b.css?v=2|js/a.js?v=1");

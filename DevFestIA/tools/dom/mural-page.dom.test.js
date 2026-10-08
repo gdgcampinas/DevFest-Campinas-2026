@@ -20,13 +20,17 @@ const PAGE = fs.readFileSync(path.join(DOCS, "js", "pages", "mural.js"), "utf8")
 const BODY = `<!doctype html><html><body><div class="mural-backdrop"><div class="mural-stage" id="muralStage"><main id="muralContent"></main><footer id="muralFooter"></footer><aside id="muralDiag" hidden></aside></div></div></body></html>`;
 
 /** Sobe a página com tudo de fora substituído. `search` = parâmetros de URL; `overrides` ajusta o que pode mudar (rede, QR, registered). */
-function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => true, registered = { total: 120 }, initialPodium = null }) {
+function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => true, registered = { total: 120 }, initialPodium = null, albums = null }) {
   const contestListeners = new Map();
   const globals = {
     QRCode: qr ? function QRCode(el, options) { el.dataset.qrText = options.text; el.innerHTML = "<img>"; } : undefined,
     Image: class { set src(url) { setTimeout(() => this.onload?.(), 0); } },
     fetch: async url => {
       if (!internet()) throw new Error("sem internet");
+      if (String(url).includes("proxy.test/albums/")) { // intermediário de álbuns de mentira
+        const body = albums?.[decodeURIComponent(String(url).split("/albums/")[1])];
+        return body ? { ok: true, status: 200, json: async () => ({ ...body, photos: [...body.photos] }) } : { ok: false, status: 404, json: async () => ({}) };
+      }
       return { ok: true, text: async () => HTML };
     },
     firebaseClient: { ensureAnonymousUid: async () => "uid" },
@@ -37,9 +41,10 @@ function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => t
   // tempos curtos (o rodízio roda no relógio real aqui) e papel picado espiado
   site.run(`
     MURAL_SCENES.forEach(scene => { scene.seconds = 0.15; });
-    Object.assign(MURAL_CONFIG, { transitionMs: 20, retryDelayMs: 10, clockEveryMs: 20, reserveSeconds: 0.15, failureCooldownMs: 50, skipCooldownMs: 50, kioskEnsureEveryMs: 1000000, health: { ...MURAL_CONFIG.health, versionCheckEveryMs: 1000000 } });
+    Object.assign(MURAL_CONFIG, { transitionMs: 20, retryDelayMs: 10, clockEveryMs: 20, reserveSeconds: 0.15, idleRetryMs: 50, failureCooldownMs: 50, skipCooldownMs: 50, kioskEnsureEveryMs: 1000000, health: { ...MURAL_CONFIG.health, versionCheckEveryMs: 1000000 } });
     Object.assign(MURAL_CONFIG.network, { probeEveryMs: 25, backoff: { baseMs: 20, maxMs: 40, factor: 1, jitter: 0 } });
     Object.assign(MURAL_CONFIG.motion, { countUpMs: 60, countUpStepMs: 20 });
+    MURAL_ALBUMS.forEach(album => { album.pollMs = 40; });
     MURAL_SOURCES.find(source => source.id === "podium").bind.celebrateDelayMs = 30;
     globalThis.__confetti = 0;
     createConfetti = () => ({ fire: () => { __confetti++; return true; } });
@@ -90,6 +95,58 @@ test("selfie na página: arte do pôr do sol de fundo, sem frase de apoio", asyn
   await waitFor(() => page.active() === "selfie");
   assert.equal(page.document.querySelector(".ms-art-img").getAttribute("src"), "assets/img/mural-art-sunset.webp?v=1");
   assert.ok(!/Tire sua foto/.test(page.activeText()));
+  page.site.window.close();
+});
+
+const albumPhoto = (id, width = 4000, height = 3000) => ({ id, url: `https://lh3.googleusercontent.com/pw/${id}`, width, height, takenAt: 1, addedAt: 1 });
+const albumBody = (title, ids, size) => ({ title, fetchedAt: 1, count: ids.length, photos: ids.map(id => albumPhoto(id, ...(size ?? []))) });
+
+test("álbuns: com o intermediário ligado (?albuns=) a cena mostra as fotos do álbum, no modelo e no tamanho certos", async () => {
+  const albums = { "ao-vivo": albumBody("Ao vivo", ["a", "b", "c", "d", "e", "f", "g"]) };
+  const page = boot({ search: "cenas=album-ao-vivo&albuns=https://proxy.test", albums });
+  await waitFor(() => page.active() === "album-ao-vivo");
+  const imgs = [...page.document.querySelectorAll(".mural-scene.is-active .ms-album-tile img")].map(img => img.getAttribute("src"));
+  assert.equal(imgs.length, 6, "colagem de 6 (álbum de paisagens)");
+  assert.ok(imgs.every(src => /^https:\/\/lh3\.googleusercontent\.com\/pw\/[a-g]=w960-h640$/.test(src)), imgs.join(" "));
+  assert.match(page.activeText(), /DevFest 2026 ao vivo/);
+  assert.ok(page.document.querySelector(".ms-live-dot"));
+  page.site.window.close();
+});
+
+test("álbuns: álbum de retratos vira faixa de retratos (o do Elotech Agibank é 93% retrato)", async () => {
+  const albums = { "elotech-agibank": albumBody("Elotech Agibank", ["p1", "p2", "p3", "p4", "p5"], [3000, 5333]) };
+  const page = boot({ search: "cenas=album-elotech&albuns=https://proxy.test", albums });
+  await waitFor(() => page.active() === "album-elotech");
+  assert.ok(page.document.querySelector(".ms-album--strip"));
+  assert.equal(page.document.querySelectorAll(".ms-album-tile").length, 4);
+  page.site.window.close();
+});
+
+test("álbuns: sem o intermediário ligado nenhuma cena de álbum aparece e o mural segue com o resto", async () => {
+  const page = boot({ search: "cenas=album-ao-vivo,dicas" });
+  await waitFor(() => page.active() === "dicas");
+  assert.equal(page.document.querySelector('[data-scene="album-ao-vivo"]'), null);
+  page.site.window.close();
+});
+
+test("álbuns: intermediário fora do ar sem lista guardada: o mural não quebra e segue com as outras cenas", async () => {
+  const page = boot({ search: "cenas=album-ao-vivo,dicas&diag=1&albuns=https://proxy.test", albums: {} });
+  await waitFor(() => page.active() === "dicas");
+  assert.equal(page.document.querySelector('[data-scene="album-ao-vivo"]'), null);
+  await waitFor(() => /album-live:ao-vivo: retrying/.test(textOf(page.document.getElementById("muralDiag"))), { timeout: 4000 }); // a fonte tenta de novo com espera crescente
+  page.site.window.close();
+});
+
+test("foto nova no álbum ao vivo: entra em destaque na frente do rodízio com o selo; as que já estavam lá não viram destaque", async () => {
+  const albums = { "ao-vivo": albumBody("Ao vivo", ["a", "b", "c"]) };
+  const page = boot({ search: "cenas=dicas,foto-nova&albuns=https://proxy.test", albums });
+  await waitFor(() => page.document.querySelector('[data-scene="dicas"]'));
+  await new Promise(resolve => setTimeout(resolve, 150)); // algumas leituras do álbum sem novidade
+  assert.equal(page.document.querySelector('[data-scene="foto-nova"]'), null, "as 3 fotos que já estavam lá não são novas");
+  albums["ao-vivo"] = albumBody("Ao vivo", ["NOVA", "a", "b", "c"]);
+  await waitFor(() => page.active() === "foto-nova");
+  assert.equal(page.document.querySelector("img.ms-photo-img").getAttribute("src"), "https://lh3.googleusercontent.com/pw/NOVA=w1920-h1080");
+  assert.match(page.activeText(), /Nova foto da galera/);
   page.site.window.close();
 });
 

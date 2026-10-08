@@ -204,6 +204,37 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .ms-selfie-bar .ms-selfie-title{font-size:calc(var(--u) * 7)}
 .ms-selfie-bar .ms-selfie-date{font-size:calc(var(--u) * 3.6)}
 
+/* ---------- álbuns do Google Fotos: modelos de exibição ---------- */
+.ms-album{position:relative}
+.ms-album-grid{flex:1;min-height:0;display:grid;gap:calc(var(--u) * 1.4)}
+.ms-album-tile{margin:0;min-width:0;min-height:0;border-radius:calc(var(--u) * 1.2);overflow:hidden;background:oklch(16% .02 260)}
+.ms-album-tile img{width:100%;height:100%;object-fit:cover;display:block}
+/* etiqueta do álbum (nome, bolinha ao vivo, selo) */
+.ms-album-caption{position:absolute;left:calc(var(--u) * 1.6);bottom:calc(var(--u) * 1.4);z-index:2;margin:0;display:flex;align-items:center;gap:calc(var(--u) * 1);padding:calc(var(--u) * .7) calc(var(--u) * 1.8);border-radius:99px;background:oklch(8% .01 260 / .78);font:700 calc(var(--u) * 2.4) var(--font-body);color:#fff}
+.ms-album-caption b{padding:calc(var(--u) * .2) calc(var(--u) * 1.2);border-radius:99px;background:var(--google-yellow);color:#05060a;font-weight:800;font-size:calc(var(--u) * 2)}
+.ms-live-dot{width:calc(var(--u) * 1.2);height:calc(var(--u) * 1.2);border-radius:50%;background:var(--live);display:inline-block}
+/* colagem: 3 x 2 (a quantidade vem do modelo) */
+.ms-album--collage .ms-album-grid{grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(0,1fr)}
+.ms-album--collage[data-count="1"] .ms-album-grid,.ms-album--collage[data-count="2"] .ms-album-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+/* faixa de retratos: uma coluna por foto, cada uma com a altura toda */
+.ms-album--strip .ms-album-grid{grid-template-columns:repeat(var(--cols,4),minmax(0,1fr));grid-auto-rows:minmax(0,1fr)}
+.ms-album--strip[data-count="1"]{--cols:1}.ms-album--strip[data-count="2"]{--cols:2}.ms-album--strip[data-count="3"]{--cols:3}
+/* destaque + 3: a primeira grande à esquerda, as outras empilhadas à direita */
+.ms-album--feature .ms-album-grid{grid-template-columns:minmax(0,2fr) minmax(0,1fr);grid-template-rows:repeat(3,minmax(0,1fr))}
+.ms-album--feature .ms-album-tile:first-child{grid-row:1 / span 3}
+.ms-album--feature[data-count="1"] .ms-album-grid{grid-template-columns:minmax(0,1fr)}
+.ms-album--feature[data-count="1"] .ms-album-tile:first-child{grid-row:1 / span 3}
+/* mural de polaroides: fotos soltas com borda branca e um giro diferente cada (--rot vem do dado do modelo) */
+.ms-album--polaroid .ms-album-grid{display:block;position:relative}
+.ms-album--polaroid .ms-album-tile{position:absolute;width:30%;height:56%;padding:calc(var(--u) * 1) calc(var(--u) * 1) calc(var(--u) * 4);background:#f6f4ee;border-radius:calc(var(--u) * .4);transform:rotate(var(--rot,0deg));box-shadow:0 calc(var(--u) * .8) calc(var(--u) * 2) oklch(0% 0 0 / .45);animation:ms-drop .6s cubic-bezier(.2,1.2,.4,1) both;animation-delay:calc(.5s + var(--i,0) * var(--stagger-step,120ms))}
+.ms-album--polaroid .ms-album-tile img{border-radius:calc(var(--u) * .2)}
+.ms-album--polaroid .ms-album-tile:nth-child(1){left:3%;top:4%}
+.ms-album--polaroid .ms-album-tile:nth-child(2){left:34%;top:30%}
+.ms-album--polaroid .ms-album-tile:nth-child(3){left:66%;top:4%}
+.ms-album--polaroid .ms-album-tile:nth-child(4){left:12%;top:40%}
+.ms-album--polaroid .ms-album-tile:nth-child(5){left:60%;top:38%}
+@keyframes ms-drop{from{opacity:0;transform:translateY(calc(var(--u) * -6)) rotate(calc(var(--rot,0deg) * 2))}to{opacity:1;transform:rotate(var(--rot,0deg))}}
+
 /* ---------- formas do palco ---------- */
 /* faixa ultra larga (3:1): cabeçalho na lateral e as salas lado a lado, uma linha só */
 .mural-stage[data-shape="ultrawide"] .ms-now{flex-direction:row;align-items:stretch}
@@ -246,3 +277,9 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .mural-stage[data-shape="tall"] .ms-selfie-brand{max-width:100%;align-items:center}
 .mural-stage[data-shape="tall"] .ms-selfie-logo{align-self:center}
 .mural-stage[data-shape="tall"] .ms-selfie-mascot{height:auto;max-width:70%;max-height:45%}
+.mural-stage[data-shape="tall"] .ms-album--collage .ms-album-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.mural-stage[data-shape="tall"] .ms-album--strip .ms-album-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.mural-stage[data-shape="tall"] .ms-album--feature .ms-album-grid{grid-template-columns:minmax(0,1fr);grid-template-rows:2fr repeat(3,minmax(0,1fr))}
+.mural-stage[data-shape="tall"] .ms-album--feature .ms-album-tile:first-child{grid-row:auto}
+.mural-stage[data-shape="ultrawide"] .ms-album--collage .ms-album-grid{grid-template-columns:repeat(6,minmax(0,1fr))}
+.mural-stage[data-shape="ultrawide"] .ms-album--polaroid .ms-album-tile{width:20%;height:70%}

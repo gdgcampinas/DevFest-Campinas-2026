@@ -18,7 +18,7 @@ const MURAL_SKIP = site.get("MURAL_SKIP");
 const createReloadLedger = site.get("createReloadLedger");
 const evaluateHealth = site.get("evaluateHealth");
 
-const config = { defaultSeconds: 10, transitionMs: 600, prepareTimeoutMs: 8000, failureCooldownMs: 120000, skipCooldownMs: 60000, retryDelayMs: 500, reserveSeconds: 20, watchdogSlackMs: 5000, maxConsecutiveFailures: 6, preventiveReloadMs: 2 * 3600000, reloadStormWindowMs: 600000, reloadStormMax: 3 };
+const config = { defaultSeconds: 10, transitionMs: 600, prepareTimeoutMs: 8000, failureCooldownMs: 120000, skipCooldownMs: 60000, retryDelayMs: 500, reserveSeconds: 20, idleRetryMs: 5000, watchdogSlackMs: 5000, maxConsecutiveFailures: 6, preventiveReloadMs: 2 * 3600000, reloadStormWindowMs: 600000, reloadStormMax: 3 };
 const okScene = (id, extra = {}) => ({ id, type: "ok", params: { label: id }, ...extra });
 const okImpl = { render: (_prepared, params) => ({ markup: `<p>${params.label}</p>` }) };
 const reserveScene = { id: "reserva", type: "reserve", params: {} };
@@ -135,13 +135,17 @@ test("cena sem nada pra mostrar (MURAL_SKIP) não conta como falha e só descans
 
 test("sem nenhuma cena disponível: entra a RESERVA; e quando uma cena volta a ficar disponível o mural sai da reserva", async () => {
   const liveCtx = {};
-  const { clock, mural, active } = setup({ scenes: [okScene("so-com-fonte", { requires: { live: "x" } })], liveCtx });
+  const { clock, mural, active, contentEl } = setup({ scenes: [okScene("so-com-fonte", { requires: { live: "x" } })], liveCtx });
   mural.start();
   await clock.tick(0);
   assert.equal(active(), "reserva");
+  const reserveEl = contentEl.querySelector(".mural-scene.is-active");
+  await clock.tick(5000);
+  assert.equal(contentEl.querySelector(".mural-scene.is-active"), reserveEl, "a reserva não é redesenhada enquanto continua sendo a única opção");
+  assert.equal(mural.state().shown, 1);
   liveCtx.x = true;
-  await clock.tick(20000);
-  assert.equal(active(), "so-com-fonte");
+  await clock.tick(5000);
+  assert.equal(active(), "so-com-fonte", "o dado ao vivo chegou: sai da reserva em até 5 s, não em 20");
   mural.stop();
 });
 

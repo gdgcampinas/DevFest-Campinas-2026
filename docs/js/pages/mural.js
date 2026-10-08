@@ -20,6 +20,8 @@ function initMural() {
   const nowMs = () => Date.now();
   const year = EVENT.date.slice(0, 4);
   const title = `${EVENT.name} ${year}`;
+  const proxyParam = params.get("albuns");
+  const proxyUrl = /^https?:\/\//.test(proxyParam ?? "") ? proxyParam : config.albums.proxyUrl;
   const logoSrc = EVENT.hosts[0].logo ?? EVENT.hosts[0].icon;
   const stageEl = document.getElementById("muralStage");
   const contentEl = document.getElementById("muralContent");
@@ -58,6 +60,10 @@ function initMural() {
     },
   });
 
+  // ---------- álbuns do Google Fotos (sem o intermediário ligado não há o que ler: nenhuma fonte, nenhuma cena de álbum) ----------
+  const albumsRepository = createAlbumsRepository({ baseUrl: proxyUrl, storage: safeLocalStorage(), timeoutMs: config.albums.timeoutMs, schedule });
+  const albumKeys = live => (proxyUrl ? muralAlbumsRepository.enabled({ live }).map(album => ({ key: album.id, intervalMs: album.pollMs })) : []);
+
   // ---------- cenas ----------
   const preload = url => preloadImage(url, { timeoutMs: config.imageTimeoutMs, schedule });
   const talkIndex = buildTalkIndex(SCHEDULE, TRACKS, EVENT.timezone);
@@ -65,6 +71,17 @@ function initMural() {
   const highlights = highlightsRepository.getAll();
   const registry = {
     "now-next": createNowNextScene(grid),
+    album: createAlbumScene({
+      albums: muralAlbumsRepository, models: muralAlbumModelsRepository.getAll(), autoRules: muralAlbumModelsRepository.auto(), preload, orderPhotos: orderAlbumPhotos,
+      createPool: photos => createPhotoPool({ photos, nowMs, quarantineMs: config.albums.quarantineMs, keyOf: photo => photo.id }),
+      renderers: {
+        single: createSingleAlbumModel({ moves: createMoveCycle(config.motion.kenBurns) }),
+        collage: albumCollageModel,
+        "portrait-strip": albumPortraitStripModel,
+        polaroid: createPolaroidAlbumModel({ rotations: muralAlbumModelsRepository.getAll().polaroid.rotations }),
+        feature: albumFeatureModel,
+      },
+    }),
     spotlight: createSpotlightScene({ ...grid, preloadPhoto: url => preloadImage(url, { timeoutMs: config.speakerPhotoTimeoutMs, schedule }), hostOf: id => talkHighlightsRepository.getById(id)?.host ?? null }),
     art: createArtScene({ repository: muralArtsRepository, preload }),
     selfie: createSelfieScene({ preload, arts: muralArtsRepository, mascotUrl: "assets/img/gumbleton.png", logoSrc, title, subtitle: eventDateLabel(SCHEDULE, EVENT.timezone) }),
@@ -111,7 +128,7 @@ function initMural() {
 
   // ---------- fontes ao vivo ----------
   const bindings = createLiveBindings({
-    definitions: muralSourcesRepository.getAll(), live, mural, schedule,
+    definitions: muralSourcesRepository.getAll(), live, mural, schedule, nowMs,
     celebrate: () => createConfetti().fire({ origin: { x: window.innerWidth / 2, y: window.innerHeight / 2 }, force: true }),
   });
   runAfterModules(() => {
@@ -119,8 +136,10 @@ function initMural() {
       schedule, nowMs, backoff: config.network.backoff, onUpdate: bindings,
       sources: buildLiveSources({
         definitions: muralSourcesRepository.getAll(), schedule,
-        repositories: { eventStats: () => window.eventStatsRepository, contestResults: () => window.contestResultsRepository },
-        keyResolvers: { "contest-sessions": () => talkIndex.getAll().filter(entry => talkHighlightsRepository.hasContest(entry.data)).map(entry => entry.key) },
+        repositories: { eventStats: () => window.eventStatsRepository, contestResults: () => window.contestResultsRepository, albums: () => albumsRepository },
+        keyResolvers: {
+          "live-albums": () => albumKeys(true),
+          "other-albums": () => albumKeys(false), "contest-sessions": () => talkIndex.getAll().filter(entry => talkHighlightsRepository.hasContest(entry.data)).map(entry => entry.key) },
         getUid: () => window.firebaseClient.ensureAnonymousUid(),
       }),
     });
@@ -152,6 +171,15 @@ function initMural() {
   network.start();
   watchdog.start();
   mural.start();
+}
+
+/** localStorage (a última lista boa de cada álbum sobrevive a recarregar a página), ou null quando o navegador bloqueia. */
+function safeLocalStorage() {
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
 }
 
 /** sessionStorage, ou null quando o navegador bloqueia (o ledger então guarda só em memória). */

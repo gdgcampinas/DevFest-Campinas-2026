@@ -6,8 +6,7 @@
  * Tudo injetado: `pool`, `preload` (features/image-preload.js), `caption`, `kenBurns` (MURAL_CONFIG.motion.kenBurns).
  */
 function createPhotosScene({ pool, preload, caption, kenBurns = [] }) {
-  let shown = 0;
-  const nextMove = () => (kenBurns.length ? kenBurns[shown++ % kenBurns.length] : null);
+  const moves = createMoveCycle(kenBurns);
   return {
     async prepare() {
       for (let tries = Math.max(1, pool.usable()); tries > 0; tries--) {
@@ -23,10 +22,7 @@ function createPhotosScene({ pool, preload, caption, kenBurns = [] }) {
       throw new Error("nenhuma foto carregou");
     },
     render(photo) {
-      const url = escapeHtml(photo.file);
-      const move = nextMove();
-      const moveStyle = move ? ` style="--kb-origin:${move.origin};--kb-from:${move.from};--kb-to:${move.to}"` : "";
-      return { markup: `<section class="ms ms-photo"><div class="ms-photo-bg" style="background-image:url('${url}')"></div><img class="ms-photo-img" src="${url}" alt="${escapeHtml(photo.alt ?? "")}"${moveStyle}><p class="ms-photo-caption">${escapeHtml(caption)}</p></section>` };
+      return { markup: muralPhotoMarkup({ url: photo.file, alt: photo.alt, captionMarkup: `<p class="ms-photo-caption">${escapeHtml(caption)}</p>`, moveStyle: moves.next() }) };
     },
   };
 }

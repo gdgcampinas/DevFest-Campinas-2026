@@ -5,7 +5,8 @@
  *   speakerPhotoTimeoutMs foto de palestrante que passar disso vira iniciais (a cena "rolando agora" não espera foto lenta)
  *   prepareTimeoutMs     quanto uma cena pode demorar pra preparar (foto, leitura) antes de ser pulada
  *   failureCooldownMs    cena que falhou descansa esse tempo antes de tentar de novo; skipCooldownMs = a que não tinha nada pra mostrar
- *   reserveSeconds       quanto a cena de reserva fica no ar antes de o mural tentar as outras de novo
+ *   reserveSeconds       quanto a cena de reserva fica no ar antes de o mural tentar as outras de novo (se a falha foi da própria reserva)
+ *   idleRetryMs          com a reserva no ar porque NADA estava disponível (dado ao vivo ainda chegando), de quanto em quanto tempo o mural olha de novo, sem redesenhar a reserva
  *   watchdogSlackMs      folga que o vigia dá além da duração da cena antes de dizer "travou"
  *   health               quando recarregar (ver features/mural-health.js): falhas seguidas, recarga preventiva, trava anti-laço, volta da internet
  *   network              sonda de internet (um endereço minúsculo de fora do site) e espera crescente entre tentativas
@@ -13,6 +14,9 @@
  *                        `staggerMs` (espera entre um cartão e o seguinte quando entram em sequência), `podiumStepMs` (espera entre um lugar do pódio e o seguinte,
  *                        do último pro primeiro), `countUpMs`/`countUpStepMs` (número que sobe), `kenBurns` (zoom lento das fotos: ponto de origem e escala inicial/final,
  *                        em rodízio a cada foto). Só opacity e transform (roda na placa de vídeo, não pesa em computador fraco)
+ *   albums               álbuns do Google Fotos (data/mural-albums.js): `proxyUrl` = endereço do intermediário (DevFestIA/tools/album-proxy; VAZIO = álbuns desligados, o mural segue
+ *                        com as fotos locais; `?albuns=<endereço>` na URL liga só pra teste), `timeoutMs` = quanto esperar o intermediário, `quarantineMs` = quanto uma foto que
+ *                        não carregou fica de fora
  *   stage                margem segura (%) e as formas do palco por proporção, do mais largo ao mais alto (data-shape; o CSS escolhe o desenho)
  */
 const MURAL_CONFIG = {
@@ -23,6 +27,7 @@ const MURAL_CONFIG = {
   skipCooldownMs: 60000,
   retryDelayMs: 500,
   reserveSeconds: 20,
+  idleRetryMs: 5000,
   watchdogSlackMs: 6000,
   imageTimeoutMs: 6000,
   speakerPhotoTimeoutMs: 2500,
@@ -43,6 +48,11 @@ const MURAL_CONFIG = {
     probeEveryMs: 30000,
     probeTimeoutMs: 5000,
     backoff: { baseMs: 2000, maxMs: 60000, factor: 2, jitter: 0.3 },
+  },
+  albums: {
+    proxyUrl: "",
+    timeoutMs: 8000,
+    quarantineMs: 10 * 60000,
   },
   motion: {
     defaultTransition: "rise",

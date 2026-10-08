@@ -106,6 +106,9 @@ function createMural({
     const scene = picked?.scene ?? reserveScene;
     if (picked?.interrupt) interrupts = pruneInterrupts(interrupts, nowMs(), picked.interrupt);
     const reserve = scene === reserveScene;
+    if (reserve && picked === null && current?.reserve && !current.errored) { // a reserva já está no ar e continua sendo a única opção: não redesenha, só olha de novo daqui a pouco
+      return later(config.idleRetryMs ?? config.reserveSeconds * 1000);
+    }
     const seconds = reserve ? config.reserveSeconds : scene.seconds ?? config.defaultSeconds;
     beatDueAt = nowMs() + config.prepareTimeoutMs + config.watchdogSlackMs;
     try {
@@ -136,7 +139,7 @@ function createMural({
     shown++;
     if (!reserve) ledger?.saveScene(scene.id);
     onSceneChange({ scene, interrupt: picked?.interrupt ?? null, reserve });
-    later(seconds * 1000);
+    later(reserve && picked === null ? config.idleRetryMs ?? seconds * 1000 : seconds * 1000); // reserva porque nada estava disponível: olha de novo logo, o dado ao vivo pode estar chegando
   }
 
   function run() {

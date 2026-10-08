@@ -160,7 +160,7 @@ docs/
       team.js, cod.js, seo.js, stats.js, about.js, highlights.js,
       video.js, realizacao.js, tickets.js, footer.js,
       tracks-overview.js, testimonials.js, ticker.js, patrocinio.js
-      mural (ver "Mural do telão de LED"): scheduler.js (defaultSchedule/scheduleEvery/withTimeout), backoff.js, publish-detector.js (também usado por board-contest.js),
+      mural (ver "Mural do telão de LED"; álbuns: album-photo-url.js, album-models.js, new-items-detector.js): scheduler.js (defaultSchedule/scheduleEvery/withTimeout), backoff.js, publish-detector.js (também usado por board-contest.js),
         mural.js (motor), mural-playlist.js, mural-health.js, mural-network.js, mural-version.js, mural-live.js, mural-live-sources.js, mural-live-bindings.js,
         mural-stage.js, mural-now-next.js, mural-photo-pool.js, count-up.js, kiosk.js, image-preload.js, qr-renderer.js
     pages/                   one bootstrap per page (see table above)
@@ -459,12 +459,28 @@ controle remoto. **Fase 3:** fênix animada (precisa do arquivo; sem som). **Fas
   `?cenas=a,b`, `?diag=1` (painel: cena, falhas, castigo, último erro, internet, fontes ao vivo, tempo ligado, recargas, pendências, degradado, palco), `?tela=LxA`, `?proporcao=3:1`, `?margem=N`.
 - **Rede de segurança na página:** um `<script>` inline recarrega a página se o JavaScript não chegar a iniciar em 45 s (`window.__muralBooted`); a tela de partida (logo e nome) está no HTML.
 - **Testes:** puros em `tools/mural/*.test.js` (playlist, health, network/live/version, stage, scenes-logic, bindings, count-up; 57 testes), de tela em `tools/dom/mural-engine.dom.test.js` (23, com relógio falso
-  `tools/lib/fake-clock.js`, inclui 8 h de resistência), `mural-scenes.dom.test.js` (28) e `mural-page.dom.test.js` (12, carrega os scripts do próprio `mural.html` na ordem dele; confere a lista de scripts da página).
+  `tools/lib/fake-clock.js`, inclui 8 h de resistência), `mural-scenes.dom.test.js` (36) e `mural-page.dom.test.js` (17, carrega os scripts do próprio `mural.html` na ordem dele; confere a lista de scripts da página).
   Armadilha: em teste de tela, array vindo de dentro do jsdom não é `deepEqual` de array do teste (outro realm): espalhe `[...x]`.
 - **Ainda NÃO verificado (depende do hardware/do Renato):** o ensaio de 1 h ou mais no computador e no telão de verdade com o Wi-Fi desligado no meio; recarga real por `stuck` (nos testes é decisão pura, o `location.reload` não roda no jsdom);
   o Wake Lock num Chrome de verdade; a proporção real do LED; o pódio ao vivo com login de moderador (só emulado). **Falta também o OK do Renato** pra incluir `tools/mural/` no `validate.yml`.
 - **Pós-queda de energia sem internet:** se o computador ligar sem rede o Chrome mostra a página de erro e o JavaScript do mural nem existe; a página de "sem internet" do Chrome recarrega sozinha quando a rede volta, mas
   testar isso no ensaio (e deixar o endereço do mural como página inicial do Chrome em `--kiosk`).
+
+**Álbuns do Google Fotos (sessão 12, 2026-10-08): cena `album` com vários álbuns, X fotos por passada e vários modelos de exibição.** O iframe do álbum NÃO funciona (`x-frame-options: SAMEORIGIN`), mas a PÁGINA de
+compartilhamento pode ser lida e as imagens (`lh3.googleusercontent.com/pw/<token>=w1920-h1080`) carregam em `<img>` do nosso site (testado de `gdgcampinas.github.io`). O navegador do mural não lê a página (sem CORS), então há um
+INTERMEDIÁRIO em `DevFestIA/tools/album-proxy/` (README lá): leitor puro `parse-album.mjs` (cada foto é um array `[id,[url,w,h,...],takenAt,chave,fuso,addedAt,...]`, lido com `JSON.parse` item a item, falha com `ok:false` se o formato mudar),
+`google-photos-repository.mjs` (link curto em dois passos: User-Agent simples recebe o 302, o de navegador recebe uma página sem fotos), `album-service.mjs` (cache de 45 s no ao vivo e 10 min nos demais, UMA busca para pedidos simultâneos, última lista boa
+`stale: true` quando o Google falha), `album-handler.mjs` (HTTP e CORS, independente de provedor), `worker.mjs` (Cloudflare Worker), `dev-server.mjs` (local). Os LINKS dos álbuns ficam só no segredo `ALBUMS` do intermediário (JSON `{ id: link | { url, live } }`),
+NUNCA no repositório (público; a chave do link dá acesso). Álbuns configurados: `ao-vivo` (ao vivo, 45 s), `elotech-agibank` (178 fotos, 93% retrato), `devfest-2025` (300 fotos, até 4032 px).
+- **Mural:** `data/albums-repository.js` (repository HTTP: lê `<proxyUrl>/albums/<id>`, limpa os dados e guarda a última lista boa no localStorage), `data/mural-albums.js` (álbuns: `id`, `label`, `live`, `pollMs`, `order`: newest/oldest/shuffle),
+  `data/mural-album-models.js` (modelos: `single`, `collage` 6, `portrait-strip` 4 retratos, `polaroid` 5, `feature` 1+3; `count`, `prefer` orientação, `tiles` tamanho pedido ao Google; `auto` escolhe pela orientação: >=60% retrato = faixa, >=60% paisagem = colagem, misto = destaque),
+  `components/mural-scenes/mural-album-scene.js` + um arquivo por modelo em `album-models/`, `features/album-photo-url.js` (`=w..-h..` e orientação), `album-models.js` (`chooseAlbumModel`, `orderAlbumPhotos`), `new-items-detector.js`, e a fila `createPhotoPool` generalizada (`keyOf`, `take(count, accept)`, `replace`).
+  Fontes ao vivo em `data/mural-sources.js` (`album-live` a 45 s e `album` a 10 min; chaves por álbum com intervalo próprio) e bindings novos: `collect` (guarda `live.albums[id]`) e `notifyNew` (FOTO NOVA: a 1ª leitura é a base; a nova vai pra `live.newPhoto` por 2 min e a cena `foto-nova` entra na frente do rodízio no máximo 1 vez a cada 15 s).
+  Cenas: `album-ao-vivo` (auto), `album-ao-vivo-2` (polaroide), `album-elotech`, `album-2025` e `foto-nova` (foto única com o selo "Nova foto da galera"). Foto escondida pelo moderador: `ctx.live.hidden[album]` (lista de ids; a fonte e a tela do moderador ainda por fazer).
+- **LIGAR:** `MURAL_CONFIG.albums.proxyUrl` (VAZIO = álbuns desligados e o mural segue com as 16 fotos locais). Para teste, `?albuns=<endereço do intermediário>` na URL; local: `ALBUMS='{...}' node DevFestIA/tools/album-proxy/dev-server.mjs` e `mural.html?albuns=http://localhost:8787`.
+- **`<meta name="referrer" content="no-referrer">` no `mural.html`:** sem isso o Google devolve 429 nas fotos quando a página é aberta de `http://localhost` (com a origem `gdgcampinas.github.io` já funcionava). Também evita vazar o endereço do mural.
+- **Falhas (todas cobertas por teste):** intermediário fora do ar usa a última lista guardada (`stale`); sem lista guardada as cenas de álbum somem do rodízio e o mural segue; foto que não carrega é trocada na mesma preparação e fica 10 min de castigo; álbum pequeno nunca repete a mesma foto na mesma cena; com a reserva no ar por falta de dado o mural olha de novo a cada `idleRetryMs` (5 s) sem redesenhá-la.
+- **Verificado no navegador do app com os 3 álbuns reais** (via intermediário local): colagem do 2025, faixa de retratos do Elotech, polaroide do ao vivo (1 foto de teste ainda). **Falta:** publicar o intermediário (Cloudflare Worker, o Renato cria a conta e faz o deploy) e medir o atraso real do álbum ao vivo com fotos novas; tela de moderação (esconder foto); regras do Firestore para a lista de ocultas.
 
 ## Quiz "Monte sua trilha" (sessão 7)
 
