@@ -64,6 +64,14 @@ const moderationContestResultsRepository = window.createFirestoreDocumentReposit
   edition: CURRENT_EDITION,
 });
 
+/** Fotos escondidas do mural (`mural-hidden/<álbum>`), do lado do moderador: lê e regrava a lista de ids (tirar do ar / voltar ao ar). */
+const moderationMuralHiddenRepository = window.createFirestoreDocumentRepository({
+  db: window.moderatorClient.db,
+  collectionName: "mural-hidden",
+  edition: CURRENT_EDITION,
+});
+
+window.moderationMuralHiddenRepository = moderationMuralHiddenRepository;
 window.moderationQuestionsRepository = moderationQuestionsRepository;
 window.moderationContestProjectsRepository = moderationContestProjectsRepository;
 window.moderationContestVotesRepository = moderationContestVotesRepository;

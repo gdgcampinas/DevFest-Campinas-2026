@@ -4,7 +4,8 @@
  *   - quando a lista ACABA DE SER PUBLICADA ao vivo (features/publish-detector.js: viu vazio e depois encheu), empurra a cena de interrupção na frente
  *     do rodízio e dispara a comemoração. Mural aberto com o resultado já publicado não comemora, só mostra a cena no rodízio.
  * `bind.celebrateDelayMs` espera esse tempo antes do papel picado (o pódio entra do 3º ao 1º: a festa é na hora do 1º lugar).
- * `bind.collect` guarda o valor de cada chave de uma fonte de várias (`live[nome][chave]`, ex.: a lista de fotos de cada álbum).
+ * `bind.collect` guarda o valor de cada chave de uma fonte de várias (`live[nome][chave]`, ex.: a lista de fotos de cada álbum); `collect: { field }` guarda só aquele campo do documento
+ * (ex.: `ids` das fotos escondidas), e documento que não existe vira lista vazia.
  * `bind.notifyNew` avisa FOTO NOVA numa lista que chega várias vezes (álbum ao vivo): a primeira leitura é a base; as novas vão pra `live[notifyNew.live]` ({ key, photo, photos }, a mais
  * nova primeiro) por `expireMs`, e a cena de destaque entra na frente do rodízio no máximo uma vez a cada `minGapMs` (as outras só entram no rodízio normal, sem enchê-lo de interrupções).
  * Tudo injetado: `definitions`, `live` (objeto de estado), `mural` (pushInterrupt), `celebrate`, `schedule`, `nowMs`, `createDetector`, `createNewDetector`. Dual (navegador e Node).
@@ -39,7 +40,8 @@ function createLiveBindings({ definitions, live, mural, celebrate = () => {}, sc
     if (!bind) return;
     if (bind.collect) {
       const key = sourceId.slice(definition.id.length + 1);
-      (live[bind.live] ??= {})[key] = value;
+      const field = bind.collect.field;
+      (live[bind.live] ??= {})[key] = field ? value?.[field] ?? [] : value;
       if (bind.notifyNew && value?.photos) announceNew(sourceId, key, bind.notifyNew, value.photos);
       return;
     }

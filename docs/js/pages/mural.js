@@ -136,10 +136,13 @@ function initMural() {
       schedule, nowMs, backoff: config.network.backoff, onUpdate: bindings,
       sources: buildLiveSources({
         definitions: muralSourcesRepository.getAll(), schedule,
-        repositories: { eventStats: () => window.eventStatsRepository, contestResults: () => window.contestResultsRepository, albums: () => albumsRepository },
+        repositories: { eventStats: () => window.eventStatsRepository, contestResults: () => window.contestResultsRepository, albums: () => albumsRepository, muralHidden: () => window.muralHiddenRepository },
         keyResolvers: {
+          albums: () => albumKeys().map(entry => entry.key),
           "live-albums": () => albumKeys(true),
-          "other-albums": () => albumKeys(false), "contest-sessions": () => talkIndex.getAll().filter(entry => talkHighlightsRepository.hasContest(entry.data)).map(entry => entry.key) },
+          "other-albums": () => albumKeys(false),
+          "contest-sessions": () => talkIndex.getAll().filter(entry => talkHighlightsRepository.hasContest(entry.data)).map(entry => entry.key),
+        },
         getUid: () => window.firebaseClient.ensureAnonymousUid(),
       }),
     });

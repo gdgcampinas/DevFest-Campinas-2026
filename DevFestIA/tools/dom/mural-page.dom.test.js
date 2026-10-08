@@ -22,6 +22,7 @@ const BODY = `<!doctype html><html><body><div class="mural-backdrop"><div class=
 /** Sobe a página com tudo de fora substituído. `search` = parâmetros de URL; `overrides` ajusta o que pode mudar (rede, QR, registered). */
 function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => true, registered = { total: 120 }, initialPodium = null, albums = null }) {
   const contestListeners = new Map();
+  const hiddenListeners = new Map();
   const globals = {
     QRCode: qr ? function QRCode(el, options) { el.dataset.qrText = options.text; el.innerHTML = "<img>"; } : undefined,
     Image: class { set src(url) { setTimeout(() => this.onload?.(), 0); } },
@@ -35,6 +36,7 @@ function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => t
     },
     firebaseClient: { ensureAnonymousUid: async () => "uid" },
     eventStatsRepository: { get: async () => registered },
+    muralHiddenRepository: { listen: (key, onNext) => { hiddenListeners.set(key, onNext); onNext(null); return () => hiddenListeners.delete(key); } },
     contestResultsRepository: { listen: (key, onNext) => { contestListeners.set(key, onNext); onNext(initialPodium ? { podium: initialPodium } : null); return () => contestListeners.delete(key); } },
   };
   const site = loadSite({ scripts: SCRIPTS, html: BODY, url: `http://localhost/mural.html?lineup=1&demo=${demo}&${search}`, globals });
@@ -52,7 +54,7 @@ function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => t
   site.run(PAGE, "pages/mural.js");
   const document = site.document;
   return {
-    site, document, contestListeners,
+    site, document, contestListeners, hiddenListeners,
     active: () => document.querySelector(".mural-scene.is-active")?.dataset.scene ?? null,
     activeText: () => textOf(document.querySelector(".mural-scene.is-active") ?? document.body),
     confetti: () => site.run("__confetti"),
@@ -134,6 +136,19 @@ test("álbuns: intermediário fora do ar sem lista guardada: o mural não quebra
   await waitFor(() => page.active() === "dicas");
   assert.equal(page.document.querySelector('[data-scene="album-ao-vivo"]'), null);
   await waitFor(() => /album-live:ao-vivo: retrying/.test(textOf(page.document.getElementById("muralDiag"))), { timeout: 4000 }); // a fonte tenta de novo com espera crescente
+  page.site.window.close();
+});
+
+test("foto escondida pelo moderador some do telão (a lista vem do banco por escuta) e volta quando o moderador a devolve", async () => {
+  const albums = { "ao-vivo": albumBody("Ao vivo", ["a", "b", "c", "d"]) };
+  const page = boot({ search: "cenas=album-ao-vivo&albuns=https://proxy.test", albums });
+  await waitFor(() => page.active() === "album-ao-vivo");
+  const shown = () => [...page.document.querySelectorAll(".mural-scene.is-active .ms-album-tile img")].map(img => img.getAttribute("src").match(/pw\/(\w)=/)[1]).sort().join("");
+  await waitFor(() => shown() === "abcd");
+  page.hiddenListeners.get("ao-vivo")({ ids: ["a", "c"] });
+  await waitFor(() => shown() === "bd");
+  page.hiddenListeners.get("ao-vivo")({ ids: [] });
+  await waitFor(() => shown() === "abcd");
   page.site.window.close();
 });
 

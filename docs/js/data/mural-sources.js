@@ -22,6 +22,8 @@ const MURAL_SOURCES = [
     bind: { live: "albums", collect: true, notifyNew: { live: "newPhoto", minGapMs: 15000, expireMs: 120000, interrupt: { sceneId: "foto-nova", priority: 80, ttlMs: 60000, immediate: true } } },
   },
   { id: "album", kind: "poll", repository: "albums", keys: "other-albums", intervalMs: 600000, bind: { live: "albums", collect: true } },
+  // fotos que o moderador escondeu (Firestore `mural-hidden/<álbum>`, escuta: a foto some do telão na hora)
+  { id: "hidden", kind: "document", repository: "muralHidden", keys: "albums", bind: { live: "hidden", collect: { field: "ids" } } },
   {
     id: "podium", kind: "document", repository: "contestResults", keys: "contest-sessions",
     bind: { live: "podium", pick: "podium", interrupt: { sceneId: "podio-jam", priority: 100, ttlMs: 3 * 60000, immediate: true }, celebrate: true, celebrateDelayMs: MURAL_CONFIG.motion.podiumStepMs * 2 + 1100 },

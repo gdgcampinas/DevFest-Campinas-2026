@@ -322,6 +322,19 @@ service cloud.firestore {
 
     // Código atual do QR do sorteio: escrito SÓ pelo moderador (features/raffle-draw.js, a cada ~60 s enquanto o QR
     // está na tela) e NUNCA lido pela plateia: se ela pudesse ler, buscaria o código direto no banco e furaria o QR.
+    // Fotos ESCONDIDAS do mural do telão (álbuns do Google Fotos): UM documento por álbum (`mural-hidden/<albumId>`) com a lista de ids das fotos que o moderador tirou do ar.
+    // O mural (login anônimo) lê o documento do álbum pelo id; só o moderador grava; ninguém lista nem apaga (voltar ao ar = gravar a lista sem aquele id).
+    match /mural-hidden/{albumId} {
+      allow get: if request.auth != null;
+      allow list: if false;
+      allow create, update: if isModerator() && albumId.matches('^[a-z0-9-]{1,40}$')
+        && request.resource.data.keys().hasOnly(['edition', 'updatedAt', 'ids'])
+        && request.resource.data.edition is string && isKnownEdition(request.resource.data.edition)
+        && request.resource.data.updatedAt == request.time
+        && request.resource.data.ids is list && request.resource.data.ids.size() <= 500;
+      allow delete: if false;
+    }
+
     match /raffle-session/{docId} {
       allow get, list: if isModerator();
       allow create, update: if isModerator() && docId == 'current'

@@ -1,0 +1,10 @@
+/* Tela do moderador de fotos do mural (mural-fotos.html): só a grade de fotos; o resto (login, título, aviso) é o da moderação de perguntas (styles.css, .mod). */
+.mf-grid{list-style:none;margin:16px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.mf-tile{position:relative;display:flex;flex-direction:column;gap:8px;padding:8px;border:1px solid var(--card-border);border-radius:12px;background:var(--card-a)}
+.mf-tile img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;background:oklch(16% .02 260)}
+.mf-tile.is-hidden img{opacity:.25;filter:grayscale(1)}
+.mf-tile.is-hidden{border-style:dashed}
+.mf-time{position:absolute;top:14px;left:14px;padding:2px 8px;border-radius:99px;background:oklch(8% .01 260 / .78);font:700 12px var(--font-body);color:#fff}
+.mf-tile .chip-btn{justify-content:center}
+.chip-btn--danger{border-color:var(--google-red);color:var(--google-red)}
+.mf-notice{color:var(--google-yellow)}
