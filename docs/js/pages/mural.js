@@ -65,6 +65,8 @@ function initMural() {
   const highlights = highlightsRepository.getAll();
   const registry = {
     "now-next": createNowNextScene(grid),
+    spotlight: createSpotlightScene({ ...grid, preloadPhoto: url => preloadImage(url, { timeoutMs: config.speakerPhotoTimeoutMs, schedule }), hostOf: id => talkHighlightsRepository.getById(id)?.host ?? null }),
+    selfie: createSelfieScene({ preload, mascotUrl: "assets/img/gumbleton.png", logoSrc, title, subtitle: eventDateLabel(SCHEDULE, EVENT.timezone) }),
     photos: createPhotosScene({ pool: createPhotoPool({ photos: highlights.photos, nowMs, quarantineMs: config.photoQuarantineMs }), preload, caption: highlights.title, kenBurns: config.motion.kenBurns }),
     sponsors: createSponsorsScene({ repository: sponsorsRepository, preload }),
     qr: createQrScene({ siteUrl: EVENT.url, extraQuery: () => rehearsal.query, qr: createQrRenderer() }),

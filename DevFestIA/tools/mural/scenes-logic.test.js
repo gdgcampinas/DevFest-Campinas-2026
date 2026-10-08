@@ -76,3 +76,16 @@ test("fotos: rodízio na ordem, foto com falha sai por um tempo e volta, e acaba
   assert.equal(pool.next(), null);
   assert.equal(createPhotoPool({ photos: [], nowMs: () => 0, quarantineMs: 1 }).next(), null);
 });
+
+test("a palestra descrita leva pessoas com foto e cargo, o texto curto (blurb ou descrição) e as tags", () => {
+  const { describeTalk } = load("features/mural-now-next.js");
+  const slot = { start: at("09:00"), end: at("09:40") };
+  const full = describeTalk(slot, { title: "T", speakers: [{ name: "Ana", title: "Eng", photo: "a.jpg" }], description: "longa", blurb: "curta", tags: ["x"] });
+  assert.deepEqual(full.people, [{ name: "Ana", title: "Eng", photo: "a.jpg" }]);
+  assert.equal(full.blurb, "curta");
+  assert.deepEqual(full.tags, ["x"]);
+  assert.deepEqual(full.speakers, ["Ana"]);
+  assert.equal(describeTalk(slot, { title: "T", speakers: [{ name: "Ana" }], description: "longa" }).blurb, "longa", "sem blurb cai na descrição");
+  const bare = describeTalk(slot, { title: "T" });
+  assert.deepEqual([bare.people, bare.blurb, bare.tags], [[], "", []]);
+});

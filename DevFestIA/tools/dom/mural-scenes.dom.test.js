@@ -8,9 +8,9 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 const { createFakeClock } = require("../lib/fake-clock.js");
 
-const SCENES = ["mural-scene-kit", "mural-now-next-scene", "mural-photos-scene", "mural-sponsors-scene", "mural-qr-scene", "mural-registered-scene", "mural-tips-scene", "mural-phoenix-scene", "mural-podium-scene", "mural-event-phase-scene", "mural-reserve-scene"].map(name => `components/mural-scenes/${name}.js`);
+const SCENES = ["mural-scene-kit", "mural-now-next-scene", "mural-photos-scene", "mural-sponsors-scene", "mural-qr-scene", "mural-registered-scene", "mural-tips-scene", "mural-phoenix-scene", "mural-podium-scene", "mural-event-phase-scene", "mural-reserve-scene", "mural-spotlight-scene", "mural-selfie-scene"].map(name => `components/mural-scenes/${name}.js`);
 const site = loadSite({
-  scripts: [...SITE_BASE, "features/scheduler.js", "features/agenda.js", "features/mural-now-next.js", "features/mural-photo-pool.js", "features/mural.js", "features/mural-playlist.js", "components/talk-highlight.js", "data/mural-tips.js", ...SCENES, "features/live-status.js", "features/count-up.js"],
+  scripts: [...SITE_BASE, "features/scheduler.js", "features/agenda.js", "features/mural-now-next.js", "features/mural-photo-pool.js", "features/mural.js", "features/mural-playlist.js", "components/talk-highlight.js", "data/mural-tips.js", ...SCENES, "features/live-status.js", "features/count-up.js", "components/avatar.js"],
 });
 const { window, document } = site;
 test.after(() => window.close());
@@ -228,4 +228,100 @@ test("inscritos: o número sobe de 0 até o total e o total já está no HTML se
   assert.equal(el.querySelector("[data-count-up]").textContent, "1.234");
   dispose();
   assert.equal(clock.pending(), 0);
+});
+
+const talkOf = (title, people = [], extra = {}) => ({ title, speakers: people, ...extra });
+const spotTracks = [{ id: "ia", label: "IA", color: "blue", room: "Sala A" }, { id: "web", label: "Web", color: "red", room: "Sala B" }, { id: "mob", label: "Mobile", color: "green", room: "Sala C" }];
+const spotSchedule = [{
+  talks: {
+    ia: talkOf("Agentes de IA", [{ name: "Ana Souza", title: "Engenheira de IA", photo: "ana.jpg" }], { description: "Descrição longa da palestra.", blurb: "Texto curto da Ana.", tags: ["agentes", "produção", "llm", "extra"] }),
+    web: talkOf("Design systems", [{ name: "Camila Rocha", title: "Tech Lead", photo: "camila.jpg" }, { name: "Olivia Chen", title: "Front-end", photo: "olivia.jpg" }], { description: "Só a descrição." }),
+  },
+  start: at("09:00"), end: at("09:40"),
+}];
+const spotlight = (preloadPhoto = async () => {}, hostOf = () => null) => g("createSpotlightScene")({ schedule: spotSchedule, tracks: spotTracks, timezone: "America/Sao_Paulo", phaseOf: g("resolveEventState"), preloadPhoto, hostOf });
+
+test("rolando agora: a posição escolhe a sala entre as que têm palestra no ar; sem sala nessa posição a cena não aparece", async () => {
+  const scene = spotlight();
+  const first = await scene.prepare({ slot: 0 }, ctx({ now: at("09:10") }));
+  assert.equal(first.track.id, "ia");
+  assert.equal((await scene.prepare({ slot: 1 }, ctx({ now: at("09:10") }))).track.id, "web");
+  assert.equal(await scene.prepare({ slot: 2 }, ctx({ now: at("09:10") })), MURAL_SKIP, "só 2 salas com palestra: a 3ª posição não existe");
+  assert.equal(await scene.prepare({ slot: 0 }, ctx({ now: at("12:00") })), MURAL_SKIP, "ninguém no ar fora do horário");
+});
+
+test("rolando agora: foto, nome, cargo, título, texto curto (blurb vence a descrição), tags limitadas, horário, progresso e pontinhos", async () => {
+  const scene = spotlight();
+  const prepared = await scene.prepare({ slot: 0 }, ctx({ now: at("09:10") }));
+  const el = html(scene.render(prepared, {}, ctx({ now: at("09:10") })).markup);
+  const text = textOf(el);
+  assert.match(text, /Rolando agora/);
+  assert.match(text, /Sala A · IA/);
+  assert.match(text, /09:00 às 09:40/);
+  assert.match(text, /Ana Souza.*Engenheira de IA/);
+  assert.match(text, /Agentes de IA/);
+  assert.match(text, /Texto curto da Ana/);
+  assert.ok(!text.includes("Descrição longa"), "o blurb vence a descrição");
+  assert.equal(el.querySelector("img.ms-avatar").getAttribute("src"), "ana.jpg");
+  assert.equal(el.querySelectorAll(".ms-spot-tags li").length, 3, "no máximo 3 tags");
+  assert.equal(el.querySelector("[data-progress]").style.width, "25%", "10 de 40 min");
+  assert.match(el.querySelector("[data-left]").textContent, /faltam 30 min/);
+  assert.equal(el.querySelectorAll(".ms-dots i").length, 2);
+  assert.ok(el.querySelector(".ms-dots i").classList.contains("is-on"));
+  assert.match(el.querySelector(".ms-spotlight").getAttribute("style"), /--track-color:blue/);
+});
+
+test("rolando agora: sem blurb usa a descrição; dois palestrantes aparecem juntos", async () => {
+  const scene = spotlight();
+  const prepared = await scene.prepare({ slot: 1 }, ctx({ now: at("09:10") }));
+  const el = html(scene.render(prepared, {}, ctx({ now: at("09:10") })).markup);
+  assert.match(textOf(el), /Só a descrição/);
+  assert.equal(el.querySelectorAll(".ms-spot-person").length, 2);
+  assert.equal(el.querySelector(".ms-spot-people").dataset.count, "2");
+});
+
+test("rolando agora: foto que falha ou demora vira iniciais, e a cena sai igual", async () => {
+  const scene = spotlight(async url => { if (url === "ana.jpg") throw new Error("404"); });
+  const prepared = await scene.prepare({ slot: 0 }, ctx({ now: at("09:10") }));
+  const el = html(scene.render(prepared, {}, ctx({ now: at("09:10") })).markup);
+  assert.equal(el.querySelector("img.ms-avatar"), null);
+  assert.equal(textOf(el.querySelector(".ms-avatar--fallback")), "AS");
+});
+
+test("rolando agora: sessão sem palestrante (Coding Jam) usa quem conduz", async () => {
+  const jamSchedule = [{ talks: { ia: talkOf("GDG Campinas Coding Jam", [], { highlight: "codejam" }) }, start: at("10:30"), end: at("11:10") }];
+  const scene = g("createSpotlightScene")({ schedule: jamSchedule, tracks: [spotTracks[0]], timezone: "America/Sao_Paulo", phaseOf: g("resolveEventState"), preloadPhoto: async () => {}, hostOf: id => g("talkHighlightsRepository").getById(id).host });
+  const prepared = await scene.prepare({ slot: 0 }, ctx({ now: at("10:40") }));
+  assert.equal(prepared.people[0].name, "GDG Campinas");
+  assert.match(textOf(html(scene.render(prepared, {}, ctx({ now: at("10:40") })).markup)), /Coding Jam/);
+});
+
+test("rolando agora: a barra e o 'faltam N min' andam com o relógio da cena", async () => {
+  const scene = spotlight();
+  const prepared = await scene.prepare({ slot: 0 }, ctx({ now: at("09:10") }));
+  const view = scene.render(prepared, {}, ctx({ now: at("09:10") }));
+  const el = html(view.markup);
+  const clock = createFakeClock();
+  let now = at("09:30");
+  const dispose = view.mount(el, { schedule: clock.schedule, clock: () => now });
+  assert.equal(el.querySelector("[data-progress]").style.width, "75%");
+  assert.match(el.querySelector("[data-left]").textContent, /faltam 10 min/);
+  now = new Date(at("09:40").getTime() - 30000);
+  await clock.tick(1000);
+  assert.match(el.querySelector("[data-left]").textContent, /faltam 1 min/);
+  now = at("09:40");
+  await clock.tick(1000);
+  assert.match(el.querySelector("[data-left]").textContent, /últimos instantes/);
+  dispose();
+  assert.equal(clock.pending(), 0);
+});
+
+test("selfie: cartão-postal com logo, nome e data grandes, hashtag só quando existir, e falha se a fênix não carregar", async () => {
+  const scene = g("createSelfieScene")({ preload: async () => {}, mascotUrl: "f.png", logoSrc: "logo.svg", title: "DevFest Campinas 2026", subtitle: "28 de novembro de 2026" });
+  await scene.prepare();
+  const plain = html(scene.render(null, { hint: "Tire sua foto aqui" }).markup);
+  assert.match(textOf(plain), /DevFest Campinas 2026.*28 de novembro de 2026.*Tire sua foto aqui/);
+  assert.equal(plain.querySelector(".ms-selfie-tag"), null, "sem hashtag definida não aparece nada");
+  assert.match(textOf(html(scene.render(null, { hashtag: "#DevFestCampinas" }).markup)), /#DevFestCampinas/);
+  await assert.rejects(g("createSelfieScene")({ preload: async () => { throw new Error("404"); }, mascotUrl: "f.png", logoSrc: "l", title: "", subtitle: "" }).prepare());
 });

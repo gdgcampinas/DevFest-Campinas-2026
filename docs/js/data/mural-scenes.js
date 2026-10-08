@@ -10,11 +10,18 @@
  *              live: "nome"    só quando a fonte ao vivo com esse nome já tem dado (data/mural-sources.js)
  * `?cenas=agora,fotos-1` na URL mostra só essas, na ordem pedida (ensaio e teste).
  *
+ * "Rolando agora" (spotlight): uma entrada por posição de sala (`params.slot`); o rodízio passa só pelas salas com palestra no ar. Texto curto = campo `blurb` da palestra
+ * (opcional, ~110 caracteres) ou, sem ele, a descrição. "Selfie": o telão como painel de foto pra plateia (hashtag ainda vazia; fixe com `?cenas=selfie`).
+ *
  * Tempo de tela por cota de patrocínio: cada cota é uma cena (Master mais tempo, as demais agrupadas). Fotos: cada cena mostra a próxima foto
  * da fila, então repetir a cena mostra mais fotos. Fotos da edição 2025 hoje estão a 900 px (fotos em alta resolução ficam pra quando o Renato mandar).
  */
 const MURAL_SCENES = [
   { id: "agora", type: "now-next", seconds: 22, requires: { reveal: true, phases: ["before", "live"] }, params: {} },
+  { id: "rolando-0", type: "spotlight", seconds: 8, requires: { reveal: true, phases: ["live"] }, params: { slot: 0 } },
+  { id: "rolando-1", type: "spotlight", seconds: 8, requires: { reveal: true, phases: ["live"] }, params: { slot: 1 } },
+  { id: "rolando-2", type: "spotlight", seconds: 8, requires: { reveal: true, phases: ["live"] }, params: { slot: 2 } },
+  { id: "rolando-3", type: "spotlight", seconds: 8, requires: { reveal: true, phases: ["live"] }, params: { slot: 3 } },
   { id: "fotos-1", type: "photos", seconds: 9, transition: "zoom", params: {} },
   { id: "patrocinio-master", type: "sponsors", seconds: 12, requires: { reveal: true }, params: { tiers: ["Master"], title: "Quem faz o DevFest acontecer" } },
   { id: "qr-cartao", type: "qr", seconds: 14, transition: "slide", params: { kicker: "Compartilhe", heading: "Monte seu cartão Eu vou!", hint: "Escaneie, gere o seu e mostre que você está no DevFest", path: "ingressos.html?cartao=1" } },
@@ -23,6 +30,7 @@ const MURAL_SCENES = [
   { id: "fotos-2", type: "photos", seconds: 9, transition: "zoom", params: {} },
   { id: "dicas", type: "tips", seconds: 16, params: { title: "Aproveite o DevFest" } },
   { id: "patrocinio-demais", type: "sponsors", seconds: 14, requires: { reveal: true }, params: { tiers: ["Especialista", "Senior", "Intern", "Apoio"], title: "Quem faz o DevFest acontecer" } },
+  { id: "selfie", type: "selfie", seconds: 20, transition: "zoom", params: { hashtag: "", hint: "Tire sua foto aqui e compartilhe o seu DevFest" } },
   { id: "fenix", type: "phoenix", seconds: 10, transition: "zoom", params: {} },
   { id: "podio-jam", type: "podium", seconds: 20, requires: { reveal: true, live: "podium" }, params: {} },
   { id: "contagem", type: "event-phase", seconds: 12, requires: { phases: ["before"] }, params: { kind: "countdown" } },

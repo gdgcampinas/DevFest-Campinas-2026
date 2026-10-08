@@ -2,6 +2,7 @@
  * Configuração do MURAL do telão (mural.html). Só números e endereços, nada de lógica: o motor (features/mural.js), o vigia
  * (features/mural-health.js), a rede e o palco leem daqui. Tempos em milissegundos, salvo `*Seconds`.
  *
+ *   speakerPhotoTimeoutMs foto de palestrante que passar disso vira iniciais (a cena "rolando agora" não espera foto lenta)
  *   prepareTimeoutMs     quanto uma cena pode demorar pra preparar (foto, leitura) antes de ser pulada
  *   failureCooldownMs    cena que falhou descansa esse tempo antes de tentar de novo; skipCooldownMs = a que não tinha nada pra mostrar
  *   reserveSeconds       quanto a cena de reserva fica no ar antes de o mural tentar as outras de novo
@@ -24,6 +25,7 @@ const MURAL_CONFIG = {
   reserveSeconds: 20,
   watchdogSlackMs: 6000,
   imageTimeoutMs: 6000,
+  speakerPhotoTimeoutMs: 2500,
   photoQuarantineMs: 10 * 60000,
   clockEveryMs: 1000,
   kioskEnsureEveryMs: 60000,
