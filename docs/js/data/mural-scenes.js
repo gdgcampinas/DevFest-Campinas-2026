@@ -43,6 +43,7 @@ const MURAL_SCENES = [
   { id: "patrocinio-demais", type: "sponsors", seconds: 14, requires: { reveal: true }, params: { tiers: ["Especialista", "Senior", "Intern", "Apoio"], title: "Quem faz o DevFest acontecer" } },
   { id: "selfie", type: "selfie", seconds: 20, transition: "zoom", params: { hashtag: "", art: "sunset" } },
   { id: "arte-gumbleton", type: "art", seconds: 8, transition: "zoom", params: { art: "gumbleton" } },
+  { id: "album-bosch", type: "album", seconds: 14, requires: { live: "albums" }, params: { album: "gdg-talks-bosch", model: "auto" } },
   { id: "fenix", type: "phoenix", seconds: 10, transition: "zoom", params: {} },
   { id: "podio-jam", type: "podium", seconds: 20, requires: { reveal: true, live: "podium" }, params: {} },
   { id: "contagem", type: "event-phase", seconds: 12, requires: { phases: ["before"] }, params: { kind: "countdown" } },

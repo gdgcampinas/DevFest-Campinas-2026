@@ -10,6 +10,7 @@ const MURAL_ALBUMS = [
   { id: "ao-vivo", label: "DevFest 2026 ao vivo", live: true, pollMs: 45000, order: "newest" },
   { id: "elotech-agibank", label: "Elotech Agibank", live: false, pollMs: 600000, order: "shuffle" },
   { id: "devfest-2025", label: "DevFest Campinas 2025", live: false, pollMs: 600000, order: "shuffle" },
+  { id: "gdg-talks-bosch", label: "GDG Talks · Bosch 2025", live: false, pollMs: 600000, order: "shuffle" },
 ];
 
 const muralAlbumsRepository = createRepository(MURAL_ALBUMS, {
