@@ -1,8 +1,29 @@
 # Handoff — Current State
 
-**Last updated:** 2026-10-08, fim da sessão 12 (mural do telão completo: motor, cenas, animações, artes, "rolando agora", selfie, álbuns do Google Fotos com intermediário no Cloudflare e moderação de fotos; protocolo de novo chat executado). Antes: fim da sessão 11 (ideias reorganizadas, Coding Jam com card e concurso, decisões do mural do telão) e da sessão 10 (Sorteio fechado no código, Time público, análise do
+**Last updated:** 2026-10-08, sessão 13 (mural v2: fotos sem foto única, QR do álbum, momentos, controle remoto, vídeo, painel da equipe; ver o primeiro bloco). Antes: fim da sessão 12 (mural do telão completo: motor, cenas, animações, artes, "rolando agora", selfie, álbuns do Google Fotos com intermediário no Cloudflare e moderação de fotos; protocolo de novo chat executado). Antes: fim da sessão 11 (ideias reorganizadas, Coding Jam com card e concurso, decisões do mural do telão) e da sessão 10 (Sorteio fechado no código, Time público, análise do
 Sincronizar Sympla). Abrir chat novo pra próxima task, use `NEW_CHAT_PROMPT.md`. Antes de confiar neste texto, rode
 `git status --short --branch` e `git log --oneline --decorate -30` (o git não mente; cada commit tem mensagem descritiva).
+
+## SESSÃO 13 (2026-10-08, depois do fim da 12): MURAL V2 (fotos, QR, momentos, controle remoto, vídeo, painel da equipe)
+
+**Feito (um commit por melhoria, detalhes técnicos no `PROJECT_CONTEXT.md`, seção "Mural do telão de LED"):**
+1. **Álbum Bosch trocado** pelo de 26/08/2026 (`gdg-talks-bosch-2026`, 72 fotos; segredo `ALBUMS` já atualizado pelo Renato e conferido no Worker).
+2. **Regra: o telão NUNCA mostra foto única** (só a arte do selfie): modelo `mosaic` (12 fotos), `foto-nova` = a nova GRANDE + 3 recentes (`feature`), `min` por modelo (a cena some até o álbum encher), removidos `single`, a cena `photos` e o Ken Burns.
+3. **QR do álbum ao vivo** ("Mande sua foto", cena `qr-album`): leva a `<Worker>/join/ao-vivo` (302 pro convite, só álbum `live`; o link nunca está no repo). `qr-cartao` saiu do rodízio. Resolvedor `features/qr-targets.js`.
+4. **Momentos da grade** (`moment` em `schedule.js`: `lunch` 12:00 às 13:20, `closing` 17:15 às 18:00...; `requires.moments`) e cena `agradecimento-patrocinio` (almoço e encerramento, mock até os logos reais).
+5. **Controle remoto do mural** (`mural-controle.html`, celular do moderador): avisos ao vivo com validade, pausar/fixar cena, recarregar, EMERGÊNCIA em dois toques; documento `mural-control/current`, motor `hold/release`, vigia não recarrega com o rodízio parado, regras do Firestore + 4 testes.
+6. **Vídeo** (sem som, decisão do Renato): 9 clipes do vídeo de 2025 (`tools/video/`), cena `video` com cache no navegador, rota `/media` no Worker, playlists por dado; o motor aceita `render` devolvendo `seconds`.
+7. **Painel da equipe** `equipe.html`: atalhos de todas as telas internas (`data/team-tools.js`).
+**Testes:** 330 de tela + 162 puros, CI verde; regras do Firestore (emulador) 100%.
+
+**O que depende do RENATO (nesta ordem):**
+- **Colar as regras do Firestore de novo** (bloco novo `mural-control`): `pbcopy < /Users/renatoramos/Documents/Projects/GDGCampinas/FrontEnd/DevFest-Campinas-2026/DevFestIA/firebase/firestore.rules` e Publicar. Sem isso o controle do mural recusa gravar.
+- **Aprovar os cortes do vídeo** (`DevFestIA/tools/video/cuts-2025.json`; os 9 arquivos prontos estão em `~/Downloads/devfest-mural-clips-2025/`) e dizer "pode publicar": a IA cria a release `mural-video-2025` no GitHub com os 9 arquivos.
+- **`npx wrangler deploy`** (em `DevFestIA/tools/album-proxy`, DEPOIS da release): leva as rotas novas `/join` e `/media` pro Worker. Sem o deploy o QR do álbum e os vídeos não funcionam em produção.
+- Confirmar que o link de `ao-vivo` no segredo é o CONVITE pra colaborar (link só de visualização não deixa ninguém adicionar foto).
+- Testar o controle (login Google): aviso, pausar, emergência, recarregar, no celular, com o mural aberto.
+- Logos em alta, cotas e horário do coffee (entra como `moment: "coffee"` na grade); hashtag do selfie; ensaio de 1 h no hardware; os 6 e-mails dos moderadores (depois).
+**Armadilhas novas:** (a) `lsof -ti tcp:8787 | xargs kill` mata também o Claude Helper (cliente da conexão): use `lsof -ti tcp:8787 -sTCP:LISTEN`; (b) teste de tela que falha ANTES de `window.close()` deixa o processo preso: use `--test-force-exit` e feche a página; (c) `ffmpeg` do brew não tem `drawtext`; (d) `schedule.dev.js` (gitignored) precisa dos mesmos `moment` da grade; (e) o checador de traduções trata string solta de dado como texto: ids técnicos entram em `SKIP_KEYS` de `tools/i18n/check-i18n.js`; (f) cena pulada por falta de dado fica de castigo 60 s (`skipCooldownMs`): o vídeo pode levar 1 minuto pra aparecer depois que o mural abre.
 
 ## FIM DA SESSÃO 12 (2026-10-08): ESTADO PARA O PRÓXIMO CHAT
 
