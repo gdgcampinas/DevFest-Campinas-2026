@@ -89,6 +89,11 @@ usado (fênix com som?).
 
 ---
 
+## Admin e controle do evento
+
+### Admin com CONFIGURAÇÃO e alimentação do site: ideia guardada, DESCARTADA por ora (2026-10-08)
+O Renato pediu primeiro uma área de CONTROLE (telão, palestras, moderação; ver o plano no handoff). A parte de configuração/alimentação dinâmica fica só como ideia: hoje toda config é código (`docs/js/data/*.js`, repositório público, site estático): mudar = commit + CI + cache de ~10 min. Para editar em tempo de execução seria preciso uma camada de config no Firestore (documento `site-config` com só as DIFERENÇAS sobre o padrão do código, lista de campos editáveis, rascunho e publicar, histórico, controle de versão, cache de 5 min no navegador, regras lendo os interruptores). Fases pensadas: (1) infraestrutura + "Operação do dia" (revelar line-up, vendas, `registrationGate`, trava de horário das perguntas e interruptores do sorteio lidos pelas regras, sem colar regras antes do evento); (2) mural editável (cenas, dicas, álbuns, vídeos, números); (3) conteúdo (evento, ingressos, patrocinadores, sobre, rodapé, time, parceiros, depoimentos, com campo em inglês); (4) line-up (palestras, palestrantes, grade); (5) infra (links dos álbuns no Worker, lista de moderadores dentro do admin, grupo menor só pra config). Limitações: imagens só por endereço (Firebase Storage e R2 exigem cartão), texto editado precisa de campo em inglês, tudo cabe no plano grátis (Spark: ~50 mil leituras/dia; passou do limite o banco para até o dia seguinte, não cobra).
+
 ## Engajamento e gamificação
 
 ### Coding Jam no DevFest (sessão 11, 2026-10-06): FEITO no código (card, modal e concurso)
