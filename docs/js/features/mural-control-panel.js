@@ -2,7 +2,7 @@
  * Feature: tela do moderador do CONTROLE do mural (ferramenta interna, mural-controle.html), feita pro celular. Escreve avisos, fixa ou pausa o rodízio, manda recarregar e arma a emergência:
  * cada ação vira o documento `mural-control/current` (Firestore) e o mural do telão só LÊ e obedece (features/mural-control.js). Só o e-mail Google da lista de moderadores das regras grava;
  * outra conta vê "sem permissão" (a regra é a defesa, a tela só avisa). Retoma o login que já estava feito.
- * O formulário é desenhado UMA vez (quem digita não perde o texto quando o estado muda); só as áreas vivas (`data-slot`) são refeitas. A emergência exige dois toques (o primeiro pede confirmação
+ * O formulário é desenhado UMA vez (quem digita não perde o texto quando o estado muda); só as áreas vivas (`data-slot`) são refeitas. A emergência exige dois toques (features/two-tap-confirm.js; o primeiro pede confirmação
  * e vale `confirmMs`). Tudo por parâmetro: `repository` ({ listen, set }), `rules` (as regras puras de features/mural-control.js), `limits` (MURAL_CONFIG.control), `scenes` ([{ id, label }]),
  * `templates` (data/mural-notices.js), `login`, `nowMs`, `makeId`, `schedule`, `formatTime`, `refreshMs`, `confirmMs`.
  * `embedded` (dentro da área de admin, que faz o login uma vez): sem porta de entrada, conta nem título; liga na hora, já logado. Devolve `{ stop }` (desliga a escuta e os temporizadores).
@@ -14,15 +14,15 @@ function initMuralControlPanel(rootEl, { repository, rules, limits, scenes, temp
   let active = false;
   let stopListening = () => {};
   let cancelRefresh = () => {};
-  let cancelConfirm = () => {};
-  const ui = { kind: "info", noticeMinutes: limits.noticeDefaultMinutes, holdMinutes: limits.holdDefaultMinutes, emergencyConfirm: false, message: "" };
+  const confirm = createTwoTapConfirm({ schedule, confirmMs, onChange: () => { if (active) drawSlots(); } });
+  const ui = { kind: "info", noticeMinutes: limits.noticeDefaultMinutes, holdMinutes: limits.holdDefaultMinutes, message: "" };
   const sceneLabel = id => scenes.find(scene => scene.id === id)?.label ?? id;
   const field = attr => rootEl.querySelector(`[${attr}]`);
 
   function drawSlots() {
     const state = rules.normalize(doc, nowMs(), limits);
     const formatMs = ms => formatTime(new Date(ms));
-    const slots = muralControlSlots({ state, summary: rules.summarize(state, { sceneLabel, formatTime: formatMs }), ui, limits, formatTime: formatMs, busy });
+    const slots = muralControlSlots({ state, summary: rules.summarize(state, { sceneLabel, formatTime: formatMs }), ui: { ...ui, emergencyConfirm: confirm.armed() === "emergency" }, limits, formatTime: formatMs, busy });
     Object.entries(slots).forEach(([name, markup]) => {
       const slot = rootEl.querySelector(`[data-slot="${name}"]`);
       if (slot) slot.innerHTML = markup;
@@ -59,7 +59,7 @@ function initMuralControlPanel(rootEl, { repository, rules, limits, scenes, temp
     active = false;
     stopListening();
     cancelRefresh();
-    cancelConfirm();
+    confirm.disarm();
   }
 
   /** Grava o próximo estado (já calculado pelas regras puras). O estado local muda na hora e volta ao do banco se ele recusar. */
@@ -106,15 +106,8 @@ function initMuralControlPanel(rootEl, { repository, rules, limits, scenes, temp
         ui.message = "Escreva o texto da emergência.";
         return drawSlots();
       }
-      if (!ui.emergencyConfirm) {
-        ui.emergencyConfirm = true;
-        ui.message = "";
-        cancelConfirm = schedule(() => { ui.emergencyConfirm = false; if (active) drawSlots(); }, confirmMs);
-        return drawSlots();
-      }
-      cancelConfirm();
-      ui.emergencyConfirm = false;
-      return save(() => rules.armEmergency(doc, { text: field("data-emergency-text").value, nowMs: nowMs() }, limits), "EMERGÊNCIA ARMADA no telão.");
+      ui.message = "";
+      return confirm.press("emergency", () => save(() => rules.armEmergency(doc, { text: field("data-emergency-text").value, nowMs: nowMs() }, limits), "EMERGÊNCIA ARMADA no telão."));
     },
     "data-emergency-disarm": () => save(() => rules.disarmEmergency(doc, nowMs(), limits), "Emergência desarmada."),
   };

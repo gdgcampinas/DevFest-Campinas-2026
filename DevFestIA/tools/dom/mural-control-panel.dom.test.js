@@ -8,7 +8,7 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, waitFor, textOf } = require("../lib/dom-harness.js");
 const { createFakeClock } = require("../lib/fake-clock.js");
 
-const site = loadSite({ scripts: [...SITE_BASE, "features/scheduler.js", "data/mock-links.js", "data/mock-photo.js", "data/mock-speakers.js", "data/mock-talks.js", "data/schedule-builder.js", "data/schedule.js", "data/mural-config.js", "data/mural-scenes.js", "data/mural-notices.js", "components/moderator-login.js", "components/mural-control-panel.js", "features/moderator-login.js", "features/mural-control.js", "features/mural-control-panel.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "features/scheduler.js", "data/mock-links.js", "data/mock-photo.js", "data/mock-speakers.js", "data/mock-talks.js", "data/schedule-builder.js", "data/schedule.js", "data/mural-config.js", "data/mural-scenes.js", "data/mural-notices.js", "components/moderator-login.js", "components/mural-control-panel.js", "features/moderator-login.js", "features/mural-control.js", "features/two-tap-confirm.js", "features/mural-control-panel.js"] });
 const { window, document } = site;
 test.after(() => window.close());
 const g = name => site.get(name);

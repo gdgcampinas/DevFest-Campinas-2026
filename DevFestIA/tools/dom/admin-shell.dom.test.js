@@ -185,9 +185,9 @@ test("a página admin.html inteira: abre logado na seção Atalhos com os links 
   const body = site.document.getElementById("adminBody");
   await waitFor(() => body.querySelector("[data-shortcut]"));
   const hrefs = [...body.querySelectorAll("[data-shortcut] a")].map(link => link.getAttribute("href"));
-  assert.deepEqual(hrefs, ["mural.html", "DEV/sorteio.html?telao=1", "reset-teste.html"]);
+  assert.deepEqual(hrefs, ["mural.html", "DEV/sorteio.html?telao=1"]);
   assert.ok([...body.querySelectorAll("[data-shortcut] a")].every(link => link.target === "_blank" && link.rel === "noopener"));
-  assert.deepEqual([...site.document.querySelectorAll("#adminNav a")].map(link => link.getAttribute("href")), ["#visao-geral", "#telao", "#fotos", "#palestras", "#atalhos"]);
+  assert.deepEqual([...site.document.querySelectorAll("#adminNav a")].map(link => link.getAttribute("href")), ["#visao-geral", "#telao", "#fotos", "#palestras", "#moderadores", "#antes-do-evento", "#atalhos"]);
   site.window.close();
 });
 
@@ -264,6 +264,15 @@ test("a página admin.html: a seção Palestras mostra uma caixa por trilha com 
   assert.equal(body.querySelector("[data-admin-title]").textContent, "Palestras");
   assert.ok(body.querySelector('[data-track="ia"] [data-link="codejam"]'));
   assert.equal(body.querySelectorAll('[data-track="webdata"] a').length, 2);
+  site.window.close();
+});
+
+test("a página admin.html: a seção Antes do evento traz a limpeza do banco (link do GitHub) e a limpeza deste aparelho", async () => {
+  const { site, body } = bootAdminPage("#antes-do-evento");
+  await waitFor(() => body.querySelector('[data-card="device"]'));
+  assert.equal(body.querySelector("[data-admin-title]").textContent, "Antes do evento");
+  assert.match(body.querySelector('[data-card="purge"] a').getAttribute("href"), /actions\/workflows\/purge-test-data\.yml$/);
+  assert.ok(body.querySelector("[data-device-reset]"));
   site.window.close();
 });
 

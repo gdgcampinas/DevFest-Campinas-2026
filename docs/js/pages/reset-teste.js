@@ -4,12 +4,5 @@
  */
 initLocalReset(document.getElementById("rtScreen"), {
   resultMarkupFn: localResetResultMarkup,
-  reset: () => resetLocalData({
-    prefix: "devfest-campinas-2026:",
-    localStorage: window.localStorage,
-    sessionStorage: window.sessionStorage,
-    indexedDB: window.indexedDB,
-    caches: window.caches,
-    serviceWorker: navigator.serviceWorker,
-  }),
+  reset: () => resetBrowserData(),
 });

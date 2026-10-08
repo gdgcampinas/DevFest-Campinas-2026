@@ -7,6 +7,7 @@
  *                       só aparece quando a palestra tem concurso (Coding Jam)
  *   ADMIN_OVERVIEW      os cartões da visão geral, na ordem: `id` (liga ao desenhista em features/admin-overview-cards.js), `title` e o ritmo de cada um (`refreshMs`: redesenha; `intervalMs`: relê o banco/intermediário;
  *                       cada leitura conta no plano grátis do Firebase, por isso os intervalos são folgados)
+ *   ADMIN_BEFORE_EVENT  a seção "Antes do evento": a limpeza do BANCO (roda no GitHub, com as travas dela) e a limpeza deste APARELHO; só texto e endereço
  *   ADMIN_TALKS         ritmo da seção Palestras (`refreshMs`: de quanto em quanto tempo ela confere se a palestra da trilha mudou)
  * Todas as telas são internas (fora do menu e do sitemap, sem versão /DEV/): abrem na raiz. As de moderação pedem login Google de moderador.
  */
@@ -17,13 +18,14 @@ const ADMIN_SECTIONS = [
   { id: "telao", title: "Telão" },
   { id: "fotos", title: "Fotos" },
   { id: "palestras", title: "Palestras" },
+  { id: "moderadores", title: "Moderadores" },
+  { id: "antes-do-evento", title: "Antes do evento" },
   { id: "atalhos", title: "Atalhos" },
 ];
 
 const ADMIN_SHORTCUTS = [
   { id: "mural", title: "Mural do telão", description: "A tela do LED. Abra no computador do telão, em tela cheia (Chrome em modo quiosque).", href: "mural.html" },
   { id: "sorteio", title: "Sorteio (telão)", description: "A roda do sorteio em modo telão, no notebook do palco.", href: "DEV/sorteio.html?telao=1" },
-  { id: "reset-teste", title: "Limpar dados de teste", description: "Zera os dados de teste de um aparelho (check-ins, favoritos e cache). Use antes do evento, nos aparelhos em que o site foi testado.", href: "reset-teste.html" },
 ];
 
 const ADMIN_TRACK_LINKS = [
@@ -41,6 +43,30 @@ const ADMIN_OVERVIEW = [
 ];
 
 const ADMIN_TALKS = { refreshMs: 30000 };
+
+const ADMIN_BEFORE_EVENT = {
+  confirmMs: 5000,
+  purge: {
+    title: "Limpar o banco (dados de teste)",
+    description: "Apaga os dados de teste do Firebase pra o evento começar do zero. Roda no GitHub, com as travas de segurança dele (o navegador não tem permissão pra apagar isso, de propósito).",
+    clears: ["Check-ins, avaliações das palestras e do evento", "Perguntas e votos", "Cadastros e sorteios do sorteio", "Projetos, votos e pódio do Coding Jam"],
+    keeps: "Nunca toca nos inscritos do Sympla nem no contador de inscritos.",
+    steps: ["Toque em \"Abrir a limpeza no GitHub\" e em \"Run workflow\".", "Primeiro rode com o \"Modo teste\" LIGADO: só conta o que seria apagado.", "Conferindo o resumo, rode de novo: desmarque o modo teste e digite APAGAR."],
+    lock: "A limpeza se recusa a rodar depois que o evento começa (os dados passam a ser reais).",
+    workflowUrl: "https://github.com/gdgcampinas/DevFest-Campinas-2026/actions/workflows/purge-test-data.yml",
+    buttonLabel: "Abrir a limpeza no GitHub",
+  },
+  device: {
+    title: "Limpar este aparelho",
+    description: "Zera os dados de teste deste celular ou computador: check-ins, avaliações, nome, favoritos, caches e o login. Use nos aparelhos em que o site foi testado.",
+    warning: "Você será desconectado do admin e do site neste aparelho.",
+    buttonLabel: "Limpar este aparelho",
+    confirmLabel: "Toque de novo para CONFIRMAR",
+    doneText: "Pronto. Este aparelho está limpo. Entre de novo com o Google para continuar.",
+  },
+};
+
+const adminBeforeEventRepository = createRepository(ADMIN_BEFORE_EVENT);
 
 const adminSectionsRepository = createRepository(ADMIN_SECTIONS, { page: ADMIN_PAGE, get: id => ADMIN_SECTIONS.find(section => section.id === id) });
 const adminShortcutsRepository = createRepository(ADMIN_SHORTCUTS);

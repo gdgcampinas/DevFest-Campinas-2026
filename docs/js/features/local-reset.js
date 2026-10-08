@@ -47,6 +47,11 @@ async function resetLocalData({ prefix, localStorage, sessionStorage, indexedDB,
   };
 }
 
+/** Limpa ESTE navegador com as APIs reais da janela (a página interna reset-teste.html e a seção "Antes do evento" do admin usam a mesma). `win` e `nav` são injetáveis. */
+function resetBrowserData(win = window, nav = navigator) {
+  return resetLocalData({ prefix: "devfest-campinas-2026:", localStorage: win.localStorage, sessionStorage: win.sessionStorage, indexedDB: win.indexedDB, caches: win.caches, serviceWorker: nav.serviceWorker });
+}
+
 /** Liga o botão da página: pede confirmação inline, limpa e mostra o resultado. */
 function initLocalReset(rootEl, { reset, resultMarkupFn }) {
   const button = rootEl.querySelector("[data-reset-run]");

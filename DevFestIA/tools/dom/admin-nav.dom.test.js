@@ -16,8 +16,8 @@ test("o menu tem uma seção por item do dado, na ordem, com o id depois do #", 
   const site = boot();
   site.get("mountAdminNav")();
   const links = [...site.document.querySelectorAll("#adminNav a")];
-  assert.deepEqual(links.map(link => textOf(link)), ["Visão geral", "Telão", "Fotos", "Palestras", "Atalhos"]);
-  assert.deepEqual(links.map(link => link.getAttribute("href")), ["admin.html#visao-geral", "admin.html#telao", "admin.html#fotos", "admin.html#palestras", "admin.html#atalhos"]);
+  assert.deepEqual(links.map(link => textOf(link)), ["Visão geral", "Telão", "Fotos", "Palestras", "Moderadores", "Antes do evento", "Atalhos"]);
+  assert.deepEqual(links.map(link => link.getAttribute("href")), ["admin.html#visao-geral", "admin.html#telao", "admin.html#fotos", "admin.html#palestras", "admin.html#moderadores", "admin.html#antes-do-evento", "admin.html#atalhos"]);
   site.window.close();
 });
 
