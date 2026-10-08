@@ -8,7 +8,8 @@ import { createAlbumService, AlbumError } from "./album-service.mjs";
 import { createAlbumHandler } from "./album-handler.mjs";
 import { createMemoryCache } from "./memory-cache.mjs";
 import { createGooglePhotosRepository } from "./google-photos-repository.mjs";
-import { createWorkerCache } from "./worker.mjs";
+import { createWorkerCache, withEdgeCache } from "./worker.mjs";
+import { createMediaService, releaseSource } from "./media-service.mjs";
 import { parseAlbumPage } from "./parse-album.mjs";
 import { albumPage } from "./album-fixture.mjs";
 
@@ -206,4 +207,55 @@ test("cache do Worker: guarda e devolve pelo contrato get/set da Cloudflare", as
   assert.equal(await cache.get("ao-vivo"), null);
   await cache.set("ao-vivo", { id: "ao-vivo", count: 3 });
   assert.deepEqual(await cache.get("ao-vivo"), { id: "ao-vivo", count: 3 });
+});
+
+// ---------- /media: clipes de vídeo do mural ----------
+const bytes = new Uint8Array([0, 0, 0, 24, 102, 116, 121, 112]);
+function mediaHandler({ files = { "devfest-2025-abertura.mp4": bytes }, failing = false } = {}) {
+  const requested = [];
+  const media = createMediaService({ source: releaseSource({ baseUrl: "https://github.test/releases/download/v1/", fetchFn: async (url, options) => {
+    requested.push([url, options.redirect]);
+    if (failing) throw new Error("rede");
+    const name = url.split("/").pop();
+    return files[name] ? new Response(files[name], { status: 200, headers: { "content-length": String(files[name].length), "content-type": "application/octet-stream" } }) : new Response("nada", { status: 404 });
+  } }) });
+  return { handler: createAlbumHandler({ service: setup().service, media, allowedOrigins: [ORIGIN] }), requested };
+}
+
+test("HTTP /media: entrega o clipe com tipo de vídeo, cache longo e CORS só pros endereços permitidos (o GitHub não manda CORS, por isso o intermediário)", async () => {
+  const { handler, requested } = mediaHandler();
+  const response = await get(handler, "/media/devfest-2025-abertura.mp4", ORIGIN);
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("content-type"), "video/mp4", "o tipo certo, não o octet-stream do GitHub");
+  assert.match(response.headers.get("cache-control"), /max-age=86400/);
+  assert.equal(response.headers.get("content-length"), String(bytes.length));
+  assert.equal(response.headers.get("access-control-allow-origin"), ORIGIN);
+  assert.deepEqual([...new Uint8Array(await response.arrayBuffer())], [...bytes]);
+  assert.deepEqual(requested, [["https://github.test/releases/download/v1/devfest-2025-abertura.mp4", "follow"]]);
+  assert.equal((await get(handler, "/media/devfest-2025-abertura.mp4", "https://outro-site.com")).headers.get("access-control-allow-origin"), null);
+});
+
+test("HTTP /media: só nomes .mp4 simples (nada de caminho nem '..'); arquivo que não existe é 404; GitHub fora do ar é 502; sem fonte configurada os vídeos estão desligados", async () => {
+  const { handler, requested } = mediaHandler();
+  for (const path of ["/media/..%2F..%2Fsegredo.mp4", "/media/Abertura.mp4", "/media/clipe.mov", "/media/.mp4", "/media/a/b.mp4", "/media/__proto__"]) {
+    assert.equal((await get(handler, path)).status, 404, path);
+  }
+  assert.equal(requested.length, 0, "nome inválido nem chega ao GitHub");
+  assert.equal((await get(handler, "/media/nao-existe.mp4")).status, 404);
+  assert.equal((await get(mediaHandler({ failing: true }).handler, "/media/devfest-2025-abertura.mp4")).status, 502);
+  const off = createAlbumHandler({ service: setup().service, media: createMediaService({ source: releaseSource({ baseUrl: "" }) }), allowedOrigins: [ORIGIN] });
+  assert.equal((await get(off, "/media/devfest-2025-abertura.mp4")).status, 404);
+  const none = createAlbumHandler({ service: setup().service, allowedOrigins: [ORIGIN] });
+  assert.equal((await get(none, "/media/devfest-2025-abertura.mp4")).status, 404, "handler sem media também não quebra");
+  assert.equal((await handler(new Request("https://proxy.test/media/devfest-2025-abertura.mp4", { method: "POST" }))).status, 405);
+});
+
+test("cache da borda: o GitHub é consultado uma vez e os pedidos seguintes saem do cache", async () => {
+  let upstream = 0;
+  const store = new Map();
+  const cacheStorage = { match: async key => store.get(key.url)?.clone(), put: async (key, response) => { store.set(key.url, response); } };
+  const media = withEdgeCache({ get: async () => { upstream++; return new Response("corpo", { headers: { "content-length": "5" } }); } }, cacheStorage);
+  assert.equal(await (await media.get("a.mp4")).text(), "corpo");
+  assert.equal(await (await media.get("a.mp4")).text(), "corpo");
+  assert.equal(upstream, 1);
 });

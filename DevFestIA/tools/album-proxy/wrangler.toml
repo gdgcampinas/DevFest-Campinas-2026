@@ -2,3 +2,7 @@
 name = "devfest-album-proxy"
 main = "worker.mjs"
 compatibility_date = "2026-01-01"
+
+# Onde ficam os clipes de vídeo do mural (anexos de uma release do GitHub; público, nada secreto). Rota /media/<arquivo.mp4>. Vazio = vídeos desligados.
+[vars]
+MEDIA_BASE = "https://github.com/gdgcampinas/DevFest-Campinas-2026/releases/download/mural-video-2025/"
