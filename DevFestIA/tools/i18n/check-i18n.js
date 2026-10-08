@@ -20,7 +20,7 @@ const fail = message => errors.push(message);
 
 const KEEP_AS_IS = new Set(["Coding Jam", "Antigravity", "Antigravity IDE", "Gemini", "Meetup", "Instagram", "LinkedIn", "Linktree", "VIP", "GDG Campinas", "DevFest Campinas", "EloTech 2026", "gdgcampinascontato@gmail.com", "Campinas, SP", "Sympla", "Links", "Networking", "Workshop", "Front-end / Back-end / Data", "Front/Back/Data", "Mobile / Agile", "Mobile/Agile", "Google Sans"]);
 // Campos dos dados que não são texto de tela (ids, endereços, cores, arquivos, textos já gerados por t()).
-const SKIP_KEYS = new Set(["id", "noteIcon", "url", "href", "color", "trackColor", "icon", "date", "start", "end", "timezone", "utcOffset", "image", "logo", "photo", "file", "youtubeId", "tier", "shape", "endpoint", "provider", "alt", "waitlistUrl", "price", "value", "min", "max"]);
+const SKIP_KEYS = new Set(["id", "noteIcon", "url", "href", "color", "trackColor", "icon", "date", "start", "end", "timezone", "utcOffset", "image", "logo", "photo", "file", "youtubeId", "tier", "shape", "endpoint", "provider", "alt", "waitlistUrl", "price", "value", "min", "max", "moment"]);
 const isTechnical = value => /^(https?:|mailto:|var\(|assets\/|js\/|#)/.test(value) || /^[\d\s+.,%/-]+$/.test(value);
 
 // ---------- 1 e 2: chaves usadas no código ----------
