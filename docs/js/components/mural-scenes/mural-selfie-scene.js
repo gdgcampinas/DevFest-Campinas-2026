@@ -9,7 +9,7 @@ function createSelfieScene({ preload, mascotUrl, logoSrc, title, subtitle }) {
     prepare: () => preload(mascotUrl),
     render(_prepared, params) {
       const hashtag = params.hashtag ? `<p class="ms-selfie-tag">${escapeHtml(params.hashtag)}</p>` : "";
-      return { markup: `<section class="ms ms-selfie"><div class="ms-selfie-brand"><img class="ms-selfie-logo" src="${escapeHtml(logoSrc)}" alt=""><h2 class="ms-selfie-title">${escapeHtml(title)}</h2><p class="ms-selfie-date">${escapeHtml(subtitle)}</p>${hashtag}<p class="ms-selfie-hint">${escapeHtml(params.hint ?? "")}</p></div><img class="ms-selfie-mascot" src="${escapeHtml(mascotUrl)}" alt=""></section>` };
+      return { markup: `<section class="ms ms-selfie"><div class="ms-selfie-brand"><img class="ms-selfie-logo" src="${escapeHtml(logoSrc)}" alt=""><h2 class="ms-selfie-title">${escapeHtml(title)}</h2><p class="ms-selfie-date">${escapeHtml(subtitle)}</p>${hashtag}${params.hint ? `<p class="ms-selfie-hint">${escapeHtml(params.hint)}</p>` : ""}</div><img class="ms-selfie-mascot" src="${escapeHtml(mascotUrl)}" alt=""></section>` };
     },
   };
 }

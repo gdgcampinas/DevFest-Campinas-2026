@@ -322,6 +322,7 @@ test("selfie: cartão-postal com logo, nome e data grandes, hashtag só quando e
   const plain = html(scene.render(null, { hint: "Tire sua foto aqui" }).markup);
   assert.match(textOf(plain), /DevFest Campinas 2026.*28 de novembro de 2026.*Tire sua foto aqui/);
   assert.equal(plain.querySelector(".ms-selfie-tag"), null, "sem hashtag definida não aparece nada");
+  assert.equal(html(scene.render(null, {}).markup).querySelector(".ms-selfie-hint"), null, "sem frase de apoio não sobra parágrafo vazio");
   assert.match(textOf(html(scene.render(null, { hashtag: "#DevFestCampinas" }).markup)), /#DevFestCampinas/);
   await assert.rejects(g("createSelfieScene")({ preload: async () => { throw new Error("404"); }, mascotUrl: "f.png", logoSrc: "l", title: "", subtitle: "" }).prepare());
 });
