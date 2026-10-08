@@ -14,7 +14,7 @@ function initMuralControlPanel(rootEl, { repository, rules, limits, scenes, temp
   let stopListening = () => {};
   let cancelRefresh = () => {};
   let cancelConfirm = () => {};
-  const ui = { kind: "info", noticeMinutes: limits.noticeMinutes[1] ?? limits.noticeMinutes[0], holdMinutes: limits.holdMinutes[1] ?? limits.holdMinutes[0], emergencyConfirm: false, message: "" };
+  const ui = { kind: "info", noticeMinutes: limits.noticeDefaultMinutes, holdMinutes: limits.holdDefaultMinutes, emergencyConfirm: false, message: "" };
   const sceneLabel = id => scenes.find(scene => scene.id === id)?.label ?? id;
   const field = attr => rootEl.querySelector(`[${attr}]`);
 

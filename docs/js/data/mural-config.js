@@ -15,7 +15,7 @@
  *                        do último pro primeiro), `countUpMs`/`countUpStepMs` (número que sobe). Só opacity e transform (roda na placa de vídeo, não pesa em computador fraco)
  *   holdCheckMs          com o rodízio parado numa cena (fixar, pausar, emergência) de quanto em quanto tempo o motor olha se o prazo acabou (e renova o prazo do vigia)
  *   control              controle remoto do mural (features/mural-control.js): `docKey` (documento `mural-control/<docKey>`), limites de aviso (`maxNotices`, `maxTextLength`, `maxEmergencyLength`),
- *                        as durações que o moderador escolhe (`noticeMinutes`, `holdMinutes`) e o que o mural faz com o aviso novo (`emergencyScene`, `noticeInterrupt`)
+ *                        as durações que o moderador escolhe (`noticeMinutes`, `holdMinutes`) e a que já vem marcada (`noticeDefaultMinutes`, `holdDefaultMinutes`) e o que o mural faz com o aviso novo (`emergencyScene`, `noticeInterrupt`)
  *   video                vídeos (data/mural-videos.js): `path` = rota do intermediário que entrega os clipes (junto de `albums.proxyUrl`; `?videos=<endereço>` na URL troca só pra teste), `cacheName` = nome
  *                        no Cache Storage do navegador, `retryMs` = quanto esperar pra tentar de novo um clipe que falhou, `slackSeconds` = folga somada à duração do clipe
  *   albums               álbuns do Google Fotos (data/mural-albums.js): `proxyUrl` = endereço do intermediário (DevFestIA/tools/album-proxy, publicado como Cloudflare Worker na conta do GDG; VAZIO = álbuns desligados, o mural segue
@@ -58,8 +58,10 @@ const MURAL_CONFIG = {
     maxNotices: 5,
     maxTextLength: 140,
     maxEmergencyLength: 160,
-    noticeMinutes: [2, 5, 15, 60],
+    noticeMinutes: [1, 2, 5, 15, 60],
+    noticeDefaultMinutes: 5,
     holdMinutes: [5, 15, 30, 60],
+    holdDefaultMinutes: 15,
     emergencyScene: "emergencia",
     noticeInterrupt: { sceneId: "aviso", priority: 90, ttlMs: 60000, immediate: true },
   },

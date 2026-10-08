@@ -49,7 +49,7 @@ test("entrar: mostra a conta, o estado normal do telão, as frases prontas, as d
   assert.match(textOf(rootEl), /mod@gmail\.com/);
   assert.match(textOf(rootEl.querySelector("[data-slot=status]")), /Telão normal · rodando sozinho · 0 aviso\(s\) no ar/);
   assert.match(textOf(rootEl), /A próxima palestra começa em 5 minutos/);
-  assert.deepEqual([...rootEl.querySelectorAll("[data-notice-minutes]")].map(button => textOf(button)), ["2 min", "5 min", "15 min", "1 h"]);
+  assert.deepEqual([...rootEl.querySelectorAll("[data-notice-minutes]")].map(button => textOf(button)), ["1 min", "2 min", "5 min", "15 min", "1 h"]);
   assert.deepEqual([...rootEl.querySelectorAll("[data-hold-scene] option")].map(option => option.textContent), ["Agora e próximas", "Dicas"]);
   assert.equal(rootEl.querySelector("[data-notice-text]").getAttribute("maxlength"), String(limits.maxTextLength));
 });

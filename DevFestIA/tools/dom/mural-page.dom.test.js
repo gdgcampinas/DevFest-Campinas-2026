@@ -20,7 +20,7 @@ const PAGE = fs.readFileSync(path.join(DOCS, "js", "pages", "mural.js"), "utf8")
 const BODY = `<!doctype html><html><body><div class="mural-backdrop"><div class="mural-stage" id="muralStage"><main id="muralContent"></main><footer id="muralFooter"></footer><aside id="muralDiag" hidden></aside></div></div></body></html>`;
 
 /** Sobe a página com tudo de fora substituído. `search` = parâmetros de URL; `overrides` ajusta o que pode mudar (rede, QR, registered). */
-function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => true, registered = { total: 120 }, initialPodium = null, albums = null }) {
+function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => true, registered = { total: 120 }, initialPodium = null, albums = null, initialControl = null }) {
   const contestListeners = new Map();
   const hiddenListeners = new Map();
   const controlListeners = new Map();
@@ -39,7 +39,7 @@ function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => t
     firebaseClient: { ensureAnonymousUid: async () => "uid" },
     eventStatsRepository: { get: async () => registered },
     muralHiddenRepository: { listen: (key, onNext) => { hiddenListeners.set(key, onNext); onNext(null); return () => hiddenListeners.delete(key); } },
-    muralControlRepository: { listen: (key, onNext) => { controlListeners.set(key, onNext); onNext(null); return () => controlListeners.delete(key); } },
+    muralControlRepository: { listen: (key, onNext) => { controlListeners.set(key, onNext); onNext(initialControl); return () => controlListeners.delete(key); } },
     contestResultsRepository: { listen: (key, onNext) => { contestListeners.set(key, onNext); onNext(initialPodium ? { podium: initialPodium } : null); return () => contestListeners.delete(key); } },
   };
   const site = loadSite({ scripts: SCRIPTS, html: BODY, url: `http://localhost/mural.html?lineup=1&demo=${demo}&${search}`, globals });
@@ -380,3 +380,15 @@ test("vídeo: hoje toca SEMPRE mudo (o som foi desligado pelo Renato), e as cena
   talk.site.window.close();
 });
 
+
+test("aviso que já estava no ar quando o mural abre (como depois de uma recarga) aparece na hora, e um pedido de recarregar não tira o aviso do documento", async () => {
+  const notice = { id: "n1", text: "Sala B começa em 5 minutos", kind: "info", until: Date.now() + 60000 };
+  const page = boot({ search: "cenas=dicas,aviso", initialControl: control({ notices: [notice], reload: 5 }) });
+  await waitFor(() => page.active() === "aviso", { timeout: 3000 });
+  assert.match(page.activeText(), /Sala B começa em 5 minutos/);
+  page.controlListeners.get("current")(control({ notices: [notice], reload: 6 })); // o moderador pede recarga: o aviso continua no documento
+  await new Promise(resolve => setTimeout(resolve, 300));
+  const saved = JSON.parse(page.site.window.sessionStorage.getItem("devfest-campinas-2026:mural"));
+  assert.equal(saved.lastReason, "remote-reload");
+  page.site.window.close();
+});
