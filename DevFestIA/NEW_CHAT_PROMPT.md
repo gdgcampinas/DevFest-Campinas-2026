@@ -73,33 +73,32 @@ verificado, o que depende dele. Armadilhas e como testar: seção "Como
 trabalhar e testar aqui" do handoff (bump de ?v=N, cache do
 schedule.dev.js, painel do app sem service worker, etc.).
 
-ESTADO EM 2026-10-07, fim da sessão 12 (detalhes no handoff, seções "Sessão 12" e "Sessão 11" no topo)
+ESTADO EM 2026-10-08, fim da sessão 12 (detalhes no handoff, seção "FIM DA SESSÃO 12" no topo)
 Site de 8 páginas (Principal, Grade, Palestrantes, Ingressos, Time — PÚBLICO em PROD, 23 pessoas reais, 17 bios —, Patrocínio, Sorteio — atrás de `devOnly`, só em DEV —, Código de Conduta);
-em PROD, Grade, Palestrantes e Patrocínio abrem mas mostram "será revelado em breve" no lugar do conteúdo mock (line-up, patrocinadores, comunidades, valores), que só aparece em `/DEV/<página>` ou
-`?lineup=1`. Há também o quiz e ferramentas internas, que NÃO têm versão `/DEV/` (use na raiz): quadro da sala (`checkin-display.html?trilha=<id>`), moderação (`moderacao.html?trilha=<id>`) e
-`reset-teste.html`. No ar (main = development). Firebase (Firestore + Auth, plano Spark) guarda check-ins, avaliações, perguntas, votos, o Sorteio e o concurso do Coding Jam. Inglês pronto (`?lang=en`).
-Sorteio fechado no código (modo telão, roda de 24, Ausente, Resetar = nova rodada, papel picado, fanfarra, QR que muda e 1 ingresso = 1 cadastro atrás de interruptores hoje DESLIGADOS). Trava de
-horário das perguntas DESLIGADA de propósito (teste em DEV): LIGAR antes do evento.
-**Sessão 11:** (1) o CODING JAM entrou na grade como card de destaque (`highlight: "codejam"`, mock na trilha IA às 10:30, "Mão na massa", "Recomendamos usar Antigravity, Antigravity IDE ou Gemini",
-perguntas ao vivo desligadas, avaliação mantida) e tem CONCURSO feito: quem tem check-in cadastra o projeto, a turma vota (um voto por check-in), o moderador publica o pódio (modal, cards, quadro da sala com
-papel picado). As regras do Firestore do concurso JÁ estão publicadas e conferidas contra o banco real; o lado do moderador (login Google) ainda não foi testado pelo Renato. (2) Ideias reorganizadas:
-descartadas nota média pública, credencial digital, mentorias, mural da hashtag, área administrativa, votação das salas e a página `codejam.html` (o envio é no Google). (3) MURAL DO TELÃO DECIDIDO.
-**Sessão 12:** o MURAL DO TELÃO, FASE 1, está FEITO e no ar (`mural.html`, interno, sem versão `/DEV/`: abra na raiz com `?lineup=1`). Motor autônomo com vigia, cena isolada, rede por sonda, escutas que reabrem e
-cena de reserva, 14 cenas por dado (agora e próximas, fotos, patrocinadores, QR, inscritos, dicas, fênix estática, pódio do Coding Jam ao vivo, contagem, obrigado), palco que serve a qualquer proporção
-(testado em 16:9, 3:1, 4:3 e vertical) e cenas "rolando agora" (foto do palestrante), álbuns do Google Fotos (5 modelos, foto nova em destaque, tela do moderador `mural-fotos.html` pra esconder foto, coleção `mural-hidden` com regras novas a colar; intermediário em `DevFestIA/tools/album-proxy/` ainda NÃO publicado: falta o Renato fazer o deploy no Cloudflare), "selfie" (painel de foto) e artes de design que se adaptam a qualquer formato de telão (formato AINDA desconhecido), animações por dado (troca em sequência, zoom lento nas fotos, cartões em fila, pódio 3º, 2º, 1º, número que sobe; ignora "Reduzir movimento"). Testes: `tools/mural/*.test.js` (76, puros, no CI), `tools/dom/mural-*.dom.test.js` (88, no CI, com relógio falso e 8 h de resistência). Detalhes e parâmetros
-(`?tela=`, `?proporcao=`, `?cenas=`, `?diag=1`, `?demo=`, `?ensaio=0`) no PROJECT_CONTEXT, "Mural do telão de LED", subseção "Implementação da Fase 1".
+em PROD, Grade, Palestrantes e Patrocínio abrem mas mostram "será revelado em breve" no lugar do conteúdo mock, que só aparece em `/DEV/<página>` ou `?lineup=1`. Ferramentas internas, SEM versão `/DEV/` (use na raiz):
+quadro da sala (`checkin-display.html?trilha=<id>`), moderação de perguntas (`moderacao.html?trilha=<id>`), `reset-teste.html`, **mural do telão** (`mural.html`) e **moderação das fotos do mural** (`mural-fotos.html?album=ao-vivo`).
+Git: `development` = `main` = `e6a8986`, árvore limpa, CI verde (Validar com 298 testes de tela + 140 puros). Firebase (Firestore + Auth, plano Spark) guarda check-ins, avaliações, perguntas, votos, Sorteio, concurso do
+Coding Jam e as fotos escondidas do mural (`mural-hidden`, regras já publicadas). Inglês pronto (`?lang=en`). Sorteio fechado no código atrás de interruptores DESLIGADOS; trava de horário das perguntas DESLIGADA de propósito: LIGAR antes do evento.
+**Sessão 12 (resumo):** (1) MURAL DO TELÃO completo: motor autônomo que se corrige sozinho (vigia, cena isolada, sonda de rede, escutas que reabrem, reserva), cenas por dado (agora e próximas, "rolando agora" com foto do
+palestrante, fotos, patrocinadores, QR, inscritos, dicas, fênix, pódio do Coding Jam ao vivo, contagem, obrigado, selfie, artes de design que se adaptam a QUALQUER formato de telão: o formato AINDA é desconhecido),
+animações por dado (ignora "Reduzir movimento"), palco que serve a qualquer proporção (testado em 16:9, 3:1, 4:3 e vertical). (2) ÁLBUNS DO GOOGLE FOTOS: o iframe NÃO funciona, mas a página de compartilhamento pode ser lida; um
+intermediário próprio (`DevFestIA/tools/album-proxy/`) roda como **Cloudflare Worker** `https://devfest-album-proxy.gdgcampinas-devfest.workers.dev` (conta do GDG; segredo `ALBUMS` com 4 álbuns: `ao-vivo` colaborativo, onde as
+pessoas do evento adicionam fotos, `elotech-agibank`, `devfest-2025`, `gdg-talks-bosch`; LIGADO em produção via `MURAL_CONFIG.albums.proxyUrl`). 5 modelos de exibição (foto única, colagem, faixa de retratos, polaroides, destaque + 3;
+`auto` escolhe pela orientação), foto nova em destaque ("Nova foto da galera", máx. 1 a cada 15 s), e moderação (esconder foto: `mural-fotos.html`, login Google, coleção `mural-hidden`). Atraso medido: Google ~10 s, mural ~45 s típico
+(Worker 45 s + mural 45 s). (3) CI ganhou o passo "Test the pure logic". (4) Plugin oficial `cloudflare@cloudflare` instalado no Claude Code (opcional autorizar o MCP com `/mcp`). (5) Diretiva nova: protocolo de novo chat em ~95% do contexto.
+Detalhes técnicos: PROJECT_CONTEXT, "Mural do telão de LED" e "Álbuns do Google Fotos"; operação do Worker lá também.
 
-PRÓXIMO TRABALHO (ver "Sessão 12" no handoff e "Mural do telão de LED" no PROJECT_CONTEXT)
-1) **Mural, o que depende do Renato:** (a) abrir `mural.html` (links no handoff) e dizer o que ajustar no visual e no tempo de cada cena; (b) mandar logos em alta e cotas reais dos patrocinadores, originais em alta das fotos de
-2025 (hoje 900 px, vão pixelar no LED), texto de Wi-Fi, estacionamento e comida (as dicas estão `enabled: false`), a proporção/resolução do telão quando souber, e se o sorteio usa o mesmo telão; (c) o ENSAIO de 1 h ou mais no
-computador e no telão de verdade, desligando o Wi-Fi no meio (checklist no PROJECT_CONTEXT); (d) dar OK pra incluir `tools/mural/`, `tools/raffle/`, `tools/contest/` e `tools/room/` no `validate.yml`.
-2) **Fase 2 do mural (lapidar com o Renato):** foto ao vivo (SEM aprovação antes, qualquer moderador tira do ar, sem limite rígido por pessoa, nome opcional, exportar zip pro Google Fotos, módulo
-desligável; caminho em aberto: nosso site ou álbum do Google Fotos lido por intermediário, decidir com um álbum de TESTE que o Renato vai mandar), aviso e controle remoto pelo celular. O motor já tem o contrato
-de fonte ao vivo (`open(onData, onError)`) e a cena é só um tipo novo no registro de `pages/mural.js`. O iframe do álbum do Google Fotos NÃO funciona. Fase 3: fênix animada (arquivo do Renato).
+PRÓXIMO TRABALHO (ver "FIM DA SESSÃO 12" no handoff)
+1) **O que depende do Renato, nesta ordem:** (a) testar o lado do moderador das fotos (a IA não consegue, exige o login Google): abrir `mural-fotos.html?album=ao-vivo`, entrar com `gdgcampinascontato@gmail.com`, "Tirar do ar" numa foto com o mural aberto;
+(b) dizer "pode" para baixar o atraso da foto nova de 45 s para 20 s (a IA ajusta `album-service.mjs` e `data/mural-albums.js`; o `npx wrangler deploy` precisa ser rodado, pelo Renato ou autorizado); (c) mandar mais álbuns (link + nome; a IA faz o código, o
+Renato atualiza o segredo com `npx wrangler secret put ALBUMS` e o JSON INTEIRO); (d) hashtag do selfie, logos em alta e cotas dos patrocinadores, fotos reais dos palestrantes, Wi-Fi/estacionamento/comida (dicas `enabled: false`), formato real do telão
+e o ENSAIO de 1 h ou mais no hardware com o Wi-Fi desligado no meio (checklist no PROJECT_CONTEXT); (e) deixar um moderador com `mural-fotos.html` aberto durante o evento.
+2) **Resto da Fase 2 do mural:** aviso ao vivo pelo celular (moderador escreve, aparece com tempo de vida) e controle remoto (recarregar, fixar cena, pausar). O motor já tem o contrato de fonte ao vivo e os bindings; é um tipo novo de cena e uma tela de moderador.
+Fase 3: fênix animada (arquivo do Renato).
 3) Pendências do Renato do Coding Jam: horário/sala/prêmios reais (hoje mock), confirmar que conta como workshop obrigatório do e-mail dos organizadores, acesso de organizador no codingjam.dev (mensagem pra
-Christina Lin no LinkedIn rascunhada), testar o lado do moderador, passar os 6 e-mails dos moderadores (1 por trilha + 2 reservas) e confirmar `gdgcampinascontato@gmail.com`.
+Christina Lin no LinkedIn rascunhada), testar o lado do moderador do concurso, passar os 6 e-mails dos moderadores (1 por trilha + 2 reservas) e confirmar `gdgcampinascontato@gmail.com`.
 4) Sorteio: o Renato testar o lado do moderador; decisões abertas (horários de abrir/fechar o cadastro, prêmios, quando tirar o `devOnly`). Corrigir o texto "aguarde até 10 minutos" do cadastro por ingresso
-(pequeno, o Claude faz). (os testes de `raffle/`, `contest/`, `mural/` e `album-proxy/` já rodam no CI desde 2026-10-08.)
+(pequeno, o Claude faz).
 5) Time: 6 mini-bios (Carlos, Débora, Laydianne, Lorenzo, Felipe, João Paulo), LinkedIn da Laydianne e do Davi, cargo dos 4 organizadores. Sympla: o sync roda a cada ~4,4 h e leu 0 inscritos (o Renato
 conferir o painel). Outras frentes: dados reais do evento, mapa do local, cartão "Eu vou!" com a Minha agenda, certificado (depois do evento), ES/FR.
 
@@ -115,6 +114,10 @@ ensaio geral com o notebook do telão do sorteio (tomada, sem repouso, áudio HD
 Quando houver inscrições: conferir o resumo do "🎫 Sincronizar Sympla" e ligar `registrationGate` (só no `schedule.js`).
 
 ARMADILHAS (leia "Como trabalhar e testar aqui" no handoff antes de agir)
+NOVAS (sessão 12): o repositório é PÚBLICO e o link de um álbum do Google Fotos dá acesso a ele: NUNCA escrever link de álbum em arquivo (nem handoff); varrer com `grep -rl` antes de commitar. `wrangler secret put ALBUMS` troca o valor INTEIRO;
+`wrangler deploy` só atualiza código; mudar o subdomínio `workers.dev` quebra o endereço antigo. Fotos do Google abertas de `http://localhost` dão 429 (as páginas do mural têm `<meta name="referrer" content="no-referrer">`). No navegador do app a aba fica
+oculta e congela animações CSS: antes de screenshot rode `document.getAnimations().forEach(a => a.finish())`. `?ensaio=` fica guardado na aba: use `?ensaio=0` junto de `?demo=`. Heredoc de shell sem aspas expande crases: use `<<'EOF'`. Em teste de
+tela, array/objeto criado dentro do jsdom não é `deepEqual` do teste (use `[...x]` ou JSON). Em zsh `status` é só leitura. Várias pushes seguidos podem "falhar" o Pages por substituição: confira o mais novo.
 O HTML no GitHub Pages fica 10 min em cache: confira com curl o que está publicado. `?v=N` tem que ser igual em todas as páginas pra cada
 arquivo que o referencia. Regras do Firestore são coladas à mão no console (`pbcopy < DevFestIA/firebase/firestore.rules`; o Firebase CLI
 não está logado). Nunca renomear o workflow Validar sem antes o Promote ouvir o nome novo. Secrets nunca no chat. Sempre passar links
@@ -122,7 +125,7 @@ COMPLETOS ao Renato. Script externo fixo no `<head>` quebra a navegação dentro
 `gh run rerun <id> --failed`. NUNCA encadear `grep ... && git commit` sem checar o resultado dos testes (use `if ...; then commit; else ...`).
 `requestAnimationFrame` não dispara em aba oculta: nada crítico pode depender dele. As telas internas (moderação, quadro da sala, `reset-teste`, futuro `mural.html`) NÃO têm
 versão `/DEV/`: links na raiz. Testes de tela: `node --test DevFestIA/tools/dom/*.test.js` (em teste de tela use `waitFor` do `tools/lib/dom-harness.js` em vez de dormir; sleeps curtos falham
-em máquina carregada); puros: `node --test DevFestIA/tools/raffle/*.test.js DevFestIA/tools/contest/*.test.js DevFestIA/tools/room/*.test.js DevFestIA/tools/questions/questions.test.js`; regras (Java 21 instalado):
+em máquina carregada); puros (no CI): `node --test DevFestIA/tools/mural/*.test.js DevFestIA/tools/album-proxy/*.test.mjs DevFestIA/tools/raffle/*.test.js DevFestIA/tools/contest/*.test.js` e `DevFestIA/tools/room/*.test.js DevFestIA/tools/questions/questions.test.js`; regras (Java 21 instalado):
 `bash DevFestIA/tools/questions/run-rules-tests.sh` (porta 8085 livre).
 
 DIRETIVA DE CONTEXTO CHEIO
