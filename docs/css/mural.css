@@ -25,11 +25,12 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .mural-stage[data-framed="true"]{outline:2px dashed oklch(70% .02 260 / .45);outline-offset:6px}
 
 .mural-content{position:absolute;left:var(--m);right:var(--m);top:var(--m);bottom:calc(var(--m) + var(--footer-h))}
-.mural-scene{position:absolute;inset:0;animation:ms-in calc(var(--transition,.7s)) ease both}
-.mural-scene.is-leaving{animation:ms-out .5s ease both;pointer-events:none}
+/* troca em SEQUÊNCIA, nunca uma cena em cima da outra: a que sai some em .3 s e a que entra só começa depois disso (animation-delay) */
+.mural-scene{position:absolute;inset:0;animation:ms-in .45s ease .3s both}
+.mural-scene.is-leaving{animation:ms-out .3s ease both;pointer-events:none}
 @keyframes ms-in{from{opacity:0;transform:translateY(calc(var(--u) * 1.5))}to{opacity:1;transform:none}}
 @keyframes ms-out{from{opacity:1}to{opacity:0}}
-@media (prefers-reduced-motion:reduce){.mural-scene,.mural-scene.is-leaving{animation:none}}
+/* Sem @media (prefers-reduced-motion) de propósito: o mural é uma TV sem ninguém na frente; a configuração é de quem usa a própria tela (o papel picado também ignora). */
 
 .mural-footer{
   position:absolute;left:var(--m);right:var(--m);bottom:var(--m);height:var(--footer-h);
