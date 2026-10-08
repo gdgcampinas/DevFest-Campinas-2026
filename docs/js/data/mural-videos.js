@@ -3,8 +3,8 @@
  * ficam num anexo de release do GitHub e o intermediário (DevFestIA/tools/album-proxy, rota `/media/<arquivo>`) entrega com CORS pro mural, que baixa antes e guarda no navegador (features/video-cache.js).
  *   clips      cada clipe: `id`, `file`, `label` (etiqueta na tela), `seconds` (duração real, o tempo de tela), `fit`/`focus` (como encaixa em qualquer proporção de telão, igual às artes;
  *              padrão cover; um objeto por forma de tela: { default, ultrawide, wide, standard, tall })
- *   playlists  listas que as cenas pedem por nome (`params.playlist`): `clips` (ids, em ordem; cada vez que a cena volta toca o próximo) e `sound` (momentos da grade e fases do evento em que toca COM
- *              som; fora deles toca mudo, ver features/video-sound.js)
+ *   playlists  listas que as cenas pedem por nome (`params.playlist`): `clips` (ids, em ordem; cada vez que a cena volta toca o próximo) e `sound` (OPCIONAL: momentos da grade e fases do evento em que toca COM
+ *              som; sem ele, ou fora deles, toca mudo, ver features/video-sound.js; hoje desligado)
  */
 /** Os clipes são 2048 x 1080 (quase 1,9:1): preenchem 16:9 e 4:3 (cortam pouco dos lados) e aparecem inteiros no telão ultra largo e no vertical. */
 const VIDEO_FIT = { default: "cover", ultrawide: "contain", tall: "contain" };
@@ -24,7 +24,7 @@ const MURAL_VIDEO_CLIPS = [
 const MURAL_VIDEO_PLAYLISTS = {
   "devfest-2025": {
     clips: MURAL_VIDEO_CLIPS.map(clip => clip.id),
-    sound: { moments: ["lunch", "closing"], phases: ["before", "after"] },
+    // sem `sound`: o telão toca os vídeos SEMPRE MUDOS (decisão do Renato em 2026-10-08, o som não ficou bom). Pra voltar o som é só pôr aqui, ex.: sound: { moments: ["lunch"], phases: ["after"] }
   },
 };
 

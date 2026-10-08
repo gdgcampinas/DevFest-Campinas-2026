@@ -369,13 +369,14 @@ test("vídeo: com o endereço dos clipes (?videos=) baixa antes, entra no rodíz
   off.site.window.close();
 });
 
-test("vídeo: no almoço (momento da grade) toca com som, e as cenas de intervalo só existem no almoço e no encerramento", async () => {
+test("vídeo: hoje toca SEMPRE mudo (o som foi desligado pelo Renato), e as cenas de intervalo só existem no almoço e no encerramento", async () => {
   const lunch = boot({ search: "cenas=video-2025-intervalo&videos=https://media.test/", demo: "2026-11-28T12:30" });
   await waitFor(() => lunch.active() === "video-2025-intervalo", { timeout: 3000 });
-  assert.equal(lunch.document.querySelector(".mural-scene.is-active video").hasAttribute("muted"), false, "almoço: com som");
+  assert.equal(lunch.document.querySelector(".mural-scene.is-active video").hasAttribute("muted"), true, "mesmo no almoço: mudo");
   lunch.site.window.close();
   const talk = boot({ search: "cenas=video-2025-intervalo,dicas&videos=https://media.test/", demo: "2026-11-28T10:00" });
   await waitFor(() => talk.active() === "dicas");
   assert.equal(talk.document.querySelector('[data-scene="video-2025-intervalo"]'), null, "em palestra a cena de intervalo não entra");
   talk.site.window.close();
 });
+
