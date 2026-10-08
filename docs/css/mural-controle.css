@@ -1,0 +1,14 @@
+/* Tela do moderador do controle do mural (mural-controle.html), feita pro CELULAR: um cartão por tarefa, botões grandes; o resto (título, login, campos, botões) é o do styles.css (.mod) e css/mod-tools.css. */
+.mc-card{display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid var(--card-border);border-radius:14px;background:var(--card-a)}
+.mc-card--danger{border-color:var(--google-red)}
+.mc-card .mod-section-title,.mc-card .mod-hint{margin:0}
+.mc-chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.mc-chips .chip-btn,.mc-card>.chip-btn{min-height:44px;justify-content:center}
+.mc-status{padding:10px 14px;border:1px solid var(--card-border);border-radius:12px}
+.mc-status.is-emergency{border-color:var(--google-red);color:var(--google-red);font-weight:800}
+.mc-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.mc-notice{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--card-border);border-radius:10px;font:600 15px/1.35 var(--font-body)}
+.mc-notice.is-alert{border-color:var(--google-yellow)}
+.mc-notice small{display:block;color:var(--muted);font-weight:500}
+.mc-emergency-now{margin:0;padding:10px 12px;border-radius:10px;background:oklch(40% .18 27);color:#fff;font:700 16px/1.35 var(--font-body)}
+@media(max-width:520px){.mod{padding:20px 14px}.mc-chips .chip-btn{flex:1 1 auto}}

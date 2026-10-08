@@ -1,0 +1,3 @@
+/* Peças compartilhadas pelas telas internas de moderação do mural (mural-fotos.html e mural-controle.html); o resto vem do styles.css (.mod, .chip-btn, .feedback-input). */
+.chip-btn--danger{border-color:var(--google-red);color:var(--google-red)}
+.mod-notice{color:var(--google-yellow)}

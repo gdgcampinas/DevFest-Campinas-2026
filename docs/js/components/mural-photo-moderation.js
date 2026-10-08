@@ -1,6 +1,6 @@
 /** Marcação da tela do moderador de fotos do mural (mural-fotos.html): o login (reusa moderator-login.js) e a grade das fotos mais novas do álbum, cada uma com "Tirar do ar" / "Voltar ao ar". */
 function muralPhotoModerationMarkup({ phase, email = "", albumLabel = "", message = "", photos = [], hidden = new Set(), pending = new Set(), formatTime = () => "", thumbUrl = photo => photo.url }) {
-  const notice = message ? `<p class="mod-hint mf-notice" role="status">${escapeHtml(message)}</p>` : "";
+  const notice = message ? `<p class="mod-hint mod-notice" role="status">${escapeHtml(message)}</p>` : "";
   if (phase === "signin") return `${moderatorSignInMarkup({ hint: "Entre com a conta Google de moderador pra tirar fotos do telão.", signInLabel: "Entrar com Google" })}${notice}`;
   const hiddenCount = photos.filter(photo => hidden.has(photo.id)).length;
   const tiles = photos.map(photo => {
