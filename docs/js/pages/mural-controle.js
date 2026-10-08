@@ -3,6 +3,7 @@
  * cenas que podem ser fixadas, frases prontas), sem regra de negócio.
  */
 function initMuralControlePage() {
+  mountAdminNav();
   initMuralControlPanel(document.getElementById("modBody"), {
     repository: window.moderationMuralControlRepository,
     rules: { normalize: normalizeControl, addNotice, removeNotice, holdScene, releaseHold, armEmergency, disarmEmergency, orderReload },

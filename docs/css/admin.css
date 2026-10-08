@@ -1,0 +1,5 @@
+/* Área de admin: o menu (presente em admin.html e nas telas de moderação). O resto (título, textos, botões) é do styles.css (.mod, .chip-btn). */
+.ad-nav{max-width:820px;margin:0 auto;padding:12px 24px 0}
+.ad-nav-list{list-style:none;margin:0;padding:0;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+.ad-nav-list::-webkit-scrollbar{display:none}
+.ad-nav-list .chip-btn{min-height:44px;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;text-decoration:none}

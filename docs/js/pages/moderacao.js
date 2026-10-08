@@ -5,6 +5,7 @@
  * com id inválido lista as trilhas (link errado é o erro mais provável).
  */
 function initModeracaoPage() {
+  mountAdminNav();
   setupRehearsal();
   const bodyEl = document.getElementById("modBody");
   const track = TRACKS.find(t => t.id === new URLSearchParams(location.search).get("trilha"));

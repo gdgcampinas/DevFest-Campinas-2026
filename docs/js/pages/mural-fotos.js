@@ -3,6 +3,7 @@
  * intermediário só pra teste (como no mural). Raiz de composição: só liga as peças.
  */
 function initMuralFotosPage() {
+  mountAdminNav();
   const params = new URLSearchParams(location.search);
   const config = muralConfigRepository.getAll();
   const proxyParam = params.get("albuns");
