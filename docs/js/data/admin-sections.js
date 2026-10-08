@@ -7,6 +7,7 @@
  *                       só aparece quando a palestra tem concurso (Coding Jam)
  *   ADMIN_OVERVIEW      os cartões da visão geral, na ordem: `id` (liga ao desenhista em features/admin-overview-cards.js), `title` e o ritmo de cada um (`refreshMs`: redesenha; `intervalMs`: relê o banco/intermediário;
  *                       cada leitura conta no plano grátis do Firebase, por isso os intervalos são folgados)
+ *   ADMIN_TALKS         ritmo da seção Palestras (`refreshMs`: de quanto em quanto tempo ela confere se a palestra da trilha mudou)
  * Todas as telas são internas (fora do menu e do sitemap, sem versão /DEV/): abrem na raiz. As de moderação pedem login Google de moderador.
  */
 const ADMIN_PAGE = "admin.html";
@@ -39,7 +40,10 @@ const ADMIN_OVERVIEW = [
   { id: "registered", title: "Inscritos", intervalMs: 300000 },
 ];
 
+const ADMIN_TALKS = { refreshMs: 30000 };
+
 const adminSectionsRepository = createRepository(ADMIN_SECTIONS, { page: ADMIN_PAGE, get: id => ADMIN_SECTIONS.find(section => section.id === id) });
 const adminShortcutsRepository = createRepository(ADMIN_SHORTCUTS);
 const adminTrackLinksRepository = createRepository(ADMIN_TRACK_LINKS);
 const adminOverviewRepository = createRepository(ADMIN_OVERVIEW);
+const adminTalksConfigRepository = createRepository(ADMIN_TALKS);

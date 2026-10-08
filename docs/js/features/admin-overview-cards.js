@@ -24,13 +24,11 @@ function createAdminControlCard({ definition, controlRepository, normalize, summ
   };
 }
 
-const ROOM_PHASE_LABEL = { live: "no ar", next: "próxima", none: "sem palestra" };
-
 function createAdminRoomsCard({ definition, schedule, tracks, now, codeOf, hasContest, formatTime, timer }) {
   return onView => scheduleEvery(timer, definition.refreshMs, () => {
     const rooms = describeTrackTalks({ schedule, tracks, now: now(), codeOf, hasContest });
     const live = rooms.filter(room => room.phase === "live").length;
-    onView({ headline: `${live} de ${rooms.length} com palestra no ar`, tone: live ? "ok" : undefined, lines: rooms.map(room => `${room.track.shortLabel}: ${room.talk ? `${ROOM_PHASE_LABEL[room.phase]}, ${room.talk.title} (${formatTime(room.talk.start)})` : ROOM_PHASE_LABEL.none}`) });
+    onView({ headline: `${live} de ${rooms.length} com palestra no ar`, tone: live ? "ok" : undefined, lines: rooms.map(room => `${room.track.shortLabel}: ${describeRoomLine(room, formatTime)}`) });
   });
 }
 
@@ -92,18 +90,13 @@ function buildAdminOverviewCards({ definitions, deps, factories = ADMIN_OVERVIEW
  */
 function defaultAdminOverviewDeps({ album, albumsRepository }) {
   const control = defaultMuralControlPanelDeps();
-  const now = resolveNow();
+  const talks = defaultAdminTalksDeps();
   return {
+    ...talks,
     controlRepository: control.repository, normalize: control.rules.normalize, summarize: control.rules.summarize, limits: control.limits,
     sceneLabel: id => control.scenes.find(scene => scene.id === id)?.label ?? id,
-    formatTime: value => formatEventTime(new Date(value), EVENT.timezone),
-    nowMs: () => now().getTime(),
-    now,
+    nowMs: () => talks.now().getTime(),
     timer: defaultSchedule,
-    schedule: SCHEDULE,
-    tracks: TRACKS,
-    codeOf: (slot, trackId) => talkShareCode(slot, trackId, EVENT.timezone),
-    hasContest: talkHighlightsRepository.hasContest,
     allowsQuestions: talkHighlightsRepository.allowsQuestions,
     questionsRepository: window.moderationQuestionsRepository,
     pendingStatus: QUESTION_STATUS.pending,

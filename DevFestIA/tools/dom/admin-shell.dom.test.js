@@ -258,6 +258,15 @@ test("a página admin.html: a visão geral abre por padrão com os 5 cartões do
   site.window.close();
 });
 
+test("a página admin.html: a seção Palestras mostra uma caixa por trilha com os botões em aba nova", async () => {
+  const { site, body } = bootAdminPage("#palestras");
+  await waitFor(() => body.querySelectorAll("[data-track]").length === 4);
+  assert.equal(body.querySelector("[data-admin-title]").textContent, "Palestras");
+  assert.ok(body.querySelector('[data-track="ia"] [data-link="codejam"]'));
+  assert.equal(body.querySelectorAll('[data-track="webdata"] a').length, 2);
+  site.window.close();
+});
+
 test("equipe.html leva pra área de admin (Atalhos)", () => {
   const html = fs.readFileSync(path.join(DOCS, "equipe.html"), "utf8");
   assert.match(html, /url=admin\.html#atalhos/);

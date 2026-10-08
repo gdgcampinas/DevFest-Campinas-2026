@@ -16,6 +16,7 @@ function initAdminPage() {
       "visao-geral": containerEl => initAdminOverview(containerEl, { cards: buildAdminOverviewCards({ definitions: adminOverviewRepository.getAll(), deps: defaultAdminOverviewDeps({ album: liveAlbum, albumsRepository }) }) }),
       telao: containerEl => initMuralControlPanel(containerEl, { ...defaultMuralControlPanelDeps(), embedded: true }),
       fotos: containerEl => mountMuralPhotoModeration(containerEl, { album: liveAlbum, proxyUrl: muralConfig.albums.proxyUrl, albumIds: muralAlbumsRepository.getAll().map(album => album.id), timeoutMs: muralConfig.albums.timeoutMs, embedded: true }),
+      palestras: containerEl => initAdminTalksSection(containerEl, { ...defaultAdminTalksDeps(), links: adminTrackLinksRepository.getAll(), refreshMs: adminTalksConfigRepository.getAll().refreshMs }),
       atalhos: containerEl => initAdminShortcuts(containerEl, { shortcuts: adminShortcutsRepository.getAll() }),
     },
   });
