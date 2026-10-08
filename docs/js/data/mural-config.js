@@ -16,6 +16,8 @@
  *   holdCheckMs          com o rodízio parado numa cena (fixar, pausar, emergência) de quanto em quanto tempo o motor olha se o prazo acabou (e renova o prazo do vigia)
  *   control              controle remoto do mural (features/mural-control.js): `docKey` (documento `mural-control/<docKey>`), limites de aviso (`maxNotices`, `maxTextLength`, `maxEmergencyLength`),
  *                        as durações que o moderador escolhe (`noticeMinutes`, `holdMinutes`) e o que o mural faz com o aviso novo (`emergencyScene`, `noticeInterrupt`)
+ *   video                vídeos (data/mural-videos.js): `path` = rota do intermediário que entrega os clipes (junto de `albums.proxyUrl`; `?videos=<endereço>` na URL troca só pra teste), `cacheName` = nome
+ *                        no Cache Storage do navegador, `retryMs` = quanto esperar pra tentar de novo um clipe que falhou, `slackSeconds` = folga somada à duração do clipe
  *   albums               álbuns do Google Fotos (data/mural-albums.js): `proxyUrl` = endereço do intermediário (DevFestIA/tools/album-proxy, publicado como Cloudflare Worker na conta do GDG; VAZIO = álbuns desligados, o mural segue
  *                        sem cenas de foto; `?albuns=<endereço>` na URL liga só pra teste), `timeoutMs` = quanto esperar o intermediário, `quarantineMs` = quanto uma foto que
  *                        não carregou fica de fora
@@ -60,6 +62,12 @@ const MURAL_CONFIG = {
     holdMinutes: [5, 15, 30, 60],
     emergencyScene: "emergencia",
     noticeInterrupt: { sceneId: "aviso", priority: 90, ttlMs: 60000, immediate: true },
+  },
+  video: {
+    path: "/media/",
+    cacheName: "devfest-mural-video-v1",
+    retryMs: 30000,
+    slackSeconds: 0.6,
   },
   albums: {
     proxyUrl: "https://devfest-album-proxy.gdgcampinas-devfest.workers.dev",

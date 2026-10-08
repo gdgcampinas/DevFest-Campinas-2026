@@ -16,19 +16,25 @@ function muralStagger(index, extra = "") {
 }
 
 /**
- * Camada de ARTE em tela cheia (imagem desfocada ao fundo + a imagem). Como a arte se encaixa vem do dado (data/mural-arts.js): `fit` e `focus` viram variáveis CSS
- * (--fit, --focus e as versões por forma do palco: --fit-tall, --focus-wide...) e o CSS escolhe pela forma (data-shape). Reusada pela cena "art" e pelo fundo do selfie.
+ * Como uma mídia (arte ou vídeo) se ENCAIXA em qualquer proporção de telão, por dado: `fit` e `focus` viram variáveis CSS (--fit, --focus e as versões por forma do palco:
+ * --fit-tall, --focus-wide...) e o CSS escolhe pela forma (data-shape). Cada um pode ser um valor só ou um objeto por forma (`{ default, ultrawide, wide, standard, tall }`).
+ * Devolve o texto do atributo `style`. Reusada pelas artes (data/mural-arts.js) e pelos vídeos (data/mural-videos.js).
  */
-function muralArtMarkup(art) {
+function muralFitVars({ fit = "cover", focus = "50% 50%" }) {
   const vars = [];
   const spread = (name, value) => {
     const entries = typeof value === "object" ? Object.entries(value) : [["default", value]];
     entries.forEach(([shape, item]) => vars.push(`--${name}${shape === "default" ? "" : `-${shape}`}:${item}`));
   };
-  spread("fit", art.fit ?? "cover");
-  spread("focus", art.focus ?? "50% 50%");
+  spread("fit", fit);
+  spread("focus", focus);
+  return vars.join(";");
+}
+
+/** Camada de ARTE em tela cheia (imagem desfocada ao fundo + a imagem), encaixada por `muralFitVars`. Reusada pela cena "art" e pelo fundo do selfie. */
+function muralArtMarkup(art) {
   const url = escapeHtml(art.file);
-  return `<div class="ms-art-bg" style="background-image:url('${url}')"></div><img class="ms-art-img" src="${url}" alt="${escapeHtml(art.alt ?? "")}" style="${vars.join(";")}">`;
+  return `<div class="ms-art-bg" style="background-image:url('${url}')"></div><img class="ms-art-img" src="${url}" alt="${escapeHtml(art.alt ?? "")}" style="${muralFitVars(art)}">`;
 }
 
 /** Etiqueta do álbum (nome, bolinha "ao vivo" e um selo opcional como "Nova foto da galera"). */

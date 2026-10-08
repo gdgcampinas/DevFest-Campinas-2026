@@ -33,6 +33,7 @@ function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => t
         const body = albums?.[decodeURIComponent(String(url).split("/albums/")[1])];
         return body ? { ok: true, status: 200, json: async () => ({ ...body, photos: [...body.photos] }) } : { ok: false, status: 404, json: async () => ({}) };
       }
+      if (String(url).startsWith("https://media.test/")) return { ok: true, status: 200, clone() { return this; }, blob: async () => ({}) }; // clipes de vídeo de mentira
       return { ok: true, text: async () => HTML };
     },
     firebaseClient: { ensureAnonymousUid: async () => "uid" },
@@ -50,6 +51,10 @@ function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => t
     Object.assign(MURAL_CONFIG.motion, { countUpMs: 60, countUpStepMs: 20 });
     MURAL_ALBUMS.forEach(album => { album.pollMs = 40; });
     MURAL_CONFIG.holdCheckMs = 30;
+    URL.createObjectURL = () => "blob:clipe";
+    HTMLMediaElement.prototype.play = () => Promise.resolve();
+    HTMLMediaElement.prototype.pause = () => {};
+    HTMLMediaElement.prototype.load = () => {};
     MURAL_CONFIG.albums.proxyUrl = ""; // os testes ligam o intermediário (de mentira) só com ?albuns=, nunca o de produção
     MURAL_SOURCES.find(source => source.id === "podium").bind.celebrateDelayMs = 30;
     globalThis.__confetti = 0;
@@ -345,4 +350,32 @@ test("recarregar pelo celular: a primeira leitura é só o ponto de partida; ped
   emit(control({ reload: 222 }));
   assert.equal(saved().reloads.length, 1, "o mesmo pedido lido de novo não recarrega outra vez");
   page.site.window.close();
+});
+
+test("vídeo: com o endereço dos clipes (?videos=) baixa antes, entra no rodízio com o tempo do clipe e toca mudo em horário de palestra; sem endereço a cena não aparece", async () => {
+  const page = boot({ search: "cenas=video-2025,dicas&videos=https://media.test/" });
+  await waitFor(() => page.active() === "video-2025", { timeout: 3000 });
+  const video = page.document.querySelector(".mural-scene.is-active video");
+  assert.equal(video.getAttribute("src"), "blob:clipe");
+  assert.equal(video.hasAttribute("muted"), true, "09:10 é horário de palestra: mudo");
+  assert.match(page.activeText(), /DevFest 2025/);
+  const scene = page.site.run("muralScenesRepository.getAll().find(s => s.id === 'video-2025').seconds");
+  assert.equal(scene, 0.15, "o dado da cena tem tempo curto no teste, mas o vídeo manda no próprio tempo de tela");
+  assert.ok(Number(page.document.querySelector(".mural-scene.is-active").style.getPropertyValue("--scene-ms")) > 5000);
+  page.site.window.close();
+  const off = boot({ search: "cenas=video-2025,dicas" });
+  await waitFor(() => off.active() === "dicas");
+  assert.equal(off.document.querySelector('[data-scene="video-2025"]'), null, "sem intermediário e sem ?videos= não há de onde baixar");
+  off.site.window.close();
+});
+
+test("vídeo: no almoço (momento da grade) toca com som, e as cenas de intervalo só existem no almoço e no encerramento", async () => {
+  const lunch = boot({ search: "cenas=video-2025-intervalo&videos=https://media.test/", demo: "2026-11-28T12:30" });
+  await waitFor(() => lunch.active() === "video-2025-intervalo", { timeout: 3000 });
+  assert.equal(lunch.document.querySelector(".mural-scene.is-active video").hasAttribute("muted"), false, "almoço: com som");
+  lunch.site.window.close();
+  const talk = boot({ search: "cenas=video-2025-intervalo,dicas&videos=https://media.test/", demo: "2026-11-28T10:00" });
+  await waitFor(() => talk.active() === "dicas");
+  assert.equal(talk.document.querySelector('[data-scene="video-2025-intervalo"]'), null, "em palestra a cena de intervalo não entra");
+  talk.site.window.close();
 });

@@ -5,7 +5,8 @@
  * Contrato de um TIPO de cena (components/mural-scenes/*.js, registrado em pages/mural.js):
  *   prepare?(params, ctx) -> dado | MURAL_SKIP     carrega o que a cena precisa (foto, leitura); pode demorar, tem tempo limite; MURAL_SKIP = "sem nada pra
  *                                                  mostrar agora" (castigo curto, não conta como falha)
- *   render(prepared, params, ctx) -> { markup, mount?(el, deps) -> dispose? }   HTML da cena + comportamento opcional (relógio, QR, animação)
+ *   render(prepared, params, ctx) -> { markup, seconds?, mount?(el, deps) -> dispose? }   HTML da cena + comportamento opcional (relógio, QR, animação); `seconds` (opcional) é o tempo de tela
+ *                                                  que a própria cena sabe (um vídeo dura o que dura); sem ele vale o `seconds` do dado da cena
  *
  * O que faz o mural se corrigir sozinho (cada item tem teste em DevFestIA/tools/dom/mural-engine.dom.test.js):
  *   - cada cena roda num bloco protegido: erro no prepare, no render ou no mount (ou um erro solto da página enquanto ela está no ar)
@@ -117,7 +118,7 @@ function createMural({
     if (reserve && picked === null && !held && current?.reserve && !current.errored) { // a reserva já está no ar e continua sendo a única opção: não redesenha, só olha de novo daqui a pouco
       return later(config.idleRetryMs ?? config.reserveSeconds * 1000);
     }
-    const seconds = reserve ? config.reserveSeconds : scene.seconds ?? config.defaultSeconds;
+    let seconds = reserve ? config.reserveSeconds : scene.seconds ?? config.defaultSeconds;
     beatDueAt = nowMs() + config.prepareTimeoutMs + config.watchdogSlackMs;
     try {
       const impl = registry[scene.type];
@@ -131,7 +132,9 @@ function createMural({
         lastSceneId = scene.id;
         return later(0);
       }
-      show(scene, impl.render(prepared, params, ctx), seconds);
+      const view = impl.render(prepared, params, ctx);
+      if (Number.isFinite(view.seconds) && view.seconds > 0) seconds = view.seconds; // a cena que sabe quanto dura (um vídeo) manda no próprio tempo de tela
+      show(scene, view, seconds);
     } catch (error) {
       if (mine !== token || stopped) return;
       fail(scene, error);

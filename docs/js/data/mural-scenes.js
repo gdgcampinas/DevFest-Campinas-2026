@@ -14,6 +14,8 @@
  * "Rolando agora" (spotlight): uma entrada por posição de sala (`params.slot`); o rodízio passa só pelas salas com palestra no ar. Texto curto = campo `blurb` da palestra
  * (opcional, ~110 caracteres) ou, sem ele, a descrição. "Selfie": o telão como painel de foto pra plateia (arte de fundo em `params.art`, hashtag ainda vazia; fixe com `?cenas=selfie`).
  * "Arte" (`type: "art"`): peça pronta de design em tela cheia, `params.art` = id em data/mural-arts.js (que decide como ela se adapta a qualquer proporção de telão).
+ * "Vídeo" (`type: "video"`): o próximo clipe pronto de `params.playlist` (data/mural-videos.js); tempo de tela = a duração do clipe. Toca mudo e COM SOM só nos momentos/fases da playlist (almoço, encerramento, antes e depois);
+ * as cenas `*-intervalo` entram só no almoço e no encerramento pra dar mais tempo de vídeo quando ninguém está em palestra. Sem o intermediário ligado ou sem clipe baixado a cena some.
  * "Aviso" (`type: "notice"`): os avisos que o moderador escreve pelo celular (mural-controle.html); só aparece enquanto houver aviso vivo e entra na frente quando chega um novo. A emergência é a `MURAL_EMERGENCY_SCENE`, fora do rodízio.
  * "QR" (`type: "qr"`): `params.path` leva a uma página do site (avaliar o evento) e `params.album` ao CONVITE do álbum colaborativo (pelo intermediário, `/join/<id>`: o link do álbum não fica no site). O QR "Monte seu cartão Eu vou!"
  * saiu do rodízio (a plateia já está no evento); a página do cartão continua existindo e o QR volta se for preciso, é uma cena nova com `path: "ingressos.html?cartao=1"`.
@@ -38,6 +40,7 @@ const MURAL_SCENES = [
   { id: "album-2025-mosaico", label: "Mosaico DevFest 2025", type: "album", seconds: 14, transition: "zoom", requires: { live: "albums" }, params: { album: "devfest-2025", model: "mosaic" } },
   { id: "patrocinio-master", label: "Patrocínio Master", type: "sponsors", seconds: 12, requires: { reveal: true }, params: { tiers: ["Master"], title: "Quem faz o DevFest acontecer" } },
   { id: "qr-album", label: "QR: mande sua foto", type: "qr", seconds: 16, transition: "slide", requires: { live: "albums" }, params: { kicker: "Participe", heading: "Mande sua foto", hint: "Escaneie, entre no álbum e adicione suas fotos: elas aparecem aqui no telão", album: "ao-vivo" } },
+  { id: "video-2025", label: "Vídeo DevFest 2025", type: "video", transition: "zoom", params: { playlist: "devfest-2025" } },
   { id: "inscritos", label: "Inscritos", type: "registered", seconds: 9, requires: { live: "registered" }, params: { min: EVENT.tickets.counterMin } },
   { id: "album-elotech", label: "Fotos Elotech Agibank", type: "album", seconds: 14, requires: { live: "albums" }, params: { album: "elotech-agibank", model: "auto" } },
   { id: "agora-2", label: "Agora e próximas (2ª vez)", type: "now-next", seconds: 22, requires: { reveal: true, phases: ["before", "live"] }, params: {} },
@@ -50,9 +53,12 @@ const MURAL_SCENES = [
   { id: "agradecimento-patrocinio", label: "Agradecimento aos patrocinadores", type: "sponsors", seconds: 20, transition: "zoom", requires: { reveal: true, moments: ["lunch", "closing"] }, params: { kicker: "Muito obrigado", title: "A quem faz o DevFest acontecer", layout: "thanks" } },
   { id: "selfie", label: "Selfie", type: "selfie", seconds: 20, transition: "zoom", params: { hashtag: "", art: "sunset" } },
   { id: "arte-gumbleton", label: "Arte do Gumbleton", type: "art", seconds: 8, transition: "zoom", params: { art: "gumbleton" } },
+  { id: "video-2025-2", label: "Vídeo DevFest 2025 (2ª vez)", type: "video", transition: "zoom", params: { playlist: "devfest-2025" } },
   { id: "album-bosch", label: "Fotos Bosch 2026", type: "album", seconds: 14, requires: { live: "albums" }, params: { album: "gdg-talks-bosch-2026", model: "auto" } },
   { id: "fenix", label: "Fênix", type: "phoenix", seconds: 10, transition: "zoom", params: {} },
   { id: "podio-jam", label: "Pódio do Coding Jam", type: "podium", seconds: 20, requires: { reveal: true, live: "podium" }, params: {} },
+  { id: "video-2025-intervalo", label: "Vídeo DevFest 2025 (intervalo)", type: "video", transition: "zoom", requires: { moments: ["lunch", "closing"] }, params: { playlist: "devfest-2025" } },
+  { id: "video-2025-intervalo-2", label: "Vídeo DevFest 2025 (intervalo, 2ª vez)", type: "video", transition: "zoom", requires: { moments: ["lunch", "closing"] }, params: { playlist: "devfest-2025" } },
   { id: "contagem", label: "Contagem regressiva", type: "event-phase", seconds: 12, requires: { phases: ["before"] }, params: { kind: "countdown" } },
   { id: "qr-avaliar", label: "QR: avalie o evento", type: "qr", seconds: 16, transition: "slide", from: "2026-11-28T17:15:00-03:00", params: { kicker: "Obrigado por participar", heading: "Avalie o DevFest", hint: "Escaneie e conte como foi o evento", path: "index.html?avaliar=1" } },
   { id: "obrigado", label: "Obrigado", type: "event-phase", seconds: 12, requires: { phases: ["after"] }, params: { kind: "thanks" } },

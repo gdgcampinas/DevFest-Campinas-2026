@@ -8,9 +8,9 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 const { createFakeClock } = require("../lib/fake-clock.js");
 
-const SCENES = ["mural-scene-kit", "mural-now-next-scene", "mural-sponsors-scene", "mural-qr-scene", "mural-registered-scene", "mural-tips-scene", "mural-phoenix-scene", "mural-podium-scene", "mural-event-phase-scene", "mural-reserve-scene", "mural-spotlight-scene", "mural-selfie-scene", "mural-art-scene", "mural-album-scene", "mural-notice-scene"].map(name => `components/mural-scenes/${name}.js`);
+const SCENES = ["mural-scene-kit", "mural-now-next-scene", "mural-sponsors-scene", "mural-qr-scene", "mural-registered-scene", "mural-tips-scene", "mural-phoenix-scene", "mural-podium-scene", "mural-event-phase-scene", "mural-reserve-scene", "mural-spotlight-scene", "mural-selfie-scene", "mural-art-scene", "mural-album-scene", "mural-notice-scene", "mural-video-scene"].map(name => `components/mural-scenes/${name}.js`);
 const site = loadSite({
-  scripts: [...SITE_BASE, "features/scheduler.js", "features/agenda.js", "features/mural-now-next.js", "features/mural-photo-pool.js", "features/mural.js", "features/mural-playlist.js", "components/talk-highlight.js", "data/mural-tips.js", "data/mural-arts.js", "data/mural-albums.js", "data/mural-album-models.js", "features/album-photo-url.js", "features/album-models.js", "components/mural-scenes/album-models/album-model-collage.js", "components/mural-scenes/album-models/album-model-portrait-strip.js", "components/mural-scenes/album-models/album-model-polaroid.js", "components/mural-scenes/album-models/album-model-feature.js", "components/mural-scenes/album-models/album-model-mosaic.js", ...SCENES, "features/live-status.js", "features/count-up.js", "components/avatar.js"],
+  scripts: [...SITE_BASE, "features/scheduler.js", "features/agenda.js", "features/mural-now-next.js", "features/mural-photo-pool.js", "features/mural.js", "features/mural-playlist.js", "components/talk-highlight.js", "data/mural-tips.js", "data/mural-arts.js", "data/mural-albums.js", "data/mural-album-models.js", "features/album-photo-url.js", "features/album-models.js", "features/video-sound.js", "components/mural-scenes/album-models/album-model-collage.js", "components/mural-scenes/album-models/album-model-portrait-strip.js", "components/mural-scenes/album-models/album-model-polaroid.js", "components/mural-scenes/album-models/album-model-feature.js", "components/mural-scenes/album-models/album-model-mosaic.js", ...SCENES, "features/live-status.js", "features/count-up.js", "components/avatar.js"],
 });
 const { window, document } = site;
 test.after(() => window.close());
@@ -537,4 +537,82 @@ test("emergência: um texto em tela cheia (escapado), a cena não aparece sem em
   assert.equal(el.querySelector(".ms-emergency").getAttribute("role"), "alert");
   assert.match(textOf(el), /Atenção.*Evacuação: sigam <b>as saídas<\/b>/);
   assert.equal(el.querySelector("b"), null);
+});
+
+// ---------- vídeos ----------
+const clip = (id, seconds = 10) => ({ id, file: `${id}.mp4`, label: `Clipe ${id} <b>`, seconds, fit: { default: "cover", tall: "contain" } });
+function videoScene({ ready = new Set(["a.mp4", "b.mp4", "c.mp4"]), baseUrl = "https://media.test/", sound = { moments: ["lunch"], phases: ["after"] }, clips = [clip("a"), clip("b"), clip("c")] } = {}) {
+  const requested = [];
+  const cache = { request: url => { requested.push(url); return ready.has(url.split("/").pop()) ? `blob:${url.split("/").pop()}` : null; } };
+  const videos = { playlist: name => (name === "lista" ? { sound, clips } : null) };
+  return { scene: g("createVideoScene")({ videos, cache, baseUrl, slackSeconds: 0.5 }), requested, ready };
+}
+
+test("vídeo: sem endereço do intermediário, sem lista ou sem nenhum clipe baixado a cena não aparece; clipe que ainda não baixou é pulado e a vez passa pro próximo", () => {
+  assert.equal(videoScene({ baseUrl: "" }).scene.prepare({ playlist: "lista" }, ctx()), MURAL_SKIP);
+  assert.equal(videoScene().scene.prepare({ playlist: "nao-existe" }, ctx()), MURAL_SKIP);
+  assert.equal(videoScene({ clips: [] }).scene.prepare({ playlist: "lista" }, ctx()), MURAL_SKIP);
+  const none = videoScene({ ready: new Set() });
+  assert.equal(none.scene.prepare({ playlist: "lista" }, ctx()), MURAL_SKIP);
+  assert.deepEqual(none.requested, ["https://media.test/a.mp4", "https://media.test/b.mp4", "https://media.test/c.mp4"], "pediu todos (começa a baixar os que faltam)");
+  const partial = videoScene({ ready: new Set(["b.mp4"]) });
+  assert.equal(partial.scene.prepare({ playlist: "lista" }, ctx()).clip.id, "b", "a (não baixado) foi pulado");
+});
+
+test("vídeo: cada vez que a cena volta toca o PRÓXIMO clipe da lista e dá a volta; o tempo de tela é a duração do clipe mais a folga", () => {
+  const { scene } = videoScene({ clips: [clip("a", 10), clip("b", 12.5), clip("c", 8)] });
+  const played = [];
+  for (let i = 0; i < 4; i++) {
+    const prepared = scene.prepare({ playlist: "lista" }, ctx());
+    played.push([prepared.clip.id, scene.render(prepared).seconds]);
+  }
+  assert.deepEqual(played, [["a", 10.5], ["b", 13], ["c", 8.5], ["a", 10.5]]);
+});
+
+test("vídeo: o som só toca nos momentos e fases do dado (almoço, depois do evento); fora deles o clipe toca mudo; etiqueta escapada e encaixe por forma no estilo", () => {
+  const { scene } = videoScene();
+  const markupAt = context => html(scene.render(scene.prepare({ playlist: "lista" }, ctx(context))).markup);
+  assert.equal(markupAt({ moment: "lunch", phase: "live" }).querySelector("video").hasAttribute("muted"), false, "almoço: com som");
+  assert.equal(markupAt({ moment: null, phase: "after" }).querySelector("video").hasAttribute("muted"), false, "depois do evento: com som");
+  const talk = markupAt({ moment: null, phase: "live" });
+  assert.equal(talk.querySelector("video").hasAttribute("muted"), true, "em palestra: mudo");
+  assert.equal(talk.querySelector("b"), null, "etiqueta escapada");
+  assert.match(textOf(talk), /Clipe c <b>/);
+  assert.match(talk.querySelector("video").getAttribute("style"), /--fit:cover;--fit-tall:contain/);
+  assert.equal(talk.querySelector("video").getAttribute("src"), "blob:c.mp4", "o terceiro pedido: o clipe c");
+  assert.equal(g("createVideoScene")({ videos: { playlist: () => ({ clips: [clip("x")] }) }, cache: { request: () => "blob:x" }, baseUrl: "u/" }).prepare({ playlist: "p" }, ctx({ moment: "lunch" })).sound, false, "playlist sem regra de som: sempre mudo");
+});
+
+test("vídeo (montagem): toca na entrada; se o navegador bloqueia o som toca mudo em vez de parar; erro do vídeo avisa o motor; ao sair solta o vídeo", async () => {
+  const { scene } = videoScene();
+  const mountWith = async ({ playBehavior, context }) => {
+    const view = scene.render(scene.prepare({ playlist: "lista" }, ctx(context)));
+    const el = html(view.markup);
+    const video = el.querySelector("video");
+    const calls = [];
+    video.play = () => { calls.push(["play", video.muted]); return playBehavior(calls.filter(call => call[0] === "play").length); };
+    video.pause = () => calls.push(["pause"]);
+    video.load = () => calls.push(["load"]);
+    const errors = [];
+    const dispose = view.mount(el, { reportError: error => errors.push(error.message) });
+    await new Promise(resolve => setImmediate(resolve));
+    return { video, calls, errors, dispose };
+  };
+  const ok = await mountWith({ playBehavior: async () => {}, context: { moment: "lunch" } });
+  assert.deepEqual(ok.calls, [["play", false]]);
+  ok.dispose();
+  assert.deepEqual(ok.calls.slice(1), [["pause"], ["load"]]);
+  assert.equal(ok.video.hasAttribute("src"), false, "soltou o vídeo");
+
+  const blocked = await mountWith({ playBehavior: async attempt => { if (attempt === 1) throw Object.assign(new Error("bloqueado"), { name: "NotAllowedError" }); }, context: { moment: "lunch" } });
+  assert.equal(blocked.video.muted, true, "som bloqueado: segue mudo");
+  assert.equal(blocked.calls.filter(call => call[0] === "play").length, 2);
+  assert.deepEqual(blocked.errors, []);
+
+  const dead = await mountWith({ playBehavior: async () => { throw new Error("decodificador falhou"); }, context: { moment: null, phase: "live" } });
+  assert.match(dead.errors[0], /vídeo .*: decodificador falhou/);
+
+  const loadError = await mountWith({ playBehavior: async () => {}, context: { moment: null } });
+  loadError.video.dispatchEvent(new window.Event("error"));
+  assert.match(loadError.errors[0], /não carregou/);
 });

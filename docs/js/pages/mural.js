@@ -5,6 +5,7 @@
  *
  * Roda num computador plugado no telão, sem ninguém operando. Parâmetros de URL (todos opcionais, pro ensaio e teste):
  *   ?tela=1920x1080  ?proporcao=3:1  ?margem=2   simulam o telão e a margem segura (features/mural-stage.js)
+ *   ?videos=<endereço>                            troca de onde vêm os clipes de vídeo (teste local); sem isso vale <intermediário>/media/
  *   ?cenas=agora,album-2025                          só essas cenas, na ordem pedida
  *   ?diag=1                                       painel de saúde (cena, falhas, rede, fontes, recargas)
  *   ?lineup=1 | ?demo=AAAA-MM-DDTHH:MM | ?ensaio=HH:MM   os mesmos modos de teste do resto do site (app.js)
@@ -22,6 +23,8 @@ function initMural() {
   const title = `${EVENT.name} ${year}`;
   const proxyParam = params.get("albuns");
   const proxyUrl = /^https?:\/\//.test(proxyParam ?? "") ? proxyParam : config.albums.proxyUrl;
+  const videosParam = params.get("videos");
+  const mediaBase = /^https?:\/\//.test(videosParam ?? "") ? videosParam : proxyUrl ? `${proxyUrl.replace(/\/+$/, "")}${config.video.path}` : "";
   const logoSrc = EVENT.hosts[0].logo ?? EVENT.hosts[0].icon;
   const stageEl = document.getElementById("muralStage");
   const contentEl = document.getElementById("muralContent");
@@ -65,6 +68,10 @@ function initMural() {
   const albumsRepository = createAlbumsRepository({ baseUrl: proxyUrl, storage: safeLocalStorage(), timeoutMs: config.albums.timeoutMs, schedule });
   const albumKeys = live => (proxyUrl ? muralAlbumsRepository.enabled({ live }).map(album => ({ key: album.id, intervalMs: album.pollMs })) : []);
 
+  // ---------- vídeos: baixados antes (um de cada vez) e guardados no navegador; sem intermediário não há o que baixar ----------
+  const videoCache = createVideoCache({ cacheStorage: window.caches ?? null, fetchFn: url => fetch(url), urlApi: URL, cacheName: config.video.cacheName, nowMs, retryMs: config.video.retryMs });
+  if (mediaBase) videoCache.warm(muralVideosRepository.files().map(file => `${mediaBase}${file}`));
+
   // ---------- cenas ----------
   const preload = url => preloadImage(url, { timeoutMs: config.imageTimeoutMs, schedule });
   const talkIndex = buildTalkIndex(SCHEDULE, TRACKS, EVENT.timezone);
@@ -88,6 +95,7 @@ function initMural() {
     sponsors: createSponsorsScene({ repository: sponsorsRepository, preload }),
     notice: createNoticeScene({ nowMs }),
     emergency: createEmergencyScene(),
+    video: createVideoScene({ videos: muralVideosRepository, cache: videoCache, baseUrl: mediaBase, slackSeconds: config.video.slackSeconds }),
     qr: createQrScene({ targets: createQrTargets({ siteUrl: EVENT.url, extraQuery: () => rehearsal.query, albumProxyUrl: proxyUrl }), qr: createQrRenderer() }),
     registered: createRegisteredScene({ motion: config.motion }),
     tips: createTipsScene({ repository: muralTipsRepository }),
@@ -104,7 +112,7 @@ function initMural() {
     reserveScene: muralScenesRepository.reserve(),
     emergencyScene: muralScenesRepository.emergency(),
     emergencyMarkup: `<section class="ms ms-reserve"><h2 class="ms-title">${escapeHtml(title)}</h2></section>`,
-    sceneDeps: { schedule, clock },
+    sceneDeps: { schedule, clock, reportError: error => mural.reportError(error) },
     getContext: () => {
       const state = resolveEventState(clock(), SCHEDULE);
       return { now: clock(), reveal, phase: state.phase, moment: state.activeSlot?.moment ?? null, live, network: network.state() };

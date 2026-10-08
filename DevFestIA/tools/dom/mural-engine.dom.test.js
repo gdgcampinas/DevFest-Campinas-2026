@@ -477,3 +477,18 @@ test("vigia com o rodízio parado: pausa não vira 'travou'; recarga preventiva 
   assert.deepEqual([remote.action, remote.reason], ["reload", "remote-reload"], "o moderador pediu: recarrega agora, fora da troca de cena");
   assert.equal(evaluateHealth({ ...base, urgent: ["remote-reload"], recentReloads: [7900000, 7910000, 7920000] }, config).action, "none", "a trava anti-laço também vale pro pedido remoto");
 });
+
+test("cena que sabe a própria duração (vídeo): o `seconds` do render manda no tempo de tela e no --scene-ms; sem ele vale o do dado", async () => {
+  const timed = { render: (_p, params) => ({ markup: `<p>${params.label}</p>`, seconds: 4 }) };
+  const { clock, mural, active, contentEl } = setup({ scenes: [okScene("v", { type: "timed", seconds: 30 }), okScene("b", { seconds: 10 })], registry: { timed } });
+  mural.start();
+  await clock.tick(0);
+  assert.equal(active(), "v");
+  assert.equal(contentEl.querySelector('[data-scene="v"]').style.getPropertyValue("--scene-ms"), "4000");
+  await clock.tick(3900);
+  assert.equal(active(), "v");
+  await clock.tick(200);
+  assert.equal(active(), "b", "saiu aos 4 s, não aos 30 s do dado");
+  assert.equal(mural.state().current.endsAt - mural.state().current.startedAt, 10000, "a que não informa usa o do dado");
+  mural.stop();
+});
