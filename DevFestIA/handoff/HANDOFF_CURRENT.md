@@ -4,6 +4,11 @@
 Sincronizar Sympla). Abrir chat novo pra próxima task, use `NEW_CHAT_PROMPT.md`. Antes de confiar neste texto, rode
 `git status --short --branch` e `git log --oneline --decorate -30` (o git não mente; cada commit tem mensagem descritiva).
 
+## SESSÃO 14 (continuação, 2026-10-09): TELÃO ACOLHEDOR, FASE A FEITA (Fase B e estudo da C em andamento)
+Pedido do Renato: telão acolhedor, feliz, que desperte pertencimento; foco na entrada E no evento; cores do Google + Gumbleton; nada obrigatório. Autorizado: Fase A completa, Fase B (mural de recados) e Fase C só como ESTUDO. Passaporte descartado (backlog). Detalhes técnicos: `PROJECT_CONTEXT.md`, "Telão acolhedor". **Fase A feita (6 commits):** cena do time, cena de mensagem (quebra-gelo, "Primeira vez aqui?", saudação), QR da comunidade (Linktree), linha do dia, "Daqui a pouco" e anúncios ao vivo (frase, contagem, pausa).
+**PENDENTE DO RENATO:** (1) COLAR as regras do Firestore de novo (`pbcopy < /Users/renatoramos/Documents/Projects/GDGCampinas/FrontEnd/DevFest-Campinas-2026/DevFestIA/firebase/firestore.rules`): sem isso os tipos frase/contagem/pausa são recusados (aparece "sem permissão"); (2) a cor da camiseta dos voluntários (preencher `MURAL_MESSAGE_VARS.shirt`); (3) horários do café (entra na grade como `moment: "coffee"`) e do sorteio (`mural-teasers.js`, `source.at`), mas nada trava: o moderador anuncia ao vivo; (4) ensaio no hardware com as cenas novas.
+**Armadilha:** o Node 24.7 local às vezes derruba um processo de teste de tela na saída (um arquivo "falha" sem teste falhando, ou `check-install` com "Segmentation fault"): rodar de novo; o CI usa outra versão e não tem isso.
+
 ## SESSÃO 14 (2026-10-08): ÁREA DE ADMIN FEITA (autorizada pelo Renato: "autorizado todos")
 
 **Intenção do Renato:** uma área de CONTROLE (telão, palestras, moderação num lugar só), NÃO configuração nem alimentação do site. Plano base: `PLANO_ADMIN.md`. Detalhes técnicos: `PROJECT_CONTEXT.md`, "Área de admin".
