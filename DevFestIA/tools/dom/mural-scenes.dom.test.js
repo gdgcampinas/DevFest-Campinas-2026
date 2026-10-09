@@ -8,9 +8,9 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 const { createFakeClock } = require("../lib/fake-clock.js");
 
-const SCENES = ["mural-scene-kit", "mural-now-next-scene", "mural-sponsors-scene", "mural-qr-scene", "mural-registered-scene", "mural-tips-scene", "mural-phoenix-scene", "mural-podium-scene", "mural-event-phase-scene", "mural-reserve-scene", "mural-spotlight-scene", "mural-selfie-scene", "mural-art-scene", "mural-album-scene", "mural-notice-scene", "mural-video-scene", "mural-team-scene"].map(name => `components/mural-scenes/${name}.js`);
+const SCENES = ["mural-scene-kit", "mural-now-next-scene", "mural-sponsors-scene", "mural-qr-scene", "mural-registered-scene", "mural-tips-scene", "mural-phoenix-scene", "mural-podium-scene", "mural-event-phase-scene", "mural-reserve-scene", "mural-spotlight-scene", "mural-selfie-scene", "mural-art-scene", "mural-album-scene", "mural-notice-scene", "mural-video-scene", "mural-team-scene", "mural-message-scene"].map(name => `components/mural-scenes/${name}.js`);
 const site = loadSite({
-  scripts: [...SITE_BASE, "features/scheduler.js", "features/agenda.js", "features/mural-now-next.js", "features/mural-photo-pool.js", "features/mural.js", "features/mural-playlist.js", "components/talk-highlight.js", "data/mural-tips.js", "data/mural-arts.js", "data/mural-albums.js", "data/mural-album-models.js", "features/album-photo-url.js", "features/album-models.js", "features/video-sound.js", "components/mural-scenes/album-models/album-model-collage.js", "components/mural-scenes/album-models/album-model-portrait-strip.js", "components/mural-scenes/album-models/album-model-polaroid.js", "components/mural-scenes/album-models/album-model-feature.js", "components/mural-scenes/album-models/album-model-mosaic.js", ...SCENES, "features/live-status.js", "features/count-up.js", "features/mural-rotation.js", "components/avatar.js"],
+  scripts: [...SITE_BASE, "features/scheduler.js", "features/agenda.js", "features/mural-now-next.js", "features/mural-photo-pool.js", "features/mural.js", "features/mural-playlist.js", "components/talk-highlight.js", "data/mural-tips.js", "data/mural-arts.js", "data/mural-albums.js", "data/mural-album-models.js", "features/album-photo-url.js", "features/album-models.js", "features/video-sound.js", "components/mural-scenes/album-models/album-model-collage.js", "components/mural-scenes/album-models/album-model-portrait-strip.js", "components/mural-scenes/album-models/album-model-polaroid.js", "components/mural-scenes/album-models/album-model-feature.js", "components/mural-scenes/album-models/album-model-mosaic.js", ...SCENES, "features/live-status.js", "features/count-up.js", "features/mural-rotation.js", "features/mural-messages.js", "data/mural-messages.js", "components/avatar.js"],
 });
 const { window, document } = site;
 test.after(() => window.close());
@@ -672,4 +672,59 @@ test("muralShorten: texto que cabe volta igual (espaços limpos) e o que não ca
   assert.equal(g("muralShorten")("  oi   tudo  bem ", 50), "oi tudo bem");
   assert.equal(g("muralShorten")("uma frase bem comprida demais", 12), "uma frase…");
   assert.equal(g("muralShorten")(null, 5), "");
+});
+
+// ---------- cena de mensagem ----------
+function messageScene({ vars = {}, sets, preload = async () => {}, moment = null } = {}) {
+  const repository = { getAll: () => sets ?? g("MURAL_MESSAGES"), vars: () => vars };
+  const scene = g("createMessageScene")({ repository, rotation: g("createRotation")(), timezone: "America/Sao_Paulo", formatTime: (date, zone) => date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone: zone }), preload, mascotUrl: "assets/img/gumbleton.png" });
+  const show = async (params, when = at("10:00"), extra = {}) => {
+    const prepared = await scene.prepare(params, ctx({ now: when, moment, ...extra }));
+    return prepared === MURAL_SKIP ? MURAL_SKIP : html(scene.render(prepared, params).markup);
+  };
+  return { show };
+}
+
+test("mensagem: o quebra-gelo mostra uma pergunta nova a cada passada e dá a volta na lista", async () => {
+  const { show } = messageScene();
+  const total = g("MURAL_MESSAGES").icebreaker.items.length;
+  const seen = [];
+  for (let i = 0; i < total + 1; i++) seen.push(textOf((await show({ set: "icebreaker" })).querySelector(".ms-message-text")));
+  assert.equal(new Set(seen.slice(0, total)).size, total, "nenhuma repetida até dar a volta");
+  assert.equal(seen[total], seen[0], "dá a volta");
+  assert.match(seen[0], /O que você está construindo agora\?/);
+});
+
+test("mensagem: saudação pela hora do evento (fuso de Campinas) e 'Boa volta!' quando o bloco da grade é o retorno do almoço", async () => {
+  const { show } = messageScene();
+  const text = async (when, moment = null) => textOf((await show({ set: "greeting" }, when, { moment })).querySelector(".ms-message-text"));
+  assert.equal(await text(at("08:10")), "Bom dia, Campinas!");
+  assert.equal(await text(at("12:00")), "Boa tarde, Campinas!");
+  assert.equal(await text(at("17:59")), "Boa tarde, Campinas!");
+  assert.equal(await text(at("18:30")), "Boa noite, Campinas!");
+  assert.equal(await text(at("02:00")), "Boa noite, Campinas!", "a janela da noite passa da meia-noite");
+  assert.equal(await text(at("13:25"), "back-to-room"), "Boa volta!", "o bloco da grade vence a janela de horário");
+});
+
+test("mensagem: 'Primeira vez aqui?' usa a cor da camiseta quando ela está preenchida e o texto sem cor quando não está", async () => {
+  const semCor = await messageScene({ vars: { shirt: "" } }).show({ set: "welcome" });
+  assert.match(textOf(semCor.querySelector(".ms-message-hint")), /Procure alguém da equipe de voluntários/);
+  const comCor = await messageScene({ vars: { shirt: "azul" } }).show({ set: "welcome" });
+  assert.match(textOf(comCor.querySelector(".ms-message-hint")), /Procure a camiseta azul dos voluntários/);
+  assert.match(textOf(comCor), /Primeira vez aqui\?/);
+  assert.match(textOf(comCor), /Você está em casa\./);
+});
+
+test("mensagem: mascote só quando pedido e quando a imagem carrega; conjunto desconhecido ou sem frase pra agora não aparece; texto nunca vira HTML", async () => {
+  assert.ok((await messageScene().show({ set: "welcome", mascot: true })).querySelector(".ms-message-mascot"));
+  assert.equal((await messageScene().show({ set: "welcome" })).querySelector(".ms-message-mascot"), null, "sem params.mascot");
+  const semImagem = await messageScene({ preload: async () => { throw new Error("404"); } }).show({ set: "welcome", mascot: true });
+  assert.equal(semImagem.querySelector(".ms-message-mascot"), null, "imagem que falha: a cena segue sem o mascote");
+  assert.equal(await messageScene().show({ set: "nao-existe" }), MURAL_SKIP);
+  const vazio = { greeting: { kicker: "k", mode: "daypart", items: [{ from: "05:00", until: "06:00", text: "Só de madrugada" }] } };
+  assert.equal(await messageScene({ sets: vazio }).show({ set: "greeting" }, at("15:00")), MURAL_SKIP, "fora de toda janela");
+  const html2 = await messageScene({ sets: { x: { kicker: "<i>k</i>", mode: "fixed", items: [{ text: "<b>oi</b>" }] } } }).show({ set: "x" });
+  assert.equal(html2.querySelector("b"), null);
+  assert.equal(html2.querySelector("i"), null);
+  assert.match(textOf(html2), /<b>oi<\/b>/);
 });

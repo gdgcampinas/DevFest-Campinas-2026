@@ -316,3 +316,17 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .mural-stage[data-shape="tall"] .ms-team{flex-direction:column;text-align:center}
 .mural-stage[data-shape="tall"] .ms-team-text{align-items:center}
 .mural-stage[data-shape="ultrawide"] .ms-team-photo .ms-avatar{width:calc(var(--u) * 36);height:calc(var(--u) * 36)}
+
+/* cena "message": texto grande e acolhedor; o brilho de fundo muda de cor por conjunto (as 4 cores do Google) e o Gumbleton fica no canto */
+.ms-message{position:relative;flex-direction:row;align-items:center;justify-content:space-between;gap:calc(var(--u) * 4);overflow:hidden;border-radius:calc(var(--u) * 3);--glow:var(--google-blue)}
+.ms-message[data-set="icebreaker"]{--glow:var(--google-yellow)}
+.ms-message[data-set="welcome"]{--glow:var(--google-green)}
+.ms-message[data-set="greeting"]{--glow:var(--google-red)}
+.ms-message::before{content:"";position:absolute;inset:-20%;background:radial-gradient(ellipse at 22% 30%,color-mix(in oklch,var(--glow) 30%,transparent),transparent 58%),radial-gradient(ellipse at 90% 100%,color-mix(in oklch,var(--glow) 16%,transparent),transparent 50%);pointer-events:none}
+.ms-message-body{position:relative;min-width:0;display:flex;flex-direction:column;gap:calc(var(--u) * 2.4);padding-left:calc(var(--u) * 3)}
+.ms-message-text{margin:0;font:800 calc(var(--u) * 10.5) / 1.08 var(--font-display);color:oklch(97% .005 260);text-wrap:balance}
+.ms-message-hint{font-size:calc(var(--u) * 3.6)}
+.ms-message-mascot{position:relative;flex:none;height:calc(var(--u) * 52);width:auto;object-fit:contain;filter:drop-shadow(0 calc(var(--u) * 1) calc(var(--u) * 2) oklch(0% 0 0 / .45))}
+.mural-stage[data-shape="tall"] .ms-message{flex-direction:column-reverse;justify-content:center;text-align:center}
+.mural-stage[data-shape="tall"] .ms-message-body{padding-left:0;align-items:center}
+.mural-stage[data-shape="ultrawide"] .ms-message-mascot{height:calc(var(--u) * 40)}
