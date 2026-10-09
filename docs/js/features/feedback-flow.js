@@ -22,11 +22,12 @@ function initFeedbackFlow({
   form = eventFeedbackFormRepository.getAll(),
   questionsConfig = talkQuestionsConfigRepository.getAll(),
   contestConfig = talkContestConfigRepository.getAll(),
+  invite = () => "",
 }) {
   const index = calendar.index;
   const endsAt = schedule[schedule.length - 1].end;
   const startsAt = schedule[0].start;
-  const feedback = initTalkFeedback(document.body, { index, reveal, now, myCheckins, myRatings, myName });
+  const feedback = initTalkFeedback(document.body, { index, reveal, now, myCheckins, myRatings, myName, invite });
   const eventFeedback = initEventFeedback(document.body, { form, myRatings, myName, now, endsAt });
   if (!reveal) return { feedback, eventFeedback };
   const questions = initTalkQuestions(document.body, { index, config: questionsConfig, myCheckins, myVotes, myAsked, myName, now, ensureCheckin: feedback.checkin });

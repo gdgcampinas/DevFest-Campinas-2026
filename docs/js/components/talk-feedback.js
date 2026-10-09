@@ -11,7 +11,7 @@
  * handler delegado saber qual palestra. `message` é um aviso de erro opcional;
  * `name` pré-preenche o nome (obrigatório) com o da última avaliação.
  */
-function talkFeedbackMarkup({ phase, entryKey, title = "", message = "", name = "" }) {
+function talkFeedbackMarkup({ phase, entryKey, title = "", message = "", name = "", invite = "" }) {
   const note = message ? `<p class="form-error" role="alert">${message}</p>` : "";
 
   if (phase === "checkin") {
@@ -51,5 +51,5 @@ function talkFeedbackMarkup({ phase, entryKey, title = "", message = "", name = 
     </form>`;
   }
 
-  return `<div class="talk-feedback talk-feedback--done">${iconMarkup("check")}${t("rate.thanks", "Obrigado pela avaliação! 🎉")}</div>`;
+  return `<div class="talk-feedback talk-feedback--done">${iconMarkup("check")}${t("rate.thanks", "Obrigado pela avaliação! 🎉")}${invite}</div>`;
 }

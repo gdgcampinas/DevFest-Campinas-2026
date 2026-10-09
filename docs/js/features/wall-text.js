@@ -6,6 +6,7 @@
  *                       de 5 letras ou mais, pega o plural), nunca um pedaço no meio de outra palavra ("cultura" não casa com "cu")
  *   validateWallPost    devolve { text, nickname, prompt } limpos ou lança Error com o motivo em português
  *   nextWallSlot        o próximo espaço livre do aparelho (1 a `maxPerPerson`) pelos espaços já usados, ou null se acabaram
+ *   fillWallText        troca `{nome}` do texto pelos valores (`{from}` e `{until}` na mensagem "os recados abrem..."); chave sem valor vira vazio
  *   wallEntry           o documento a gravar: { entryKey, text, prompt, status: "pending", nickname? }
  */
 const LEET = { 0: "o", 1: "i", 3: "e", 4: "a", 5: "s", "@": "a", $: "s" };
@@ -36,8 +37,10 @@ function nextWallSlot(usedSlots, maxPerPerson) {
   return null;
 }
 
+const fillWallText = (template, values = {}) => String(template).replace(/\{(\w+)\}/g, (_match, name) => values[name] ?? "");
+
 function wallEntry({ text, nickname, prompt }, slot) {
   return { entryKey: `wall-${slot}`, text, prompt, status: "pending", ...(nickname ? { nickname } : {}) };
 }
 
-if (typeof module !== "undefined") module.exports = { cleanWallText, findBlockedWord, validateWallPost, nextWallSlot, wallEntry };
+if (typeof module !== "undefined") module.exports = { cleanWallText, findBlockedWord, validateWallPost, nextWallSlot, fillWallText, wallEntry };

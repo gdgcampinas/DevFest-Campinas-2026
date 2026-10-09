@@ -18,7 +18,7 @@ const config = g("WALL_CONFIG");
 const text = g("WALL_TEXTS");
 const rules = { validateWallPost: g("validateWallPost"), nextWallSlot: g("nextWallSlot"), wallEntry: g("wallEntry") };
 
-function mount({ used = [], open = true, addImpl, getUid = async () => "uid1", mineImpl } = {}) {
+function mount({ used = [], open = true, phase = open ? "open" : "closed", addImpl, getUid = async () => "uid1", mineImpl } = {}) {
   document.body.innerHTML = `<div id="wallBody"></div>`;
   const added = [];
   const repository = {
@@ -26,10 +26,11 @@ function mount({ used = [], open = true, addImpl, getUid = async () => "uid1", m
     add: addImpl ?? (async (uid, entryKey, data) => { added.push({ uid, entryKey, data }); }),
   };
   const root = document.getElementById("wallBody");
-  const view = g("initWallSubmit")(root, { repository, config: { ...config, open }, rules, getUid, text });
+  let currentPhase = phase;
+  const view = g("initWallSubmit")(root, { repository, config, rules, getUid, text, phaseOf: () => currentPhase, hours: { from: "08:00", until: "17:30" } });
   const type = (selector, value) => { const el = root.querySelector(selector); el.value = value; el.dispatchEvent(new window.Event("input", { bubbles: true })); };
   const submit = () => root.querySelector("[data-wall-form]").dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
-  return { root, view, added, type, submit, ready: () => waitFor(() => root.querySelector("[data-wall-form]") || /Obrigado|encerrados/.test(textOf(root))) };
+  return { root, view, added, type, submit, setPhase: value => { currentPhase = value; }, ready: () => waitFor(() => root.querySelector("[data-wall-form]") || /Obrigado|encerrados|abrem no dia/.test(textOf(root))) };
 }
 
 test("abre com as perguntas do dado (a primeira marcada), campo com a ajuda dela, contador e o botão de enviar", async () => {
@@ -131,14 +132,34 @@ test("falha ao enviar: avisa, mantém o texto, devolve o botão e deixa tentar d
 test("fechado (config.open = false) e sem conseguir ler o limite (sem login ou sem permissão): a página fecha em vez de deixar enviar sem garantia", async () => {
   const closed = mount({ open: false });
   await closed.ready();
-  assert.match(textOf(closed.root), /encerrados por enquanto/);
+  assert.match(textOf(closed.root), /encerrados/);
   assert.equal(closed.root.querySelector("[data-wall-form]"), null);
   const noRead = mount({ mineImpl: async () => { throw { code: "permission-denied" }; } });
   await noRead.ready();
-  assert.match(textOf(noRead.root), /encerrados por enquanto/);
+  assert.match(textOf(noRead.root), /encerrados/);
   const noLogin = mount({ getUid: async () => { throw new Error("sem login"); } });
   await noLogin.ready();
-  assert.match(textOf(noLogin.root), /encerrados por enquanto/);
+  assert.match(textOf(noLogin.root), /encerrados/);
+});
+
+test("janela: antes das 08:00 mostra quando abre (com as horas), depois das 17:30 mostra encerrado, e sem formulário nos dois", async () => {
+  const before = mount({ phase: "before" });
+  await before.ready();
+  assert.match(textOf(before.root), /abrem no dia do evento, das 08:00 às 17:30/);
+  assert.equal(before.root.querySelector("[data-wall-form]"), null);
+  const closed = mount({ phase: "closed" });
+  await closed.ready();
+  assert.match(textOf(closed.root), /encerrados/);
+});
+
+test("janela: a página aberta desde cedo não envia depois que a janela fecha (o envio é recusado na hora e a tela vira 'encerrados')", async () => {
+  const { root, ready, type, submit, added, setPhase } = mount();
+  await ready();
+  type("[data-wall-text]", "Quase fora do horário");
+  setPhase("closed");
+  submit();
+  assert.match(textOf(root), /encerrados/);
+  assert.equal(added.length, 0);
 });
 
 test("texto do dado nunca vira HTML e stop impede a tela de mudar depois", async () => {
@@ -162,10 +183,10 @@ test("a página recado.html inteira abre o formulário com as frases e as pergun
   const DOCS = path.join(__dirname, "..", "..", "..", "docs");
   const html = fs.readFileSync(path.join(DOCS, "recado.html"), "utf8");
   assert.match(html, /noindex/);
-  const scripts = [...html.matchAll(/<script src="(js\/[^"?]+)[^"]*"/g)].map(match => match[1].replace("js/", "")).filter(file => !["pages/recado.js", "app.js"].includes(file));
+  const scripts = [...html.matchAll(/<script src="(js\/[^"?]+)[^"]*"/g)].map(match => match[1].replace("js/", "")).map(file => file.replace("data/schedule.dev.js", "data/schedule.js")).filter(file => !["pages/recado.js", "app.js"].includes(file));
   const page = loadSite({
     scripts, html: `<!doctype html><html><body><span id="wallMascot"></span><span id="wallLogo"></span><h1 id="wallTitle"></h1><p id="wallIntro"></p><div id="wallBody">Carregando…</div></body></html>`,
-    globals: { wallRepository: { getMineFor: async () => new Set(), add: async () => {} }, firebaseClient: { ensureAnonymousUid: async () => "uid1" } },
+    globals: { initShell: () => true, resolveNow: () => () => new Date("2026-11-28T10:00:00-03:00"), wallRepository: { getMineFor: async () => new Set(), add: async () => {} }, firebaseClient: { ensureAnonymousUid: async () => "uid1" } },
   });
   page.run(fs.readFileSync(path.join(DOCS, "js", "pages", "recado.js"), "utf8"), "pages/recado.js");
   await waitFor(() => page.document.querySelector("[data-wall-form]"));

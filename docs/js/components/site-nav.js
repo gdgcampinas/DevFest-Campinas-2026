@@ -18,6 +18,7 @@ const SITE_PAGES = [
   { id: "time", label: "Time", href: "time.html" },
   { id: "patrocinio", label: "Patrocínio", href: "patrocinio.html" },
   { id: "sorteio", label: "Sorteio", href: "sorteio.html", devOnly: true },
+  { id: "recados", label: "Recados no telão", href: "recado.html" },
   { id: "cod", label: "Código de Conduta", href: "codigo-de-conduta.html" },
   { id: "quiz", label: "Monte sua trilha", href: "quiz.html", nav: false },
 ];

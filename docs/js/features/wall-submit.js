@@ -3,9 +3,9 @@
  * `pending` e só aparece no telão depois que o moderador aprova. Cada aparelho manda até `config.maxPerPerson` (os espaços já usados vêm do banco, então recarregar a página não zera o limite).
  * Antes de enviar passa pelo filtro de primeira linha (features/wall-text.js: palavra ofensiva, link, e-mail, telefone). Erro nunca apaga o que a pessoa digitou; o botão não envia duas vezes.
  * Tudo por parâmetro: `repository` ({ add(uid, entryKey, data), getMineFor(uid, entryKeys) }), `config` (data/wall-config.js), `rules` ({ validateWallPost, nextWallSlot, wallEntry }), `getUid()`, `text` (as frases da tela,
- * data/wall-texts.js). Devolve `{ stop }`.
+ * data/wall-texts.js), `phaseOf()` ("before", "open" ou "closed": features/wall-window.js; a janela das 08:00 às 17:30 e o interruptor manual) e `hours` ({ from, until } já formatados pra mostrar). Devolve `{ stop }`.
  */
-function initWallSubmit(rootEl, { repository, config, rules, getUid, text }) {
+function initWallSubmit(rootEl, { repository, config, rules, getUid, text, phaseOf, hours = {} }) {
   const used = new Set();
   let uid = null;
   let stopped = false;
@@ -14,7 +14,7 @@ function initWallSubmit(rootEl, { repository, config, rules, getUid, text }) {
   const remaining = () => config.maxPerPerson - used.size;
   const field = attr => rootEl.querySelector(`[${attr}]`);
   const setSlot = (name, markup) => { const slot = rootEl.querySelector(`[data-slot="${name}"]`); if (slot) slot.innerHTML = markup; };
-  const showState = (state, extra = {}) => { if (!stopped) rootEl.innerHTML = wallStateMarkup({ state, text, ...extra }); };
+  const showState = (state, extra = {}) => { if (!stopped) rootEl.innerHTML = wallStateMarkup({ state, text, hours, ...extra }); };
 
   function showForm() {
     if (stopped) return;
@@ -28,7 +28,8 @@ function initWallSubmit(rootEl, { repository, config, rules, getUid, text }) {
 
   async function start() {
     showState("loading");
-    if (!config.open) return showState("closed");
+    const phase = phaseOf();
+    if (phase !== "open") return showState(phase);
     try {
       uid = await getUid();
       (await repository.getMineFor(uid, slots)).forEach(key => used.add(Number(key.split("-")[1])));
@@ -53,6 +54,7 @@ function initWallSubmit(rootEl, { repository, config, rules, getUid, text }) {
     if (!form) return;
     event.preventDefault();
     if (sending) return;
+    if (phaseOf() !== "open") return showState(phaseOf()); // a janela fechou com a página aberta: nada de enviar fora dela
     let post;
     try {
       post = rules.validateWallPost({ text: field("data-wall-text").value, nickname: field("data-wall-nickname").value, prompt: form.querySelector("[data-wall-prompt]:checked")?.value }, config);

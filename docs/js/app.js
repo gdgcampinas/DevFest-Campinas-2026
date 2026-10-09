@@ -299,6 +299,8 @@ const LOCALIZED_DATASETS = [
   () => videoRepository.getAll(),
   () => highlightsRepository.getAll(),
   () => analyticsRepository.getAll(),
+  () => wallTextsRepository.getAll(),
+  () => wallConfigRepository.getAll().prompts,
 ];
 
 /** Traduz os dados no lugar (uma vez, antes de qualquer render); no idioma padrão não faz nada. */

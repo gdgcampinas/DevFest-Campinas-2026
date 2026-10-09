@@ -38,7 +38,7 @@ function showFormError(formEl, submitBtn, message) {
   submitBtn.insertAdjacentHTML("beforebegin", `<p class="form-error" role="alert">${message}</p>`);
 }
 
-function initTalkFeedback(rootEl, { index, reveal = true, now = () => new Date(), myCheckins, myRatings, myName }) {
+function initTalkFeedback(rootEl, { index, reveal = true, now = () => new Date(), myCheckins, myRatings, myName, invite = () => "" }) {
   const announceChange = () => rootEl.dispatchEvent(new CustomEvent(FEEDBACK_CHANGED_EVENT));
 
   /** Grava o check-in. "permission-denied" = já existia (a regra recusa o segundo); outro erro sobe pra quem chamou avisar. */
@@ -63,7 +63,7 @@ function initTalkFeedback(rootEl, { index, reveal = true, now = () => new Date()
   function render(containerEl, entry, { message = "" } = {}) {
     if (!reveal || !containerEl) return;
     containerEl.dataset.feedbackContainer = entry.key;
-    containerEl.innerHTML = talkFeedbackMarkup({ ...stateFor(entry), name: myName.get(), message });
+    containerEl.innerHTML = talkFeedbackMarkup({ ...stateFor(entry), name: myName.get(), message, invite: invite() });
   }
 
   /** `?checkin=<code>` na URL: faz o check-in e limpa o parâmetro. Agendado por runAfterModules. */

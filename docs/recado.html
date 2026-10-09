@@ -3,11 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Seu recado no telão • DevFest Campinas 2026</title>
+<title data-i18n="page.wall.title">Recados no telão • DevFest Campinas 2026</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#05060a">
 <link rel="icon" href="assets/brand/gdg-icon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/icons/favicon-32.png?v=3" sizes="32x32">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png?v=3">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="preload" href="assets/fonts/google-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=1">
 <link rel="stylesheet" href="css/tokens.css?v=3">
@@ -15,24 +17,132 @@
 <link rel="stylesheet" href="css/wall.css?v=2">
 </head>
 <body>
-<main class="mod wall">
-  <div class="wall-head"><span id="wallMascot"></span><div><span id="wallLogo"></span><h1 class="mod-title" id="wallTitle">Seu recado no telão</h1><p class="mod-hint" id="wallIntro"></p></div></div>
-  <div id="wallBody">Carregando…</div>
-</main>
+
+<div class="ticker" id="ticker"></div>
+
+<header>
+  <div class="header-top">
+    <div class="brand" id="brand"></div>
+  </div>
+  <h1 class="wordmark" id="wordmark"></h1>
+  <div class="meta-line" id="headerMeta"></div>
+  <nav class="site-nav" id="siteNav"></nav>
+</header>
+
+<section class="wall" id="wallSection">
+  <div class="wall-head"><span id="wallMascot"></span><div><span id="wallLogo"></span><h1 class="section-title" id="wallTitle"></h1><p class="wall-intro" id="wallIntro"></p></div></div>
+  <div id="wallBody"></div>
+</section>
+
+<footer>
+  <div class="footer-columns"></div>
+  <div class="social-links">
+    <a href="https://www.instagram.com/gdgcampinas" target="_blank" rel="noopener">Instagram</a>
+    <a href="https://www.linkedin.com/company/gdg-campinas/" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="https://linktr.ee/gdgcampinas" target="_blank" rel="noopener">Linktree</a>
+    <a href="codigo-de-conduta.html" data-i18n="footer.conduct">Código de conduta</a>
+    <a href="admin.html" rel="nofollow" data-i18n="footer.team">Área da equipe</a>
+  </div>
+  <div class="credits">
+    <span data-i18n="footer.credits">DevFest Campinas, realizado pelo</span> <a href="https://gdg.community.dev/gdg-campinas/" target="_blank" rel="noopener">GDG Campinas</a>.
+    <span class="tag">#DevFestCampinas2026</span>
+  </div>
+</footer>
 
 <script src="js/data/repository.js?v=1"></script>
+<script src="js/data/i18n/languages.js?v=1"></script>
+<script src="js/data/i18n/en.js?v=30"></script>
+<script src="js/features/i18n-core.js?v=1"></script>
+<script src="js/features/i18n.js?v=1"></script>
 <script src="js/data/firebase-config.js?v=1"></script>
 <script type="module" src="js/data/firebase-client.js?v=6"></script>
 <script type="module" src="js/data/firestore-repository.js?v=8"></script>
-<script src="js/data/brand.js?v=1"></script>
-<script src="js/data/wall-config.js?v=1"></script>
+<script type="module" src="js/data/checkin-repository.js?v=1"></script>
+<script type="module" src="js/data/feedback-repository.js?v=1"></script>
+<script type="module" src="js/data/event-feedback-repository.js?v=1"></script>
+<script type="module" src="js/data/public-lookup-repository.js?v=1"></script>
+<script type="module" src="js/data/registrations-repository.js?v=1"></script>
+<script type="module" src="js/data/event-stats-repository.js?v=1"></script>
 <script type="module" src="js/data/wall-repository.js?v=1"></script>
-<script src="js/data/wall-texts.js?v=1"></script>
+<script src="js/data/starfield.js?v=1"></script>
+<script src="js/data/mock-links.js?v=1"></script>
+<script src="js/data/mock-photo.js?v=1"></script>
+<script src="js/data/mock-logo.js?v=2"></script>
+<script src="js/data/mock-speakers.js?v=5"></script>
+<script src="js/data/mock-talks.js?v=5"></script>
+<script src="js/data/schedule-builder.js?v=3"></script>
+<script src="js/data/schedule.dev.js" onerror="this.onerror=null;document.write('\x3Cscript src=&quot;js/data/schedule.js?v=25&quot;\x3E\x3C/script\x3E')"></script>
+<script src="js/data/placeholder.js?v=1"></script>
+<script src="js/data/persisted-set-repository.js?v=2"></script>
+<script src="js/data/favorites.js?v=1"></script>
+<script src="js/data/icons.js?v=8"></script>
+<script src="js/data/talk-highlights.js?v=6"></script>
+<script src="js/data/tickets.js?v=2"></script>
+<script src="js/data/talk-formats.js?v=1"></script>
+<script src="js/data/sponsors.js?v=4"></script>
+<script src="js/data/partner-communities.js?v=3"></script>
+<script src="js/data/highlights.js?v=6"></script>
+<script src="js/data/video.js?v=3"></script>
+<script src="js/data/stats.js?v=2"></script>
+<script src="js/data/about.js?v=3"></script>
+<script src="js/data/team.js?v=34"></script>
+<script src="js/data/team-intro.js?v=3"></script>
+<script src="js/data/contact.js?v=1"></script>
+<script src="js/data/brand.js?v=1"></script>
+<script src="js/data/wall-config.js?v=2"></script>
+<script src="js/data/wall-texts.js?v=2"></script>
+<script src="js/data/footer.js?v=3"></script>
+<script src="js/data/analytics.js?v=2"></script>
+<script src="js/data/install-guides.js?v=2"></script>
+<script src="js/components/site-nav.js?v=6"></script>
+<script src="js/components/language-switcher.js?v=1"></script>
+<script src="js/components/avatar.js?v=1"></script>
+<script src="js/components/icon.js?v=1"></script>
 <script src="js/components/escape-html.js?v=1"></script>
 <script src="js/components/brand.js?v=1"></script>
 <script src="js/components/wall-submit.js?v=2"></script>
-<script src="js/features/wall-text.js?v=1"></script>
-<script src="js/features/wall-submit.js?v=1"></script>
+<script src="js/components/registration-counter.js?v=2"></script>
+<script src="js/components/modal.js?v=2"></script>
+<script src="js/components/install-guide.js?v=1"></script>
+<script src="js/components/favorite-button.js?v=3"></script>
+<script src="js/components/speaker-link.js?v=1"></script>
+<script src="js/components/talk-highlight.js?v=7"></script>
+<script src="js/components/talk-meta.js?v=2"></script>
+<script src="js/components/calendar-links.js?v=2"></script>
+<script src="js/components/track-card.js?v=14"></script>
+<script src="js/components/info-card.js?v=1"></script>
+<script src="js/components/sponsor-card.js?v=2"></script>
+<script src="js/components/person-card.js?v=6"></script>
+<script src="js/features/agenda.js?v=6"></script>
+<script src="js/features/wall-text.js?v=2"></script>
+<script src="js/features/wall-window.js?v=1"></script>
+<script src="js/features/wall-submit.js?v=2"></script>
+<script src="js/features/registration-counter.js?v=1"></script>
+<script src="js/features/live-status.js?v=11"></script>
+<script src="js/features/talk-modal.js?v=11"></script>
+<script src="js/features/calendar.js?v=1"></script>
+<script src="js/features/talk-index.js?v=3"></script>
+<script src="js/features/calendar-actions.js?v=2"></script>
+<script src="js/features/sponsors.js?v=1"></script>
+<script src="js/features/team.js?v=5"></script>
+<script src="js/features/seo.js?v=4"></script>
+<script src="js/features/speakers.js?v=6"></script>
+<script src="js/features/stats.js?v=1"></script>
+<script src="js/features/about.js?v=2"></script>
+<script src="js/features/highlights.js?v=1"></script>
+<script src="js/features/video.js?v=2"></script>
+<script src="js/features/realizacao.js?v=1"></script>
+<script src="js/features/partner-communities.js?v=1"></script>
+<script src="js/features/tickets.js?v=5"></script>
+<script src="js/features/footer.js?v=2"></script>
+<script src="js/features/featured-speakers.js?v=3"></script>
+<script src="js/features/ticker.js?v=3"></script>
+<script src="js/features/starfield.js?v=2"></script>
+<script src="js/features/a11y.js?v=2"></script>
+<script src="js/features/install-platform.js?v=1"></script>
+<script src="js/features/pwa.js?v=4"></script>
+<script src="js/features/analytics.js?v=1"></script>
+<script src="js/features/rehearsal.js?v=2"></script>
 <script src="js/app.js?v=27"></script>
 <script src="js/pages/recado.js?v=2"></script>
 </body>

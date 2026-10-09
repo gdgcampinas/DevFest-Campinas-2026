@@ -14,11 +14,12 @@ function wallSubmitShellMarkup({ config, text }) {
     </form>`;
 }
 
-/** Os estados que trocam a página inteira: carregando, fechado, limite de recados e enviado. */
-function wallStateMarkup({ state, text, remaining = 0 }) {
+/** Os estados que trocam a página inteira: carregando, ainda não abriu (com as horas da janela), encerrado, limite de recados e enviado. */
+function wallStateMarkup({ state, text, remaining = 0, hours = {} }) {
   const mascot = state === "loading" ? "" : mascotMarkup("wall-mascot");
   const body = {
     loading: `<p class="mod-hint">${escapeHtml(text.loading)}</p>`,
+    before: `<p class="wall-state">${escapeHtml(fillWallText(text.before, hours))}</p>`,
     closed: `<p class="wall-state">${escapeHtml(text.closed)}</p>`,
     limit: `<p class="wall-state">${escapeHtml(text.limit)}</p>`,
     sent: `<p class="wall-state is-ok">${escapeHtml(text.sent)}</p>${remaining ? `<button type="button" class="chip-btn" data-wall-again>${escapeHtml(text.again)} (${remaining})</button>` : `<p class="mod-hint">${escapeHtml(text.noMore)}</p>`}`,

@@ -17,3 +17,20 @@
 .wall-send{min-height:52px;justify-content:center;font-size:17px}
 .wall-state{margin:20px 0;padding:18px;border:1px solid var(--card-border);border-radius:14px;background:var(--card-a);font:700 18px/1.4 var(--font-body)}
 .wall-state.is-ok{border-color:var(--accent)}
+
+/* a página dentro da casca do site (menu e rodapé do site): coluna única centralizada */
+.wall{max-width:560px;margin:0 auto;padding:24px}
+.wall-intro{margin:6px 0 0;font:500 16px/1.5 var(--font-body);color:var(--muted)}
+.wall-head-mascot{display:block}
+
+/* convites pro mural de recados: o cartão da home (some fora da janela de envio) e o link depois da avaliação */
+.wall-invite{max-width:1180px;margin:0 auto;padding:0 24px}
+.wall-invite-card{display:flex;align-items:center;gap:16px;padding:16px 20px;border:1px solid var(--accent);border-radius:18px;background:color-mix(in oklch,var(--accent) 10%,var(--card-a));color:var(--text);text-decoration:none}
+.wall-invite-mascot{flex:none;width:64px;height:auto}
+.wall-invite-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.wall-invite-body b{font:800 18px var(--font-display)}
+.wall-invite-body span{font:500 15px/1.4 var(--font-body);color:var(--muted)}
+.wall-invite-card .chip-btn{flex:none;min-height:44px;display:inline-flex;align-items:center}
+.wall-invite-link{margin:8px 0 0;font:600 14px var(--font-body);color:var(--muted)}
+.wall-invite-link a{color:var(--accent);font-weight:800}
+@media(max-width:560px){.wall-invite-card{flex-wrap:wrap}.wall-invite-card .chip-btn{width:100%;justify-content:center}}
