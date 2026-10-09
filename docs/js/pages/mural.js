@@ -96,7 +96,7 @@ function initMural() {
     sponsors: createSponsorsScene({ repository: sponsorsRepository, preload }),
     notice: createNoticeScene({ nowMs }),
     emergency: createEmergencyScene(),
-    video: createVideoScene({ videos: muralVideosRepository, cache: videoCache, baseUrl: mediaBase, slackSeconds: config.video.slackSeconds }),
+    video: createVideoScene({ videos: muralVideosRepository, cache: videoCache, baseUrl: mediaBase, slackSeconds: config.video.slackSeconds, captions: muralCaptionsRepository }),
     qr: createQrScene({ targets: createQrTargets({ siteUrl: EVENT.url, extraQuery: () => rehearsal.query, albumProxyUrl: proxyUrl, links: contactRepository.getAll() }), qr: createQrRenderer() }),
     registered: createRegisteredScene({ motion: config.motion }),
     tips: createTipsScene({ repository: muralTipsRepository }),

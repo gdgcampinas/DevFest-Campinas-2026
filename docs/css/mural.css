@@ -207,7 +207,7 @@ html.kiosk,html.kiosk *{cursor:none !important}
 /* ---------- arte em tela cheia ---------- */
 /* como a arte se adapta vem do dado (data/mural-arts.js): --fit e --focus, e as versões por forma do palco (--fit-tall, --focus-wide...) */
 .ms-video{position:relative;border-radius:calc(var(--u) * 1.6);overflow:hidden;background:#000}
-.ms-video-caption{position:absolute;left:calc(var(--u) * 2);bottom:calc(var(--u) * 1.6);margin:0;padding:calc(var(--u) * .7) calc(var(--u) * 1.8);border-radius:99px;background:oklch(8% .01 260 / .72);font:700 calc(var(--u) * 2.4) var(--font-body);color:#fff}
+.ms-video-caption{position:absolute;left:calc(var(--u) * 2);top:calc(var(--u) * 1.6);margin:0;padding:calc(var(--u) * .7) calc(var(--u) * 1.8);border-radius:99px;background:oklch(8% .01 260 / .72);font:700 calc(var(--u) * 2.4) var(--font-body);color:#fff}
 .ms-art{position:relative;border-radius:calc(var(--u) * 1.6);overflow:hidden;background:#000}
 .ms-art-bg{position:absolute;inset:-6%;background-size:cover;background-position:center;filter:blur(calc(var(--u) * 2.4)) brightness(.45)}
 .ms-art-img,.ms-video-el{position:relative;width:100%;height:100%;object-fit:var(--fit,cover);object-position:var(--focus,50% 50%)}
@@ -381,3 +381,8 @@ html.kiosk,html.kiosk *{cursor:none !important}
 
 /* Gumbleton em cima do texto das cenas de fase (contagem de antes do evento e agradecimento) */
 .ms-big-mascot{height:calc(var(--u) * 30);width:auto;object-fit:contain;filter:drop-shadow(0 calc(var(--u) * 1) calc(var(--u) * 2) oklch(0% 0 0 / .45))}
+
+/* legenda do vídeo (o vídeo toca mudo): faixa escura translúcida no pé, letra grande e legível de longe, até 2 linhas */
+.ms-video-sub{position:absolute;left:50%;bottom:calc(var(--u) * 4);transform:translateX(-50%);width:max-content;max-width:86%;margin:0;padding:calc(var(--u) * 1.2) calc(var(--u) * 3);border-radius:calc(var(--u) * 1.8);background:oklch(8% .01 260 / .78);color:#fff;font:700 calc(var(--u) * 4.4) / 1.22 var(--font-display);text-align:center;text-wrap:balance;text-shadow:0 calc(var(--u) * .2) calc(var(--u) * .8) oklch(0% 0 0 / .6)}
+.ms-video-sub[hidden]{display:none}
+.mural-stage[data-shape="tall"] .ms-video-sub{font-size:calc(var(--u) * 5.2);max-width:92%}

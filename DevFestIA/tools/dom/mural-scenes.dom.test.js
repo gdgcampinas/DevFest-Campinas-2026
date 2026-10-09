@@ -10,7 +10,7 @@ const { createFakeClock } = require("../lib/fake-clock.js");
 
 const SCENES = ["mural-scene-kit", "mural-now-next-scene", "mural-sponsors-scene", "mural-qr-scene", "mural-registered-scene", "mural-tips-scene", "mural-phoenix-scene", "mural-podium-scene", "mural-event-phase-scene", "mural-reserve-scene", "mural-spotlight-scene", "mural-selfie-scene", "mural-art-scene", "mural-album-scene", "mural-notice-scene", "mural-video-scene", "mural-team-scene", "mural-message-scene", "mural-day-timeline-scene", "mural-teaser-scene", "mural-wall-scene"].map(name => `components/mural-scenes/${name}.js`);
 const site = loadSite({
-  scripts: [...SITE_BASE, "features/scheduler.js", "features/agenda.js", "features/mural-now-next.js", "features/mural-photo-pool.js", "features/mural.js", "features/mural-playlist.js", "components/talk-highlight.js", "data/mural-tips.js", "data/mural-arts.js", "data/mural-albums.js", "data/mural-album-models.js", "features/album-photo-url.js", "features/album-models.js", "features/video-sound.js", "components/mural-scenes/album-models/album-model-collage.js", "components/mural-scenes/album-models/album-model-portrait-strip.js", "components/mural-scenes/album-models/album-model-polaroid.js", "components/mural-scenes/album-models/album-model-feature.js", "components/mural-scenes/album-models/album-model-mosaic.js", ...SCENES, "features/live-status.js", "features/count-up.js", "features/mural-rotation.js", "features/mural-messages.js", "features/mural-day-timeline.js", "features/mural-teasers.js", "data/mural-messages.js", "components/avatar.js"],
+  scripts: [...SITE_BASE, "features/scheduler.js", "features/agenda.js", "features/mural-now-next.js", "features/mural-photo-pool.js", "features/mural.js", "features/mural-playlist.js", "components/talk-highlight.js", "data/mural-tips.js", "data/mural-arts.js", "data/mural-albums.js", "data/mural-album-models.js", "features/album-photo-url.js", "features/album-models.js", "features/video-sound.js", "components/mural-scenes/album-models/album-model-collage.js", "components/mural-scenes/album-models/album-model-portrait-strip.js", "components/mural-scenes/album-models/album-model-polaroid.js", "components/mural-scenes/album-models/album-model-feature.js", "components/mural-scenes/album-models/album-model-mosaic.js", ...SCENES, "features/live-status.js", "features/count-up.js", "features/mural-rotation.js", "features/mural-captions.js", "features/mural-messages.js", "features/mural-day-timeline.js", "features/mural-teasers.js", "data/mural-messages.js", "components/avatar.js"],
 });
 const { window, document } = site;
 test.after(() => window.close());
@@ -877,4 +877,31 @@ test("time: organizadores e voluntários aparecem MISTURADOS (um de cada grupo p
   };
   assert.deepEqual(await names({}), ["Org Um", "Vol Um", "Org Dois", "Vol Dois", "Vol Tres", "Vol Quatro"], "voluntário já na segunda pessoa");
   assert.deepEqual(await names({ order: "listed" }), team.map(member => member.name));
+});
+
+test("vídeo com legenda: a frase certa aparece conforme o vídeo anda, some no vão, o texto nunca vira HTML e sair do vídeo desliga o relógio; clipe sem legenda não ganha a faixa", async () => {
+  const cues = [{ from: 1, to: 3, text: "Olá <b>pessoal</b>" }, { from: 4, to: 6, text: "Segunda frase" }];
+  const captions = { cuesFor: id => (id === "a" ? cues : []) };
+  const make = clips => g("createVideoScene")({ videos: { playlist: () => ({ sound: null, clips }) }, cache: { request: () => "blob:x" }, baseUrl: "u/", captions, captionTickMs: 100 });
+  const scene = make([clip("a"), clip("b")]);
+  const withCaption = scene.render(scene.prepare({ playlist: "p" }, ctx()));
+  const el = html(withCaption.markup);
+  const sub = el.querySelector("[data-sub]");
+  assert.ok(sub, "clipe com frases ganha a faixa de legenda");
+  const video = el.querySelector("video");
+  video.play = async () => {};
+  video.pause = () => {};
+  video.load = () => {};
+  const clock = createFakeClock();
+  const dispose = withCaption.mount(el, { schedule: clock.schedule });
+  const textAt = async seconds => { Object.defineProperty(video, "currentTime", { value: seconds, configurable: true }); await clock.tick(100); return [sub.hidden, textOf(sub)]; };
+  assert.deepEqual(await textAt(0.5), [true, ""]);
+  assert.deepEqual(await textAt(1.5), [false, "Olá <b>pessoal</b>"]);
+  assert.equal(sub.querySelector("b"), null, "texto da legenda é só texto");
+  assert.deepEqual(await textAt(3.5), [true, ""], "no vão a legenda some");
+  assert.deepEqual(await textAt(4.2), [false, "Segunda frase"]);
+  dispose();
+  assert.equal(clock.pending(), 0, "ao sair o relógio da legenda para");
+  const without = scene.render(scene.prepare({ playlist: "p" }, ctx()));
+  assert.equal(html(without.markup).querySelector("[data-sub]"), null, "o segundo clipe não tem frases: sem faixa");
 });
