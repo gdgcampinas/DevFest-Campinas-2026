@@ -303,3 +303,16 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .mural-stage[data-shape="ultrawide"] .ms-album--polaroid .ms-album-tile{width:20%;height:70%}
 .mural-stage[data-shape="ultrawide"] .ms-album--mosaic .ms-album-grid{grid-template-columns:repeat(6,minmax(0,1fr))}
 .mural-stage[data-shape="tall"] .ms-album--mosaic .ms-album-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+
+/* cena "time": foto grande à esquerda, nome, grupo e mini-bio à direita; em telão vertical empilha */
+.ms-team{flex-direction:row;align-items:center;gap:calc(var(--u) * 6)}
+.ms-team-photo{flex:none;display:flex;align-items:center;justify-content:center}
+.ms-team-photo .ms-avatar{width:calc(var(--u) * 46);height:calc(var(--u) * 46)}
+.ms-team-text{min-width:0;display:flex;flex-direction:column;gap:calc(var(--u) * 1.6)}
+.ms-team-name{margin:0;font:800 calc(var(--u) * 8) / 1.05 var(--font-display);color:oklch(97% .005 260);text-wrap:balance}
+.ms-team-role{margin:0;font:600 calc(var(--u) * 3) var(--font-body);color:var(--muted)}
+.ms-team-role b{color:var(--track-color);font-weight:800}
+.ms-team-bio{display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.mural-stage[data-shape="tall"] .ms-team{flex-direction:column;text-align:center}
+.mural-stage[data-shape="tall"] .ms-team-text{align-items:center}
+.mural-stage[data-shape="ultrawide"] .ms-team-photo .ms-avatar{width:calc(var(--u) * 36);height:calc(var(--u) * 36)}

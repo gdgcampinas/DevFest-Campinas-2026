@@ -8,9 +8,9 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 const { createFakeClock } = require("../lib/fake-clock.js");
 
-const SCENES = ["mural-scene-kit", "mural-now-next-scene", "mural-sponsors-scene", "mural-qr-scene", "mural-registered-scene", "mural-tips-scene", "mural-phoenix-scene", "mural-podium-scene", "mural-event-phase-scene", "mural-reserve-scene", "mural-spotlight-scene", "mural-selfie-scene", "mural-art-scene", "mural-album-scene", "mural-notice-scene", "mural-video-scene"].map(name => `components/mural-scenes/${name}.js`);
+const SCENES = ["mural-scene-kit", "mural-now-next-scene", "mural-sponsors-scene", "mural-qr-scene", "mural-registered-scene", "mural-tips-scene", "mural-phoenix-scene", "mural-podium-scene", "mural-event-phase-scene", "mural-reserve-scene", "mural-spotlight-scene", "mural-selfie-scene", "mural-art-scene", "mural-album-scene", "mural-notice-scene", "mural-video-scene", "mural-team-scene"].map(name => `components/mural-scenes/${name}.js`);
 const site = loadSite({
-  scripts: [...SITE_BASE, "features/scheduler.js", "features/agenda.js", "features/mural-now-next.js", "features/mural-photo-pool.js", "features/mural.js", "features/mural-playlist.js", "components/talk-highlight.js", "data/mural-tips.js", "data/mural-arts.js", "data/mural-albums.js", "data/mural-album-models.js", "features/album-photo-url.js", "features/album-models.js", "features/video-sound.js", "components/mural-scenes/album-models/album-model-collage.js", "components/mural-scenes/album-models/album-model-portrait-strip.js", "components/mural-scenes/album-models/album-model-polaroid.js", "components/mural-scenes/album-models/album-model-feature.js", "components/mural-scenes/album-models/album-model-mosaic.js", ...SCENES, "features/live-status.js", "features/count-up.js", "components/avatar.js"],
+  scripts: [...SITE_BASE, "features/scheduler.js", "features/agenda.js", "features/mural-now-next.js", "features/mural-photo-pool.js", "features/mural.js", "features/mural-playlist.js", "components/talk-highlight.js", "data/mural-tips.js", "data/mural-arts.js", "data/mural-albums.js", "data/mural-album-models.js", "features/album-photo-url.js", "features/album-models.js", "features/video-sound.js", "components/mural-scenes/album-models/album-model-collage.js", "components/mural-scenes/album-models/album-model-portrait-strip.js", "components/mural-scenes/album-models/album-model-polaroid.js", "components/mural-scenes/album-models/album-model-feature.js", "components/mural-scenes/album-models/album-model-mosaic.js", ...SCENES, "features/live-status.js", "features/count-up.js", "features/mural-rotation.js", "components/avatar.js"],
 });
 const { window, document } = site;
 test.after(() => window.close());
@@ -615,4 +615,61 @@ test("vídeo (montagem): toca na entrada; se o navegador bloqueia o som toca mud
   const loadError = await mountWith({ playBehavior: async () => {}, context: { moment: null } });
   loadError.video.dispatchEvent(new window.Event("error"));
   assert.match(loadError.errors[0], /não carregou/);
+});
+
+// ---------- cena do time ----------
+const person = (name, extra = {}) => ({ name, role: "", type: "voluntario", photo: "", bio: "", trackColor: "var(--accent)", social: [], ...extra });
+
+test("time: uma pessoa por passada na ordem do dado e volta ao começo; organizador e voluntário aparecem com o grupo certo", async () => {
+  const team = [person("Ana Souza", { type: "organizador", role: "Organizadora", trackColor: "var(--google-blue)", bio: "Ana cuida da programação." }), person("Bruno Lima", { role: "Voluntário" }), person("Carla Dias")];
+  const scene = g("createTeamScene")({ repository: { getAll: () => team }, preload: async () => {}, rotation: g("createRotation")() });
+  const names = [];
+  for (let i = 0; i < 4; i++) {
+    const prepared = await scene.prepare({ kicker: "Gente como você", title: "Quem faz" });
+    const view = html(scene.render(prepared, { kicker: "Gente como você", title: "Quem faz" }).markup);
+    names.push(textOf(view.querySelector(".ms-team-name")));
+    if (i === 0) {
+      assert.match(textOf(view), /Gente como você/);
+      assert.match(textOf(view.querySelector(".ms-team-role")), /^Organização · Organizadora$/);
+      assert.match(textOf(view), /Ana cuida da programação\./);
+      assert.match(view.querySelector(".ms-team").getAttribute("style"), /var\(--google-blue\)/);
+    }
+  }
+  assert.deepEqual(names, ["Ana Souza", "Bruno Lima", "Carla Dias", "Ana Souza"]);
+});
+
+test("time: sem foto cai nas iniciais, foto que falha também, sem bio mostra só o cargo, e a bio longa é cortada em palavra inteira", async () => {
+  const long = "Palavra ".repeat(60).trim();
+  const team = [person("Dora Ramos"), person("Edu Prado", { photo: "assets/x.webp", bio: long }), person("Fabi Nunes", { photo: "assets/ok.webp" })];
+  const scene = g("createTeamScene")({ repository: { getAll: () => team }, preload: async url => { if (url.includes("x.webp")) throw new Error("404"); }, rotation: g("createRotation")() });
+  const render = async () => html(scene.render(await scene.prepare({}), {}).markup);
+  const first = await render();
+  assert.ok(first.querySelector(".ms-avatar--fallback"), "sem foto: iniciais");
+  assert.equal(textOf(first.querySelector(".ms-avatar--fallback")), "DR");
+  assert.equal(first.querySelector(".ms-team-bio"), null, "sem bio não desenha o texto");
+  const second = await render();
+  assert.ok(second.querySelector(".ms-avatar--fallback"), "foto que não carrega: iniciais");
+  const bio = textOf(second.querySelector(".ms-team-bio"));
+  assert.ok(bio.endsWith("…") && bio.length <= 221 && !/Palav…$/.test(bio), `bio cortada em palavra inteira: ${bio.slice(-12)}`);
+  const third = await render();
+  assert.equal(third.querySelector("img.ms-avatar").getAttribute("src"), "assets/ok.webp");
+});
+
+test("time: sem ninguém no time a cena não aparece; nome com HTML nunca vira HTML; as duas entradas do dado dividem o rodízio", async () => {
+  const empty = g("createTeamScene")({ repository: { getAll: () => [] }, preload: async () => {}, rotation: g("createRotation")() });
+  assert.equal(await empty.prepare({}), MURAL_SKIP);
+  const team = [person("<b>Xis</b>"), person("Yara")];
+  const scene = g("createTeamScene")({ repository: { getAll: () => team }, preload: async () => {}, rotation: g("createRotation")() });
+  const one = html(scene.render(await scene.prepare({ rotation: "time" }), {}).markup);
+  assert.equal(one.querySelectorAll("b").length, 1, "só o <b> do grupo do próprio cartão, nenhum vindo do nome");
+  assert.equal(textOf(one.querySelector(".ms-team-role b")), "Voluntariado");
+  assert.equal(textOf(one.querySelector(".ms-team-name")), "<b>Xis</b>");
+  const two = html(scene.render(await scene.prepare({ rotation: "time" }), {}).markup);
+  assert.equal(textOf(two.querySelector(".ms-team-name")), "Yara", "a 2ª entrada com a mesma chave mostra a próxima pessoa");
+});
+
+test("muralShorten: texto que cabe volta igual (espaços limpos) e o que não cabe termina em reticências sem cortar palavra", () => {
+  assert.equal(g("muralShorten")("  oi   tudo  bem ", 50), "oi tudo bem");
+  assert.equal(g("muralShorten")("uma frase bem comprida demais", 12), "uma frase…");
+  assert.equal(g("muralShorten")(null, 5), "");
 });

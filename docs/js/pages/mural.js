@@ -76,6 +76,7 @@ function initMural() {
   const preload = url => preloadImage(url, { timeoutMs: config.imageTimeoutMs, schedule });
   const talkIndex = buildTalkIndex(SCHEDULE, TRACKS, EVENT.timezone);
   const grid = { schedule: SCHEDULE, tracks: TRACKS, timezone: EVENT.timezone, phaseOf: resolveEventState };
+  const rotation = createRotation();
   const registry = {
     "now-next": createNowNextScene(grid),
     album: createAlbumScene({
@@ -99,6 +100,7 @@ function initMural() {
     qr: createQrScene({ targets: createQrTargets({ siteUrl: EVENT.url, extraQuery: () => rehearsal.query, albumProxyUrl: proxyUrl }), qr: createQrRenderer() }),
     registered: createRegisteredScene({ motion: config.motion }),
     tips: createTipsScene({ repository: muralTipsRepository }),
+    team: createTeamScene({ repository: teamRepository, preload: url => preloadImage(url, { timeoutMs: config.speakerPhotoTimeoutMs, schedule }), rotation }),
     phoenix: createPhoenixScene({ preload, imageUrl: "assets/img/gumbleton.png", title, subtitle: eventDateLabel(SCHEDULE, EVENT.timezone) }),
     podium: createPodiumScene({ talkIndex, highlightOf: talkHighlightsRepository.forTalk }),
     "event-phase": createEventPhaseScene({ schedule: SCHEDULE, title }),

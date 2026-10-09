@@ -51,3 +51,11 @@ function muralAlbumTileMarkup(url, index, extra = "") {
 function muralTimeRange(start, end, timezone) {
   return `${formatEventTime(start, timezone)} às ${formatEventTime(end, timezone)}`;
 }
+
+/** Texto cortado numa palavra inteira, com reticências, pra caber na cena (mini-bio, frase longa). Texto que já cabe volta igual. */
+function muralShorten(text, max) {
+  const clean = String(text ?? "").replace(/\s+/g, " ").trim();
+  if (clean.length <= max) return clean;
+  const cut = clean.slice(0, max);
+  return `${cut.slice(0, Math.max(cut.lastIndexOf(" "), max * 0.6)).replace(/[\s,.;:!?-]+$/, "")}…`;
+}
