@@ -10,6 +10,7 @@
  *                       cada leitura conta no plano grátis do Firebase, por isso os intervalos são folgados)
  *   ADMIN_BEFORE_EVENT  a seção "Antes do evento": a limpeza do BANCO (roda no GitHub, com as travas dela) e a limpeza deste APARELHO; só texto e endereço
  *   ADMIN_MODERATORS    a seção Moderadores: limite da lista, prazo da confirmação de remoção e os textos da tela
+ *   ADMIN_WALL          a seção Recados (moderação do mural de recados): os textos da tela
  *   ADMIN_TALKS         ritmo da seção Palestras (`refreshMs`: de quanto em quanto tempo ela confere se a palestra da trilha mudou)
  * Todas as telas são internas (fora do menu e do sitemap, sem versão /DEV/): abrem na raiz. As de moderação pedem login Google de moderador.
  */
@@ -22,6 +23,7 @@ const ADMIN_SECTIONS = [
   { id: "telao", title: "Telão", icon: "screen" },
   { id: "fotos", title: "Fotos", icon: "photos" },
   { id: "palestras", title: "Palestras", icon: "talks" },
+  { id: "recados", title: "Recados", icon: "chat" },
   { id: "moderadores", title: "Moderadores", icon: "users", ownerOnly: true },
   { id: "antes-do-evento", title: "Antes do evento", icon: "checklist", ownerOnly: true },
   { id: "atalhos", title: "Atalhos", icon: "link" },
@@ -43,10 +45,28 @@ const ADMIN_OVERVIEW = [
   { id: "rooms", title: "Salas agora", refreshMs: 30000 },
   { id: "pending", title: "Perguntas pendentes", intervalMs: 60000 },
   { id: "photos", title: "Fotos do telão", intervalMs: 60000 },
+  { id: "wall", title: "Recados para aprovar", intervalMs: 30000 },
   { id: "registered", title: "Inscritos", intervalMs: 300000 },
 ];
 
 const ADMIN_TALKS = { refreshMs: 30000 };
+
+const ADMIN_WALL = {
+  intro: "Os recados da plateia chegam aqui. Só vão ao telão depois que você aprova; tirar do ar some do telão na hora.",
+  pendingTitle: "Para aprovar",
+  pendingHint: "Do mais antigo para o mais novo.",
+  liveTitle: "No telão",
+  liveHint: "Aprovados, que aparecem no mural.",
+  otherTitle: "Recusados e tirados do ar",
+  otherHint: "Dá para devolver ao telão.",
+  empty: "Nenhum recado aqui.",
+  by: "de",
+  actions: { approve: "Aprovar", reject: "Recusar", hide: "Tirar do ar", restore: "Devolver ao telão" },
+  statusName: { rejected: "recusado", hidden: "tirado do ar" },
+  noPermission: "Sem permissão: esta conta não é de moderador.",
+  readFailed: "Não consegui ler os recados. Confira a conexão.",
+  saveFailed: "Não consegui salvar. Tente de novo.",
+};
 
 const ADMIN_MODERATORS = {
   max: 30,
@@ -102,3 +122,4 @@ const adminOverviewRepository = createRepository(ADMIN_OVERVIEW);
 const adminTalksConfigRepository = createRepository(ADMIN_TALKS);
 const adminModeratorsRepository = createRepository(ADMIN_MODERATORS);
 const adminBrandRepository = createRepository(ADMIN_BRAND);
+const adminWallRepository = createRepository(ADMIN_WALL);

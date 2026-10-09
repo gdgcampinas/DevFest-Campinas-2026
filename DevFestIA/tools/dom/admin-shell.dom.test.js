@@ -115,7 +115,7 @@ test("conta que não é dona: o menu esconde as seções só do dono; a rota esc
   const helper = loadSite({ scripts: UNITS, html: BODY });
   const denied = setup({ restoreAs: "mod@gmail.com", hash: "#moderadores", access: { resolve: () => helper.get("resolveAdminAccess")({ probe: async () => { throw { code: "permission-denied" }; } }) } });
   await waitFor(() => denied.body.querySelector("[data-mounted]"));
-  assert.deepEqual([...denied.nav.querySelectorAll("a")].map(link => textOf(link)), ["Visão geral", "Telão", "Fotos", "Palestras", "Atalhos"]);
+  assert.deepEqual([...denied.nav.querySelectorAll("a")].map(link => textOf(link)), ["Visão geral", "Telão", "Fotos", "Palestras", "Recados", "Atalhos"]);
   assert.deepEqual(denied.events, ["mount:visao-geral"]);
   assert.equal(denied.window.location.hash, "#visao-geral");
   denied.window.close();
@@ -129,7 +129,7 @@ test("conta dona (a leitura da lista passa) ou sem saber (erro de rede): o menu 
     const resolve = () => helper.get("resolveAdminAccess")({ probe });
     const { body, nav, window } = setup({ restoreAs: "mod@gmail.com", access: { resolve } });
     await waitFor(() => body.querySelector("[data-mounted]"));
-    assert.equal(nav.querySelectorAll("a").length, 7, name);
+    assert.equal(nav.querySelectorAll("a").length, 8, name);
     window.close();
     helper.window.close();
   }
@@ -211,7 +211,7 @@ test("a página admin.html inteira: abre logado na seção Atalhos com os links 
   const hrefs = [...body.querySelectorAll("[data-shortcut] a")].map(link => link.getAttribute("href"));
   assert.deepEqual(hrefs, ["mural.html", "DEV/sorteio.html?telao=1"]);
   assert.ok([...body.querySelectorAll("[data-shortcut] a")].every(link => link.target === "_blank" && link.rel === "noopener"));
-  assert.deepEqual([...site.document.querySelectorAll("#adminNav a")].map(link => link.getAttribute("href")), ["#visao-geral", "#telao", "#fotos", "#palestras", "#moderadores", "#antes-do-evento", "#atalhos"]);
+  assert.deepEqual([...site.document.querySelectorAll("#adminNav a")].map(link => link.getAttribute("href")), ["#visao-geral", "#telao", "#fotos", "#palestras", "#recados", "#moderadores", "#antes-do-evento", "#atalhos"]);
   site.window.close();
 });
 
@@ -228,6 +228,7 @@ function bootAdminPage(hash) {
       moderationMuralControlRepository: { listen: (key, onNext) => { controlListeners.push(key); onNext(null); return () => controlListeners.pop(); }, set: async () => {} },
       moderationMuralHiddenRepository: { listen: (id, onNext) => { hiddenListeners.push(id); onNext({ ids: [] }); return () => hiddenListeners.pop(); }, set: async () => {} },
       moderationQuestionsRepository: { countWhere: async filters => (filters.talkKey.endsWith("|ia") ? 4 : 0) },
+      moderationWallRepository: { countWhere: async () => 2, listen: (filters, onNext) => { onNext([{ id: "a", status: "pending", text: "oi", prompt: "buscar", createdAtMs: 1 }]); return () => {}; }, update: async () => {} },
       eventStatsRepository: { get: async () => ({ total: 321 }) },
       firebaseClient: { ensureAnonymousUid: async () => "uid" },
       resolveNow: () => () => new Date("2026-11-28T12:10:00Z"), // 09:10 locais, 1ª palestra no ar (no navegador vem do app.js, que não roda aqui)
@@ -264,13 +265,14 @@ test("a página admin.html: a seção Fotos lê o álbum ao vivo pelo intermedi�
 
 test("a página admin.html: a visão geral abre por padrão com os 5 cartões do dado, cada um com o seu número, e sair da seção desliga as escutas", async () => {
   const { site, controlListeners, hiddenListeners, body } = bootAdminPage("");
-  await waitFor(() => body.querySelectorAll("[data-card]").length === 5 && !/Carregando/.test(textOf(body)));
-  assert.deepEqual([...body.querySelectorAll("[data-card]")].map(card => card.dataset.card), ["control", "rooms", "pending", "photos", "registered"]);
+  await waitFor(() => body.querySelectorAll("[data-card]").length === 6 && !/Carregando/.test(textOf(body)));
+  assert.deepEqual([...body.querySelectorAll("[data-card]")].map(card => card.dataset.card), ["control", "rooms", "pending", "photos", "wall", "registered"]);
   const card = id => textOf(body.querySelector(`[data-card="${id}"]`));
   assert.match(card("control"), /Telão normal/);
   assert.match(card("rooms"), /4 de 4 com palestra no ar/);
   assert.match(card("pending"), /4 na fila/);
   assert.match(card("photos"), /1 foto\(s\)/);
+  assert.match(card("wall"), /2 esperando/);
   assert.match(card("registered"), /321/);
   assert.equal(body.querySelector("[data-admin-title]").textContent, "Visão geral");
   assert.deepEqual(controlListeners, ["current"]);
@@ -297,6 +299,14 @@ test("a página admin.html: a seção Antes do evento traz a limpeza do banco (l
   assert.equal(body.querySelector("[data-admin-title]").textContent, "Antes do evento");
   assert.match(body.querySelector('[data-card="purge"] a').getAttribute("href"), /actions\/workflows\/purge-test-data\.yml$/);
   assert.ok(body.querySelector("[data-device-reset]"));
+  site.window.close();
+});
+
+test("a página admin.html: a seção Recados mostra a fila de recados e aprova um", async () => {
+  const { site, body } = bootAdminPage("#recados");
+  await waitFor(() => body.querySelector("[data-wall-action]"));
+  assert.equal(body.querySelector("[data-admin-title]").textContent, "Recados");
+  assert.match(textOf(body.querySelector("[data-slot=pending]")), /oi/);
   site.window.close();
 });
 

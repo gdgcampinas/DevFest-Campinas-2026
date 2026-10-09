@@ -63,3 +63,13 @@
 .ad-person .chip-btn{flex:none;min-height:40px}
 .ad-empty{display:flex;flex-direction:column;align-items:center;gap:8px;padding:28px 16px;border:1px dashed var(--card-border);border-radius:12px;color:var(--muted);text-align:center}
 .ad-empty p{margin:0;font:500 15px/1.5 var(--font-body)}
+
+/* Recados: lista de notinhas com o texto, a origem e os botões; duas colunas no computador */
+.ad-notes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.ad-note{display:flex;flex-direction:column;gap:8px;padding:12px 14px;border:1px solid var(--card-border);border-radius:12px;background:oklch(16% .018 260)}
+.ad-note-text{margin:0;font:600 17px/1.35 var(--font-body);overflow-wrap:anywhere}
+.ad-note-meta{font:500 13px var(--font-body);color:var(--muted)}
+.ad-note .ad-links .chip-btn{min-height:40px}
+.ad-cols--wall{grid-template-columns:minmax(0,1fr)}
+@media(min-width:900px){.ad-cols--wall{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.ad-card--wide{margin-top:16px}

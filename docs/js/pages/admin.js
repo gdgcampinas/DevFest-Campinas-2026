@@ -19,6 +19,7 @@ function initAdminPage() {
       telao: containerEl => initMuralControlPanel(containerEl, { ...defaultMuralControlPanelDeps(), embedded: true }),
       fotos: containerEl => mountMuralPhotoModeration(containerEl, { album: liveAlbum, proxyUrl: muralConfig.albums.proxyUrl, albumIds: muralAlbumsRepository.getAll().map(album => album.id), timeoutMs: muralConfig.albums.timeoutMs, embedded: true }),
       palestras: containerEl => initAdminTalksSection(containerEl, { ...defaultAdminTalksDeps(), links: adminTrackLinksRepository.getAll(), refreshMs: adminTalksConfigRepository.getAll().refreshMs }),
+      recados: containerEl => initAdminWall(containerEl, { repository: window.moderationWallRepository, rules: { groupWallPosts, wallStatusFor }, config: wallConfigRepository.getAll(), text: adminWallRepository.getAll(), formatTime: ms => formatEventTime(new Date(ms), EVENT.timezone) }),
       moderadores: (containerEl, { email }) => initAdminModerators(containerEl, { repository: window.moderationModeratorsRepository, rules: { buildModeratorToAdd, sortModerators }, config: adminModeratorsRepository.getAll(), selfEmail: email }),
       "antes-do-evento": containerEl => initAdminBeforeEvent(containerEl, { config: adminBeforeEventRepository.getAll(), reset: () => resetBrowserData(), resultRows: localResetRows }),
       atalhos: containerEl => initAdminShortcuts(containerEl, { shortcuts: adminShortcutsRepository.getAll() }),

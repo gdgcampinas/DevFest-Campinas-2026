@@ -6,6 +6,7 @@
  *   rooms        a palestra no ar (ou a próxima) em cada trilha, só do `SCHEDULE` (sem rede)
  *   pending      perguntas pendentes por trilha: conta no servidor (1 leitura por consulta) a cada `intervalMs`
  *   photos       fotos do álbum ao vivo e quantas estão fora do ar (cada metade falha sozinha)
+ *   wall         recados do mural esperando aprovação (conta no servidor a cada `intervalMs`)
  *   registered   total de inscritos do Sympla (`event-stats`)
  * Nomes: `schedule` = a grade do evento; `timer` = o agendador de tempo (`defaultSchedule`).
  */
@@ -71,11 +72,19 @@ function createAdminRegisteredCard({ definition, statsRepository, edition, getUi
   }, onError);
 }
 
+function createAdminWallCard({ definition, wallRepository, timer }) {
+  return (onView, onError) => pollOpen({ read: () => wallRepository.countWhere({ status: "pending" }), intervalMs: definition.intervalMs, schedule: timer, keepAlive: true })(
+    pending => onView({ headline: pending ? `${pending} esperando` : "Nenhum esperando", tone: pending ? "warn" : "ok", lines: [pending ? "Abra Recados para aprovar" : "Tudo em dia"] }),
+    onError,
+  );
+}
+
 const ADMIN_OVERVIEW_CARD_FACTORIES = {
   control: createAdminControlCard,
   rooms: createAdminRoomsCard,
   pending: createAdminPendingQuestionsCard,
   photos: createAdminPhotosCard,
+  wall: createAdminWallCard,
   registered: createAdminRegisteredCard,
 };
 
@@ -102,6 +111,7 @@ function defaultAdminOverviewDeps({ album, albumsRepository }) {
     pendingStatus: QUESTION_STATUS.pending,
     pickTalk: pickModerationTalk,
     album, albumsRepository,
+    wallRepository: window.moderationWallRepository,
     hiddenRepository: window.moderationMuralHiddenRepository,
     statsRepository: window.eventStatsRepository,
     edition: CURRENT_EDITION,
