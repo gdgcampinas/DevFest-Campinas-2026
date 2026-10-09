@@ -333,8 +333,8 @@ html.kiosk,html.kiosk *{cursor:none !important}
 
 /* cena "Hoje no DevFest": faixa de blocos (largura proporcional à duração); em pé no telão vertical */
 .ms-day{gap:calc(var(--u) * 3);justify-content:center}
-.ms-day-line{list-style:none;margin:0;padding:0;display:flex;gap:calc(var(--u) * .8);height:calc(var(--u) * 20)}
-.ms-day-block{flex:var(--minutes) 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--u) * .6);padding:0 calc(var(--u) * .6);border-radius:calc(var(--u) * 1.6);background:oklch(24% .02 260);color:var(--text);overflow:hidden;text-align:center}
+.ms-day-line{list-style:none;margin:0;padding:0;display:flex;gap:calc(var(--u) * .8);height:calc(var(--u) * 34)}
+.ms-day-block{flex:var(--minutes) 1 0;min-width:calc(var(--u) * 5);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--u) * .6);padding:0 calc(var(--u) * .6);border-radius:calc(var(--u) * 1.6);background:oklch(24% .02 260);color:var(--text);overflow:hidden;text-align:center}
 .ms-day-block b{font:800 calc(var(--u) * 3.4) / 1.05 var(--font-display);overflow-wrap:anywhere}
 .ms-day-block span{font:700 calc(var(--u) * 2) var(--font-body);color:var(--muted);font-variant-numeric:tabular-nums}
 .ms-day-block[data-kind="talks"]{background:color-mix(in oklch,var(--google-blue) 24%,oklch(20% .02 260))}
@@ -369,3 +369,12 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .mural-stage[data-shape="tall"] .ms-wall-notes{grid-template-columns:repeat(2,minmax(0,1fr))}
 .mural-stage[data-shape="ultrawide"] .ms-wall-notes{grid-template-columns:repeat(6,minmax(0,1fr))}
 .mural-stage[data-shape="ultrawide"] .ms-wall-notes[data-count]{grid-auto-rows:auto}
+.ms-team .ms-title{margin:0;font-size:calc(var(--u) * 3.6);font-weight:700;color:var(--muted)}
+/* bloco curto da grade (credenciamento, almoço...): o nome em pé, lido de baixo pra cima, e sem a hora; no telão vertical volta a ser horizontal */
+.ms-day-block[data-kind="banner"]{writing-mode:vertical-rl;transform:rotate(180deg)}
+.ms-day-block[data-kind="banner"] b{font-size:calc(var(--u) * 2.6);font-weight:700;overflow-wrap:normal}
+.ms-day-block[data-kind="banner"] span{display:none}
+.ms-day-block.is-now[data-kind="banner"]{animation:none}
+.mural-stage[data-shape="tall"] .ms-day-block[data-kind="banner"]{writing-mode:horizontal-tb;transform:none}
+.mural-stage[data-shape="tall"] .ms-day-block[data-kind="banner"] span{display:inline}
+.ms-message .ms-kicker{font-size:calc(var(--u) * 3.2)}
