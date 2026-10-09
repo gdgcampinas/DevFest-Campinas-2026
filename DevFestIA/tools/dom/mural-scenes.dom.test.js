@@ -854,3 +854,15 @@ test("cenas de fase com o Gumbleton: contagem (antes) e agradecimento (depois) g
   const plain = g("createEventPhaseScene")({ schedule, title: "DevFest" });
   assert.equal(html(plain.render(null, { kind: "thanks" }, ctx()).markup).querySelector("img"), null);
 });
+
+test("QR sem o endereço escrito: `showUrl: false` esconde o texto embaixo do QR e o QR continua desenhado", () => {
+  const drawn = [];
+  const qr = { available: () => true, draw: (el, text) => drawn.push(text) };
+  const scene = g("createQrScene")({ targets: { resolve: params => ({ url: `https://site/${params.path}`, label: `site/${params.path}` }) }, qr });
+  const show = params => { const view = scene.render(scene.prepare(params), params); const el = html(view.markup); view.mount(el); return el; };
+  assert.match(textOf(show({ heading: "Avalie", hint: "x", path: "a.html" })), /site\/a\.html/, "padrão: mostra o endereço");
+  const hidden = show({ heading: "Recados", hint: "x", path: "recado.html", showUrl: false });
+  assert.equal(hidden.querySelector(".ms-url"), null);
+  assert.ok(hidden.querySelector("[data-qr]"));
+  assert.equal(drawn.at(-1), "https://site/recado.html");
+});
