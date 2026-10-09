@@ -20,7 +20,7 @@
  * "Mensagem" (`type: "message"`): texto grande e acolhedor do conjunto `params.set` de data/mural-messages.js (quebra-gelo, "Primeira vez aqui?", saudação por horário); `params.mascot` põe o Gumbleton no canto.
  * O quebra-gelo entra no almoço, no café e quando o moderador anuncia uma pausa (`requires.live: "break"`, ver o controle remoto).
  * "Aviso" (`type: "notice"`): os avisos que o moderador escreve pelo celular (mural-controle.html); só aparece enquanto houver aviso vivo e entra na frente quando chega um novo. A emergência é a `MURAL_EMERGENCY_SCENE`, fora do rodízio.
- * "QR" (`type: "qr"`): `params.path` leva a uma página do site (avaliar o evento) e `params.album` ao CONVITE do álbum colaborativo (pelo intermediário, `/join/<id>`: o link do álbum não fica no site). O QR "Monte seu cartão Eu vou!"
+ * "QR" (`type: "qr"`): `params.link` leva a um endereço de fora por nome (`linktree` de data/contact.js: "Continue fazendo parte", no almoço, no encerramento, na entrada e depois do evento), `params.path` a uma página do site (avaliar o evento) e `params.album` ao CONVITE do álbum colaborativo (pelo intermediário, `/join/<id>`: o link do álbum não fica no site). O QR "Monte seu cartão Eu vou!"
  * saiu do rodízio (a plateia já está no evento); a página do cartão continua existindo e o QR volta se for preciso, é uma cena nova com `path: "ingressos.html?cartao=1"`.
  * O convite ("abertura") só entra ANTES do evento: ele chama pra comprar ingresso, e durante o evento todo mundo já está lá.
  *
@@ -69,6 +69,8 @@ const MURAL_SCENES = [
   { id: "video-2025-intervalo", label: "Vídeo DevFest 2025 (intervalo)", type: "video", transition: "zoom", requires: { moments: ["lunch", "closing"] }, params: { playlist: "devfest-2025" } },
   { id: "video-2025-intervalo-2", label: "Vídeo DevFest 2025 (intervalo, 2ª vez)", type: "video", transition: "zoom", requires: { moments: ["lunch", "closing"] }, params: { playlist: "devfest-2025" } },
   { id: "contagem", label: "Contagem regressiva", type: "event-phase", seconds: 12, requires: { phases: ["before"] }, params: { kind: "countdown" } },
+  { id: "qr-comunidade", label: "QR: continue fazendo parte (almoço e encerramento)", type: "qr", seconds: 16, transition: "slide", requires: { moments: ["lunch", "closing"] }, params: { kicker: "Continue fazendo parte", heading: "A comunidade é de todo mundo", hint: "Escaneie e conheça o GDG Campinas: próximos eventos, grupos e mais.", link: "linktree" } },
+  { id: "qr-comunidade-entrada-e-fim", label: "QR: continue fazendo parte (entrada e depois do evento)", type: "qr", seconds: 16, transition: "slide", requires: { phases: ["before", "after"] }, params: { kicker: "Continue fazendo parte", heading: "A comunidade é de todo mundo", hint: "Escaneie e conheça o GDG Campinas: próximos eventos, grupos e mais.", link: "linktree" } },
   { id: "qr-avaliar", label: "QR: avalie o evento", type: "qr", seconds: 16, transition: "slide", from: "2026-11-28T17:15:00-03:00", params: { kicker: "Obrigado por participar", heading: "Avalie o DevFest", hint: "Escaneie e conte como foi o evento", path: "index.html?avaliar=1" } },
   { id: "obrigado", label: "Obrigado", type: "event-phase", seconds: 12, requires: { phases: ["after"] }, params: { kind: "thanks" } },
 ];

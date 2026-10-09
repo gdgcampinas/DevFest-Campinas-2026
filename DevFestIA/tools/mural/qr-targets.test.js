@@ -22,3 +22,11 @@ test("sem intermediário ligado o QR do álbum não tem destino (a cena não apa
   assert.equal(targets({ albumProxyUrl: "" }).resolve({ album: "ao-vivo" }), null);
   assert.ok(targets({ albumProxyUrl: "" }).resolve({ path: "index.html" }));
 });
+
+test("endereço de fora por nome: usa o do mapa injetado (sem repetir o endereço no dado), escreve sem protocolo nem barra final e nome desconhecido não tem destino", () => {
+  const links = { linktree: "https://linktr.ee/gdgcampinas", comunidade: "https://exemplo.test/" };
+  assert.deepEqual(targets({ links }).resolve({ link: "linktree" }), { url: "https://linktr.ee/gdgcampinas", label: "linktr.ee/gdgcampinas" });
+  assert.equal(targets({ links }).resolve({ link: "comunidade" }).label, "exemplo.test");
+  assert.equal(targets({ links }).resolve({ link: "nao-existe" }), null);
+  assert.equal(targets().resolve({ link: "linktree" }), null, "sem mapa injetado não há destino");
+});
