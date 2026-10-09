@@ -1,6 +1,6 @@
 /**
  * Cena de VÍDEO: a próxima clipe pronto de uma lista (`params.playlist`, data/mural-videos.js). Os clipes são baixados ANTES por features/video-cache.js (um de cada vez, guardados no navegador): só entra
- * clipe que já está pronto, então o telão nunca engasga nem fica esperando rede no meio da cena; sem nenhum pronto a cena não aparece (MURAL_SKIP) e o rodízio segue. O tempo de tela é a duração do clipe
+ * clipe que já está pronto, então o telão nunca engasga nem fica esperando rede no meio da cena; sem nenhum pronto a cena não aparece (MURAL_WAIT: tenta de novo em segundos) e o rodízio segue. O tempo de tela é a duração do clipe
  * (+ uma folga), não um número fixo. Toca MUDO, ou COM SOM nos momentos e fases que o dado permite (features/video-sound.js); se o navegador bloquear o som (política de autoplay) toca mudo em vez de
  * ficar parado. Se o vídeo der erro, avisa o motor (`deps.reportError`), que pula a cena. Ao sair, solta o vídeo (libera o decodificador).
  * LEGENDAS: o vídeo toca mudo, então a fala aparece em texto por cima (data/mural-captions.js, frases com tempo; features/mural-captions.js escolhe a do segundo atual); clipe sem legenda ou que já a tem gravada não leva.
@@ -23,7 +23,7 @@ function createVideoScene({ videos, cache, baseUrl, slackSeconds = 0.6, captions
           return { clip, src, sound: videoSoundAllowed(playlist.sound, ctx) };
         }
       }
-      return MURAL_SKIP; // nenhum clipe baixado ainda
+      return MURAL_WAIT; // os clipes existem mas ainda estão baixando: volta logo, não de castigo de 1 minuto
     },
     render({ clip, src, sound }) {
       const cues = captions.cuesFor(clip.id);

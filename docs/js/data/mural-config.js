@@ -4,7 +4,7 @@
  *
  *   speakerPhotoTimeoutMs foto de palestrante que passar disso vira iniciais (a cena "rolando agora" não espera foto lenta)
  *   prepareTimeoutMs     quanto uma cena pode demorar pra preparar (foto, leitura) antes de ser pulada
- *   failureCooldownMs    cena que falhou descansa esse tempo antes de tentar de novo; skipCooldownMs = a que não tinha nada pra mostrar
+ *   failureCooldownMs    cena que falhou descansa esse tempo antes de tentar de novo; skipCooldownMs = a que não tinha nada pra mostrar; waitCooldownMs = a que tem conteúdo ainda chegando (vídeo baixando), volta logo
  *   reserveSeconds       quanto a cena de reserva fica no ar antes de o mural tentar as outras de novo (se a falha foi da própria reserva)
  *   idleRetryMs          com a reserva no ar porque NADA estava disponível (dado ao vivo ainda chegando), de quanto em quanto tempo o mural olha de novo, sem redesenhar a reserva
  *   watchdogSlackMs      folga que o vigia dá além da duração da cena antes de dizer "travou"
@@ -29,6 +29,7 @@ const MURAL_CONFIG = {
   prepareTimeoutMs: 8000,
   failureCooldownMs: 2 * 60000,
   skipCooldownMs: 60000,
+  waitCooldownMs: 5000,
   retryDelayMs: 500,
   reserveSeconds: 20,
   idleRetryMs: 5000,

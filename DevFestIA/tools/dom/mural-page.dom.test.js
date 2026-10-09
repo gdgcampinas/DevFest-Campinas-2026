@@ -46,7 +46,7 @@ function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => t
   // tempos curtos (o rodízio roda no relógio real aqui) e papel picado espiado
   site.run(`
     MURAL_SCENES.forEach(scene => { scene.seconds = 0.15; });
-    Object.assign(MURAL_CONFIG, { transitionMs: 20, retryDelayMs: 10, clockEveryMs: 20, reserveSeconds: 0.15, idleRetryMs: 50, failureCooldownMs: 50, skipCooldownMs: 50, kioskEnsureEveryMs: 1000000, health: { ...MURAL_CONFIG.health, versionCheckEveryMs: 1000000 } });
+    Object.assign(MURAL_CONFIG, { transitionMs: 20, retryDelayMs: 10, clockEveryMs: 20, reserveSeconds: 0.15, idleRetryMs: 50, failureCooldownMs: 50, skipCooldownMs: 50, waitCooldownMs: 50, kioskEnsureEveryMs: 1000000, health: { ...MURAL_CONFIG.health, versionCheckEveryMs: 1000000 } });
     Object.assign(MURAL_CONFIG.network, { probeEveryMs: 25, backoff: { baseMs: 20, maxMs: 40, factor: 1, jitter: 0 } });
     Object.assign(MURAL_CONFIG.motion, { countUpMs: 60, countUpStepMs: 20 });
     MURAL_ALBUMS.forEach(album => { album.pollMs = 40; });

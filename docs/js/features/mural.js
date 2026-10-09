@@ -21,6 +21,7 @@
  * sozinha: se falhar, o HTML de emergência segura a tela e o motor tenta de novo.
  */
 const MURAL_SKIP = Symbol("mural-skip");
+const MURAL_WAIT = Symbol("mural-wait"); // "tem conteúdo, mas ainda está chegando" (ex.: vídeo baixando): descansa só `waitCooldownMs`, bem menos que o SKIP
 
 function createMural({
   contentEl, scenes, registry, reserveScene, emergencyScene = null, emergencyMarkup = "", getContext, config,
@@ -126,9 +127,9 @@ function createMural({
       const params = scene.params ?? {};
       const prepared = await withTimeout(impl.prepare?.(params, ctx), config.prepareTimeoutMs, schedule, "prepare demorou demais");
       if (mine !== token || stopped) return;
-      if (prepared === MURAL_SKIP) {
+      if (prepared === MURAL_SKIP || prepared === MURAL_WAIT) {
         if (held) held = null; // cena fixada sem nada pra mostrar: solta e o rodízio volta
-        cooldowns = withCooldown(cooldowns, scene.id, nowMs(), config.skipCooldownMs);
+        cooldowns = withCooldown(cooldowns, scene.id, nowMs(), prepared === MURAL_WAIT ? config.waitCooldownMs ?? config.skipCooldownMs : config.skipCooldownMs);
         lastSceneId = scene.id;
         return later(0);
       }

@@ -16,6 +16,7 @@ const { window, document } = site;
 test.after(() => window.close());
 const g = name => site.get(name);
 const MURAL_SKIP = g("MURAL_SKIP");
+const MURAL_WAIT = g("MURAL_WAIT");
 const html = markup => { const el = document.createElement("div"); el.innerHTML = markup; return el; };
 const ctx = (extra = {}) => ({ now: new Date("2026-11-28T12:00:00Z"), reveal: true, phase: "live", live: {}, ...extra });
 const at = hhmm => new Date(`2026-11-28T${hhmm}:00-03:00`);
@@ -548,12 +549,12 @@ function videoScene({ ready = new Set(["a.mp4", "b.mp4", "c.mp4"]), baseUrl = "h
   return { scene: g("createVideoScene")({ videos, cache, baseUrl, slackSeconds: 0.5 }), requested, ready };
 }
 
-test("vídeo: sem endereço do intermediário, sem lista ou sem nenhum clipe baixado a cena não aparece; clipe que ainda não baixou é pulado e a vez passa pro próximo", () => {
+test("vídeo: sem endereço do intermediário, sem lista ou sem nenhum clipe baixado a cena não aparece (este último espera pouco: MURAL_WAIT); clipe que ainda não baixou é pulado e a vez passa pro próximo", () => {
   assert.equal(videoScene({ baseUrl: "" }).scene.prepare({ playlist: "lista" }, ctx()), MURAL_SKIP);
   assert.equal(videoScene().scene.prepare({ playlist: "nao-existe" }, ctx()), MURAL_SKIP);
   assert.equal(videoScene({ clips: [] }).scene.prepare({ playlist: "lista" }, ctx()), MURAL_SKIP);
   const none = videoScene({ ready: new Set() });
-  assert.equal(none.scene.prepare({ playlist: "lista" }, ctx()), MURAL_SKIP);
+  assert.equal(none.scene.prepare({ playlist: "lista" }, ctx()), MURAL_WAIT, "clipes existem mas ainda baixando: espera curta, não o castigo do SKIP");
   assert.deepEqual(none.requested, ["https://media.test/a.mp4", "https://media.test/b.mp4", "https://media.test/c.mp4"], "pediu todos (começa a baixar os que faltam)");
   const partial = videoScene({ ready: new Set(["b.mp4"]) });
   assert.equal(partial.scene.prepare({ playlist: "lista" }, ctx()).clip.id, "b", "a (não baixado) foi pulado");

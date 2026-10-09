@@ -15,10 +15,11 @@ const { document, window } = site;
 test.after(() => window.close());
 const createMural = site.get("createMural");
 const MURAL_SKIP = site.get("MURAL_SKIP");
+const MURAL_WAIT = site.get("MURAL_WAIT");
 const createReloadLedger = site.get("createReloadLedger");
 const evaluateHealth = site.get("evaluateHealth");
 
-const config = { defaultSeconds: 10, holdCheckMs: 5000, transitionMs: 600, prepareTimeoutMs: 8000, failureCooldownMs: 120000, skipCooldownMs: 60000, retryDelayMs: 500, reserveSeconds: 20, idleRetryMs: 5000, watchdogSlackMs: 5000, maxConsecutiveFailures: 6, preventiveReloadMs: 2 * 3600000, reloadStormWindowMs: 600000, reloadStormMax: 3 };
+const config = { defaultSeconds: 10, holdCheckMs: 5000, transitionMs: 600, prepareTimeoutMs: 8000, failureCooldownMs: 120000, skipCooldownMs: 60000, waitCooldownMs: 5000, retryDelayMs: 500, reserveSeconds: 20, idleRetryMs: 5000, watchdogSlackMs: 5000, maxConsecutiveFailures: 6, preventiveReloadMs: 2 * 3600000, reloadStormWindowMs: 600000, reloadStormMax: 3 };
 const okScene = (id, extra = {}) => ({ id, type: "ok", params: { label: id }, ...extra });
 const okImpl = { render: (_prepared, params) => ({ markup: `<p>${params.label}</p>` }) };
 const reserveScene = { id: "reserva", type: "reserve", params: {} };
@@ -116,6 +117,22 @@ test("prepare que nunca termina estoura o tempo limite e o rodízio segue", asyn
   await clock.tick(2000);
   assert.equal(active(), "b");
   assert.match(events.failures[0][1], /prepare demorou demais/);
+  mural.stop();
+});
+
+test("cena com conteúdo ainda chegando (MURAL_WAIT) descansa só o tempo curto e volta quando fica pronta", async () => {
+  let ready = false;
+  const { clock, mural, active } = setup({
+    scenes: [okScene("baixando", { type: "wait" }), okScene("b")],
+    registry: { wait: { prepare: () => (ready ? {} : MURAL_WAIT), render: okImpl.render } },
+  });
+  mural.start();
+  await clock.tick(1);
+  assert.equal(active(), "b");
+  assert.deepEqual([...mural.state().cooling], ["baixando"]);
+  ready = true;
+  await clock.tick(5000 + 10000 + 1000); // passa o descanso curto (5 s) e o tempo de tela de "b"
+  assert.ok(mural.state().cooling.length === 0, "o descanso curto acabou muito antes dos 60 s do SKIP");
   mural.stop();
 });
 
