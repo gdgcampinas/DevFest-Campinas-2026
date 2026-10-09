@@ -378,3 +378,6 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .mural-stage[data-shape="tall"] .ms-day-block[data-kind="banner"]{writing-mode:horizontal-tb;transform:none}
 .mural-stage[data-shape="tall"] .ms-day-block[data-kind="banner"] span{display:inline}
 .ms-message .ms-kicker{font-size:calc(var(--u) * 3.2)}
+
+/* Gumbleton em cima do texto das cenas de fase (contagem de antes do evento e agradecimento) */
+.ms-big-mascot{height:calc(var(--u) * 30);width:auto;object-fit:contain;filter:drop-shadow(0 calc(var(--u) * 1) calc(var(--u) * 2) oklch(0% 0 0 / .45))}

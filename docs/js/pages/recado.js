@@ -3,6 +3,8 @@
  */
 function initRecadoPage() {
   const text = wallTextsRepository.getAll();
+  document.getElementById("wallMascot").innerHTML = mascotMarkup("wall-head-mascot");
+  document.getElementById("wallLogo").innerHTML = logoMarkup("wall-logo");
   document.getElementById("wallTitle").textContent = text.title;
   document.getElementById("wallIntro").textContent = text.intro;
   initWallSubmit(document.getElementById("wallBody"), {

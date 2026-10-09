@@ -842,3 +842,15 @@ test("recados: o texto e o apelido da plateia nunca viram HTML", () => {
   assert.equal(view.querySelector("b"), null);
   assert.match(textOf(view), /<img src=x onerror=alert\(1\)>/);
 });
+
+test("cenas de fase com o Gumbleton: contagem (antes) e agradecimento (depois) ganham o mascote quando a imagem vem do dado; sem imagem seguem como eram", () => {
+  const schedule = [{ start: at("08:00"), end: at("18:00") }];
+  const withMascot = g("createEventPhaseScene")({ schedule, title: "DevFest", mascotUrl: "assets/img/gumbleton.png" });
+  for (const kind of ["countdown", "thanks"]) {
+    const el = html(withMascot.render(null, { kind }, ctx({ now: at("07:00") })).markup);
+    assert.equal(el.querySelector("img.ms-big-mascot").getAttribute("src"), "assets/img/gumbleton.png", kind);
+    assert.equal(el.querySelector("img.ms-big-mascot").getAttribute("onerror"), "this.remove()", "imagem quebrada some sozinha");
+  }
+  const plain = g("createEventPhaseScene")({ schedule, title: "DevFest" });
+  assert.equal(html(plain.render(null, { kind: "thanks" }, ctx()).markup).querySelector("img"), null);
+});

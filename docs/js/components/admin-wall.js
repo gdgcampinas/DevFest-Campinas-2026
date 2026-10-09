@@ -20,7 +20,7 @@ const WALL_BUTTONS = {
 };
 
 function adminWallListMarkup({ posts, text, promptLabelOf, formatTime, busyId = null }) {
-  if (!posts.length) return `<p class="mod-hint">${escapeHtml(text.empty)}</p>`;
+  if (!posts.length) return adminEmptyMarkup(text.empty);
   const row = post => {
     const meta = [promptLabelOf(post.prompt), post.nickname ? `${text.by} ${post.nickname}` : "", post.createdAtMs ? formatTime(post.createdAtMs) : ""].filter(Boolean).join(" · ");
     const buttons = (WALL_BUTTONS[post.status] ?? []).map(({ action, primary, danger }) => `<button type="button" class="chip-btn${primary ? " chip-btn--primary" : ""}${danger ? " chip-btn--danger" : ""}" data-wall-action="${action}" data-wall-id="${escapeHtml(post.id)}"${busyId === post.id ? " disabled" : ""}>${escapeHtml(text.actions[action])}</button>`).join("");

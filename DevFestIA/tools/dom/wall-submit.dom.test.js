@@ -9,7 +9,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { loadSite, SITE_BASE, waitFor, textOf } = require("../lib/dom-harness.js");
 
-const UNITS = [...SITE_BASE, "data/wall-config.js", "data/wall-texts.js", "components/wall-submit.js", "features/wall-text.js", "features/wall-submit.js"];
+const UNITS = [...SITE_BASE, "data/brand.js", "components/brand.js", "data/wall-config.js", "data/wall-texts.js", "components/wall-submit.js", "features/wall-text.js", "features/wall-submit.js"];
 const site = loadSite({ scripts: UNITS });
 const { window, document } = site;
 test.after(() => window.close());
@@ -63,6 +63,7 @@ test("enviar: grava como pendente no espaço 1 do aparelho, com a pergunta e o a
   await waitFor(() => /Recebemos/.test(textOf(root)));
   assert.deepEqual(JSON.parse(JSON.stringify(added)), [{ uid: "uid1", entryKey: "wall-1", data: { entryKey: "wall-1", text: "Vim buscar gente boa", prompt: config.prompts[0].id, status: "pending", nickname: "Ana" } }]);
   assert.match(textOf(root), /Mandar outro recado \(2\)/);
+  assert.ok(root.querySelector("img.wall-mascot"), "o Gumbleton comemora o envio");
 });
 
 test("mandar outro: o formulário volta limpo no espaço seguinte; no último recado não oferece mais", async () => {
@@ -91,6 +92,7 @@ test("limite: quem já mandou os 3 (mesmo recarregando a página) vê o aviso e 
   const { root, ready } = mount({ used: [1, 2, 3] });
   await ready();
   assert.match(textOf(root), /já mandou todos os seus recados/);
+  assert.ok(root.querySelector("img.wall-mascot"));
   assert.equal(root.querySelector("[data-wall-form]"), null);
 });
 
@@ -162,7 +164,7 @@ test("a página recado.html inteira abre o formulário com as frases e as pergun
   assert.match(html, /noindex/);
   const scripts = [...html.matchAll(/<script src="(js\/[^"?]+)[^"]*"/g)].map(match => match[1].replace("js/", "")).filter(file => !["pages/recado.js", "app.js"].includes(file));
   const page = loadSite({
-    scripts, html: `<!doctype html><html><body><h1 id="wallTitle"></h1><p id="wallIntro"></p><div id="wallBody">Carregando…</div></body></html>`,
+    scripts, html: `<!doctype html><html><body><span id="wallMascot"></span><span id="wallLogo"></span><h1 id="wallTitle"></h1><p id="wallIntro"></p><div id="wallBody">Carregando…</div></body></html>`,
     globals: { wallRepository: { getMineFor: async () => new Set(), add: async () => {} }, firebaseClient: { ensureAnonymousUid: async () => "uid1" } },
   });
   page.run(fs.readFileSync(path.join(DOCS, "js", "pages", "recado.js"), "utf8"), "pages/recado.js");
@@ -170,5 +172,7 @@ test("a página recado.html inteira abre o formulário com as frases e as pergun
   assert.equal(page.document.getElementById("wallTitle").textContent, "Seu recado no telão");
   assert.match(page.document.getElementById("wallIntro").textContent, /aprovar/);
   assert.equal(page.document.querySelectorAll("[data-wall-prompt]").length, 3);
+  assert.equal(page.document.querySelector("#wallMascot img").getAttribute("src"), "assets/img/gumbleton.png");
+  assert.equal(page.document.querySelector("#wallLogo img").getAttribute("alt"), "GDG Campinas");
   page.window.close();
 });

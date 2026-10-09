@@ -20,7 +20,7 @@ function createMessageScene({ repository, rotation, timezone, formatTime, preloa
       return {
         markup: `<section class="ms ms-message" data-set="${escapeHtml(set)}">
           <div class="ms-message-body"><span class="ms-kicker">${escapeHtml(kicker)}</span><p class="ms-message-text">${escapeHtml(message.text)}</p>${message.hint ? `<p class="ms-hint ms-message-hint">${escapeHtml(message.hint)}</p>` : ""}</div>
-          ${mascot ? `<img class="ms-message-mascot" src="${escapeHtml(mascot)}" alt="">` : ""}
+          ${mascot ? muralMascotMarkup(mascot, "ms-message-mascot") : ""}
         </section>`,
       };
     },

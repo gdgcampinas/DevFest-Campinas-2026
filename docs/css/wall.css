@@ -1,7 +1,9 @@
 /* Página de enviar recado (recado.html), feita pro celular: cartão único, botões grandes. O resto (campos, botões) é do styles.css (.mod, .chip-btn, .feedback-input). */
 .wall{max-width:560px}
 .wall-head{display:flex;align-items:center;gap:14px;margin-bottom:18px}
-.wall-head img{width:64px;height:auto;flex:none}
+.wall-head-mascot{width:64px;height:auto;flex:none}
+.wall-logo{height:30px;width:auto;margin-bottom:6px}
+.wall-mascot{display:block;width:96px;height:auto;margin:8px auto 0}
 .wall-head .mod-title{margin:0}
 .wall-head .mod-hint{margin:4px 0 0}
 .wall-form{display:flex;flex-direction:column;gap:16px}

@@ -59,3 +59,8 @@ function muralShorten(text, max) {
   const cut = clean.slice(0, max);
   return `${cut.slice(0, Math.max(cut.lastIndexOf(" "), max * 0.6)).replace(/[\s,.;:!?-]+$/, "")}…`;
 }
+
+/** O Gumbleton (mascote) numa cena: a imagem é a de data/brand.js, passada já resolvida (`url`); imagem que não carrega some sozinha. `className` é o tamanho/posição da cena. */
+function muralMascotMarkup(url, className) {
+  return `<img class="${escapeHtml(className)}" src="${escapeHtml(url)}" alt="" onerror="this.remove()">`;
+}

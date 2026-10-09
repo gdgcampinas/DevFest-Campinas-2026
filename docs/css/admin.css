@@ -73,3 +73,9 @@
 .ad-cols--wall{grid-template-columns:minmax(0,1fr)}
 @media(min-width:900px){.ad-cols--wall{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
 .ad-card--wide{margin-top:16px}
+
+/* marca: Gumbleton nos estados vazios e na porta de entrada, logo do GDG na barra do admin */
+.ad-empty-mascot{width:72px;height:auto;opacity:.95}
+.ad-bar-mascot{width:76px;height:auto;flex:none}
+.ad-bar-title{display:flex;align-items:center;gap:14px}
+.ad-bar-logo{height:34px;width:auto;flex:none}

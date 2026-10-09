@@ -8,7 +8,7 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, waitFor, textOf } = require("../lib/dom-harness.js");
 const { createFakeClock } = require("../lib/fake-clock.js");
 
-const site = loadSite({ scripts: [...SITE_BASE, "features/scheduler.js", "data/admin-sections.js", "features/two-tap-confirm.js", "features/moderator-rules.js", "components/admin-icons.js", "components/initial-avatar.js", "components/admin-card.js", "features/admin-access.js", "components/admin-moderators.js", "features/admin-moderators.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "features/scheduler.js", "data/admin-sections.js", "features/two-tap-confirm.js", "features/moderator-rules.js", "data/brand.js", "components/brand.js", "components/admin-icons.js", "components/initial-avatar.js", "components/admin-card.js", "features/admin-access.js", "components/admin-moderators.js", "features/admin-moderators.js"] });
 const { window, document } = site;
 test.after(() => window.close());
 const g = name => site.get(name);
@@ -54,6 +54,7 @@ test("lista os moderadores em ordem alfabética com o botão de remover; lista v
   assert.match(textOf(root), /só o dono da conta/i);
   const empty = mount({ initial: [] });
   assert.match(textOf(empty.root.querySelector("[data-slot=list]")), /o dono sempre pode tudo/i);
+  assert.ok(empty.root.querySelector("[data-slot=list] img.ad-empty-mascot"), "estado vazio com o Gumbleton");
 });
 
 test("cadastrar: valida, grava com o e-mail limpo e quem cadastrou, limpa o campo e avisa; erro de validação mantém o texto", async () => {

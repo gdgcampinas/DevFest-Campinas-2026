@@ -26,6 +26,6 @@ function adminModeratorsSlots({ list, armedId = null, selfEmail = "", busy = fal
     count: `<div class="ad-card-head"><div><h2 class="mod-section-title">${escapeHtml(text.listTitle)} <span class="ad-count">${list.length}</span></h2></div></div>`,
     list: list.length
       ? `<ul class="ad-people">${list.map(row).join("")}</ul>`
-      : `<div class="ad-empty">${adminIconMarkup("users", { size: 28 })}<p>${escapeHtml(text.empty)}</p></div>`,
+      : adminEmptyMarkup(text.empty),
   };
 }

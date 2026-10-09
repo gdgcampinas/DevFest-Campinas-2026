@@ -15,7 +15,7 @@ const SCRIPTS = [...HTML.matchAll(/<script src="(js\/[^"?]+)[^"]*"/g)].map(match
 const PAGE = fs.readFileSync(path.join(DOCS, "js", "pages", "admin.js"), "utf8");
 const BODY = `<!doctype html><html><body><nav id="adminNav" hidden></nav><main id="adminBody">Carregando…</main></body></html>`;
 
-const UNITS = [...SITE_BASE, "data/admin-sections.js", "components/escape-html.js", "components/moderator-login.js", "components/admin-icons.js", "components/initial-avatar.js", "components/admin-card.js", "features/admin-access.js", "components/admin-nav.js", "components/admin-shell.js", "features/moderator-login.js", "features/admin-session.js", "features/hash-router.js", "features/admin-nav.js", "features/admin-shell.js"];
+const UNITS = [...SITE_BASE, "data/admin-sections.js", "components/escape-html.js", "components/moderator-login.js", "data/brand.js", "components/brand.js", "components/admin-icons.js", "components/initial-avatar.js", "components/admin-card.js", "features/admin-access.js", "components/admin-nav.js", "components/admin-shell.js", "features/moderator-login.js", "features/admin-session.js", "features/hash-router.js", "features/admin-nav.js", "features/admin-shell.js"];
 
 /** Login de mentira: `restoreAs` = e-mail já logado ("" = ninguém); `signIn` pode falhar. */
 function fakeLogin({ restoreAs = "", signInImpl } = {}) {
@@ -46,6 +46,7 @@ test("sem login: só a porta de entrada com o botão do Google, menu escondido e
   const { body, nav, events, window } = setup();
   await waitFor(() => body.querySelector("[data-mod-signin]"));
   assert.match(textOf(body), /Área de admin/);
+  assert.ok(body.querySelector("img.ad-bar-mascot"), "o Gumbleton recebe quem chega");
   assert.equal(nav.hidden, true);
   assert.deepEqual(events, []);
   window.close();
@@ -56,6 +57,7 @@ test("quem já tinha entrado em outra tela volta logado: conta, menu e a seção
   await waitFor(() => body.querySelector("[data-mounted]"));
   assert.match(textOf(body), /mod@gmail\.com/);
   assert.equal(nav.hidden, false);
+  assert.equal(body.querySelector("img.ad-bar-logo").getAttribute("alt"), "GDG Campinas", "logo do GDG na barra");
   assert.equal(body.querySelector("[data-admin-title]").textContent, "Visão geral");
   assert.deepEqual(events, ["mount:visao-geral"]);
   assert.equal(textOf(nav.querySelector("a[aria-current]")), "Visão geral");
