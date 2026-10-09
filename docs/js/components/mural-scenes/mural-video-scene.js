@@ -4,9 +4,9 @@
  * (+ uma folga), não um número fixo. Toca MUDO, ou COM SOM nos momentos e fases que o dado permite (features/video-sound.js); se o navegador bloquear o som (política de autoplay) toca mudo em vez de
  * ficar parado. Se o vídeo der erro, avisa o motor (`deps.reportError`), que pula a cena. Ao sair, solta o vídeo (libera o decodificador).
  * LEGENDAS: o vídeo toca mudo, então a fala aparece em texto por cima (data/mural-captions.js, frases com tempo; features/mural-captions.js escolhe a do segundo atual); clipe sem legenda ou que já a tem gravada não leva.
- * Cada clipe diz como se encaixa em qualquer proporção de telão (`fit`/`focus`, features como as artes). Tudo injetado: `videos` (repository), `cache`, `baseUrl` (vazio = vídeos desligados), `slackSeconds`, `captions` (data/mural-captions.js: as legendas por clipe, desenhadas sobre o vídeo mudo; o texto muda conforme o vídeo anda) e `captionTickMs`.
+ * Cada clipe diz como se encaixa em qualquer proporção de telão (`fit`/`focus`, features como as artes). Tudo injetado: `videos` (repository), `cache`, `baseUrl` (vazio = vídeos desligados), `slackSeconds`, `captions` (data/mural-captions.js: as legendas por clipe, desenhadas sobre o vídeo mudo; o texto muda conforme o vídeo anda), `captionTickMs`, `playRetries` e `playRetryMs` (quantas vezes e de quanto em quanto tempo tenta tocar de novo quando o navegador pausa o vídeo pra economizar energia).
  */
-function createVideoScene({ videos, cache, baseUrl, slackSeconds = 0.6, captions = { cuesFor: () => [] }, captionTickMs = 150 }) {
+function createVideoScene({ videos, cache, baseUrl, slackSeconds = 0.6, captions = { cuesFor: () => [] }, captionTickMs = 150, playRetries = 20, playRetryMs = 500 }) {
   const cursors = new Map(); // playlist -> posição da próxima
   return {
     prepare(params, ctx) {
@@ -35,18 +35,24 @@ function createVideoScene({ videos, cache, baseUrl, slackSeconds = 0.6, captions
           const fail = reason => deps.reportError?.(new Error(`vídeo ${clip.id}: ${reason}`));
           video.addEventListener("error", () => fail("não carregou"));
           const play = () => Promise.resolve(video.play()); // navegador sem promessa (ou teste) também vale
-          play().catch(async error => {
+          let cancelRetry = () => {};
+          const start = (attempt = 0) => play().catch(async error => {
+            if (error?.name === "AbortError" && deps.schedule && attempt < playRetries) { // o navegador pausou o vídeo "pra economizar energia" (janela escondida ou coberta): tenta de novo até ela voltar, em vez de derrubar a cena
+              cancelRetry = deps.schedule(() => start(attempt + 1), playRetryMs);
+              return;
+            }
             if (!sound || error?.name !== "NotAllowedError") return fail(error?.message ?? "não tocou");
             video.muted = true; // o navegador bloqueou o som: segue mudo (o comando do quiosque libera: --autoplay-policy=no-user-gesture-required)
             await play().catch(second => fail(second?.message ?? "não tocou"));
           });
+          start();
           const subEl = el.querySelector("[data-sub]");
           const stopCaptions = subEl ? scheduleEvery(deps.schedule, captionTickMs, () => {
             const text = captionAt(cues, video.currentTime);
             if (subEl.textContent !== text) subEl.textContent = text;
             subEl.hidden = !text;
           }) : () => {};
-          return () => { stopCaptions(); video.pause(); video.removeAttribute("src"); video.load(); };
+          return () => { cancelRetry(); stopCaptions(); video.pause(); video.removeAttribute("src"); video.load(); };
         },
       };
     },

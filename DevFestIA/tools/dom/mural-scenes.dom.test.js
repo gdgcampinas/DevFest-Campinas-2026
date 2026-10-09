@@ -905,3 +905,33 @@ test("vídeo com legenda: a frase certa aparece conforme o vídeo anda, some no 
   const without = scene.render(scene.prepare({ playlist: "p" }, ctx()));
   assert.equal(html(without.markup).querySelector("[data-sub]"), null, "o segundo clipe não tem frases: sem faixa");
 });
+
+test("vídeo: se o navegador pausa o vídeo pra economizar energia (AbortError) a cena tenta de novo até tocar em vez de falhar; passando do limite avisa o motor; sair cancela a nova tentativa", async () => {
+  const make = playRetries => g("createVideoScene")({ videos: { playlist: () => ({ sound: null, clips: [clip("a")] }) }, cache: { request: () => "blob:x" }, baseUrl: "u/", playRetries, playRetryMs: 500 });
+  const run = async (playRetries, allowFromAttempt) => {
+    const scene = make(playRetries);
+    const view = scene.render(scene.prepare({ playlist: "p" }, ctx()));
+    const el = html(view.markup);
+    const video = el.querySelector("video");
+    let attempts = 0;
+    video.play = () => { attempts++; return attempts >= allowFromAttempt ? Promise.resolve() : Promise.reject(Object.assign(new Error("interrompido"), { name: "AbortError" })); };
+    video.pause = () => {};
+    video.load = () => {};
+    const clock = createFakeClock();
+    const errors = [];
+    const dispose = view.mount(el, { reportError: error => errors.push(error.message), schedule: clock.schedule });
+    await clock.tick(5000);
+    return { attempts: () => attempts, errors, dispose, clock };
+  };
+  const recovers = await run(20, 4);
+  assert.equal(recovers.attempts(), 4, "tentou até o navegador deixar tocar");
+  assert.deepEqual(recovers.errors, []);
+  const gives = await run(3, 99);
+  assert.equal(gives.attempts(), 4, "a primeira mais 3 novas tentativas");
+  assert.match(gives.errors[0], /interrompido/, "depois do limite avisa o motor");
+  const leaving = await run(20, 99);
+  leaving.dispose();
+  const before = leaving.attempts();
+  await leaving.clock.tick(5000);
+  assert.equal(leaving.attempts(), before, "sair cancelou as tentativas");
+});
