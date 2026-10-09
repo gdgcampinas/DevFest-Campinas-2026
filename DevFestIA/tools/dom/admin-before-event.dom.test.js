@@ -8,7 +8,7 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, waitFor, textOf } = require("../lib/dom-harness.js");
 const { createFakeClock } = require("../lib/fake-clock.js");
 
-const site = loadSite({ scripts: [...SITE_BASE, "features/scheduler.js", "data/admin-sections.js", "features/two-tap-confirm.js", "features/local-reset.js", "components/local-reset.js", "components/admin-before-event.js", "features/admin-before-event.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "features/scheduler.js", "data/admin-sections.js", "features/two-tap-confirm.js", "features/local-reset.js", "components/local-reset.js", "components/admin-icons.js", "components/initial-avatar.js", "components/admin-card.js", "features/admin-access.js", "components/admin-before-event.js", "features/admin-before-event.js"] });
 const { window, document } = site;
 test.after(() => window.close());
 const g = name => site.get(name);
@@ -116,4 +116,12 @@ test("resetBrowserData usa as APIs da janela injetada com o prefixo do site e co
   const result = await g("resetBrowserData")(win, { serviceWorker: { getRegistrations: async () => [{ unregister: async () => true }] } });
   assert.deepEqual([...removed].sort(), ["devfest-campinas-2026:a", "devfest-campinas-2026:b"]);
   assert.deepEqual({ ...result }, { local: 2, session: 0, databases: 0, caches: 2, workers: 1 });
+});
+
+test("limpar este aparelho: se a limpeza falhar, avisa e o botão volta (nada de erro solto)", async () => {
+  const { root } = mount({ reset: async () => { throw new Error("indexedDB bloqueado"); } });
+  root.querySelector("[data-device-reset]").click();
+  root.querySelector("[data-device-reset]").click();
+  await waitFor(() => /Não consegui limpar este aparelho/.test(textOf(root.querySelector('[data-slot="device"]'))));
+  assert.ok(root.querySelector("[data-device-reset]") && !root.querySelector("[data-device-reset]").disabled);
 });

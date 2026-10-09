@@ -4,6 +4,6 @@
  * Só texto escapado e classes do styles.css (.mod, .chip-btn) e do css/admin.css.
  */
 function adminTalksMarkup({ rooms }) {
-  const card = room => `<li class="ad-card" data-track="${escapeHtml(room.track.id)}" style="--track-color:${escapeHtml(room.track.color)}"><h2 class="mod-section-title">${escapeHtml(room.track.label)} · ${escapeHtml(room.track.room)}</h2><p class="mod-hint">${escapeHtml(room.lineOf)}</p><div class="ad-links">${room.links.map(link => `<a class="chip-btn" data-link="${escapeHtml(link.id)}" href="${escapeHtml(link.href)}" target="_blank" rel="noopener">${escapeHtml(link.label)}</a>`).join("")}</div></li>`;
+  const card = room => `<li class="ad-card" data-track="${escapeHtml(room.track.id)}" style="--track-color:${escapeHtml(room.track.color)}">${adminCardHeadMarkup({ title: `${room.track.label} · ${room.track.room}`, subtitle: room.lineOf })}<div class="ad-links">${room.links.map(link => `<a class="chip-btn" data-link="${escapeHtml(link.id)}" href="${escapeHtml(link.href)}" target="_blank" rel="noopener">${escapeHtml(link.label)}</a>`).join("")}</div></li>`;
   return `<p class="mod-hint">Cada tela abre em aba própria. A moderação de perguntas atualiza o quadro que a plateia vê enquanto está aberta: deixe aberta só a aba da trilha que você está moderando.</p><ul class="ad-list">${rooms.map(card).join("")}</ul>`;
 }

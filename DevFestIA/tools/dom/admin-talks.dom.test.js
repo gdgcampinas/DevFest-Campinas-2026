@@ -10,7 +10,7 @@ const { createFakeClock } = require("../lib/fake-clock.js");
 
 const site = loadSite({
   scripts: [...SITE_BASE, "features/scheduler.js", "data/mock-links.js", "data/mock-photo.js", "data/mock-speakers.js", "data/mock-talks.js", "data/schedule-builder.js", "data/schedule.js", "data/favorites.js",
-    "features/agenda.js", "features/talk-index.js", "data/admin-sections.js", "features/admin-talks.js", "components/admin-talks.js", "features/admin-talks-section.js"],
+    "features/agenda.js", "features/talk-index.js", "data/admin-sections.js", "features/admin-talks.js", "components/admin-icons.js", "components/initial-avatar.js", "components/admin-card.js", "features/admin-access.js", "components/admin-talks.js", "features/admin-talks-section.js"],
 });
 const { window, document } = site;
 test.after(() => window.close());

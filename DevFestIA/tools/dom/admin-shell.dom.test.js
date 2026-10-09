@@ -15,7 +15,7 @@ const SCRIPTS = [...HTML.matchAll(/<script src="(js\/[^"?]+)[^"]*"/g)].map(match
 const PAGE = fs.readFileSync(path.join(DOCS, "js", "pages", "admin.js"), "utf8");
 const BODY = `<!doctype html><html><body><nav id="adminNav" hidden></nav><main id="adminBody">Carregando…</main></body></html>`;
 
-const UNITS = [...SITE_BASE, "data/admin-sections.js", "components/escape-html.js", "components/moderator-login.js", "components/admin-nav.js", "components/admin-shell.js", "features/moderator-login.js", "features/admin-session.js", "features/hash-router.js", "features/admin-nav.js", "features/admin-shell.js"];
+const UNITS = [...SITE_BASE, "data/admin-sections.js", "components/escape-html.js", "components/moderator-login.js", "components/admin-icons.js", "components/initial-avatar.js", "components/admin-card.js", "features/admin-access.js", "components/admin-nav.js", "components/admin-shell.js", "features/moderator-login.js", "features/admin-session.js", "features/hash-router.js", "features/admin-nav.js", "features/admin-shell.js"];
 
 /** Login de mentira: `restoreAs` = e-mail já logado ("" = ninguém); `signIn` pode falhar. */
 function fakeLogin({ restoreAs = "", signInImpl } = {}) {
@@ -23,7 +23,7 @@ function fakeLogin({ restoreAs = "", signInImpl } = {}) {
   return { calls, signIn: signInImpl ?? (async () => "mod@gmail.com"), restore: async () => restoreAs || null, signOut: async () => { calls.signOut++; } };
 }
 
-function setup({ restoreAs = "", signInImpl, hash = "", mounts } = {}) {
+function setup({ restoreAs = "", signInImpl, hash = "", mounts, access } = {}) {
   const site = loadSite({ scripts: UNITS, html: BODY, url: `http://localhost/admin.html${hash}` });
   const { window, document } = site;
   const sections = site.get("adminSectionsRepository").getAll();
@@ -36,7 +36,7 @@ function setup({ restoreAs = "", signInImpl, hash = "", mounts } = {}) {
   const login = fakeLogin({ restoreAs, signInImpl });
   const session = site.get("createAdminSession")({ login });
   const router = site.get("createHashRouter")({ win: window, routes: sections.map(section => section.id), fallback: sections[0].id });
-  const shell = site.get("initAdminShell")(document.getElementById("adminBody"), { session, router, navEl: document.getElementById("adminNav"), sections, mounts: mounts ?? defaultMounts });
+  const shell = site.get("initAdminShell")(document.getElementById("adminBody"), { session, router, navEl: document.getElementById("adminNav"), sections, brand: site.get("adminBrandRepository").getAll(), mounts: mounts ?? defaultMounts, ...(access ? { access } : {}) });
   const body = document.getElementById("adminBody");
   const goTo = hashValue => { window.location.hash = hashValue; window.dispatchEvent(new window.Event("hashchange")); };
   return { site, window, document, body, nav: document.getElementById("adminNav"), events, login, session, shell, goTo };
@@ -109,6 +109,30 @@ test("hash desconhecido cai na primeira seção", async () => {
   goTo("#nao-existe");
   assert.deepEqual(events.slice(-2), ["stop:telao", "mount:visao-geral"]);
   window.close();
+});
+
+test("conta que não é dona: o menu esconde as seções só do dono; a rota escondida cai na primeira visível e o hash é corrigido", async () => {
+  const helper = loadSite({ scripts: UNITS, html: BODY });
+  const denied = setup({ restoreAs: "mod@gmail.com", hash: "#moderadores", access: { resolve: () => helper.get("resolveAdminAccess")({ probe: async () => { throw { code: "permission-denied" }; } }) } });
+  await waitFor(() => denied.body.querySelector("[data-mounted]"));
+  assert.deepEqual([...denied.nav.querySelectorAll("a")].map(link => textOf(link)), ["Visão geral", "Telão", "Fotos", "Palestras", "Atalhos"]);
+  assert.deepEqual(denied.events, ["mount:visao-geral"]);
+  assert.equal(denied.window.location.hash, "#visao-geral");
+  denied.window.close();
+  helper.window.close();
+});
+
+test("conta dona (a leitura da lista passa) ou sem saber (erro de rede): o menu mostra todas as seções", async () => {
+  const probes = { dono: async () => {}, rede: async () => { throw new Error("sem rede") } };
+  for (const [name, probe] of Object.entries(probes)) {
+    const helper = loadSite({ scripts: UNITS, html: BODY });
+    const resolve = () => helper.get("resolveAdminAccess")({ probe });
+    const { body, nav, window } = setup({ restoreAs: "mod@gmail.com", access: { resolve } });
+    await waitFor(() => body.querySelector("[data-mounted]"));
+    assert.equal(nav.querySelectorAll("a").length, 7, name);
+    window.close();
+    helper.window.close();
+  }
 });
 
 test("sair: desliga a seção aberta e volta pra porta de entrada", async () => {

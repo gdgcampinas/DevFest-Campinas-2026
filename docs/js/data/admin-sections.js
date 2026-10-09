@@ -1,7 +1,8 @@
 /**
  * Dados da ÁREA DE ADMIN (admin.html), a central de CONTROLE da equipe: telão, palestras e moderação num lugar só (não é configuração nem alimentação do site). Só dado: a tela, o menu e os
  * cartões leem daqui, nada de endereço ou título solto no código.
- *   ADMIN_SECTIONS      as seções do menu, na ordem (`id` = o que vai depois do # na URL)
+ *   ADMIN_BRAND         o nome da área (barra de topo) e da edição
+ *   ADMIN_SECTIONS      as seções do menu, na ordem (`id` = o que vai depois do # na URL; `icon` = nome em components/admin-icons.js; `ownerOnly` = só o dono usa, o menu esconde das outras contas)
  *   ADMIN_SHORTCUTS     links soltos pra telas grandes que continuam na própria página (seção Atalhos): `id`, `title`, `description`, `href`
  *   ADMIN_TRACK_LINKS   o que se abre POR TRILHA (seção Palestras), sempre em aba própria: `href` recebe `?trilha=<id>`; `withTalkCode` junta `&palestra=<código>` da palestra da sala; `requires: "contest"`
  *                       só aparece quando a palestra tem concurso (Coding Jam)
@@ -14,14 +15,16 @@
  */
 const ADMIN_PAGE = "admin.html";
 
+const ADMIN_BRAND = { title: "Área de admin", subtitle: "DevFest Campinas 2026" };
+
 const ADMIN_SECTIONS = [
-  { id: "visao-geral", title: "Visão geral" },
-  { id: "telao", title: "Telão" },
-  { id: "fotos", title: "Fotos" },
-  { id: "palestras", title: "Palestras" },
-  { id: "moderadores", title: "Moderadores" },
-  { id: "antes-do-evento", title: "Antes do evento" },
-  { id: "atalhos", title: "Atalhos" },
+  { id: "visao-geral", title: "Visão geral", icon: "overview" },
+  { id: "telao", title: "Telão", icon: "screen" },
+  { id: "fotos", title: "Fotos", icon: "photos" },
+  { id: "palestras", title: "Palestras", icon: "talks" },
+  { id: "moderadores", title: "Moderadores", icon: "users", ownerOnly: true },
+  { id: "antes-do-evento", title: "Antes do evento", icon: "checklist", ownerOnly: true },
+  { id: "atalhos", title: "Atalhos", icon: "link" },
 ];
 
 const ADMIN_SHORTCUTS = [
@@ -49,14 +52,16 @@ const ADMIN_MODERATORS = {
   max: 30,
   confirmMs: 5000,
   text: {
-    intro: "Quem entra aqui com o Google pode moderar perguntas, o telão e as fotos. Só o dono da conta (fixo nas regras do Firestore) cadastra e remove moderadores. O e-mail precisa ser de uma conta Google.",
+    intro: "Quem entra com o Google pode moderar perguntas, o telão e as fotos. Só o dono da conta (fixo nas regras) cadastra e remove. O e-mail precisa ser de uma conta Google.",
     addTitle: "Cadastrar moderador",
+    listTitle: "Moderadores cadastrados",
+    addedBy: "cadastrado por",
     placeholder: "e-mail do Google (ex.: nome@gmail.com)",
     addButton: "Cadastrar",
     removeButton: "Remover",
     removeConfirm: "Toque de novo para REMOVER",
     you: "você",
-    empty: "Nenhum moderador cadastrado ainda (o dono sempre pode tudo).",
+    empty: "Nenhum moderador cadastrado ainda. O dono sempre pode tudo.",
     added: "Moderador cadastrado.",
     removed: "Moderador removido.",
     ownerOnly: "Sem permissão: só o dono da conta cadastra e remove moderadores.",
@@ -83,6 +88,7 @@ const ADMIN_BEFORE_EVENT = {
     warning: "Você será desconectado do admin e do site neste aparelho.",
     buttonLabel: "Limpar este aparelho",
     confirmLabel: "Toque de novo para CONFIRMAR",
+    failedText: "Não consegui limpar este aparelho. Tente de novo.",
     doneText: "Pronto. Este aparelho está limpo. Entre de novo com o Google para continuar.",
   },
 };
@@ -95,3 +101,4 @@ const adminTrackLinksRepository = createRepository(ADMIN_TRACK_LINKS);
 const adminOverviewRepository = createRepository(ADMIN_OVERVIEW);
 const adminTalksConfigRepository = createRepository(ADMIN_TALKS);
 const adminModeratorsRepository = createRepository(ADMIN_MODERATORS);
+const adminBrandRepository = createRepository(ADMIN_BRAND);

@@ -10,7 +10,7 @@ const path = require("node:path");
 const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 
 const DOCS = path.join(__dirname, "..", "..", "..", "docs");
-const boot = () => loadSite({ scripts: [...SITE_BASE, "data/admin-sections.js", "components/admin-nav.js", "features/admin-nav.js"], html: `<!doctype html><html><body><nav id="adminNav" data-admin-current="fotos"></nav></body></html>` });
+const boot = () => loadSite({ scripts: [...SITE_BASE, "data/admin-sections.js", "components/admin-icons.js", "components/admin-nav.js", "features/admin-nav.js"], html: `<!doctype html><html><body><nav id="adminNav" data-admin-current="fotos"></nav></body></html>` });
 
 test("o menu tem uma seção por item do dado, na ordem, com o id depois do #", () => {
   const site = boot();

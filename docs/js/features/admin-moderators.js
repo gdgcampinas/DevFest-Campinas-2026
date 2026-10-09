@@ -3,9 +3,9 @@
  * moderador entra com Google (as regras exigem e-mail verificado); só o DONO (e-mail fixo nas regras) lista, cadastra e remove: outra conta moderadora vê "sem permissão" (a regra é a defesa, a tela
  * só avisa). O formulário é desenhado UMA vez (quem digita não perde o texto); só as áreas `data-slot` são refeitas.
  * Tudo por parâmetro: `repository` ({ listen, set, remove }), `rules` (features/moderator-rules.js), `config` (ADMIN_MODERATORS: limite, prazo e textos), `selfEmail` (quem está logado: marca "você" e
- * vai em `addedBy`), `schedule`. Devolve `{ stop }`.
+ * vai em `addedBy`), `schedule`, `formatDate`. Devolve `{ stop }`.
  */
-function initAdminModerators(containerEl, { repository, rules, config, selfEmail, schedule = defaultSchedule }) {
+function initAdminModerators(containerEl, { repository, rules, config, selfEmail, schedule = defaultSchedule, formatDate = ms => new Date(ms).toLocaleDateString("pt-BR") }) {
   const { text } = config;
   let list = [];
   let message = "";
@@ -15,7 +15,7 @@ function initAdminModerators(containerEl, { repository, rules, config, selfEmail
 
   const paint = () => {
     if (stopped) return;
-    Object.entries(adminModeratorsSlots({ list: rules.sortModerators(list), armedId: confirm.armed(), selfEmail, busy, message, text })).forEach(([name, markup]) => {
+    Object.entries(adminModeratorsSlots({ list: rules.sortModerators(list), armedId: confirm.armed(), selfEmail, busy, message, text, formatDate })).forEach(([name, markup]) => {
       containerEl.querySelector(`[data-slot="${name}"]`).innerHTML = markup;
     });
   };

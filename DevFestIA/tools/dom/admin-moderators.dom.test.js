@@ -8,7 +8,7 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, waitFor, textOf } = require("../lib/dom-harness.js");
 const { createFakeClock } = require("../lib/fake-clock.js");
 
-const site = loadSite({ scripts: [...SITE_BASE, "features/scheduler.js", "data/admin-sections.js", "features/two-tap-confirm.js", "features/moderator-rules.js", "components/admin-moderators.js", "features/admin-moderators.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "features/scheduler.js", "data/admin-sections.js", "features/two-tap-confirm.js", "features/moderator-rules.js", "components/admin-icons.js", "components/initial-avatar.js", "components/admin-card.js", "features/admin-access.js", "components/admin-moderators.js", "features/admin-moderators.js"] });
 const { window, document } = site;
 test.after(() => window.close());
 const g = name => site.get(name);
@@ -44,16 +44,16 @@ function mount({ initial = [{ id: "zeca@gmail.com" }, { id: "ana@gmail.com" }], 
   const view = g("initAdminModerators")(root, { repository, rules, config, selfEmail: "dono@gmail.com", schedule: clock.schedule });
   const type = value => { root.querySelector("[data-moderator-email]").value = value; };
   const add = () => root.querySelector("[data-moderator-add]").click();
-  const rows = () => [...root.querySelectorAll("[data-slot=list] li")].map(item => textOf(item));
+  const rows = () => [...root.querySelectorAll("[data-slot=list] .ad-person")].map(item => textOf(item.querySelector("strong")));
   return { root, view, clock, calls, listeners, type, add, rows };
 }
 
 test("lista os moderadores em ordem alfabética com o botão de remover; lista vazia explica que o dono sempre pode tudo", () => {
   const { rows, root } = mount();
-  assert.deepEqual(rows(), ["ana@gmail.comRemover", "zeca@gmail.comRemover"]);
+  assert.deepEqual(rows(), ["ana@gmail.com", "zeca@gmail.com"]);
   assert.match(textOf(root), /só o dono da conta/i);
   const empty = mount({ initial: [] });
-  assert.match(textOf(empty.root.querySelector("[data-slot=list]")), /o dono sempre pode tudo/);
+  assert.match(textOf(empty.root.querySelector("[data-slot=list]")), /o dono sempre pode tudo/i);
 });
 
 test("cadastrar: valida, grava com o e-mail limpo e quem cadastrou, limpa o campo e avisa; erro de validação mantém o texto", async () => {
