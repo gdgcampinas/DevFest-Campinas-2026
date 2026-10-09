@@ -356,6 +356,26 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // MURAL DE RECADOS (`mural-wall/<uid>_wall-<1..3>`): qualquer pessoa autenticada (a plateia, inclusive na entrada, sem exigir check-in) manda até 3 recados por aparelho (o id leva o número, então o 4º
+    // é recusado), com texto de até 120 caracteres, a pergunta que respondeu (`prompt`) e um apelido opcional de até 30. Nasce `pending`: só o moderador muda o estado (approved, rejected, hidden = tirado do ar
+    // depois de aprovado). O telão lê SÓ os aprovados (consulta filtrando status == approved; a regra só deixa listar o aprovado) e o moderador lista tudo. ESPELHAR `maxLength`, `maxNickname` e
+    // `maxPerPerson` de docs/js/data/wall-config.js (120 = "size() < 121", 30 = "size() < 31").
+    match /mural-wall/{docId} {
+      allow get: if isOwnDoc(docId) || isModerator();
+      allow list: if request.auth != null && (isModerator() || resource.data.status == 'approved');
+      allow create: if isOwnDoc(docId) && idMatchesEntry(docId) && hasValidBaseFields()
+        && request.resource.data.entryKey.matches('^wall-[1-3]$')
+        && request.resource.data.keys().hasOnly(['edition', 'entryKey', 'createdAt', 'text', 'prompt', 'nickname', 'status'])
+        && request.resource.data.status == 'pending'
+        && requiredText(request.resource.data, 'text', 121)
+        && requiredText(request.resource.data, 'prompt', 41)
+        && optionalText(request.resource.data, 'nickname', 31);
+      allow update: if isModerator()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status in ['approved', 'rejected', 'hidden'];
+      allow delete: if false;
+    }
+
     // LISTA DE MODERADORES (`moderators/<e-mail em minúsculas>`): só o DONO lista, cadastra e apaga (a tela do admin).
     // Formato fechado: { email (igual ao id), addedBy (o dono), createdAt (horário do servidor) }.
     match /moderators/{email} {
