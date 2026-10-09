@@ -347,3 +347,7 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .ms-day-done{margin:0;font:800 calc(var(--u) * 5) / 1.1 var(--font-display);color:oklch(97% .005 260)}
 .mural-stage[data-shape="tall"] .ms-day-line{flex-direction:column;height:auto;flex:1;min-height:0}
 .mural-stage[data-shape="tall"] .ms-day-block{flex-direction:row;justify-content:space-between;padding:0 calc(var(--u) * 3)}
+
+/* cena "Daqui a pouco": nome da atração grande, contagem enorme e o convite */
+.ms-teaser-title{font-size:calc(var(--u) * 11)}
+.ms-teaser .ms-number{color:var(--google-green)}

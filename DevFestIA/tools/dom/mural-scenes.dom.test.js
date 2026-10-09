@@ -8,9 +8,9 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 const { createFakeClock } = require("../lib/fake-clock.js");
 
-const SCENES = ["mural-scene-kit", "mural-now-next-scene", "mural-sponsors-scene", "mural-qr-scene", "mural-registered-scene", "mural-tips-scene", "mural-phoenix-scene", "mural-podium-scene", "mural-event-phase-scene", "mural-reserve-scene", "mural-spotlight-scene", "mural-selfie-scene", "mural-art-scene", "mural-album-scene", "mural-notice-scene", "mural-video-scene", "mural-team-scene", "mural-message-scene", "mural-day-timeline-scene"].map(name => `components/mural-scenes/${name}.js`);
+const SCENES = ["mural-scene-kit", "mural-now-next-scene", "mural-sponsors-scene", "mural-qr-scene", "mural-registered-scene", "mural-tips-scene", "mural-phoenix-scene", "mural-podium-scene", "mural-event-phase-scene", "mural-reserve-scene", "mural-spotlight-scene", "mural-selfie-scene", "mural-art-scene", "mural-album-scene", "mural-notice-scene", "mural-video-scene", "mural-team-scene", "mural-message-scene", "mural-day-timeline-scene", "mural-teaser-scene"].map(name => `components/mural-scenes/${name}.js`);
 const site = loadSite({
-  scripts: [...SITE_BASE, "features/scheduler.js", "features/agenda.js", "features/mural-now-next.js", "features/mural-photo-pool.js", "features/mural.js", "features/mural-playlist.js", "components/talk-highlight.js", "data/mural-tips.js", "data/mural-arts.js", "data/mural-albums.js", "data/mural-album-models.js", "features/album-photo-url.js", "features/album-models.js", "features/video-sound.js", "components/mural-scenes/album-models/album-model-collage.js", "components/mural-scenes/album-models/album-model-portrait-strip.js", "components/mural-scenes/album-models/album-model-polaroid.js", "components/mural-scenes/album-models/album-model-feature.js", "components/mural-scenes/album-models/album-model-mosaic.js", ...SCENES, "features/live-status.js", "features/count-up.js", "features/mural-rotation.js", "features/mural-messages.js", "features/mural-day-timeline.js", "data/mural-messages.js", "components/avatar.js"],
+  scripts: [...SITE_BASE, "features/scheduler.js", "features/agenda.js", "features/mural-now-next.js", "features/mural-photo-pool.js", "features/mural.js", "features/mural-playlist.js", "components/talk-highlight.js", "data/mural-tips.js", "data/mural-arts.js", "data/mural-albums.js", "data/mural-album-models.js", "features/album-photo-url.js", "features/album-models.js", "features/video-sound.js", "components/mural-scenes/album-models/album-model-collage.js", "components/mural-scenes/album-models/album-model-portrait-strip.js", "components/mural-scenes/album-models/album-model-polaroid.js", "components/mural-scenes/album-models/album-model-feature.js", "components/mural-scenes/album-models/album-model-mosaic.js", ...SCENES, "features/live-status.js", "features/count-up.js", "features/mural-rotation.js", "features/mural-messages.js", "features/mural-day-timeline.js", "features/mural-teasers.js", "data/mural-messages.js", "components/avatar.js"],
 });
 const { window, document } = site;
 test.after(() => window.close());
@@ -753,4 +753,28 @@ test("hoje no DevFest: conta os blocos de palestras vividos e diz o que está no
   assert.match(text, /Agora: Palestras: Coding Jam/);
   assert.match(text, /A seguir: Almoço às 12:00/);
   assert.match(text, /O dia no DevFest/);
+});
+
+// ---------- cena "Daqui a pouco" ----------
+test("daqui a pouco: mostra a atração, a contagem em minutos e segundos e o convite; a contagem anda sozinha; sem atração na janela a cena não aparece", () => {
+  const schedule = [{ start: at("10:30"), end: at("11:15"), talks: { ia: { highlight: "codejam" } } }];
+  const repository = { enabled: () => [{ id: "codejam", title: "Coding Jam", call: "Traga seu notebook", source: { highlight: "codejam" }, leadMinutes: 30 }] };
+  const scene = g("createTeaserScene")({ repository, schedule });
+  assert.equal(scene.prepare({}, ctx({ now: at("09:00") })), MURAL_SKIP);
+  const now = at("10:10");
+  const prepared = scene.prepare({}, ctx({ now }));
+  const view = scene.render(prepared, {}, ctx({ now }));
+  const el = html(view.markup);
+  assert.match(textOf(el), /Daqui a pouco/);
+  assert.match(textOf(el), /Coding Jam/);
+  assert.match(textOf(el), /Traga seu notebook/);
+  assert.equal(textOf(el.querySelector("[data-countdown]")), "20:00");
+  const clock = createFakeClock();
+  let current = now.getTime();
+  const stop = view.mount(el, { schedule: clock.schedule, clock: () => new Date(current) });
+  current += 90 * 1000;
+  return clock.tick(1000).then(() => {
+    assert.equal(textOf(el.querySelector("[data-countdown]")), "18:30");
+    stop();
+  });
 });

@@ -102,6 +102,7 @@ function initMural() {
     tips: createTipsScene({ repository: muralTipsRepository }),
     message: createMessageScene({ repository: muralMessagesRepository, rotation, timezone: EVENT.timezone, formatTime: (date, zone) => formatEventTime(date, zone, CODE_LOCALE), preload, mascotUrl: "assets/img/gumbleton.png" }),
     "day-timeline": createDayTimelineScene({ schedule: SCHEDULE, timezone: EVENT.timezone, formatTime: (date, zone) => formatEventTime(date, zone, CODE_LOCALE), highlightLabelOf: data => talkHighlightsRepository.forTalk(data)?.label ?? null }),
+    teaser: createTeaserScene({ repository: muralTeasersRepository, schedule: SCHEDULE }),
     team: createTeamScene({ repository: teamRepository, preload: url => preloadImage(url, { timeoutMs: config.speakerPhotoTimeoutMs, schedule }), rotation }),
     phoenix: createPhoenixScene({ preload, imageUrl: "assets/img/gumbleton.png", title, subtitle: eventDateLabel(SCHEDULE, EVENT.timezone) }),
     podium: createPodiumScene({ talkIndex, highlightOf: talkHighlightsRepository.forTalk }),
