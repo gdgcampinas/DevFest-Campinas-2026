@@ -330,3 +330,20 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .mural-stage[data-shape="tall"] .ms-message{flex-direction:column-reverse;justify-content:center;text-align:center}
 .mural-stage[data-shape="tall"] .ms-message-body{padding-left:0;align-items:center}
 .mural-stage[data-shape="ultrawide"] .ms-message-mascot{height:calc(var(--u) * 40)}
+
+/* cena "Hoje no DevFest": faixa de blocos (largura proporcional à duração); em pé no telão vertical */
+.ms-day{gap:calc(var(--u) * 3);justify-content:center}
+.ms-day-line{list-style:none;margin:0;padding:0;display:flex;gap:calc(var(--u) * .8);height:calc(var(--u) * 20)}
+.ms-day-block{flex:var(--minutes) 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--u) * .6);padding:0 calc(var(--u) * .6);border-radius:calc(var(--u) * 1.6);background:oklch(24% .02 260);color:var(--text);overflow:hidden;text-align:center}
+.ms-day-block b{font:800 calc(var(--u) * 3.4) / 1.05 var(--font-display);overflow-wrap:anywhere}
+.ms-day-block span{font:700 calc(var(--u) * 2) var(--font-body);color:var(--muted);font-variant-numeric:tabular-nums}
+.ms-day-block[data-kind="talks"]{background:color-mix(in oklch,var(--google-blue) 24%,oklch(20% .02 260))}
+.ms-day-block.is-past{opacity:.35}
+.ms-day-block.is-now{background:var(--google-green);color:#05060a;animation:ms-day-pulse 2.4s ease-in-out infinite}
+.ms-day-block.is-now span{color:#05060a}
+.ms-day-block[data-highlight="true"]{outline:calc(var(--u) * .5) solid var(--google-yellow)}
+@keyframes ms-day-pulse{50%{transform:scale(1.04)}}
+.ms-day-foot{display:flex;flex-direction:column;gap:calc(var(--u) * 1)}
+.ms-day-done{margin:0;font:800 calc(var(--u) * 5) / 1.1 var(--font-display);color:oklch(97% .005 260)}
+.mural-stage[data-shape="tall"] .ms-day-line{flex-direction:column;height:auto;flex:1;min-height:0}
+.mural-stage[data-shape="tall"] .ms-day-block{flex-direction:row;justify-content:space-between;padding:0 calc(var(--u) * 3)}

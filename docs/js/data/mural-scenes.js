@@ -16,6 +16,7 @@
  * "Arte" (`type: "art"`): peça pronta de design em tela cheia, `params.art` = id em data/mural-arts.js (que decide como ela se adapta a qualquer proporção de telão).
  * "Vídeo" (`type: "video"`): o próximo clipe pronto de `params.playlist` (data/mural-videos.js); tempo de tela = a duração do clipe. Toca mudo e COM SOM só nos momentos/fases da playlist (almoço, encerramento, antes e depois);
  * as cenas `*-intervalo` entram só no almoço e no encerramento pra dar mais tempo de vídeo quando ninguém está em palestra. Sem o intermediário ligado ou sem clipe baixado a cena some.
+ * "Linha do dia" (`type: "day-timeline"`): a grade inteira como uma faixa de blocos com o que já passou, o que está no ar e o que vem aí (usa a grade, então só com o line-up revelado).
  * "Time" (`type: "team"`): uma pessoa do time por passada (foto, nome, cargo e mini-bio de data/team.js), a próxima a cada vez; duas entradas dão duas pessoas por volta do rodízio. Em PROD o time é público (dado real), sem `reveal`.
  * "Mensagem" (`type: "message"`): texto grande e acolhedor do conjunto `params.set` de data/mural-messages.js (quebra-gelo, "Primeira vez aqui?", saudação por horário); `params.mascot` põe o Gumbleton no canto.
  * O quebra-gelo entra no almoço, no café e quando o moderador anuncia uma pausa (`requires.live: "break"`, ver o controle remoto).
@@ -54,6 +55,7 @@ const MURAL_SCENES = [
   { id: "primeira-vez", label: "Primeira vez aqui?", type: "message", seconds: 10, requires: { phases: ["before", "live"] }, params: { set: "welcome", mascot: true } },
   { id: "quebra-gelo", label: "Quebra-gelo (pausa anunciada)", type: "message", seconds: 12, transition: "zoom", requires: { live: "break" }, params: { set: "icebreaker", mascot: true } },
   { id: "quebra-gelo-intervalo", label: "Quebra-gelo (almoço e café)", type: "message", seconds: 12, transition: "zoom", requires: { moments: ["lunch", "coffee", "back-to-room"] }, params: { set: "icebreaker", mascot: true } },
+  { id: "linha-do-dia", label: "Hoje no DevFest (linha do dia)", type: "day-timeline", seconds: 14, requires: { reveal: true, phases: ["before", "live"] }, params: {} },
   { id: "time-1", label: "Quem faz o DevFest (1)", type: "team", seconds: 11, transition: "rise", params: { kicker: "Gente como você, de casa", title: "Quem faz o DevFest acontecer" } },
   { id: "dicas", label: "Dicas", type: "tips", seconds: 16, params: { title: "Aproveite o DevFest" } },
   { id: "time-2", label: "Quem faz o DevFest (2)", type: "team", seconds: 11, transition: "rise", params: { kicker: "Gente como você, de casa", title: "Quem faz o DevFest acontecer" } },

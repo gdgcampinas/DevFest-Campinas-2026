@@ -8,9 +8,9 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 const { createFakeClock } = require("../lib/fake-clock.js");
 
-const SCENES = ["mural-scene-kit", "mural-now-next-scene", "mural-sponsors-scene", "mural-qr-scene", "mural-registered-scene", "mural-tips-scene", "mural-phoenix-scene", "mural-podium-scene", "mural-event-phase-scene", "mural-reserve-scene", "mural-spotlight-scene", "mural-selfie-scene", "mural-art-scene", "mural-album-scene", "mural-notice-scene", "mural-video-scene", "mural-team-scene", "mural-message-scene"].map(name => `components/mural-scenes/${name}.js`);
+const SCENES = ["mural-scene-kit", "mural-now-next-scene", "mural-sponsors-scene", "mural-qr-scene", "mural-registered-scene", "mural-tips-scene", "mural-phoenix-scene", "mural-podium-scene", "mural-event-phase-scene", "mural-reserve-scene", "mural-spotlight-scene", "mural-selfie-scene", "mural-art-scene", "mural-album-scene", "mural-notice-scene", "mural-video-scene", "mural-team-scene", "mural-message-scene", "mural-day-timeline-scene"].map(name => `components/mural-scenes/${name}.js`);
 const site = loadSite({
-  scripts: [...SITE_BASE, "features/scheduler.js", "features/agenda.js", "features/mural-now-next.js", "features/mural-photo-pool.js", "features/mural.js", "features/mural-playlist.js", "components/talk-highlight.js", "data/mural-tips.js", "data/mural-arts.js", "data/mural-albums.js", "data/mural-album-models.js", "features/album-photo-url.js", "features/album-models.js", "features/video-sound.js", "components/mural-scenes/album-models/album-model-collage.js", "components/mural-scenes/album-models/album-model-portrait-strip.js", "components/mural-scenes/album-models/album-model-polaroid.js", "components/mural-scenes/album-models/album-model-feature.js", "components/mural-scenes/album-models/album-model-mosaic.js", ...SCENES, "features/live-status.js", "features/count-up.js", "features/mural-rotation.js", "features/mural-messages.js", "data/mural-messages.js", "components/avatar.js"],
+  scripts: [...SITE_BASE, "features/scheduler.js", "features/agenda.js", "features/mural-now-next.js", "features/mural-photo-pool.js", "features/mural.js", "features/mural-playlist.js", "components/talk-highlight.js", "data/mural-tips.js", "data/mural-arts.js", "data/mural-albums.js", "data/mural-album-models.js", "features/album-photo-url.js", "features/album-models.js", "features/video-sound.js", "components/mural-scenes/album-models/album-model-collage.js", "components/mural-scenes/album-models/album-model-portrait-strip.js", "components/mural-scenes/album-models/album-model-polaroid.js", "components/mural-scenes/album-models/album-model-feature.js", "components/mural-scenes/album-models/album-model-mosaic.js", ...SCENES, "features/live-status.js", "features/count-up.js", "features/mural-rotation.js", "features/mural-messages.js", "features/mural-day-timeline.js", "data/mural-messages.js", "components/avatar.js"],
 });
 const { window, document } = site;
 test.after(() => window.close());
@@ -727,4 +727,30 @@ test("mensagem: mascote só quando pedido e quando a imagem carrega; conjunto de
   assert.equal(html2.querySelector("b"), null);
   assert.equal(html2.querySelector("i"), null);
   assert.match(textOf(html2), /<b>oi<\/b>/);
+});
+
+// ---------- cena "Hoje no DevFest" ----------
+function dayScene() {
+  const slot = (start, end, extra) => ({ start: at(start), end: at(end), ...extra });
+  const schedule = [slot("08:00", "08:30", { banner: "Credenciamento" }), slot("09:00", "09:45", { talks: { ia: {} } }), slot("09:45", "10:30", { talks: { ia: { highlight: "codejam" } } }), slot("12:00", "13:20", { banner: "Almoço" })];
+  const scene = g("createDayTimelineScene")({ schedule, timezone: "America/Sao_Paulo", formatTime: (date, zone) => date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", hourCycle: "h23", timeZone: zone }), highlightLabelOf: data => (data.highlight ? "Coding Jam" : null) });
+  return html(scene.render(null, {}, ctx({ now: at("10:00") })).markup);
+}
+
+test("hoje no DevFest: um bloco por item da grade com a largura da duração, o do momento pulsando, o passado apagado e o destaque marcado", () => {
+  const view = dayScene();
+  const blocks = [...view.querySelectorAll(".ms-day-block")];
+  assert.deepEqual(blocks.map(block => block.className.match(/is-(\w+)/)[1]), ["past", "past", "now", "future"]);
+  assert.deepEqual(blocks.map(block => block.getAttribute("style").match(/--minutes:(\d+)/)[1]), ["30", "45", "45", "80"]);
+  assert.deepEqual(blocks.map(block => textOf(block.querySelector("b"))), ["Credenciamento", "1", "2", "Almoço"]);
+  assert.equal(blocks[2].getAttribute("data-highlight"), "true");
+  assert.equal(textOf(blocks[1].querySelector("span")), "09:00");
+});
+
+test("hoje no DevFest: conta os blocos de palestras vividos e diz o que está no ar e o que vem a seguir, com o destaque", () => {
+  const text = textOf(dayScene());
+  assert.match(text, /Já vivemos 1 de 2 blocos de palestras/);
+  assert.match(text, /Agora: Palestras: Coding Jam/);
+  assert.match(text, /A seguir: Almoço às 12:00/);
+  assert.match(text, /O dia no DevFest/);
 });
