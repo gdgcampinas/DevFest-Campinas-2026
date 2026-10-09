@@ -181,12 +181,6 @@ lista de fotos. Descartado: pasta pública do Drive (plateia precisa de conta e 
 - **Bônus:** esse álbum resolve o pedido das "fotos em alta de edições antigas" (hoje são 16 de 900 px): 300 fotos de até 4032 px pra cena de fotos.
 - **Moderação:** foto escondida vira uma lista de ids ocultos (Firestore) que o mural aplica por cima da lista do álbum.
 
-### Passaporte DevFest com QR nos estandes
-Quem visita cada estande dos patrocinadores escaneia um QR, junta
-"carimbos", troca por brinde no fim. Mesmo mecanismo técnico do check-in de
-palestra (QR + Firestore + uid anônimo), só que por estande em vez de por
-palestra — reusaria a mesma `createFirestoreRepository()` genérica.
-
 ---
 
 ## Conteúdo e utilidade no dia
@@ -259,4 +253,5 @@ essencial (a proteção real já é a regra do Firestore).
 - **Mentorias com agendamento.**
 - **Mural da hashtag** (`#DevFestCampinas2026`).
 - **Área administrativa com login** (CRUD de moderadores, palestrantes, palestras...), descartada em 2026-10-06. Motivo: o line-up chega pronto e só o Renato preenche; os moderadores são 6 pessoas fixas (1 por trilha + 2 reservas), então basta colocar os 6 e-mails em `isModerator()` (`firestore.rules`) e publicar as regras uma vez. Complexidade alta (grade slot x trilha com preview, foto só por URL, site passando a ler JSON, papéis, auditoria, LGPD). **Só reavaliar se mais gente passar a editar dados toda semana.** Alternativa barata nesse caso: planilha modelo + script em `DevFestIA/tools/` que lê o CSV, valida (slot duplicado, foto faltando, trilha inexistente) e gera o arquivo de dados.
+- **Passaporte DevFest com QR nos estandes** (carimbos por estande e brinde no fim; também fora do telão "N pessoas já completaram"), descartado em 2026-10-09.
 - **Votação da comunidade pras salas** (os nomes das salas já estão decididos e no ar).
