@@ -9,7 +9,7 @@ const { load, backoffDelay } = require("./load.js");
 const { createFakeClock } = require("../lib/fake-clock.js");
 const { createNetworkMonitor, createFetchProbe } = load("features/mural-network.js");
 const { createResilientListener, createLiveHub } = load("features/mural-live.js");
-const { pollOpen, documentListenOpen, buildLiveSources } = load("features/mural-live-sources.js");
+const { pollOpen, documentListenOpen, queryListenOpen, buildLiveSources } = load("features/mural-live-sources.js");
 const { assetSignature, createVersionChecker } = load("features/mural-version.js");
 const { defaultSchedule, withTimeout } = load("features/scheduler.js");
 const { createFreshPublishDetector } = load("features/publish-detector.js");
@@ -236,6 +236,30 @@ test("fonte por polling com keepAlive: erro avisa e continua tentando; voltando 
   const after = values.length;
   await clock.tick(5000);
   assert.equal(values.length, after, "depois do stop não lê mais");
+});
+
+test("fonte por consulta: espera o login, escuta a consulta com os filtros do dado e devolve a função que desliga", async () => {
+  const order = [];
+  const received = [];
+  const repository = { listen: (filters, onData, onError) => { order.push(["listen", { ...filters }]); onData([{ id: "a" }]); return () => order.push(["stop"]); } };
+  const open = queryListenOpen({ repository: () => repository, filters: { status: "approved" }, getUid: async () => { order.push(["login"]); } });
+  const stop = await open(value => received.push(value), () => {});
+  assert.deepEqual(order, [["login"], ["listen", { status: "approved" }]]);
+  assert.deepEqual(received, [[{ id: "a" }]]);
+  stop();
+  assert.deepEqual(order.at(-1), ["stop"]);
+});
+
+test("fontes montadas pelo dado: uma definição `query` vira escuta da consulta com os filtros do dado", async () => {
+  const listened = [];
+  const sources = buildLiveSources({
+    definitions: [{ id: "wall", kind: "query", repository: "wall", filters: { status: "approved" } }],
+    repositories: { wall: () => ({ listen: (filters, onData) => { listened.push({ ...filters }); return () => {}; } }) },
+    getUid: async () => {}, schedule: () => () => {},
+  });
+  assert.deepEqual(sources.map(source => source.id), ["wall"]);
+  await sources[0].open(() => {}, () => {});
+  assert.deepEqual(listened, [{ status: "approved" }]);
 });
 
 test("fontes montadas pelo dado: uma escuta por chave, repositories e chaves resolvidos por nome, login antes de escutar", async () => {

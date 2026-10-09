@@ -8,7 +8,7 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 const { createFakeClock } = require("../lib/fake-clock.js");
 
-const SCENES = ["mural-scene-kit", "mural-now-next-scene", "mural-sponsors-scene", "mural-qr-scene", "mural-registered-scene", "mural-tips-scene", "mural-phoenix-scene", "mural-podium-scene", "mural-event-phase-scene", "mural-reserve-scene", "mural-spotlight-scene", "mural-selfie-scene", "mural-art-scene", "mural-album-scene", "mural-notice-scene", "mural-video-scene", "mural-team-scene", "mural-message-scene", "mural-day-timeline-scene", "mural-teaser-scene"].map(name => `components/mural-scenes/${name}.js`);
+const SCENES = ["mural-scene-kit", "mural-now-next-scene", "mural-sponsors-scene", "mural-qr-scene", "mural-registered-scene", "mural-tips-scene", "mural-phoenix-scene", "mural-podium-scene", "mural-event-phase-scene", "mural-reserve-scene", "mural-spotlight-scene", "mural-selfie-scene", "mural-art-scene", "mural-album-scene", "mural-notice-scene", "mural-video-scene", "mural-team-scene", "mural-message-scene", "mural-day-timeline-scene", "mural-teaser-scene", "mural-wall-scene"].map(name => `components/mural-scenes/${name}.js`);
 const site = loadSite({
   scripts: [...SITE_BASE, "features/scheduler.js", "features/agenda.js", "features/mural-now-next.js", "features/mural-photo-pool.js", "features/mural.js", "features/mural-playlist.js", "components/talk-highlight.js", "data/mural-tips.js", "data/mural-arts.js", "data/mural-albums.js", "data/mural-album-models.js", "features/album-photo-url.js", "features/album-models.js", "features/video-sound.js", "components/mural-scenes/album-models/album-model-collage.js", "components/mural-scenes/album-models/album-model-portrait-strip.js", "components/mural-scenes/album-models/album-model-polaroid.js", "components/mural-scenes/album-models/album-model-feature.js", "components/mural-scenes/album-models/album-model-mosaic.js", ...SCENES, "features/live-status.js", "features/count-up.js", "features/mural-rotation.js", "features/mural-messages.js", "features/mural-day-timeline.js", "features/mural-teasers.js", "data/mural-messages.js", "components/avatar.js"],
 });
@@ -802,4 +802,43 @@ test("aviso por tipo: FRASE com o rótulo próprio, CONTAGEM com o relógio que 
   await clock.tick(1000);
   assert.equal(textOf(el.querySelector("[data-countdown]")), "00:00", "nunca fica negativa");
   stop();
+});
+
+// ---------- cena de recados ----------
+const wallPost = (id, prompt, createdAtMs, extra = {}) => ({ id, prompt, createdAtMs, text: `recado ${id}`, ...extra });
+function wallScene() {
+  const scene = g("createWallScene")({ promptLabelOf: id => ({ buscar: "O que você veio buscar?", recado: "Um recado" })[id] ?? id, rotation: g("createRotation")() });
+  return { scene, show: (params, posts) => { const prepared = scene.prepare(params, ctx({ live: { wall: posts } })); return prepared === MURAL_SKIP ? MURAL_SKIP : html(scene.render(prepared, params).markup); } };
+}
+
+test("recados: só a pergunta da cena, do mais novo pro mais antigo, com a pergunta em letra grande, o apelido e as cores do Google em rodízio", () => {
+  const { show } = wallScene();
+  const posts = [wallPost("a", "buscar", 10), wallPost("b", "recado", 50), wallPost("c", "buscar", 30, { nickname: "Ana" }), wallPost("d", "buscar", 20), wallPost("e", "buscar", 40), wallPost("f", "buscar", 5)];
+  const view = show({ prompt: "buscar", count: 4 }, posts);
+  assert.match(textOf(view.querySelector(".ms-title")), /O que você veio buscar\?/);
+  assert.deepEqual([...view.querySelectorAll(".ms-wall-note p")].map(note => textOf(note)), ["recado e", "recado c", "recado d", "recado a"]);
+  assert.equal(textOf(view.querySelectorAll(".ms-wall-note")[1].querySelector("span")), "Ana");
+  assert.equal(view.querySelector(".ms-wall-notes").dataset.count, "4");
+  const colors = [...view.querySelectorAll(".ms-wall-note")].map(note => note.getAttribute("style").match(/--note:([^;]+)/)[1]);
+  assert.equal(new Set(colors).size, 4, "cada notinha de uma cor");
+});
+
+test("recados: cada passada mostra a página seguinte e dá a volta; com menos de 3 recados da pergunta (ou nenhum dado ao vivo) a cena não aparece", () => {
+  const { show } = wallScene();
+  const posts = Array.from({ length: 5 }, (_, index) => wallPost(`p${index}`, "buscar", 100 - index));
+  const page = () => [...show({ prompt: "buscar", count: 3 }, posts).querySelectorAll(".ms-wall-note p")].map(note => textOf(note));
+  assert.deepEqual(page(), ["recado p0", "recado p1", "recado p2"]);
+  assert.deepEqual(page(), ["recado p3", "recado p4"]);
+  assert.deepEqual(page(), ["recado p0", "recado p1", "recado p2"], "dá a volta");
+  assert.equal(show({ prompt: "buscar" }, [wallPost("a", "buscar", 1), wallPost("b", "buscar", 2)]), MURAL_SKIP);
+  assert.equal(show({ prompt: "buscar", min: 1 }, [wallPost("a", "buscar", 1)]) === MURAL_SKIP, false, "o mínimo vem do dado");
+  assert.equal(wallScene().scene.prepare({ prompt: "buscar" }, ctx()), MURAL_SKIP, "fonte ainda sem dado");
+});
+
+test("recados: o texto e o apelido da plateia nunca viram HTML", () => {
+  const { show } = wallScene();
+  const view = show({ prompt: "buscar", min: 1 }, [wallPost("x", "buscar", 1, { text: "<img src=x onerror=alert(1)>", nickname: "<b>eu</b>" })]);
+  assert.equal(view.querySelector("img"), null);
+  assert.equal(view.querySelector("b"), null);
+  assert.match(textOf(view), /<img src=x onerror=alert\(1\)>/);
 });

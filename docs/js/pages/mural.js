@@ -103,6 +103,7 @@ function initMural() {
     message: createMessageScene({ repository: muralMessagesRepository, rotation, timezone: EVENT.timezone, formatTime: (date, zone) => formatEventTime(date, zone, CODE_LOCALE), preload, mascotUrl: "assets/img/gumbleton.png" }),
     "day-timeline": createDayTimelineScene({ schedule: SCHEDULE, timezone: EVENT.timezone, formatTime: (date, zone) => formatEventTime(date, zone, CODE_LOCALE), highlightLabelOf: data => talkHighlightsRepository.forTalk(data)?.label ?? null }),
     teaser: createTeaserScene({ repository: muralTeasersRepository, schedule: SCHEDULE }),
+    wall: createWallScene({ promptLabelOf: id => wallConfigRepository.prompt(id)?.label ?? id, rotation }),
     team: createTeamScene({ repository: teamRepository, preload: url => preloadImage(url, { timeoutMs: config.speakerPhotoTimeoutMs, schedule }), rotation }),
     phoenix: createPhoenixScene({ preload, imageUrl: "assets/img/gumbleton.png", title, subtitle: eventDateLabel(SCHEDULE, EVENT.timezone) }),
     podium: createPodiumScene({ talkIndex, highlightOf: talkHighlightsRepository.forTalk }),
@@ -162,7 +163,7 @@ function initMural() {
       schedule, nowMs, backoff: config.network.backoff, onUpdate: bindings,
       sources: buildLiveSources({
         definitions: muralSourcesRepository.getAll(), schedule,
-        repositories: { eventStats: () => window.eventStatsRepository, contestResults: () => window.contestResultsRepository, albums: () => albumsRepository, muralHidden: () => window.muralHiddenRepository, muralControl: () => window.muralControlRepository },
+        repositories: { eventStats: () => window.eventStatsRepository, contestResults: () => window.contestResultsRepository, albums: () => albumsRepository, muralHidden: () => window.muralHiddenRepository, muralControl: () => window.muralControlRepository, wall: () => window.wallRepository },
         keyResolvers: {
           albums: () => albumKeys().map(entry => entry.key),
           "live-albums": () => albumKeys(true),

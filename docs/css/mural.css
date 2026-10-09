@@ -358,3 +358,14 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .ms-notice[data-kind="quote"] .ms-kicker{color:var(--google-yellow)}
 .ms-notice[data-kind="countdown"] .ms-notice-count{color:var(--google-green);font-size:calc(var(--u) * 22)}
 .ms-notice[data-kind="countdown"] .ms-kicker,.ms-notice[data-kind="break"] .ms-kicker{color:var(--google-green)}
+
+/* cena "recados": notinhas coloridas (as 4 cores do Google) levemente tortas, em grade que se ajusta ao formato do telão */
+.ms-wall{gap:calc(var(--u) * 3)}
+.ms-wall-notes{flex:1;min-height:0;list-style:none;margin:0;padding:calc(var(--u) * 1);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:1fr;gap:calc(var(--u) * 2.4)}
+.ms-wall-notes[data-count="1"],.ms-wall-notes[data-count="2"],.ms-wall-notes[data-count="3"]{grid-template-columns:repeat(auto-fit,minmax(0,1fr))}
+.ms-wall-note{display:flex;flex-direction:column;justify-content:space-between;gap:calc(var(--u) * 1.2);padding:calc(var(--u) * 2.4);border-radius:calc(var(--u) * 1.4);background:var(--note);color:#05060a;transform:rotate(var(--tilt));box-shadow:0 calc(var(--u) * .8) calc(var(--u) * 2) oklch(0% 0 0 / .4);overflow:hidden}
+.ms-wall-note p{margin:0;font:800 calc(var(--u) * 3.6) / 1.18 var(--font-display);text-wrap:balance;overflow-wrap:anywhere}
+.ms-wall-note span{font:700 calc(var(--u) * 2.2) var(--font-body);opacity:.75}
+.mural-stage[data-shape="tall"] .ms-wall-notes{grid-template-columns:repeat(2,minmax(0,1fr))}
+.mural-stage[data-shape="ultrawide"] .ms-wall-notes{grid-template-columns:repeat(6,minmax(0,1fr))}
+.mural-stage[data-shape="ultrawide"] .ms-wall-notes[data-count]{grid-auto-rows:auto}

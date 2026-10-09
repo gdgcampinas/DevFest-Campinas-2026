@@ -3,7 +3,7 @@
  * `listen`), então trocar a origem de um dado (ou ligar a foto ao vivo na Fase 2) é editar este arquivo, não o motor.
  *
  *   id          nome da fonte (as cenas pedem `requires.live` com esse nome)
- *   kind        "poll" (lê de tempos em tempos: `repository.get`) | "document" (escuta o documento: `repository.listen`, 1 leitura por mudança)
+ *   kind        "poll" (lê de tempos em tempos: `repository.get`) | "document" (escuta o documento: `repository.listen`, 1 leitura por mudança) | "query" (escuta uma consulta por igualdade, `filters`: os recados aprovados)
  *   repository  nome em pages/mural.js (window.eventStatsRepository, window.contestResultsRepository...)
  *   key | keys  documento fixo, ou o nome de um resolvedor de várias chaves (uma escuta por chave: "contest-sessions" = sessões com concurso)
  *   enabled     false desliga a fonte inteira
@@ -26,6 +26,8 @@ const MURAL_SOURCES = [
   { id: "hidden", kind: "document", repository: "muralHidden", keys: "albums", bind: { live: "hidden", collect: { field: "ids" } } },
   // controle remoto (avisos, fixar, pausar, recarregar, emergência): um documento que o moderador grava pelo celular; o mural só lê
   { id: "control", kind: "document", repository: "muralControl", key: MURAL_CONFIG.control.docKey, bind: { handle: "control" } },
+  // recados da plateia que o moderador APROVOU (Firestore `mural-wall`, escuta: o que ele tira do ar some do telão na hora; a regra só deixa o telão ler os aprovados)
+  { id: "wall", kind: "query", repository: "wall", filters: { status: "approved" }, bind: { live: "wall" } },
   {
     id: "podium", kind: "document", repository: "contestResults", keys: "contest-sessions",
     bind: { live: "podium", pick: "podium", interrupt: { sceneId: "podio-jam", priority: 100, ttlMs: 3 * 60000, immediate: true }, celebrate: true, celebrateDelayMs: MURAL_CONFIG.motion.podiumStepMs * 2 + 1100 },

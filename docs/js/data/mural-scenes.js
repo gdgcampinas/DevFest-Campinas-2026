@@ -18,6 +18,8 @@
  * as cenas `*-intervalo` entram só no almoço e no encerramento pra dar mais tempo de vídeo quando ninguém está em palestra. Sem o intermediário ligado ou sem clipe baixado a cena some.
  * "Linha do dia" (`type: "day-timeline"`): a grade inteira como uma faixa de blocos com o que já passou, o que está no ar e o que vem aí (usa a grade, então só com o line-up revelado).
  * "Daqui a pouco" (`type: "teaser"`): a atração grande (data/mural-teasers.js: Coding Jam, encerramento...) que começa dentro da janela de aviso dela, com contagem; fora da janela a cena some.
+ * "Recados" (`type: "wall"`): os recados que a plateia mandou pelo QR (recado.html) e o moderador aprovou (admin > Recados), como notinhas coloridas; uma cena por pergunta (`params.prompt`, data/wall-config.js), uma página de 6 recados por passada,
+ * só com 3 ou mais recados da pergunta. `qr-recados` é o QR que leva à página de enviar e só entra enquanto o mural de recados está aberto (`WALL_CONFIG.open`) e a fonte `wall` responde.
  * "Time" (`type: "team"`): uma pessoa do time por passada (foto, nome, cargo e mini-bio de data/team.js), a próxima a cada vez; duas entradas dão duas pessoas por volta do rodízio. Em PROD o time é público (dado real), sem `reveal`.
  * "Mensagem" (`type: "message"`): texto grande e acolhedor do conjunto `params.set` de data/mural-messages.js (quebra-gelo, "Primeira vez aqui?", saudação por horário); `params.mascot` põe o Gumbleton no canto.
  * O quebra-gelo entra no almoço, no café e quando o moderador anuncia uma pausa (`requires.live: "break"`, ver o controle remoto).
@@ -58,6 +60,10 @@ const MURAL_SCENES = [
   { id: "quebra-gelo-intervalo", label: "Quebra-gelo (almoço e café)", type: "message", seconds: 12, transition: "zoom", requires: { moments: ["lunch", "coffee", "back-to-room"] }, params: { set: "icebreaker", mascot: true } },
   { id: "linha-do-dia", label: "Hoje no DevFest (linha do dia)", type: "day-timeline", seconds: 14, requires: { reveal: true, phases: ["before", "live"] }, params: {} },
   { id: "daqui-a-pouco", label: "Daqui a pouco (próxima atração)", type: "teaser", seconds: 12, transition: "zoom", requires: { reveal: true, phases: ["before", "live"] }, params: {} },
+  { id: "recados-buscar", label: "Recados: o que você veio buscar?", type: "wall", seconds: 16, transition: "zoom", requires: { phases: ["before", "live"], live: "wall" }, params: { prompt: "buscar" } },
+  { id: "recados-recado", label: "Recados: um recado para quem você veio encontrar", type: "wall", seconds: 16, transition: "zoom", requires: { phases: ["live"], live: "wall" }, params: { prompt: "recado" } },
+  { id: "recados-significou", label: "Recados: o que o DevFest significou", type: "wall", seconds: 16, transition: "zoom", requires: { phases: ["live", "after"], live: "wall" }, params: { prompt: "significou" } },
+  { id: "qr-recados", label: "QR: deixe seu recado", type: "qr", seconds: 16, transition: "slide", enabled: WALL_CONFIG.open, requires: { live: "wall" }, params: { kicker: "Participe", heading: "Deixe seu recado no telão", hint: "Escaneie, escreva em uma frase e a equipe aprova. A galera vai ver!", path: "recado.html" } },
   { id: "time-1", label: "Quem faz o DevFest (1)", type: "team", seconds: 11, transition: "rise", params: { kicker: "Gente como você, de casa", title: "Quem faz o DevFest acontecer" } },
   { id: "dicas", label: "Dicas", type: "tips", seconds: 16, params: { title: "Aproveite o DevFest" } },
   { id: "time-2", label: "Quem faz o DevFest (2)", type: "team", seconds: 11, transition: "rise", params: { kicker: "Gente como você, de casa", title: "Quem faz o DevFest acontecer" } },
