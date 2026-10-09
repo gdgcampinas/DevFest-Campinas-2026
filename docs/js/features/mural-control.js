@@ -2,7 +2,7 @@
  * CONTROLE REMOTO do mural do telão (avisos ao vivo, fixar cena, pausar, recarregar, emergência). Um único documento no Firestore, `mural-control/current`, que o moderador grava pelo celular
  * (mural-controle.html) e o mural só LÊ por escuta (1 leitura por mudança): o computador do telão nunca é tocado. Puro, dual (navegador e Node), testado em DevFestIA/tools/mural/control.test.js.
  *
- * O documento: { notices: [{ id, text, kind: "info" | "alert", until }], emergency: { text, since } | null, hold: { sceneId | null, until } | null, reload: número }.
+ * O documento: { notices: [{ id, text, kind: "info" | "alert" | "quote" | "countdown" | "break", until }], emergency: { text, since } | null, hold: { sceneId | null, until } | null, reload: número }.
  *   notices    avisos com tempo de vida (`until` em ms): somem sozinhos quando vencem, mesmo que ninguém os remova
  *   emergency  aviso FIXO em tela cheia: o rodízio PARA até o moderador desarmar (sem validade, de propósito)
  *   hold       `sceneId` fixa essa cena; `null` = pausa na cena que estiver no ar; `until` solta sozinho (ninguém esquece o telão parado)
@@ -15,13 +15,16 @@ function emptyControl() {
   return { notices: [], emergency: null, hold: null, reload: 0 };
 }
 
+/** O tipo do aviso: um dos de `limits.kinds` (padrão: info e alert); qualquer outro vira "info". Os tipos e o que cada um faz no telão: data/mural-config.js e components/mural-scenes/mural-notice-scene.js. */
+const noticeKind = (kind, limits) => ((limits.kinds ?? ["info", "alert"]).includes(kind) ? kind : "info");
+
 const cleanText = (text, max) => String(text ?? "").replace(/\s+/g, " ").trim().slice(0, max);
 
 /** O documento como o mural o entende: só avisos válidos e vivos, emergência com texto, pausa que ainda não venceu. Nunca lança (documento ausente ou torto vira vazio). */
 function normalizeControl(doc, nowMs, limits) {
   const notices = (Array.isArray(doc?.notices) ? doc.notices : [])
     .filter(notice => notice && typeof notice.id === "string" && cleanText(notice.text, limits.maxTextLength) && Number(notice.until) > nowMs)
-    .map(notice => ({ id: notice.id, text: cleanText(notice.text, limits.maxTextLength), kind: notice.kind === "alert" ? "alert" : "info", until: Number(notice.until) }))
+    .map(notice => ({ id: notice.id, text: cleanText(notice.text, limits.maxTextLength), kind: noticeKind(notice.kind, limits), until: Number(notice.until) }))
     .slice(-limits.maxNotices);
   const emergencyText = cleanText(doc?.emergency?.text, limits.maxEmergencyLength);
   const hold = doc?.hold && Number(doc.hold.until) > nowMs ? { sceneId: typeof doc.hold.sceneId === "string" ? doc.hold.sceneId : null, until: Number(doc.hold.until) } : null;
@@ -44,7 +47,7 @@ function addNotice(doc, { text, kind = "info", ttlMs, id, nowMs }, limits) {
   const clean = cleanText(text, limits.maxTextLength);
   if (!clean) throw new Error("escreva o aviso");
   const alive = normalizeControl(doc, nowMs, limits).notices;
-  return { ...normalizeControl(doc, nowMs, limits), notices: [...alive, { id, text: clean, kind: kind === "alert" ? "alert" : "info", until: nowMs + ttlMs }].slice(-limits.maxNotices) };
+  return { ...normalizeControl(doc, nowMs, limits), notices: [...alive, { id, text: clean, kind: noticeKind(kind, limits), until: nowMs + ttlMs }].slice(-limits.maxNotices) };
 }
 
 const removeNotice = (doc, id, nowMs, limits) => {
@@ -67,8 +70,7 @@ const disarmEmergency = (doc, nowMs, limits) => ({ ...normalizeControl(doc, nowM
 const orderReload = (doc, nowMs, limits) => ({ ...normalizeControl(doc, nowMs, limits), reload: nowMs });
 
 /**
- * O APLICADOR do mural: `apply(doc)` roda a cada mudança do documento (e quando algo vence). Dá as ordens ao motor (`mural.hold`, `mural.release`, `mural.pushInterrupt`), mantém `live.notices` e
- * `live.emergency` (o que as cenas leem) e pede a recarga. A emergência vence a pausa. `spec` (data/mural-sources.js, `bind.control`) diz quais cenas e com que prioridade.
+ * O APLICADOR do mural: `apply(doc)` roda a cada mudança do documento (e quando algo vence). Dá as ordens ao motor (`mural.hold`, `mural.release`, `mural.pushInterrupt`), mantém `live.notices`, `live.emergency` e as fontes por tipo de aviso de `limits.liveByKind` (o que as cenas leem) e pede a recarga. A emergência vence a pausa. `spec` (data/mural-sources.js, `bind.control`) diz quais cenas e com que prioridade.
  *   mural          { hold({ sceneId, untilMs, critical }), release(), pushInterrupt(spec) }   (`critical`: a emergência, que o motor nunca solta sozinho)
  *   live           estado compartilhado das cenas (`live.notices`, `live.emergency`)
  *   requestReload  chamado com "remote-reload" quando o moderador pede recarga
@@ -101,6 +103,10 @@ function createMuralControl({ mural, live, limits, spec, nowMs = () => Date.now(
 
     if (state.notices.length) live.notices = state.notices;
     else delete live.notices;
+    Object.entries(limits.liveByKind ?? {}).forEach(([kind, key]) => { // alguns tipos de aviso ligam uma fonte `live` (a pausa liga o quebra-gelo)
+      if (state.notices.some(notice => notice.kind === kind)) live[key] = true;
+      else delete live[key];
+    });
     if (state.emergency) live.emergency = state.emergency;
     else delete live.emergency;
 

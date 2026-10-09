@@ -56,7 +56,7 @@ test("fixar, pausar, soltar, emergência e recarregar: cada ordem mexe só no se
   assert.equal(normalizeControl(holdScene(emptyControl(), { sceneId: "a", ttlMs: MIN, nowMs: NOW }, limits), NOW + 2 * MIN, limits).hold, null, "fixar vence sozinho");
 });
 
-function setup({ read = null } = {}) {
+function setup({ read = null, limits: setupLimits = limits } = {}) {
   const clock = createFakeClock(NOW);
   const calls = [];
   const live = {};
@@ -64,7 +64,7 @@ function setup({ read = null } = {}) {
   const mural = { hold: order => calls.push(["hold", order]), release: () => calls.push(["release"]), pushInterrupt: spec => calls.push(["interrupt", spec]) };
   const reloads = [];
   const spec = { emergencyScene: "emergencia", noticeInterrupt: { sceneId: "aviso", priority: 90, ttlMs: 60000, immediate: true } };
-  const control = createMuralControl({ mural, live, limits, spec, nowMs: clock.nowMs, schedule: clock.schedule, requestReload: reason => reloads.push(reason), reloadStore: { read: () => stored, write: token => { stored = token; } } });
+  const control = createMuralControl({ mural, live, limits: setupLimits, spec, nowMs: clock.nowMs, schedule: clock.schedule, requestReload: reason => reloads.push(reason), reloadStore: { read: () => stored, write: token => { stored = token; } } });
   return { control, calls, live, reloads, clock, stored: () => stored };
 }
 const doc = (extra = {}) => ({ notices: [], emergency: null, hold: null, reload: 0, ...extra });
@@ -146,4 +146,27 @@ test("resumo do estado: telão normal, pausado, fixado numa cena e emergência, 
   const emergency = normalizeControl({ emergency: { text: "saiam", since: 1 } }, NOW, limits);
   assert.deepEqual([summarizeControl(emergency, options).emergency, summarizeControl(emergency, options).headline], [true, "EMERGÊNCIA ARMADA"]);
   assert.equal(summarizeControl(emptyControl()).holdText, "rodando sozinho", "sem opções também funciona");
+});
+
+test("tipos de aviso: os de `limits.kinds` valem (frase, contagem, pausa), outro vira aviso comum e sem `kinds` só aviso e alerta existem", () => {
+  const kinded = { ...limits, kinds: ["info", "alert", "quote", "countdown", "break"] };
+  let doc = emptyControl();
+  for (const kind of ["quote", "countdown", "break", "outro"]) doc = addNotice(doc, { text: kind, kind, ttlMs: 5 * MIN, id: kind, nowMs: NOW }, { ...kinded, maxNotices: 10 });
+  assert.deepEqual(normalizeControl(doc, NOW, { ...kinded, maxNotices: 10 }).notices.map(notice => [notice.id, notice.kind]), [["quote", "quote"], ["countdown", "countdown"], ["break", "break"], ["outro", "info"]]);
+  const plain = normalizeControl({ notices: [{ id: "q", text: "frase", kind: "quote", until: NOW + MIN }] }, NOW, limits);
+  assert.equal(plain.notices[0].kind, "info", "sem `kinds` no limite, o tipo novo cai em aviso");
+  assert.equal(addNotice(emptyControl(), { text: "x", kind: "countdown", ttlMs: MIN, id: "c", nowMs: NOW }, kinded).notices[0].until, NOW + MIN, "contagem: o `until` é a hora do acontecimento");
+});
+
+test("aplicador: um tipo de aviso de `limits.liveByKind` liga a fonte `live` enquanto o aviso está vivo e desliga quando ele vence ou sai (a pausa liga o quebra-gelo)", async () => {
+  const { control, live, clock } = setup({ limits: { ...limits, kinds: ["info", "break"], liveByKind: { break: "break" } } });
+  control.apply(doc({ notices: [{ id: "p", text: "Pausa para o café", kind: "break", until: NOW + 10 * MIN }, { id: "i", text: "aviso comum", kind: "info", until: NOW + 30 * MIN }] }));
+  assert.equal(live.break, true);
+  await clock.tick(10 * MIN + 100);
+  assert.equal(live.break, undefined, "a pausa venceu: o quebra-gelo sai do ar");
+  assert.deepEqual(live.notices.map(notice => notice.id), ["i"]);
+  control.apply(doc({ notices: [{ id: "p2", text: "Pausa", kind: "break", until: clock.nowMs() + 5 * MIN }] }));
+  assert.equal(live.break, true);
+  control.apply(doc());
+  assert.equal(live.break, undefined, "pausa removida pelo moderador");
 });

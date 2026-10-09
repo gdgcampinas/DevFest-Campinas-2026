@@ -4,7 +4,7 @@
  * outra conta vê "sem permissão" (a regra é a defesa, a tela só avisa). Retoma o login que já estava feito.
  * O formulário é desenhado UMA vez (quem digita não perde o texto quando o estado muda); só as áreas vivas (`data-slot`) são refeitas. A emergência exige dois toques (features/two-tap-confirm.js; o primeiro pede confirmação
  * e vale `confirmMs`). Tudo por parâmetro: `repository` ({ listen, set }), `rules` (as regras puras de features/mural-control.js), `limits` (MURAL_CONFIG.control), `scenes` ([{ id, label }]),
- * `templates` (data/mural-notices.js), `login`, `nowMs`, `makeId`, `schedule`, `formatTime`, `refreshMs`, `confirmMs`.
+ * `templates` (data/mural-notices.js: frases prontas, os anúncios ao vivo prontos `announce` e o texto de cada tipo de aviso `kinds`), `login`, `nowMs`, `makeId`, `schedule`, `formatTime`, `refreshMs`, `confirmMs`.
  * `embedded` (dentro da área de admin, que faz o login uma vez): sem porta de entrada, conta nem título; liga na hora, já logado. Devolve `{ stop }` (desliga a escuta e os temporizadores).
  */
 function initMuralControlPanel(rootEl, { repository, rules, limits, scenes, templates, login = defaultModeratorLoginDeps(), nowMs = () => Date.now(), makeId = () => Math.random().toString(36).slice(2, 10), schedule = defaultSchedule, formatTime = () => "", refreshMs = 15000, confirmMs = 5000, whenReady = runAfterModules, embedded = false }) {
@@ -22,7 +22,7 @@ function initMuralControlPanel(rootEl, { repository, rules, limits, scenes, temp
   function drawSlots() {
     const state = rules.normalize(doc, nowMs(), limits);
     const formatMs = ms => formatTime(new Date(ms));
-    const slots = muralControlSlots({ state, summary: rules.summarize(state, { sceneLabel, formatTime: formatMs }), ui: { ...ui, emergencyConfirm: confirm.armed() === "emergency" }, limits, formatTime: formatMs, busy });
+    const slots = muralControlSlots({ state, summary: rules.summarize(state, { sceneLabel, formatTime: formatMs }), ui: { ...ui, emergencyConfirm: confirm.armed() === "emergency" }, limits, kinds: templates.kinds, formatTime: formatMs, busy });
     Object.entries(slots).forEach(([name, markup]) => {
       const slot = rootEl.querySelector(`[data-slot="${name}"]`);
       if (slot) slot.innerHTML = markup;
@@ -92,7 +92,18 @@ function initMuralControlPanel(rootEl, { repository, rules, limits, scenes, temp
   const actions = {
     "data-notice-template": button => { field("data-notice-text").value = button.dataset.noticeTemplate; },
     "data-emergency-template": button => { field("data-emergency-text").value = button.dataset.emergencyTemplate; },
-    "data-notice-kind": button => { ui.kind = button.dataset.noticeKind; drawSlots(); },
+    "data-notice-quick": button => {
+      const item = templates.announce[Number(button.dataset.noticeQuick)];
+      ui.kind = item.kind;
+      field("data-notice-text").value = item.text;
+      field("data-notice-text").placeholder = templates.kinds[ui.kind].placeholder;
+      drawSlots();
+    },
+    "data-notice-kind": button => {
+      ui.kind = button.dataset.noticeKind;
+      field("data-notice-text").placeholder = templates.kinds[ui.kind].placeholder;
+      drawSlots();
+    },
     "data-notice-minutes": button => { ui.noticeMinutes = Number(button.dataset.noticeMinutes); drawSlots(); },
     "data-hold-minutes": button => { ui.holdMinutes = Number(button.dataset.holdMinutes); drawSlots(); },
     "data-notice-publish": () => save(() => rules.addNotice(doc, { text: field("data-notice-text").value, kind: ui.kind, ttlMs: minutes(ui.noticeMinutes), id: makeId(), nowMs: nowMs() }, limits), "Aviso publicado no telão.").then(() => { if (!ui.message.startsWith("Não") && !ui.message.startsWith("Sem")) field("data-notice-text").value = ""; }),

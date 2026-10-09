@@ -13,8 +13,10 @@ function muralControlShellMarkup({ email, limits, scenes, templates, embedded = 
     <section class="mod-section mc-card">
       <h2 class="mod-section-title">Aviso ao vivo</h2>
       <p class="mod-hint">Aparece no telão na hora e some sozinho quando o tempo acaba.</p>
+      <p class="mod-hint">Anúncios ao vivo: um toque escolhe o tipo e escreve o texto, é só escolher o tempo.</p>
+      <div class="mc-chips">${templates.announce.map((item, index) => `<button type="button" class="chip-btn chip-btn--primary" data-notice-quick="${index}">${escapeHtml(item.label)}</button>`).join("")}</div>
       <div class="mc-chips">${templateButtons(templates.notice, "data-notice-template")}</div>
-      <textarea class="feedback-input" data-notice-text maxlength="${limits.maxTextLength}" rows="2" placeholder="Escreva o aviso (até ${limits.maxTextLength} caracteres)"></textarea>
+      <textarea class="feedback-input" data-notice-text maxlength="${limits.maxTextLength}" rows="2" placeholder="${escapeHtml(templates.kinds.info.placeholder)} (até ${limits.maxTextLength} caracteres)"></textarea>
       <div class="mc-chips" data-slot="kind"></div>
       <div class="mc-chips" data-slot="durations"></div>
       <button type="button" class="chip-btn chip-btn--primary" data-notice-publish>Publicar aviso</button>
@@ -44,17 +46,17 @@ function muralControlShellMarkup({ email, limits, scenes, templates, embedded = 
 }
 
 /** As áreas vivas. `state` já vem normalizado e `summary` é o resumo em palavras (features/mural-control.js); `ui` é o que a tela escolheu (tipo, durações, confirmação da emergência). */
-function muralControlSlots({ state, summary, ui, limits, formatTime, busy = false }) {
+function muralControlSlots({ state, summary, ui, limits, kinds, formatTime, busy = false }) {
   const disabled = busy ? " disabled" : "";
   const minutes = value => `${value >= 60 ? `${value / 60} h` : `${value} min`}`;
   const choice = (attr, values, selected) => values.map(value => `<button type="button" class="chip-btn${value === selected ? " chip-btn--primary" : ""}" ${attr}="${value}">${minutes(value)}</button>`).join("");
   return {
     status: `<p class="mod-hint mc-status${summary.emergency ? " is-emergency" : ""}" role="status">${escapeHtml(summary.text)}</p>`,
-    kind: `<button type="button" class="chip-btn${ui.kind === "info" ? " chip-btn--primary" : ""}" data-notice-kind="info">Aviso</button><button type="button" class="chip-btn${ui.kind === "alert" ? " chip-btn--danger" : ""}" data-notice-kind="alert">Alerta</button>`,
-    durations: `<span class="mod-hint">Fica no ar:</span>${choice("data-notice-minutes", limits.noticeMinutes, ui.noticeMinutes)}`,
+    kind: limits.kinds.map(id => `<button type="button" class="chip-btn${ui.kind === id ? (id === "alert" ? " chip-btn--danger" : " chip-btn--primary") : ""}" data-notice-kind="${escapeHtml(id)}">${escapeHtml(kinds[id].label)}</button>`).join(""),
+    durations: `<span class="mod-hint">${escapeHtml(kinds[ui.kind].durationLabel)}</span>${choice("data-notice-minutes", limits.noticeMinutes, ui.noticeMinutes)}`,
     "hold-durations": `<span class="mod-hint">Por quanto tempo:</span>${choice("data-hold-minutes", limits.holdMinutes, ui.holdMinutes)}`,
     notices: state.notices.length
-      ? `<ul class="mc-list">${[...state.notices].reverse().map(notice => `<li class="mc-notice${notice.kind === "alert" ? " is-alert" : ""}"><span>${escapeHtml(notice.text)} <small>até ${escapeHtml(formatTime(notice.until))}</small></span><button type="button" class="chip-btn chip-btn--danger" data-notice-remove="${escapeHtml(notice.id)}"${disabled}>Remover</button></li>`).join("")}</ul>`
+      ? `<ul class="mc-list">${[...state.notices].reverse().map(notice => `<li class="mc-notice${notice.kind === "alert" ? " is-alert" : ""}"><span>${escapeHtml(notice.text)} <small>${notice.kind === "info" ? "" : `${escapeHtml(kinds[notice.kind].label)} · `}${notice.kind === "countdown" ? "às" : "até"} ${escapeHtml(formatTime(notice.until))}</small></span><button type="button" class="chip-btn chip-btn--danger" data-notice-remove="${escapeHtml(notice.id)}"${disabled}>Remover</button></li>`).join("")}</ul>`
       : '<p class="mod-hint">Nenhum aviso no ar.</p>',
     hold: state.hold ? `<button type="button" class="chip-btn chip-btn--primary" data-hold-release${disabled}>Soltar o rodízio</button>` : "",
     emergency: state.emergency

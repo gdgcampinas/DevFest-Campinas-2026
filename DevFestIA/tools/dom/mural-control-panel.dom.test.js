@@ -16,7 +16,7 @@ const limits = g("MURAL_CONFIG").control;
 const RULE_NAMES = { normalizeControl: "normalize", summarizeControl: "summarize" };
 const rules = ["normalizeControl", "summarizeControl", "addNotice", "removeNotice", "holdScene", "releaseHold", "armEmergency", "disarmEmergency", "orderReload"].reduce((all, name) => ({ ...all, [RULE_NAMES[name] ?? name]: g(name) }), {});
 const scenes = [{ id: "agora", label: "Agora e próximas" }, { id: "dicas", label: "Dicas" }];
-const templates = { notice: ["A próxima palestra começa em 5 minutos"], emergency: ["Evacuação: sigam as saídas de emergência com calma"] };
+const templates = { notice: ["A próxima palestra começa em 5 minutos"], emergency: ["Evacuação: sigam as saídas de emergência com calma"], announce: [{ label: "Foto da galera", kind: "countdown", text: "Foto da galera: venham para perto" }, { label: "Pausa para o café", kind: "break", text: "Pausa para o café" }], kinds: g("muralNoticeTemplatesRepository").getAll().kinds };
 
 function setup({ email = "mod@gmail.com", initial = null, setImpl } = {}) {
   document.body.innerHTML = `<main id="modBody"></main>`;
@@ -50,7 +50,7 @@ test("entrar: mostra a conta, o estado normal do telão, as frases prontas, as d
   assert.match(textOf(rootEl), /mod@gmail\.com/);
   assert.match(textOf(rootEl.querySelector("[data-slot=status]")), /Telão normal · rodando sozinho · 0 aviso\(s\) no ar/);
   assert.match(textOf(rootEl), /A próxima palestra começa em 5 minutos/);
-  assert.deepEqual([...rootEl.querySelectorAll("[data-notice-minutes]")].map(button => textOf(button)), ["1 min", "2 min", "5 min", "15 min", "1 h"]);
+  assert.deepEqual([...rootEl.querySelectorAll("[data-notice-minutes]")].map(button => textOf(button)), ["1 min", "2 min", "5 min", "10 min", "15 min", "1 h"]);
   assert.deepEqual([...rootEl.querySelectorAll("[data-hold-scene] option")].map(option => option.textContent), ["Agora e próximas", "Dicas"]);
   assert.equal(rootEl.querySelector("[data-notice-text]").getAttribute("maxlength"), String(limits.maxTextLength));
 });
@@ -189,4 +189,41 @@ test("os parâmetros padrão do painel (mural-controle.html e admin) juntam repo
   assert.equal(deps.repository, window2.moderationMuralControlRepository);
   assert.deepEqual(Object.keys(deps.rules).sort(), ["addNotice", "armEmergency", "disarmEmergency", "holdScene", "normalize", "orderReload", "releaseHold", "removeNotice", "summarize"]);
   assert.equal(deps.limits.docKey, "current");
+});
+
+test("anúncio ao vivo: o botão pronto escolhe o tipo, escreve o texto e troca o texto de ajuda do campo e o rótulo do tempo; publicar grava o tipo com a hora do acontecimento", async () => {
+  const { rootEl, writes, click, signIn } = setup();
+  await signIn();
+  assert.deepEqual([...rootEl.querySelectorAll("[data-notice-kind]")].map(button => textOf(button)), ["Aviso", "Alerta", "Frase", "Contagem", "Pausa"]);
+  assert.match(textOf(rootEl.querySelector("[data-slot=durations]")), /^Fica no ar:/);
+  click("[data-notice-quick=\"0\"]");
+  assert.equal(rootEl.querySelector("[data-notice-text]").value, "Foto da galera: venham para perto");
+  assert.match(rootEl.querySelector("[data-notice-text]").placeholder, /O que vai acontecer/);
+  assert.match(textOf(rootEl.querySelector("[data-slot=durations]")), /^Acontece em:/);
+  assert.ok(rootEl.querySelector('[data-notice-kind="countdown"]').classList.contains("chip-btn--primary"));
+  click('[data-notice-minutes="10"]');
+  click("[data-notice-publish]");
+  await settle();
+  assert.equal(writes.length, 1);
+  assert.deepEqual([writes[0].data.notices[0].kind, writes[0].data.notices[0].until - NOW], ["countdown", 10 * 60000]);
+  assert.match(textOf(rootEl.querySelector("[data-slot=notices]")), /Contagem · às/);
+});
+
+test("anúncio ao vivo: a pausa vira aviso do tipo pausa; trocar o tipo na mão muda o texto de ajuda; o tipo comum não mostra o rótulo na lista", async () => {
+  const { rootEl, writes, click, signIn } = setup();
+  await signIn();
+  click("[data-notice-quick=\"1\"]");
+  assert.equal(rootEl.querySelector("[data-notice-text]").value, "Pausa para o café");
+  assert.match(textOf(rootEl.querySelector("[data-slot=durations]")), /^A pausa dura:/);
+  click("[data-notice-publish]");
+  await settle();
+  assert.equal(writes[0].data.notices[0].kind, "break");
+  click('[data-notice-kind="quote"]');
+  assert.match(rootEl.querySelector("[data-notice-text]").placeholder, /frase marcante/);
+  rootEl.querySelector("[data-notice-text]").value = "Uma frase";
+  click('[data-notice-kind="info"]');
+  click("[data-notice-publish]");
+  await settle();
+  assert.equal(writes[1].data.notices.at(-1).kind, "info");
+  assert.doesNotMatch(textOf(rootEl.querySelector("[data-slot=notices]")).split("Uma frase")[1] ?? "", /Aviso ·/);
 });

@@ -113,3 +113,11 @@ test("mural-control: limites dos avisos (no máximo 5, texto de 1 a 140, tipo in
   denied(await putControl(mod, controlData({ hold: { sceneId: "x".repeat(41), until: 1 } })), "cena grande demais");
   denied(await putControl(mod, controlData({ hold: { sceneId: "agora" } })), "pausa sem prazo");
 });
+
+test("mural-control: os tipos de aviso novos (frase do momento, contagem e pausa) valem, e continua recusando tipo desconhecido", { skip }, async () => {
+  const mod = moderator();
+  for (const kind of ["quote", "countdown", "break"]) allowed(await putControl(mod, controlData({ notices: [notice({ kind })] })), `tipo ${kind}`);
+  allowed(await putControl(mod, controlData({ notices: [notice({ id: "a", kind: "quote" }), notice({ id: "b", kind: "countdown" }), notice({ id: "c", kind: "break" }), notice({ id: "d" }), notice({ id: "e", kind: "alert" })] })), "os 5 tipos juntos, no limite de 5 avisos");
+  denied(await putControl(mod, controlData({ notices: [notice({ kind: "Quote" })] })), "caixa diferente não vale");
+  denied(await putControl(mod, controlData({ notices: [notice({ kind: "" })] })));
+});

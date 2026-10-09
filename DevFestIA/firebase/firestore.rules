@@ -73,13 +73,13 @@ service cloud.firestore {
       return isOwner() || isListedModerator();
     }
 
-    // Aviso do CONTROLE REMOTO do mural (`mural-control/current`, lista `notices`): na posição i da lista (a lista tem no máximo 5, sem laço nas regras: confere cada posição).
+    // Aviso do CONTROLE REMOTO do mural (`mural-control/current`, lista `notices`; tipos: aviso, alerta, frase do momento, contagem e pausa, ESPELHAR `control.kinds` de docs/js/data/mural-config.js): na posição i da lista (a lista tem no máximo 5, sem laço nas regras: confere cada posição).
     function noticeOk(list, i) {
       return list.size() <= i || (list[i] is map
         && list[i].keys().hasOnly(['id', 'text', 'kind', 'until'])
         && list[i].id is string && list[i].id.size() > 0 && list[i].id.size() <= 40
         && list[i].text is string && list[i].text.size() > 0 && list[i].text.size() <= 140
-        && list[i].kind in ['info', 'alert']
+        && list[i].kind in ['info', 'alert', 'quote', 'countdown', 'break']
         && list[i].until is number);
     }
 

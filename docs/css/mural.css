@@ -351,3 +351,10 @@ html.kiosk,html.kiosk *{cursor:none !important}
 /* cena "Daqui a pouco": nome da atração grande, contagem enorme e o convite */
 .ms-teaser-title{font-size:calc(var(--u) * 11)}
 .ms-teaser .ms-number{color:var(--google-green)}
+
+/* tipos de aviso: frase do momento (aspas grandes), contagem (relógio grande) e pausa */
+.ms-notice[data-kind="quote"] .ms-notice-text{font-style:italic;font-weight:700;position:relative;padding-left:calc(var(--u) * 9)}
+.ms-notice[data-kind="quote"] .ms-notice-text::before{content:"\201C";position:absolute;left:0;top:calc(var(--u) * -3);font:800 calc(var(--u) * 26) / 1 var(--font-display);font-style:normal;color:var(--google-yellow)}
+.ms-notice[data-kind="quote"] .ms-kicker{color:var(--google-yellow)}
+.ms-notice[data-kind="countdown"] .ms-notice-count{color:var(--google-green);font-size:calc(var(--u) * 22)}
+.ms-notice[data-kind="countdown"] .ms-kicker,.ms-notice[data-kind="break"] .ms-kicker{color:var(--google-green)}

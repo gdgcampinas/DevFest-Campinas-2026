@@ -778,3 +778,28 @@ test("daqui a pouco: mostra a atração, a contagem em minutos e segundos e o co
     stop();
   });
 });
+
+test("aviso por tipo: FRASE com o rótulo próprio, CONTAGEM com o relógio que anda até a hora marcada (relógio real injetado) e PAUSA", async () => {
+  let nowMs = 5000;
+  const scene = g("createNoticeScene")({ nowMs: () => nowMs });
+  const show = (kind, text, until) => scene.render(scene.prepare({}, ctx({ live: { notices: [notice("n", text, kind, until)] } })), {}, ctx());
+  const quote = html(show("quote", "Código bom é código que o time entende", 90_000).markup);
+  assert.equal(quote.querySelector(".ms-notice").dataset.kind, "quote");
+  assert.match(textOf(quote), /Frase do momento.*Código bom é código que o time entende/);
+  assert.equal(quote.querySelector("[data-countdown]"), null, "frase não tem relógio");
+  const pause = html(show("break", "Pausa para o café", 90_000).markup);
+  assert.match(textOf(pause), /Pausa.*Pausa para o café/);
+  const view = show("countdown", "Foto da galera", 125_000);
+  const el = html(view.markup);
+  assert.match(textOf(el), /Daqui a pouco.*Foto da galera/);
+  assert.equal(textOf(el.querySelector("[data-countdown]")), "02:00");
+  const clock = createFakeClock();
+  const stop = view.mount(el, { schedule: clock.schedule });
+  nowMs = 65_000;
+  await clock.tick(1000);
+  assert.equal(textOf(el.querySelector("[data-countdown]")), "01:00", "anda sozinha com o relógio real");
+  nowMs = 200_000;
+  await clock.tick(1000);
+  assert.equal(textOf(el.querySelector("[data-countdown]")), "00:00", "nunca fica negativa");
+  stop();
+});
