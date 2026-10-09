@@ -24,4 +24,4 @@ function initRecadoPage() {
   });
 }
 
-initRecadoPage();
+runAfterModules(initRecadoPage);
