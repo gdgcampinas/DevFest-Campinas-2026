@@ -186,7 +186,7 @@ test("a página recado.html inteira abre o formulário com as frases e as pergun
   const scripts = [...html.matchAll(/<script src="(js\/[^"?]+)[^"]*"/g)].map(match => match[1].replace("js/", "")).map(file => file.replace("data/schedule.dev.js", "data/schedule.js")).filter(file => !["pages/recado.js", "app.js"].includes(file));
   const page = loadSite({
     scripts, html: `<!doctype html><html><body><span id="wallMascot"></span><span id="wallLogo"></span><h1 id="wallTitle"></h1><p id="wallIntro"></p><div id="wallBody">Carregando…</div></body></html>`,
-    globals: { initShell: () => true, resolveNow: () => () => new Date("2026-11-28T10:00:00-03:00"), wallRepository: { getMineFor: async () => new Set(), add: async () => {} }, firebaseClient: { ensureAnonymousUid: async () => "uid1" } },
+    globals: { initShell: () => true, isDevModeStored: () => false, resolveNow: () => () => new Date("2026-11-28T10:00:00-03:00"), wallRepository: { getMineFor: async () => new Set(), add: async () => {} }, firebaseClient: { ensureAnonymousUid: async () => "uid1" } },
   });
   page.run(fs.readFileSync(path.join(DOCS, "js", "pages", "recado.js"), "utf8"), "pages/recado.js");
   await waitFor(() => page.document.querySelector("[data-wall-form]"));

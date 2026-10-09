@@ -1,5 +1,5 @@
 /**
- * Cena "Quem faz o DevFest Campinas acontecer": UMA pessoa do time por passada (organizadores e voluntários, na ordem do dado), com foto grande, nome, cargo e a mini-bio curta, e a mensagem de
+ * Cena "Quem faz o DevFest Campinas acontecer": UMA pessoa do time por passada (organizadores e voluntários MISTURADOS, um de cada grupo por vez; `params.order: "listed"` volta à ordem do dado), com foto grande, nome, cargo e a mini-bio curta, e a mensagem de
  * acolhimento do dado ("Gente como você, de casa"). Cada vez que a cena volta mostra a próxima pessoa (`rotation`, compartilhado entre as entradas do dado). Foto que não carrega (ou demora)
  * cai nas iniciais com a cor do grupo, sem atrasar a cena; sem bio mostra só o cargo. `params.maxBio` limita o tamanho do texto (padrão 220). Sem ninguém no time a cena não aparece.
  * Tudo injetado: `repository` (data/team.js: getAll), `preload(url)` (com tempo limite curto), `rotation` (features/mural-rotation.js).
@@ -7,7 +7,7 @@
 function createTeamScene({ repository, preload, rotation }) {
   return {
     async prepare(params) {
-      const people = repository.getAll();
+      const people = params.order === "listed" ? repository.getAll() : interleaveGroups(repository.getAll(), person => person.type); // padrão: organizadores e voluntários misturados
       const index = rotation.next(params.rotation ?? "team", people.length);
       if (index < 0) return MURAL_SKIP;
       const person = people[index];

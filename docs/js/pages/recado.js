@@ -19,7 +19,7 @@ function initRecadoPage() {
     rules: { validateWallPost, nextWallSlot, wallEntry },
     getUid: () => window.firebaseClient.ensureAnonymousUid(),
     text,
-    phaseOf: () => wallPhase(now(), config),
+    phaseOf: () => wallPhase(now(), config, { devMode: isDevModeStored() }),
     hours: { from: hour(config.window.from), until: hour(config.window.until) },
   });
 }

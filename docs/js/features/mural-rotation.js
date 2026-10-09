@@ -15,4 +15,21 @@ function createRotation() {
   };
 }
 
-if (typeof module !== "undefined") module.exports = { createRotation };
+/**
+ * Intercala os itens por grupo: um de cada grupo por vez, na ordem em que os grupos aparecem (A1, B1, A2, B2...); quando um grupo acaba, o resto segue na ordem. `groupOf(item)` diz o grupo.
+ * Usada pra o time sortear organizadores e voluntários misturados em vez de passar primeiro por todo mundo de um grupo. Devolve uma lista nova (não mexe na original).
+ */
+function interleaveGroups(items, groupOf) {
+  const groups = new Map();
+  items.forEach(item => {
+    const key = groupOf(item);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(item);
+  });
+  const queues = [...groups.values()];
+  const mixed = [];
+  for (let round = 0; queues.some(queue => round < queue.length); round++) queues.forEach(queue => { if (round < queue.length) mixed.push(queue[round]); });
+  return mixed;
+}
+
+if (typeof module !== "undefined") module.exports = { createRotation, interleaveGroups };

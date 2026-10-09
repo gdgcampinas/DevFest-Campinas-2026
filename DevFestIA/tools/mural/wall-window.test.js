@@ -30,3 +30,10 @@ test("interruptor manual: open false fecha na hora, mesmo dentro da janela", () 
   assert.equal(wallPhase(at("12:00"), { ...config, open: false }), "closed");
   assert.equal(wallPhase(at("07:00"), { ...config, open: false }), "closed");
 });
+
+test("modo DEV: abre fora da janela (pra testar a qualquer hora), mas o interruptor manual ainda fecha", () => {
+  assert.equal(wallPhase(at("03:00"), config, { devMode: true }), "open");
+  assert.equal(wallPhase(new Date("2026-12-10T10:00:00-03:00"), config, { devMode: true }), "open");
+  assert.equal(wallPhase(at("12:00"), { ...config, open: false }, { devMode: true }), "closed");
+  assert.equal(wallPhase(at("03:00"), config, { devMode: false }), "before");
+});

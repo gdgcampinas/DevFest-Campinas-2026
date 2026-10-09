@@ -866,3 +866,15 @@ test("QR sem o endereço escrito: `showUrl: false` esconde o texto embaixo do QR
   assert.ok(hidden.querySelector("[data-qr]"));
   assert.equal(drawn.at(-1), "https://site/recado.html");
 });
+
+test("time: organizadores e voluntários aparecem MISTURADOS (um de cada grupo por vez); `order: listed` mantém a ordem do dado", async () => {
+  const team = [person("Org Um", { type: "organizador" }), person("Org Dois", { type: "organizador" }), person("Vol Um"), person("Vol Dois"), person("Vol Tres"), person("Vol Quatro")];
+  const names = async params => {
+    const scene = g("createTeamScene")({ repository: { getAll: () => team }, preload: async () => {}, rotation: g("createRotation")() });
+    const out = [];
+    for (let i = 0; i < team.length; i++) out.push(textOf(html(scene.render(await scene.prepare(params), params).markup).querySelector(".ms-team-name")));
+    return out;
+  };
+  assert.deepEqual(await names({}), ["Org Um", "Vol Um", "Org Dois", "Vol Dois", "Vol Tres", "Vol Quatro"], "voluntário já na segunda pessoa");
+  assert.deepEqual(await names({ order: "listed" }), team.map(member => member.name));
+});

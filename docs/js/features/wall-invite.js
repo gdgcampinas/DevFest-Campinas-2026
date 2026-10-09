@@ -24,5 +24,5 @@ function initWallInviteCard(mountEl, { invite, timer = defaultSchedule, refreshM
 function defaultWallInvite() {
   const config = wallConfigRepository.getAll();
   const now = resolveNow();
-  return createWallInvite({ config, text: wallTextsRepository.getAll(), phaseOf: () => wallPhase(now(), config), href: "recado.html" });
+  return createWallInvite({ config, text: wallTextsRepository.getAll(), phaseOf: () => wallPhase(now(), config, { devMode: isDevModeStored() }), href: "recado.html" });
 }

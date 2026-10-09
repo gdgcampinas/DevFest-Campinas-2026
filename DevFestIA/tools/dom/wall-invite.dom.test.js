@@ -74,13 +74,16 @@ test("depois de avaliar uma palestra: o convite aparece dentro do bloco 'obrigad
   assert.doesNotMatch(textOf(plain), /recado/, "sem o parâmetro, nada muda");
 });
 
-test("o convite padrão usa o relógio do site (?demo=) e a janela do dado: dentro do dia do evento abre, fora fecha", () => {
+test("o convite padrão usa o relógio do site (?demo=) e a janela do dado: dentro do dia do evento abre, fora fecha, e o modo DEV abre sempre", () => {
+  window.isDevModeStored = () => false;
   window.resolveNow = () => () => new Date("2026-11-28T10:00:00-03:00");
   assert.equal(g("defaultWallInvite")().isOpen(), true);
   window.resolveNow = () => () => new Date("2026-11-28T18:00:00-03:00");
   assert.equal(g("defaultWallInvite")().isOpen(), false);
   window.resolveNow = () => () => new Date("2026-11-28T07:00:00-03:00");
   assert.equal(g("defaultWallInvite")().isOpen(), false);
+  window.isDevModeStored = () => true;
+  assert.equal(g("defaultWallInvite")().isOpen(), true, "DEV: a janela não vale");
 });
 
 test("texto do convite nunca vira HTML", () => {
