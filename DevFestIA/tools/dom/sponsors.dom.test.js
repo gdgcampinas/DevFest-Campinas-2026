@@ -19,7 +19,7 @@ test("Master é o Google Developer Groups, com o logo oficial que existe no repo
   const [gdg] = master.elements;
   assert.equal(gdg.name, "Google Developer Groups");
   assert.equal(gdg.link, "https://gdg.community.dev/");
-  assert.match(gdg.description, /GDG Campinas/);
+  assert.equal(gdg.description, "Comunidade global de desenvolvedores do Google Developer Groups.");
   assert.ok(fs.existsSync(path.join(__dirname, "../../../docs", gdg.imageUrl)), `logo ${gdg.imageUrl} existe`);
 });
 

@@ -18,7 +18,7 @@ const sponsor = (name, description, shape, color) => ({
 const SPONSORS = [
   { tier: "Master", elements: [
     // REAL: logo horizontal OFICIAL do Google Developer Groups (Brand Guide for Organizers), sem redesenhar. Versão de texto ESCURO, na caixa branca padrão dos cards de patrocínio.
-    { public: true, name: "Google Developer Groups", link: "https://gdg.community.dev/", imageUrl: "assets/brand/google-developer-groups.webp", description: "Comunidade global de desenvolvedores que apoia o GDG Campinas e o DevFest." },
+    { public: true, name: "Google Developer Groups", link: "https://gdg.community.dev/", imageUrl: "assets/brand/google-developer-groups.webp", description: "Comunidade global de desenvolvedores do Google Developer Groups." },
   ] },
   { tier: "Especialista", elements: [
     sponsor("Vértice Dados", "Plataforma de análise de dados e inteligência de negócios para varejo e indústria.", "bars", "#34a853"),
