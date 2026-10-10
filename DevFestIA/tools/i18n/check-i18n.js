@@ -18,9 +18,9 @@ const read = file => fs.readFileSync(path.join(docs, file), "utf8");
 const errors = [];
 const fail = message => errors.push(message);
 
-const KEEP_AS_IS = new Set(["Coding Jam", "Antigravity", "Antigravity IDE", "Gemini", "Meetup", "Instagram", "LinkedIn", "Linktree", "VIP", "GDG Campinas", "DevFest Campinas", "EloTech 2026", "gdgcampinascontato@gmail.com", "Campinas, SP", "Sympla", "Links", "Networking", "Workshop", "Front-end / Back-end / Data", "Front/Back/Data", "Mobile / Agile", "Mobile/Agile", "Google Sans"]);
+const KEEP_AS_IS = new Set(["Coding Jam", "Antigravity", "Antigravity IDE", "Gemini", "Meetup", "Instagram", "LinkedIn", "Linktree", "VIP", "GDG Campinas", "DevFest Campinas", "EloTech 2026", "gdgcampinascontato@gmail.com", "Campinas, SP", "Sympla", "Links", "Networking", "Workshop", "Front-end / Back-end / Data", "Front/Back/Data", "Mobile / Agile", "Mobile/Agile", "Google Sans", "Master", "Senior", "Intern"]);
 // Campos dos dados que não são texto de tela (ids, endereços, cores, arquivos, textos já gerados por t()).
-const SKIP_KEYS = new Set(["id", "noteIcon", "url", "href", "color", "trackColor", "icon", "date", "start", "end", "timezone", "utcOffset", "image", "logo", "photo", "file", "youtubeId", "tier", "shape", "endpoint", "provider", "alt", "waitlistUrl", "price", "value", "min", "max", "moment"]);
+const SKIP_KEYS = new Set(["id", "noteIcon", "url", "href", "color", "trackColor", "icon", "date", "start", "end", "timezone", "utcOffset", "image", "logo", "photo", "file", "youtubeId", "shape", "endpoint", "provider", "alt", "waitlistUrl", "imageUrl", "link", "slug", "price", "value", "min", "max", "moment"]);
 const isTechnical = value => /^(https?:|mailto:|var\(|assets\/|js\/|#)/.test(value) || /^[\d\s+.,%/-]+$/.test(value);
 
 // ---------- 1 e 2: chaves usadas no código ----------
@@ -77,7 +77,7 @@ languages.filter(language => language.id !== defaultLang).forEach(language => {
 });
 
 // ---------- 4: dados traduzidos por texto ----------
-const dataScripts = [...new Set(["index.html", "quiz.html", "ingressos.html"].flatMap(page => [...read(page).matchAll(/<script src="(js\/data\/[^"?]+)/g)].map(match => match[1])))]
+const dataScripts = [...new Set(["index.html", "quiz.html", "ingressos.html", "patrocinio.html", "time.html", "codigo-de-conduta.html", "sorteio.html"].flatMap(page => [...read(page).matchAll(/<script src="(js\/data\/[^"?]+)/g)].map(match => match[1])))]
   .filter(file => !/firebase|i18n|schedule\.dev|repository\.js$/.test(file) || /(^|\/)repository\.js$/.test(file) && false);
 const dataContext = vm.createContext({ console, window: {}, t: (key, fallback) => fallback, tn: () => "", CURRENT_EDITION: "2026", createPersistedSetRepository: () => ({}), createPersistedValueRepository: () => ({}) });
 vm.runInContext(read("js/data/repository.js"), dataContext);
@@ -100,7 +100,8 @@ const collect = (node, visited = new WeakSet()) => {
   if (node === null || typeof node !== "object" || visited.has(node)) return;
   if (!(Array.isArray(node) || Object.getPrototypeOf(node) === Object.prototype || node.constructor?.name === "Object")) return;
   visited.add(node);
-  Object.entries(node).forEach(([key, value]) => { if (!SKIP_KEYS.has(key)) collect(value, visited); });
+  const isProperNameOwner = Boolean(node) && ("imageUrl" in node || "photo" in node || "link" in node || "quote" in node); // marca, comunidade, pessoa, rede social e depoimento: o `name` é nome próprio, não se traduz
+  Object.entries(node).forEach(([key, value]) => { if (!SKIP_KEYS.has(key) && !(key === "name" && isProperNameOwner) && !(key === "type" && typeof value === "string" && "photo" in node)) collect(value, visited); });
 };
 datasetThunks.forEach(thunk => {
   try {

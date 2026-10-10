@@ -23,9 +23,9 @@ function sponsorLogoMarkup(sponsor, { showDescription = true, showName } = {}) {
 
 /** Um bloco por cota: nome da cota + grid de logos. O `data-tier` leva a cota pro CSS (layout e cor); a descrição segue o estilo da cota. */
 function sponsorTierMarkup(tier) {
-  const style = sponsorTierStyle(tier.tier);
+  const style = sponsorTierStyle(tier);
   return `
-    <div class="sponsor-tier" data-tier="${style.slug}">
+    <div class="sponsor-tier" data-tier="${tier.id}">
       <div class="sponsor-tier-label">${tier.tier}</div>
       <div class="sponsor-logos">${tier.elements.map(element => sponsorLogoMarkup(element, { showDescription: style.description })).join("")}</div>
     </div>`;

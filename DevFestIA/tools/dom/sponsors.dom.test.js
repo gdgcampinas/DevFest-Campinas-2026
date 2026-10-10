@@ -47,16 +47,19 @@ test("nome em texto só quando o card não tem descrição; o logo leva o nome n
   assert.equal(textOf(box.querySelector(".sponsor-name")), "Comunidade", "comunidade parceira (sem descrição no dado) mostra o nome");
 });
 
-test("cada cota leva o data-tier pro CSS e o Apoio não mostra descrição; cota desconhecida vira slug do nome", () => {
+test("cada cota leva o id como data-tier pro CSS e o Apoio não mostra descrição; cota desconhecida usa o padrão", () => {
   const html = tier => { const d = document.createElement("div"); d.innerHTML = site.get("sponsorTierMarkup")(tier); return d; };
   const element = { name: "A", link: "https://a.test/", imageUrl: "a.webp", description: "Descrição" };
-  const master = html({ tier: "Master", elements: [element] });
+  const master = html({ id: "master", tier: "Master", elements: [element] });
   assert.equal(master.querySelector(".sponsor-tier").dataset.tier, "master");
   assert.ok(master.querySelector(".sponsor-desc"));
-  const apoio = html({ tier: "Apoio", elements: [element] });
+  const apoio = html({ id: "apoio", tier: "Apoio", elements: [element] });
   assert.equal(apoio.querySelector(".sponsor-tier").dataset.tier, "apoio");
   assert.equal(apoio.querySelector(".sponsor-desc"), null, "Apoio é só logo e nome");
-  assert.equal(html({ tier: "Parceria Ouro!", elements: [element] }).querySelector(".sponsor-tier").dataset.tier, "parceria-ouro");
+  const unknown = html({ id: "ouro", tier: "Parceria Ouro", elements: [element] });
+  assert.equal(unknown.querySelector(".sponsor-tier").dataset.tier, "ouro");
+  assert.ok(unknown.querySelector(".sponsor-desc"), "cota desconhecida usa o padrão: com descrição");
+  assert.equal(textOf(unknown.querySelector(".sponsor-tier-label")), "Parceria Ouro");
 });
 
 test("em produção (antes da revelação) só as marcas `public` aparecem; cota sem nenhuma pública some", () => {

@@ -17,7 +17,7 @@ const patrocinioIntroRepository = createRepository(PATROCINIO_INTRO);
 const SPONSORSHIP_BANNER_VERSION = 1;
 const SPONSORSHIP_BANNER = {
   file: `assets/img/sponsorship-banner.webp?v=${SPONSORSHIP_BANNER_VERSION}`,
-  alt: "Colagem de fotos do DevFest Campinas com a palestra, a plateia e a mascote Fênix, com a chamada \"Seja patrocinador\"",
+  alt: t("patrocinio.bannerAlt", "Colagem de fotos do DevFest Campinas com a palestra, a plateia e a mascote Fênix, com a chamada \"Seja patrocinador\""),
 };
 
 const sponsorshipBannerRepository = createRepository(SPONSORSHIP_BANNER);

@@ -301,6 +301,16 @@ const LOCALIZED_DATASETS = [
   () => analyticsRepository.getAll(),
   () => wallTextsRepository.getAll(),
   () => wallConfigRepository.getAll().prompts,
+  () => patrocinioIntroRepository.getAll(),
+  () => sponsorshipBannerRepository.getAll(),
+  () => patrocinioBenefitsRepository.getAll(),
+  () => sponsorsRepository.getAll(),
+  () => partnerCommunitiesRepository.getAll(),
+  () => testimonialsRepository.getAll(),
+  () => teamIntroRepository.getAll(),
+  () => teamRepository.getAll(),
+  () => codRepository.getAll(),
+  () => raffleRulesRepository.getAll(),
 ];
 
 /** Traduz os dados no lugar (uma vez, antes de qualquer render); no idioma padrão não faz nada. */
