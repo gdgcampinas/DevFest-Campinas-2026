@@ -1,6 +1,6 @@
 /**
- * Patrocinadores/parceiros por tier — MOCK (empresas fictícias) até
- * confirmar os reais. Mesma estrutura serve pra qualquer número de
+ * Patrocinadores/parceiros por tier — o Master (Google Developer Groups) é REAL;
+ * os demais são MOCK (empresas fictícias) até confirmar os reais. Mesma estrutura serve pra qualquer número de
  * tiers/logos. Tier sem `elements` (ou array vazio) simplesmente não
  * aparece. `description` é opcional: com ela, o card mostra o texto
  * (padrão inspirado no Campinas Innovation Week); sem ela, sobra só
@@ -15,7 +15,8 @@ const sponsor = (name, description, shape, color) => ({
 
 const SPONSORS = [
   { tier: "Master", elements: [
-    sponsor("Tecnova Sistemas", "Software e cloud sob medida para empresas de médio e grande porte, com sede em Campinas.", "hex", "#4285f4"),
+    // REAL: logo horizontal OFICIAL do Google Developer Groups (Brand Guide for Organizers), sem redesenhar. Versão de texto escuro porque o card tem caixa branca.
+    { name: "Google Developer Groups", link: "https://gdg.community.dev/", imageUrl: "assets/brand/google-developer-groups.webp", description: "Comunidade global de desenvolvedores que apoia o GDG Campinas e o DevFest." },
   ] },
   { tier: "Especialista", elements: [
     sponsor("Vértice Dados", "Plataforma de análise de dados e inteligência de negócios para varejo e indústria.", "bars", "#34a853"),
