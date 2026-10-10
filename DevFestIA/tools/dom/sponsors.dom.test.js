@@ -9,7 +9,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 
-const site = loadSite({ scripts: [...SITE_BASE, "data/mock-links.js", "data/mock-logo.js", "data/sponsors.js", "data/sponsor-tiers.js", "components/sponsor-card.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "data/mock-links.js", "data/mock-logo.js", "data/sponsors.js", "data/sponsor-tiers.js", "components/sponsor-card.js", "features/sponsors.js"] });
 const { window, document } = site;
 test.after(() => window.close());
 
@@ -56,4 +56,17 @@ test("cada cota leva o data-tier pro CSS e o Apoio não mostra descrição; cota
   assert.equal(apoio.querySelector(".sponsor-tier").dataset.tier, "apoio");
   assert.equal(apoio.querySelector(".sponsor-desc"), null, "Apoio é só logo e nome");
   assert.equal(html({ tier: "Parceria Ouro!", elements: [element] }).querySelector(".sponsor-tier").dataset.tier, "parceria-ouro");
+});
+
+test("em produção (antes da revelação) só as marcas `public` aparecem; cota sem nenhuma pública some", () => {
+  const publicTiers = site.get("publicSponsorTiers");
+  const tiers = [
+    { tier: "Master", elements: [{ name: "Real", public: true }] },
+    { tier: "Senior", elements: [{ name: "Mock" }] },
+    { tier: "Apoio", elements: [{ name: "Outra real", public: true }, { name: "Mock 2" }] },
+  ];
+  assert.equal(JSON.stringify(publicTiers(tiers).map(tier => [tier.tier, tier.elements.map(e => e.name)])), JSON.stringify([["Master", ["Real"]], ["Apoio", ["Outra real"]]]));
+  const real = site.get("sponsorsRepository").getAll();
+  const shown = publicTiers(real).flatMap(tier => tier.elements.map(e => e.name));
+  assert.equal(JSON.stringify(shown), JSON.stringify(["Google Developer Groups"]), "hoje só o Master (GDG) está liberado em produção");
 });

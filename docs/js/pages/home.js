@@ -35,12 +35,8 @@ function initHome() {
 
   renderRealizacao(EVENT.hosts, document.querySelector(".realizacao-grid"));
   renderTestimonials(testimonialsRepository.getAll(), document.getElementById("testimonialsSection"), document.querySelector(".testimonials-grid"));
-  renderOrConstruction(reveal, document.getElementById("sponsorsSection"),
-    () => renderSponsors(sponsorsRepository.getAll(), document.getElementById("sponsorsSection"), document.querySelector(".sponsors-grid")),
-    t("home.sponsorsSoon", "Patrocinadores serão revelados em breve."));
-  renderOrConstruction(reveal, document.getElementById("partnerCommunitiesSection"),
-    () => renderPartnerCommunities(partnerCommunitiesRepository.getAll(), document.getElementById("partnerCommunitiesSection"), document.querySelector(".partner-communities-grid")),
-    t("home.communitiesSoon", "Comunidades parceiras serão reveladas em breve."));
+  initSponsorsSection({ reveal, tiers: sponsorsRepository.getAll(), sectionEl: document.getElementById("sponsorsSection"), gridEl: document.querySelector(".sponsors-grid"), soonMessage: t("home.sponsorsSoon", "Patrocinadores serão revelados em breve.") });
+  initPartnerCommunitiesSection({ reveal, communities: partnerCommunitiesRepository.getAll(), sectionEl: document.getElementById("partnerCommunitiesSection"), gridEl: document.querySelector(".partner-communities-grid"), soonMessage: t("home.communitiesSoon", "Comunidades parceiras serão reveladas em breve.") });
 
   const liveStatus = createLiveStatus({
     schedule: SCHEDULE,

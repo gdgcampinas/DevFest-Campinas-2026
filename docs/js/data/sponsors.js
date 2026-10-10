@@ -5,6 +5,8 @@
  * aparece. `description` é opcional: com ela, o card mostra o texto
  * (padrão inspirado no Campinas Innovation Week); sem ela, sobra só
  * logo+nome. Logo mock vem de mock-logo.js, link de mock-links.js.
+ * `public: true` = marca CONFIRMADA e liberada: aparece em produção mesmo antes da revelação geral (reveal); as sem a marca (mocks) só
+ * aparecem em DEV ou depois da revelação (ver publicSponsorTiers em features/sponsors.js).
  */
 const sponsor = (name, description, shape, color) => ({
   name,
@@ -16,7 +18,7 @@ const sponsor = (name, description, shape, color) => ({
 const SPONSORS = [
   { tier: "Master", elements: [
     // REAL: logo horizontal OFICIAL do Google Developer Groups (Brand Guide for Organizers), sem redesenhar. Versão de texto escuro porque o card tem caixa branca.
-    { name: "Google Developer Groups", link: "https://gdg.community.dev/", imageUrl: "assets/brand/google-developer-groups.webp", description: "Comunidade global de desenvolvedores que apoia o GDG Campinas e o DevFest." },
+    { public: true, name: "Google Developer Groups", link: "https://gdg.community.dev/", imageUrl: "assets/brand/google-developer-groups.webp", description: "Comunidade global de desenvolvedores que apoia o GDG Campinas e o DevFest." },
   ] },
   { tier: "Especialista", elements: [
     sponsor("Vértice Dados", "Plataforma de análise de dados e inteligência de negócios para varejo e indústria.", "bars", "#34a853"),

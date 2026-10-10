@@ -1,10 +1,16 @@
 /**
  * Feature: comunidades parceiras — reusa sponsorLogoMarkup
  * (components/sponsor-card.js), não duplica o template de logo+link.
- * Some sozinha enquanto vazio.
+ * Some sozinha enquanto vazio. O logo já traz o nome da comunidade: o nome
+ * fica no `alt`/`title` (sem repetir em texto).
  */
 function renderPartnerCommunities(communities, sectionEl, gridEl) {
   sectionEl.hidden = communities.length === 0;
   if (communities.length === 0) return;
-  gridEl.innerHTML = communities.map(community => sponsorLogoMarkup(community)).join("");
+  gridEl.innerHTML = communities.map(community => sponsorLogoMarkup(community, { showName: false })).join("");
+}
+
+/** Monta a seção na página atrás da revelação (antes dela: aviso "em breve"). Home e Patrocínio usam a mesma. */
+function initPartnerCommunitiesSection({ reveal, communities, sectionEl, gridEl, soonMessage }) {
+  renderOrConstruction(reveal, sectionEl, () => renderPartnerCommunities(communities, sectionEl, gridEl), soonMessage);
 }
