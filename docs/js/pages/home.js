@@ -33,10 +33,10 @@ function initHome() {
     galleryMarkup(t("before.menu", "Cardápio"), t("before.infoSoon", "Informações em breve."), FOOD_IMAGES));
   renderTracksOverview(TRACKS, document.getElementById("tracksOverviewSection"), document.querySelector(".tracks-overview-grid"));
 
-  renderRealizacao(EVENT.hosts, document.querySelector(".realizacao-grid"));
+  renderRealizacao(EVENT.hosts, document.querySelector(".realizacao-grid"), { by: REALIZATION_BY });
   renderTestimonials(testimonialsRepository.getAll(), document.getElementById("testimonialsSection"), document.querySelector(".testimonials-grid"));
   initSponsorsSection({ reveal, tiers: sponsorsRepository.getAll(), sectionEl: document.getElementById("sponsorsSection"), gridEl: document.querySelector(".sponsors-grid"), soonMessage: t("home.sponsorsSoon", "Patrocinadores serão revelados em breve.") });
-  initPartnerCommunitiesSection({ reveal, communities: partnerCommunitiesRepository.getAll(), sectionEl: document.getElementById("partnerCommunitiesSection"), gridEl: document.querySelector(".partner-communities-grid"), soonMessage: t("home.communitiesSoon", "Comunidades parceiras serão reveladas em breve.") });
+  initPartnerCommunitiesSection({ reveal, communities: partnerCommunitiesRepository.getAll(), sectionEl: document.getElementById("partnerCommunitiesSection"), gridEl: document.querySelector(".partner-communities-grid") });
 
   const liveStatus = createLiveStatus({
     schedule: SCHEDULE,

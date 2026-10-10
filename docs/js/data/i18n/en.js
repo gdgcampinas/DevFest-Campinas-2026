@@ -209,7 +209,6 @@ I18N_DICTIONARIES.en = {
     "grade.sessionFormat": "Times and session format subject to confirmation",
     "grade.favoritesEmpty": "No talks saved yet. Tap the star on a talk to build your agenda. It's saved in this browser.",
     "home.sponsorsSoon": "Sponsors will be revealed soon.",
-    "home.communitiesSoon": "Partner communities will be revealed soon.",
     "home.highlights": "Highlights",
     "home.allSpeakers": "All speakers",
     "home.beforeYouCome": "Before you come",

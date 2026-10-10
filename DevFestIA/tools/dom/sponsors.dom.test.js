@@ -9,7 +9,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 
-const site = loadSite({ scripts: [...SITE_BASE, "data/mock-links.js", "data/mock-logo.js", "data/sponsors.js", "data/sponsor-tiers.js", "components/sponsor-card.js", "features/sponsors.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "data/mock-links.js", "data/mock-logo.js", "data/sponsors.js", "data/sponsor-tiers.js", "components/sponsor-card.js", "features/sponsors.js", "features/partner-communities.js", "data/realization-by.js", "features/realizacao.js"] });
 const { window, document } = site;
 test.after(() => window.close());
 
@@ -69,4 +69,33 @@ test("em produção (antes da revelação) só as marcas `public` aparecem; cota
   const real = site.get("sponsorsRepository").getAll();
   const shown = publicTiers(real).flatMap(tier => tier.elements.map(e => e.name));
   assert.equal(JSON.stringify(shown), JSON.stringify(["Google Developer Groups"]), "hoje só o Master (GDG) está liberado em produção");
+});
+
+test("Realização: logo do GDG Campinas + \"by\" + logo oficial do Google Developer Groups (arquivo existe); sem `by` fica só o organizador", () => {
+  const by = site.get("REALIZATION_BY");
+  assert.ok(fs.existsSync(path.join(__dirname, "../../../docs", by.logo)), "logo do GDG existe");
+  const box = document.createElement("div");
+  site.get("renderRealizacao")([{ name: "GDG Campinas", icon: "i.svg", logo: "l.svg" }], box, { by });
+  assert.equal(box.querySelector(".realizacao-host").getAttribute("src"), "l.svg");
+  assert.equal(textOf(box.querySelector(".realizacao-by-word")), "by");
+  const link = box.querySelector("a.realizacao-by-logo");
+  assert.equal(link.getAttribute("href"), "https://gdg.community.dev/");
+  assert.equal(link.querySelector("img").getAttribute("alt"), "Google Developer Groups");
+  site.get("renderRealizacao")([{ name: "GDG Campinas", icon: "i.svg", logo: "l.svg" }], box);
+  assert.equal(box.querySelector(".realizacao-by-logo"), null, "sem by");
+});
+
+test("comunidades parceiras (mock) somem em produção, sem aviso, e só aparecem depois da revelação", () => {
+  const section = document.createElement("section");
+  const grid = document.createElement("div");
+  section.hidden = false;
+  const init = site.get("initPartnerCommunitiesSection");
+  const communities = [{ name: "Comunidade", link: "https://c.test/", imageUrl: "c.webp" }];
+  init({ reveal: false, communities, sectionEl: section, gridEl: grid });
+  assert.equal(section.hidden, true);
+  assert.equal(grid.innerHTML, "");
+  init({ reveal: true, communities, sectionEl: section, gridEl: grid });
+  assert.equal(section.hidden, false);
+  assert.equal(grid.querySelectorAll(".sponsor-item").length, 1);
+  assert.equal(grid.querySelector(".sponsor-name"), null, "só o logo (o nome fica no alt)");
 });

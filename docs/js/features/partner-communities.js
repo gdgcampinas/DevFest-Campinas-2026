@@ -10,7 +10,11 @@ function renderPartnerCommunities(communities, sectionEl, gridEl) {
   gridEl.innerHTML = communities.map(community => sponsorLogoMarkup(community, { showName: false })).join("");
 }
 
-/** Monta a seção na página atrás da revelação (antes dela: aviso "em breve"). Home e Patrocínio usam a mesma. */
-function initPartnerCommunitiesSection({ reveal, communities, sectionEl, gridEl, soonMessage }) {
-  renderOrConstruction(reveal, sectionEl, () => renderPartnerCommunities(communities, sectionEl, gridEl), soonMessage);
+/** Monta a seção na página atrás da revelação; antes dela a seção SOME (sem aviso: só aparece o que é real). Home e Patrocínio usam a mesma. */
+function initPartnerCommunitiesSection({ reveal, communities, sectionEl, gridEl }) {
+  if (!reveal) {
+    sectionEl.hidden = true;
+    return;
+  }
+  renderPartnerCommunities(communities, sectionEl, gridEl);
 }
