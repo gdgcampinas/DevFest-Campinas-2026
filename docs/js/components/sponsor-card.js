@@ -15,7 +15,7 @@ function sponsorLogoMarkup(sponsor, { showDescription = true, showName } = {}) {
   const name = (showName ?? !hasDescription) ? `<div class="sponsor-name">${sponsor.name}</div>` : "";
   return `
     <a class="sponsor-item" href="${sponsor.link}" target="_blank" rel="noopener" title="${sponsor.name}" data-track-event="sponsor_click" data-track-target="${sponsor.name}">
-      <div class="sponsor-logo-box"><img src="${sponsor.imageUrl}" alt="${sponsor.name}" loading="lazy"${widthStyle}></div>
+      <div class="sponsor-logo-box${sponsor.logoTone === "dark" ? " sponsor-logo-box--dark" : ""}"><img src="${sponsor.imageUrl}" alt="${sponsor.name}" loading="lazy"${widthStyle}></div>
       ${name}
       ${description}
     </a>`;

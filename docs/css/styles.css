@@ -505,8 +505,8 @@ a.featured-speaker:focus-visible{outline:2px solid var(--text);outline-offset:4p
 .realizacao-item img{height:52px;width:auto;max-width:100%}
 .realizacao-item span{font:700 16px var(--font-body);color:oklch(94% 0.006 260)}
 .realizacao-by-word{font:500 14px var(--font-body);color:var(--muted);text-transform:lowercase}
-.realizacao-by-logo{display:flex;border-radius:12px;overflow:hidden;line-height:0;transition:transform .15s ease,box-shadow .15s ease}
-.realizacao-by-logo:hover,.realizacao-by-logo:focus-visible{transform:translateY(-2px);box-shadow:0 8px 22px rgba(66,133,244,.25);outline:none}
+.realizacao-by-logo{display:flex;line-height:0;transition:transform .15s ease,filter .15s ease}
+.realizacao-by-logo:hover,.realizacao-by-logo:focus-visible{transform:translateY(-2px);filter:brightness(1.15);outline:none}
 .realizacao-by-logo img{height:56px;width:auto;display:block}
 
 /* comunidades parceiras — reusa .sponsor-item (sem description = item simples) */
@@ -781,13 +781,12 @@ a.featured-speaker:focus-visible{outline:2px solid var(--text);outline-offset:4p
 .sponsor-logo-box img{max-height:100%;max-width:100%;width:auto;object-fit:contain}
 .sponsor-name{font:700 14px var(--font-body);color:oklch(94% 0.006 260);text-align:center}
 .sponsor-desc{margin:0;font:500 13.5px var(--font-body);color:oklch(80% 0.01 260);line-height:1.55}
-/* Master: card largo, logo grande de um lado e o texto do outro (no celular empilha) */
+/* logo de texto BRANCO (logoTone "dark"): caixa escura, mesmo padrão de tamanho, fundo preto e letra branca */
+.sponsor-logo-box--dark{background:#05070b;border:1px solid var(--card-border)}
+/* Master: mesmo padrão (logo em cima, texto embaixo), só com mais destaque: logo maior, brilho e cartão um pouco mais largo */
+.sponsor-tier[data-tier="master"] .sponsor-logos{grid-template-columns:minmax(0,560px)}
 .sponsor-tier[data-tier="master"] .sponsor-item{padding:22px;background:linear-gradient(135deg,color-mix(in oklab,var(--tier) 16%,var(--card-a)),var(--card-b));box-shadow:0 0 0 1px color-mix(in oklab,var(--tier) 25%,transparent)}
-@media(min-width:720px){
-  .sponsor-tier[data-tier="master"] .sponsor-item{flex-direction:row;align-items:center;gap:28px}
-  .sponsor-tier[data-tier="master"] .sponsor-logo-box{flex:0 0 min(46%,420px)}
-  .sponsor-tier[data-tier="master"] .sponsor-desc{font-size:16px}
-}
+.sponsor-tier[data-tier="master"] .sponsor-desc{font-size:15px}
 /* comunidades parceiras: sem descrição, item vira só logo+nome flutuando lado a lado */
 /* comunidades parceiras: cada uma é um tile só de logo (o logo traz o nome), na mesma linguagem visual das cotas de patrocínio */
 .partner-communities-grid .sponsor-item{--tier:#57caff;padding:12px;border-top-width:3px}
