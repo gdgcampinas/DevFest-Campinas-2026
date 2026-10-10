@@ -781,8 +781,6 @@ a.featured-speaker:focus-visible{outline:2px solid var(--text);outline-offset:4p
 .sponsor-logo-box img{max-height:100%;max-width:100%;width:auto;object-fit:contain}
 .sponsor-name{font:700 14px var(--font-body);color:oklch(94% 0.006 260);text-align:center}
 .sponsor-desc{margin:0;font:500 13.5px var(--font-body);color:oklch(80% 0.01 260);line-height:1.55}
-/* logo de texto BRANCO (logoTone "dark"): caixa escura, mesmo padrão de tamanho, fundo preto e letra branca */
-.sponsor-logo-box--dark{background:#05070b;border:1px solid var(--card-border)}
 /* Master: mesmo padrão (logo em cima, texto embaixo), só com mais destaque: logo maior, brilho e cartão um pouco mais largo */
 .sponsor-tier[data-tier="master"] .sponsor-logos{grid-template-columns:minmax(0,560px)}
 .sponsor-tier[data-tier="master"] .sponsor-item{padding:22px;background:linear-gradient(135deg,color-mix(in oklab,var(--tier) 16%,var(--card-a)),var(--card-b));box-shadow:0 0 0 1px color-mix(in oklab,var(--tier) 25%,transparent)}

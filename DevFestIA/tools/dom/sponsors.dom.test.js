@@ -21,7 +21,6 @@ test("Master é o Google Developer Groups, com o logo oficial que existe no repo
   assert.equal(gdg.link, "https://gdg.community.dev/");
   assert.match(gdg.description, /GDG Campinas/);
   assert.ok(fs.existsSync(path.join(__dirname, "../../../docs", gdg.imageUrl)), `logo ${gdg.imageUrl} existe`);
-  assert.equal(gdg.logoTone, "dark", "logo de texto branco: caixa escura (fundo preto, letra branca)");
 });
 
 test("card do Master mostra o logo (alt com o nome), o link externo seguro e o texto", () => {
@@ -31,7 +30,7 @@ test("card do Master mostra o logo (alt com o nome), o link externo seguro e o t
   const link = box.querySelector("a.sponsor-item");
   assert.equal(link.getAttribute("href"), "https://gdg.community.dev/");
   assert.match(link.getAttribute("rel"), /noopener/);
-  assert.ok(box.querySelector(".sponsor-logo-box--dark"), "caixa escura pro logo de texto branco");
+  assert.ok(box.querySelector(".sponsor-logo-box"), "logo na caixa branca padrão dos cards de patrocínio");
   assert.equal(box.querySelector("img").getAttribute("alt"), "Google Developer Groups");
   assert.match(textOf(box), /Comunidade global de desenvolvedores/);
 });
