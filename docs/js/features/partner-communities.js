@@ -6,5 +6,5 @@
 function renderPartnerCommunities(communities, sectionEl, gridEl) {
   sectionEl.hidden = communities.length === 0;
   if (communities.length === 0) return;
-  gridEl.innerHTML = communities.map(sponsorLogoMarkup).join("");
+  gridEl.innerHTML = communities.map(community => sponsorLogoMarkup(community)).join("");
 }

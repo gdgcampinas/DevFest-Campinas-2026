@@ -748,32 +748,42 @@ a.featured-speaker:focus-visible{outline:2px solid var(--text);outline-offset:4p
 .testimonial-name{font:700 13px var(--font-body);color:var(--accent)}
 .testimonial-role{margin-top:2px;font:500 12px var(--font-body);color:var(--muted-dim)}
 
-/* patrocinadores/parceiros — some por completo enquanto SPONSORS estiver vazio (ver sponsors.js) */
+/* patrocinadores/parceiros — some por completo enquanto SPONSORS estiver vazio (ver sponsors.js). A cota chega em data-tier (data/sponsor-tiers.js):
+   cada cota tem layout e cor próprios (--tier), do maior (Master, linha inteira) ao mais compacto (Apoio). Comunidades parceiras reusam .sponsor-item. */
 .sponsors{max-width:1180px;margin:36px auto 0;padding:0 24px}
 .sponsors h2{margin:0 0 16px;font:700 22px var(--font-display);color:oklch(95% 0.005 260)}
-.sponsors-grid{display:flex;flex-direction:column;gap:28px}
-.sponsor-tier-label{font:700 12px var(--font-body);letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
-/* grid de cards quando o tier tem descrição; comunidades parceiras
-   usam .partner-communities-grid (flex, sem grid) pro mesmo .sponsor-item */
-.sponsor-logos{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-@media(min-width:640px){.sponsor-logos{grid-template-columns:repeat(3,1fr)}}
-@media(min-width:900px){.sponsor-logos{grid-template-columns:repeat(4,1fr)}}
-
+.sponsors-grid{display:flex;flex-direction:column;gap:32px}
+.sponsor-tier{--tier:var(--muted);--tier-logo-h:84px;--tier-min:230px}
+.sponsor-tier[data-tier="master"]{--tier:#4285f4;--tier-logo-h:120px}
+.sponsor-tier[data-tier="especialista"]{--tier:#34a853;--tier-logo-h:96px;--tier-min:320px}
+.sponsor-tier[data-tier="senior"]{--tier:#f9ab00}
+.sponsor-tier[data-tier="intern"]{--tier:#ea4335;--tier-logo-h:72px}
+.sponsor-tier[data-tier="apoio"]{--tier:#a8b3c4;--tier-logo-h:60px;--tier-min:170px}
+.sponsor-tier-label{display:inline-flex;align-items:center;gap:8px;margin-bottom:14px;padding:5px 12px;border-radius:999px;font:700 12px var(--font-body);letter-spacing:1.2px;text-transform:uppercase;color:var(--tier);background:color-mix(in oklab,var(--tier) 14%,transparent);border:1px solid color-mix(in oklab,var(--tier) 40%,transparent)}
+.sponsor-tier-label::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--tier)}
+.sponsor-logos{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--tier-min)),1fr));gap:16px}
 .sponsor-item{
-  display:flex;flex-direction:column;gap:10px;text-decoration:none;
+  display:flex;flex-direction:column;gap:12px;text-decoration:none;
   background:linear-gradient(180deg,var(--card-a),var(--card-b));
-  border:1px solid var(--card-border);border-radius:var(--radius);
-  padding:16px;transition:border-color .12s ease;
+  border:1px solid var(--card-border);border-top:3px solid var(--tier,var(--card-border));border-radius:var(--radius);
+  padding:16px;transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease;
 }
-.sponsor-item:hover{border-color:var(--amber)}
+.sponsor-item:hover,.sponsor-item:focus-visible{transform:translateY(-3px);border-color:var(--tier,var(--amber));box-shadow:0 10px 28px color-mix(in oklab,var(--tier,var(--amber)) 22%,transparent);outline:none}
 /* fundo branco pro logo — legível independente da cor/transparência do PNG/SVG do patrocinador */
 .sponsor-logo-box{
-  background:#fff;border-radius:10px;height:64px;
-  display:flex;align-items:center;justify-content:center;padding:8px 14px;
+  background:#fff;border-radius:12px;height:var(--tier-logo-h,64px);
+  display:flex;align-items:center;justify-content:center;padding:12px 18px;
 }
-.sponsor-logo-box img{max-height:100%;max-width:100%;width:auto}
-.sponsor-name{font:700 13.5px var(--font-body);color:oklch(94% 0.006 260)}
-.sponsor-desc{margin:0;font:500 12px var(--font-body);color:var(--muted);line-height:1.5}
+.sponsor-logo-box img{max-height:100%;max-width:100%;width:auto;object-fit:contain}
+.sponsor-name{font:700 14px var(--font-body);color:oklch(94% 0.006 260);text-align:center}
+.sponsor-desc{margin:0;font:500 13.5px var(--font-body);color:oklch(80% 0.01 260);line-height:1.55}
+/* Master: card largo, logo grande de um lado e o texto do outro (no celular empilha) */
+.sponsor-tier[data-tier="master"] .sponsor-item{padding:22px;background:linear-gradient(135deg,color-mix(in oklab,var(--tier) 16%,var(--card-a)),var(--card-b));box-shadow:0 0 0 1px color-mix(in oklab,var(--tier) 25%,transparent)}
+@media(min-width:720px){
+  .sponsor-tier[data-tier="master"] .sponsor-item{flex-direction:row;align-items:center;gap:28px}
+  .sponsor-tier[data-tier="master"] .sponsor-logo-box{flex:0 0 min(46%,420px)}
+  .sponsor-tier[data-tier="master"] .sponsor-desc{font-size:16px}
+}
 /* comunidades parceiras: sem descrição, item vira só logo+nome flutuando lado a lado */
 .partner-communities-grid .sponsor-item{flex-direction:column;width:140px;border:0;background:none;padding:0}
 

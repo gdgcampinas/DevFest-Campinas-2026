@@ -9,7 +9,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 
-const site = loadSite({ scripts: [...SITE_BASE, "data/mock-links.js", "data/mock-logo.js", "data/sponsors.js", "components/sponsor-card.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "data/mock-links.js", "data/mock-logo.js", "data/sponsors.js", "data/sponsor-tiers.js", "components/sponsor-card.js"] });
 const { window, document } = site;
 test.after(() => window.close());
 
@@ -32,4 +32,28 @@ test("card do Master mostra o logo (alt com o nome), o link externo seguro e o t
   assert.match(link.getAttribute("rel"), /noopener/);
   assert.equal(box.querySelector("img").getAttribute("alt"), "Google Developer Groups");
   assert.match(textOf(box), /Comunidade global de desenvolvedores/);
+});
+
+test("nome em texto só quando o card não tem descrição; o logo leva o nome no alt (sem repetir)", () => {
+  const box = document.createElement("div");
+  box.innerHTML = site.get("sponsorLogoMarkup")({ name: "Marca X", link: "https://x.test/", imageUrl: "x.webp", description: "Texto" });
+  assert.equal(box.querySelector(".sponsor-name"), null, "com descrição o nome não se repete em texto");
+  assert.equal(box.querySelector("img").getAttribute("alt"), "Marca X");
+  box.innerHTML = site.get("sponsorLogoMarkup")({ name: "Marca X", link: "https://x.test/", imageUrl: "x.webp", description: "Texto" }, { showDescription: false });
+  assert.equal(box.querySelector(".sponsor-desc"), null);
+  assert.equal(textOf(box.querySelector(".sponsor-name")), "Marca X", "sem descrição o nome aparece");
+  box.innerHTML = site.get("sponsorLogoMarkup")({ name: "Comunidade", link: "https://c.test/", imageUrl: "c.webp" });
+  assert.equal(textOf(box.querySelector(".sponsor-name")), "Comunidade", "comunidade parceira (sem descrição no dado) mostra o nome");
+});
+
+test("cada cota leva o data-tier pro CSS e o Apoio não mostra descrição; cota desconhecida vira slug do nome", () => {
+  const html = tier => { const d = document.createElement("div"); d.innerHTML = site.get("sponsorTierMarkup")(tier); return d; };
+  const element = { name: "A", link: "https://a.test/", imageUrl: "a.webp", description: "Descrição" };
+  const master = html({ tier: "Master", elements: [element] });
+  assert.equal(master.querySelector(".sponsor-tier").dataset.tier, "master");
+  assert.ok(master.querySelector(".sponsor-desc"));
+  const apoio = html({ tier: "Apoio", elements: [element] });
+  assert.equal(apoio.querySelector(".sponsor-tier").dataset.tier, "apoio");
+  assert.equal(apoio.querySelector(".sponsor-desc"), null, "Apoio é só logo e nome");
+  assert.equal(html({ tier: "Parceria Ouro!", elements: [element] }).querySelector(".sponsor-tier").dataset.tier, "parceria-ouro");
 });
