@@ -77,7 +77,7 @@ function drawShareCard(canvas, { event, dateLabel, name = "", logo = null }) {
 
   const tracks = [
     { label: t("shareCard.trackIa", "IA"), color: blue },
-    { label: t("shareCard.trackWeb", "Front, Back e Data"), color: yellow },
+    { label: t("shareCard.trackWeb", "Front-end / Back-end / Data - Full Stack"), color: yellow },
     { label: t("shareCard.trackMobile", "Mobile e Agile"), color: green },
     { label: t("shareCard.trackCareers", "Carreira em Tecnologia"), color: red },
   ];

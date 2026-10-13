@@ -119,7 +119,7 @@ I18N_DICTIONARIES.en = {
     "shareCard.nameGoes": "{name} is going!",
     "shareCard.going": "I'm going!",
     "shareCard.trackIa": "AI",
-    "shareCard.trackWeb": "Front, Back and Data",
+    "shareCard.trackWeb": "Front-end / Back-end / Data - Full Stack",
     "shareCard.trackMobile": "Mobile and Agile",
     "shareCard.trackCareers": "Careers and Mentoring",
     "shareCard.modalLabel": "Sharing card",
