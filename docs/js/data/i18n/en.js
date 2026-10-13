@@ -421,7 +421,6 @@ I18N_DICTIONARIES.en = {
     "Sala Lagoa do Taquaral": "Taquaral Lagoon Room",
     "Apps nativos e multiplataforma, e os métodos ágeis que fazem times entregarem rápido e com qualidade.": "Native and cross-platform apps, and the agile methods that help teams ship fast and with quality.",
     "Carreira em Tecnologia": "Technology Career",
-    "Carreira": "Career",
     "IA": "AI",
     "Sala Mercadão Central": "Central Market Room",
     "Trajetórias, mentoria e como crescer na área, com quem já passou pelos mesmos desafios.": "Journeys, mentoring and how to grow in the field, from people who have faced the same challenges.",
