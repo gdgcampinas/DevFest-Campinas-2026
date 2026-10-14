@@ -112,6 +112,13 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .ms-sponsor{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--u) * 1);padding:calc(var(--u) * 2);border-radius:calc(var(--u) * 1.6);background:#fff;color:#111;font:700 calc(var(--u) * 2.2) var(--font-body);text-align:center}
 .ms-sponsor img{height:calc(var(--u) * 9);width:auto;max-width:100%;object-fit:contain}
 .ms-tier[data-count="1"] .ms-sponsor img{height:calc(var(--u) * 15)}
+/* cena de UMA cota só (ex.: Master): a tela é dela, então cartão e logo ocupam o palco em vez de ficar pequenos no meio */
+.ms-tiers>.ms-tier:only-child .ms-tier-name{font-size:calc(var(--u) * 3.6);margin-bottom:calc(var(--u) * 2)}
+.ms-tiers>.ms-tier:only-child .ms-sponsors{grid-template-columns:repeat(auto-fit,minmax(calc(var(--u) * 34),calc(var(--u) * 56)));justify-content:center;gap:calc(var(--u) * 2.4)}
+.ms-tiers>.ms-tier:only-child[data-count="1"] .ms-sponsors{grid-template-columns:minmax(0,calc(var(--u) * 78))}
+.ms-tiers>.ms-tier:only-child .ms-sponsor{padding:calc(var(--u) * 3);border-radius:calc(var(--u) * 2.4)}
+.ms-tiers>.ms-tier:only-child .ms-sponsor img{height:calc(var(--u) * 20)}
+.ms-tiers>.ms-tier:only-child[data-count="1"] .ms-sponsor img{height:calc(var(--u) * 26)}
 /* layout COMPACTO (agradecimento e cenas com 3+ cotas): muitas cotas na mesma tela, então logos e cartões encolhem. `thanks` e `compact` são o mesmo desenho. */
 .ms-sponsors-scene--thanks .ms-tiers,.ms-sponsors-scene--compact .ms-tiers{gap:calc(var(--u) * 1.6)}
 .ms-sponsors-scene--thanks .ms-tier-name,.ms-sponsors-scene--compact .ms-tier-name{margin-bottom:calc(var(--u) * .6);font-size:calc(var(--u) * 1.9)}
