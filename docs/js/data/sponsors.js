@@ -31,7 +31,7 @@ const SPONSORS = [
   ] },
   { id: "pleno", tier: "Pleno", elements: [
     // REAL e LIBERADA em produção (`public: true`). Logo vetorial do arquivo oficial da FIAP, versão rosa na caixa branca.
-    { public: true, name: "FIAP", link: "https://www.fiap.com.br/", imageUrl: "assets/brand/fiap.webp", description: "Faculdade com graduações, MBAs, pós-graduações Tech Intensive e imersões." },
+    { public: true, name: "FIAP", link: "https://www.fiap.com.br/", imageUrl: "assets/brand/fiap.webp", description: "A FIAP é o centro de excelência em tecnologia mais respeitado do país." },
     sponsor("Astro Labs", "Laboratório de inovação e prototipagem rápida para startups.", "ring", "#14b8a6"),
   ] },
   { id: "junior", tier: "Júnior", elements: [
