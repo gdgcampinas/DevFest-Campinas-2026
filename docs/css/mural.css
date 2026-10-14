@@ -119,6 +119,13 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .ms-sponsors-scene--thanks .ms-sponsor,.ms-sponsors-scene--compact .ms-sponsor{padding:calc(var(--u) * 1.1)}
 .ms-sponsors-scene--thanks .ms-sponsor img,.ms-sponsors-scene--compact .ms-sponsor img,.ms-sponsors-scene--thanks .ms-tier[data-count="1"] .ms-sponsor img,.ms-sponsors-scene--compact .ms-tier[data-count="1"] .ms-sponsor img{height:calc(var(--u) * 6)}
 .ms-sponsors-scene--thanks .ms-tier[data-count="1"] .ms-sponsors,.ms-sponsors-scene--compact .ms-tier[data-count="1"] .ms-sponsors{grid-template-columns:minmax(0,calc(var(--u) * 30))}
+/* compacto de várias cotas: duas colunas de cotas (cabem em telão 16:9 e 4:3) e cartões de largura igual, centralizados, em vez de esticar */
+.ms-sponsors-scene--compact .ms-tiers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:center;gap:calc(var(--u) * 3.2) calc(var(--u) * 3)}
+.ms-sponsors-scene--compact .ms-tier-name{text-align:center}
+.ms-sponsors-scene--compact .ms-sponsors,.ms-sponsors-scene--compact .ms-tier[data-count="1"] .ms-sponsors{grid-template-columns:repeat(auto-fit,calc(var(--u) * 34));justify-content:center;gap:calc(var(--u) * 1.6)}
+.ms-sponsors-scene--compact .ms-tier-name{font-size:calc(var(--u) * 2.4);margin-bottom:calc(var(--u) * 1)}
+.ms-sponsors-scene--compact .ms-sponsor{padding:calc(var(--u) * 1.6)}
+.ms-sponsors-scene--compact .ms-sponsor img,.ms-sponsors-scene--compact .ms-tier[data-count="1"] .ms-sponsor img{height:calc(var(--u) * 9)}
 
 /* ---------- QR ---------- */
 .ms-qr{flex-direction:row;align-items:center;gap:calc(var(--u) * 5)}
