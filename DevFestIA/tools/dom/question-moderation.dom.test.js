@@ -115,7 +115,8 @@ test("com publishVotes ligado o quadro leva o número de votos", async () => {
 });
 
 test("só conta votos das aprovadas (pendentes, rejeitadas e respondidas não gastam consulta)", async () => {
-  const world = setup();
+  // Ciclo de recontagem longo: com o ciclo curto (40 ms) o CI lento recontava uma 2ª vez antes da conferência e a contagem dava 2 em vez de 1.
+  const world = setup({ config: { boardPublishMs: 600000 } });
   world.seed("p1", "Pendente", "pending");
   world.seed("x1", "Rejeitada", "rejected");
   world.seed("r1", "Respondida", "answered");
