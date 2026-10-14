@@ -30,8 +30,8 @@ const SPONSORS = [
     sponsor("Pixel Forge Studio", "Estúdio de produtos digitais, design de interfaces e prototipação.", "square", "#f59e0b"),
   ] },
   { id: "pleno", tier: "Pleno", elements: [
-    // REAL (ainda não liberada: sem `public`, só em DEV ou depois da revelação). Logo vetorial do arquivo oficial da FIAP, versão rosa na caixa branca.
-    { name: "FIAP", link: "https://www.fiap.com.br/", imageUrl: "assets/brand/fiap.webp", description: "Faculdade com graduações, MBAs, pós-graduações Tech Intensive e imersões." },
+    // REAL e LIBERADA em produção (`public: true`). Logo vetorial do arquivo oficial da FIAP, versão rosa na caixa branca.
+    { public: true, name: "FIAP", link: "https://www.fiap.com.br/", imageUrl: "assets/brand/fiap.webp", description: "Faculdade com graduações, MBAs, pós-graduações Tech Intensive e imersões." },
     sponsor("Astro Labs", "Laboratório de inovação e prototipagem rápida para startups.", "ring", "#14b8a6"),
   ] },
   { id: "junior", tier: "Júnior", elements: [
