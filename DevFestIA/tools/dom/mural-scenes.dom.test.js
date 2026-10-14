@@ -936,3 +936,18 @@ test("vídeo: se o navegador pausa o vídeo pra economizar energia (AbortError) 
   await leaving.clock.tick(5000);
   assert.equal(leaving.attempts(), before, "sair cancelou as tentativas");
 });
+
+test("patrocinadores no telão de PRODUÇÃO (sem revelação): só as marcas `public`; com revelação, todas", async () => {
+  const repository = { getAll: () => [
+    { id: "master", tier: "Master", elements: [{ name: "Real", imageUrl: "", public: true }] },
+    { id: "pleno", tier: "Pleno", elements: [{ name: "Mock", imageUrl: "" }, { name: "Outra real", imageUrl: "", public: true }] },
+    { id: "apoio", tier: "Apoio", elements: [{ name: "Só mock", imageUrl: "" }] },
+  ] };
+  const publicTiers = tiers => tiers.map(tier => ({ ...tier, elements: tier.elements.filter(element => element.public) })).filter(tier => tier.elements.length);
+  const scene = g("createSponsorsScene")({ repository, preload: async () => {}, publicTiers });
+  const prod = await scene.prepare({}, { reveal: false });
+  assert.equal(JSON.stringify(prod.map(tier => [tier.tier, tier.elements.map(e => e.name)])), JSON.stringify([["Master", ["Real"]], ["Pleno", ["Outra real"]]]));
+  assert.equal(await scene.prepare({ tiers: ["Apoio"] }, { reveal: false }), MURAL_SKIP, "cota só com mock some em produção");
+  const all = await scene.prepare({}, { reveal: true });
+  assert.equal(all.length, 3, "com revelação (ou DEV) aparece tudo");
+});

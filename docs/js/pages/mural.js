@@ -93,7 +93,7 @@ function initMural() {
     spotlight: createSpotlightScene({ ...grid, preloadPhoto: url => preloadImage(url, { timeoutMs: config.speakerPhotoTimeoutMs, schedule }), hostOf: id => talkHighlightsRepository.getById(id)?.host ?? null }),
     art: createArtScene({ repository: muralArtsRepository, preload }),
     selfie: createSelfieScene({ preload, arts: muralArtsRepository, mascotUrl: brandRepository.getAll().mascot, logoSrc, title, subtitle: eventDateLabel(SCHEDULE, EVENT.timezone) }),
-    sponsors: createSponsorsScene({ repository: sponsorsRepository, preload }),
+    sponsors: createSponsorsScene({ repository: sponsorsRepository, preload, publicTiers: publicSponsorTiers }),
     notice: createNoticeScene({ nowMs }),
     emergency: createEmergencyScene(),
     video: createVideoScene({ videos: muralVideosRepository, cache: videoCache, baseUrl: mediaBase, slackSeconds: config.video.slackSeconds, captions: muralCaptionsRepository }),

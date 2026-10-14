@@ -392,3 +392,13 @@ test("aviso que já estava no ar quando o mural abre (como depois de uma recarga
   assert.equal(saved.lastReason, "remote-reload");
   page.site.window.close();
 });
+
+test("as cenas de patrocínio e o vídeo da FIAP não dependem da revelação (o filtro de marcas liberadas é que protege a produção) e o telão usa só o schedule.js de produção", () => {
+  const page = boot({ search: "cenas=dicas" });
+  const needsReveal = JSON.parse(page.site.run("JSON.stringify(muralScenesRepository.getAll().filter(s => s.requires?.reveal === true).map(s => s.id))"));
+  ["patrocinio-master", "patrocinio-demais", "patrocinio-apoio", "agradecimento-patrocinio", "video-fiap"].forEach(id => {
+    assert.ok(!needsReveal.includes(id), `${id} não pode exigir a revelação`);
+  });
+  page.site.window.close();
+  assert.ok(!/schedule\.dev\.js/.test(HTML), "o telão não carrega o schedule.dev.js: os dados vêm de produção");
+});

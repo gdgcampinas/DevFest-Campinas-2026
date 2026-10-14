@@ -1,14 +1,16 @@
 /**
  * Cena de patrocinadores: as cotas pedidas em `params.tiers` (uma cota por cena = tempo de tela por cota, decidido em data/mural-scenes.js; sem `tiers` = todas).
  * `params.layout: "thanks"` é o AGRADECIMENTO (todas as cotas juntas, logos menores pra caber, cena de almoço e encerramento); `params.kicker` troca o texto de cima ("Patrocínio" por padrão).
- * O logo já traz o nome; logo que não carrega vira só o nome em texto. Cota sem ninguém não gera cena (MURAL_SKIP). Tudo injetado: `repository` (data/sponsors.js), `preload`.
+ * O logo já traz o nome; logo que não carrega vira só o nome em texto. Cota sem ninguém não gera cena (MURAL_SKIP). Antes da revelação (`ctx.reveal` falso) só entram as marcas
+ * liberadas (`public`, via `publicTiers` injetado: o mesmo filtro do site), então os mocks nunca aparecem no telão de produção. Tudo injetado: `repository` (data/sponsors.js), `preload`, `publicTiers`.
  */
-function createSponsorsScene({ repository, preload }) {
+function createSponsorsScene({ repository, preload, publicTiers = tiers => tiers }) {
   const isInline = url => !url || url.startsWith("data:");
   const withLogoStatus = async sponsor => ({ ...sponsor, logoOk: isInline(sponsor.imageUrl) ? Boolean(sponsor.imageUrl) : await preload(sponsor.imageUrl).then(() => true, () => false) });
   return {
-    async prepare(params) {
-      const tiers = repository.getAll().filter(tier => (!params.tiers || params.tiers.includes(tier.tier)) && tier.elements.length);
+    async prepare(params, ctx) {
+      const visible = ctx?.reveal === false ? publicTiers(repository.getAll()) : repository.getAll();
+      const tiers = visible.filter(tier => (!params.tiers || params.tiers.includes(tier.tier)) && tier.elements.length);
       if (!tiers.length) return MURAL_SKIP;
       return Promise.all(tiers.map(async tier => ({ tier: tier.tier, elements: await Promise.all(tier.elements.map(withLogoStatus)) })));
     },
