@@ -1,8 +1,8 @@
 /**
  * Servidor LOCAL do intermediário (teste do mural com os álbuns de verdade, sem Cloudflare). Mesmas peças do Worker, só o cache é em memória.
  *   ALBUMS='{"ao-vivo":{"url":"https://photos.app.goo.gl/...","live":true},"elotech-agibank":"https://photos.app.goo.gl/..."}' node DevFestIA/tools/album-proxy/dev-server.mjs
- * Vídeos do mural: `MEDIA_DIR=<pasta com os .mp4>` serve a rota /media/ de uma pasta local (teste dos clipes antes de publicar a release). Mural: `mural.html?albuns=http://localhost:8787`.
- * Os links vão na variável de ambiente (nunca em arquivo do repositório). Porta 8787 (ou PORT). Mural: `mural.html?albuns=http://localhost:8787`.
+ * Vídeos do mural: `MEDIA_DIR=<pasta com os .mp4>` serve a rota /media/ de uma pasta local (teste dos clipes antes de publicar a release). Mural: `telao.html?albuns=http://localhost:8787`.
+ * Os links vão na variável de ambiente (nunca em arquivo do repositório). Porta 8787 (ou PORT). Mural: `telao.html?albuns=http://localhost:8787`.
  */
 import http from "node:http";
 import { parseAlbumPage } from "./parse-album.mjs";

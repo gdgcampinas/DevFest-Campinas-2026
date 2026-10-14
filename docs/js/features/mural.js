@@ -1,5 +1,5 @@
 /**
- * Motor do MURAL do telão (mural.html): o rodízio de cenas que roda sozinho o dia inteiro, sem ninguém operando. Só orquestra; tudo que ele usa
+ * Motor do MURAL do telão (telao.html): o rodízio de cenas que roda sozinho o dia inteiro, sem ninguém operando. Só orquestra; tudo que ele usa
  * vem por parâmetro (cenas como dado, tipos de cena num registro, relógio, agendador, contexto), então o teste injeta substitutos e anda o tempo.
  *
  * Contrato de um TIPO de cena (components/mural-scenes/*.js, registrado em pages/mural.js):

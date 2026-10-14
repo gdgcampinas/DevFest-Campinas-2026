@@ -10,7 +10,7 @@ extrai a lista de fotos e a devolve como JSON pro mural. **Leitura não oficial:
 
 - `GET /join/<id>` -> 302 pro CONVITE do álbum colaborativo (só álbuns com `"live": true`; qualquer outro devolve 404 e nunca o link). É o endereço do QR "Mande sua foto" do mural: o link do álbum fica só no segredo, e trocar o álbum é trocar o segredo, sem tocar no código. O link guardado em `ao-vivo` precisa ser o CONVITE pra colaborar (link só de visualização não deixa ninguém adicionar foto).
 
-- `GET /media/<arquivo.mp4>` -> um clipe de vídeo do mural (`media-service.mjs`), com `content-type: video/mp4`, CORS pros endereços permitidos e cache de 1 dia (e cache da borda da Cloudflare: o GitHub é consultado uma vez). Os arquivos ficam num anexo de release do GitHub (variável `MEDIA_BASE` em `wrangler.toml`, ex.: `https://github.com/gdgcampinas/DevFest-Campinas-2026/releases/download/mural-video-2025/`): o repositório é público e não guarda mídia pesada, e o GitHub não manda CORS, por isso o mural pede ao intermediário. Só nomes `.mp4` simples (sem caminho, sem `..`). Teste local: `MEDIA_DIR=<pasta com os .mp4> node DevFestIA/tools/album-proxy/dev-server.mjs` e `mural.html?albuns=http://localhost:8787`.
+- `GET /media/<arquivo.mp4>` -> um clipe de vídeo do mural (`media-service.mjs`), com `content-type: video/mp4`, CORS pros endereços permitidos e cache de 1 dia (e cache da borda da Cloudflare: o GitHub é consultado uma vez). Os arquivos ficam num anexo de release do GitHub (variável `MEDIA_BASE` em `wrangler.toml`, ex.: `https://github.com/gdgcampinas/DevFest-Campinas-2026/releases/download/mural-video-2025/`): o repositório é público e não guarda mídia pesada, e o GitHub não manda CORS, por isso o mural pede ao intermediário. Só nomes `.mp4` simples (sem caminho, sem `..`). Teste local: `MEDIA_DIR=<pasta com os .mp4> node DevFestIA/tools/album-proxy/dev-server.mjs` e `telao.html?albuns=http://localhost:8787`.
 
 Cache por álbum: o álbum ao vivo vale 45 s e os demais 10 min, e pedidos simultâneos dividem UMA busca, então o Google recebe poucas consultas por minuto não importa quantas telas pedirem.
 
@@ -30,7 +30,7 @@ O repositório é público e a chave do link dá acesso ao álbum. Os links fica
 node --test DevFestIA/tools/album-proxy/*.test.mjs
 ALBUMS='{"ao-vivo":{"url":"https://photos.app.goo.gl/...","live":true}}' node DevFestIA/tools/album-proxy/dev-server.mjs   # http://localhost:8787/albums
 ```
-Mural local: `mural.html?lineup=1&albuns=http://localhost:8787`.
+Mural local: `telao.html?lineup=1&albuns=http://localhost:8787`.
 
 ## Publicar no Cloudflare Workers (gratuito)
 ```bash

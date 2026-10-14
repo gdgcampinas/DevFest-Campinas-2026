@@ -211,7 +211,7 @@ test("a página admin.html inteira: abre logado na seção Atalhos com os links 
   const body = site.document.getElementById("adminBody");
   await waitFor(() => body.querySelector("[data-shortcut]"));
   const hrefs = [...body.querySelectorAll("[data-shortcut] a")].map(link => link.getAttribute("href"));
-  assert.deepEqual(hrefs, ["mural.html", "DEV/sorteio.html?telao=1"]);
+  assert.deepEqual(hrefs, ["telao.html", "DEV/sorteio.html?telao=1"]);
   assert.ok([...body.querySelectorAll("[data-shortcut] a")].every(link => link.target === "_blank" && link.rel === "noopener"));
   assert.deepEqual([...site.document.querySelectorAll("#adminNav a")].map(link => link.getAttribute("href")), ["#visao-geral", "#telao", "#fotos", "#palestras", "#recados", "#moderadores", "#antes-do-evento", "#atalhos"]);
   site.window.close();
@@ -310,6 +310,12 @@ test("a página admin.html: a seção Recados mostra a fila de recados e aprova 
   assert.equal(body.querySelector("[data-admin-title]").textContent, "Recados");
   assert.match(textOf(body.querySelector("[data-slot=pending]")), /oi/);
   site.window.close();
+});
+
+test("mural.html (endereço antigo do telão) manda pra telao.html guardando o ?query e o #hash dos quiosques", () => {
+  const html = fs.readFileSync(path.join(DOCS, "mural.html"), "utf8");
+  assert.match(html, /location\.replace\("telao\.html" \+ location\.search \+ location\.hash\)/);
+  assert.match(html, /noindex/);
 });
 
 test("equipe.html leva pra área de admin (Atalhos)", () => {

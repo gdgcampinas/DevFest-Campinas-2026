@@ -1,5 +1,5 @@
 /**
- * Página: MURAL DO TELÃO (mural.html), ferramenta interna (fora do menu e do sitemap, sem versão /DEV/: abra na raiz, `?lineup=1` mostra o mock).
+ * Página: MURAL DO TELÃO (telao.html), ferramenta interna (fora do menu e do sitemap, sem versão /DEV/: abra na raiz, `?lineup=1` mostra o mock).
  * É a RAIZ DE COMPOSIÇÃO: aqui, e só aqui, as peças soltas (motor, vigia, rede, fontes ao vivo, cenas, palco) são ligadas, cada uma recebendo o que precisa
  * por parâmetro. Nada de regra de negócio neste arquivo.
  *

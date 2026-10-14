@@ -759,16 +759,17 @@ a.featured-speaker:focus-visible{outline:2px solid var(--text);outline-offset:4p
 .sponsors-grid{display:flex;flex-direction:column;gap:32px}
 .sponsor-tier{--tier:var(--muted);--tier-logo-h:84px;--tier-min:230px}
 .sponsor-tier[data-tier="master"]{--tier:#4285f4;--tier-logo-h:120px}
-.sponsor-tier[data-tier="especialista"]{--tier:#34a853;--tier-logo-h:96px;--tier-min:320px}
+.sponsor-tier[data-tier="especialista"]{--tier:#34a853;--tier-logo-h:96px;--tier-min:320px;--tier-max:520px}
 .sponsor-tier[data-tier="senior"]{--tier:#f9ab00}
 .sponsor-tier[data-tier="pleno"]{--tier:#57caff;--tier-logo-h:84px}
 .sponsor-tier[data-tier="junior"]{--tier:#a855f7;--tier-logo-h:72px}
 .sponsor-tier[data-tier="intern"]{--tier:#ea4335;--tier-logo-h:72px}
-.sponsor-tier[data-tier="permuta"]{--tier:#fb923c;--tier-logo-h:60px;--tier-min:170px}
-.sponsor-tier[data-tier="apoio"]{--tier:#a8b3c4;--tier-logo-h:60px;--tier-min:170px}
+.sponsor-tier[data-tier="permuta"]{--tier:#fb923c;--tier-logo-h:60px;--tier-min:170px;--tier-max:300px}
+.sponsor-tier[data-tier="apoio"]{--tier:#a8b3c4;--tier-logo-h:60px;--tier-min:170px;--tier-max:300px}
 .sponsor-tier-label{display:inline-flex;align-items:center;gap:8px;margin-bottom:14px;padding:5px 12px;border-radius:999px;font:700 12px var(--font-body);letter-spacing:1.2px;text-transform:uppercase;color:var(--tier);background:color-mix(in oklab,var(--tier) 14%,transparent);border:1px solid color-mix(in oklab,var(--tier) 40%,transparent)}
 .sponsor-tier-label::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--tier)}
-.sponsor-logos{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--tier-min)),1fr));gap:16px}
+/* largura MÁXIMA do cartão por cota (--tier-max): o cartão não estica pra linha toda quando é o único da cota */
+.sponsor-logos{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--tier-min)),var(--tier-max,380px)));justify-content:start;gap:16px}
 .sponsor-item{
   display:flex;flex-direction:column;gap:12px;text-decoration:none;
   background:linear-gradient(180deg,var(--card-a),var(--card-b));

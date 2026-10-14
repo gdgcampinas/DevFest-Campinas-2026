@@ -1,5 +1,5 @@
 /**
- * Teste de INTEGRAÇÃO da página do mural (docs/mural.html + js/pages/mural.js, a raiz de composição): carrega os scripts do próprio mural.html
+ * Teste de INTEGRAÇÃO da página do mural (docs/telao.html + js/pages/mural.js, a raiz de composição): carrega os scripts do próprio mural.html
  * na ordem dele (então confere também que a lista de scripts da página está completa), troca Firebase, rede e imagem por substitutos e confere o que
  * o telão faz: rodar o rodízio, mostrar dado ao vivo, comemorar o pódio publicado AO VIVO, sobreviver a uma cena quebrada e avisar queda de internet.
  *   node --test DevFestIA/tools/dom/mural-page.dom.test.js
@@ -11,9 +11,9 @@ const path = require("node:path");
 const { loadSite, waitFor, textOf } = require("../lib/dom-harness.js");
 
 const DOCS = path.join(__dirname, "..", "..", "..", "docs");
-const HTML = fs.readFileSync(path.join(DOCS, "mural.html"), "utf8");
+const HTML = fs.readFileSync(path.join(DOCS, "telao.html"), "utf8");
 
-/** Os scripts COMUNS do mural.html, na ordem (os módulos do Firebase e a biblioteca de QR do CDN entram como substitutos; a partida da página fica por último). */
+/** Os scripts COMUNS do telao.html, na ordem (os módulos do Firebase e a biblioteca de QR do CDN entram como substitutos; a partida da página fica por último). */
 const SCRIPTS = [...HTML.matchAll(/<script src="(js\/[^"?]+)[^"]*"/g)].map(match => match[1].replace("js/", "").replace("data/schedule.dev.js", "data/schedule.js")).filter(file => file !== "pages/mural.js");
 const PAGE = fs.readFileSync(path.join(DOCS, "js", "pages", "mural.js"), "utf8");
 
@@ -42,7 +42,7 @@ function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => t
     muralControlRepository: { listen: (key, onNext) => { controlListeners.set(key, onNext); onNext(initialControl); return () => controlListeners.delete(key); } },
     contestResultsRepository: { listen: (key, onNext) => { contestListeners.set(key, onNext); onNext(initialPodium ? { podium: initialPodium } : null); return () => contestListeners.delete(key); } },
   };
-  const site = loadSite({ scripts: SCRIPTS, html: BODY, url: `http://localhost/mural.html?lineup=1&demo=${demo}&${search}`, globals });
+  const site = loadSite({ scripts: SCRIPTS, html: BODY, url: `http://localhost/telao.html?lineup=1&demo=${demo}&${search}`, globals });
   // tempos curtos (o rodízio roda no relógio real aqui) e papel picado espiado
   site.run(`
     MURAL_SCENES.forEach(scene => { scene.seconds = 0.15; });
@@ -82,7 +82,7 @@ test("a página sobe e roda o rodízio: 'agora e próximas' com a grade, e a tel
 });
 
 test("o line-up só aparece revelado: sem ?lineup=1 a cena 'agora' (dado mock) não entra e a reserva sustenta a tela", async () => {
-  const dom = loadSite({ scripts: SCRIPTS, html: BODY, url: "http://localhost/mural.html?cenas=agora&ensaio=0&demo=2026-11-28T09:10", globals: { fetch: async () => ({ ok: true, text: async () => HTML }), Image: class { set src(url) { setTimeout(() => this.onload?.(), 0); } } } });
+  const dom = loadSite({ scripts: SCRIPTS, html: BODY, url: "http://localhost/telao.html?cenas=agora&ensaio=0&demo=2026-11-28T09:10", globals: { fetch: async () => ({ ok: true, text: async () => HTML }), Image: class { set src(url) { setTimeout(() => this.onload?.(), 0); } } } });
   dom.run("Object.assign(MURAL_CONFIG, { reserveSeconds: 0.15 }); MURAL_CONFIG.network.probeEveryMs = 1000000;");
   dom.run(PAGE, "pages/mural.js");
   await waitFor(() => dom.document.querySelector(".mural-scene.is-active")?.dataset.scene === "reserva");

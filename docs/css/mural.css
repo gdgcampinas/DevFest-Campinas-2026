@@ -1,5 +1,5 @@
 /**
- * MURAL DO TELÃO (mural.html): página isolada, tela cheia, feita pra ser lida de longe num telão de LED de proporção ainda desconhecida.
+ * MURAL DO TELÃO (telao.html): página isolada, tela cheia, feita pra ser lida de longe num telão de LED de proporção ainda desconhecida.
  * Não usa o styles.css do site; só os tokens de cor e fonte.
  *
  * Como funciona o tamanho: o palco (.mural-stage) é um contêiner de tamanho (container-type: size) e TODA medida dentro dele é múltiplo de --u

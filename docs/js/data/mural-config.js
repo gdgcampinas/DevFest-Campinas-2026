@@ -1,5 +1,5 @@
 /**
- * Configuração do MURAL do telão (mural.html). Só números e endereços, nada de lógica: o motor (features/mural.js), o vigia
+ * Configuração do MURAL do telão (telao.html). Só números e endereços, nada de lógica: o motor (features/mural.js), o vigia
  * (features/mural-health.js), a rede e o palco leem daqui. Tempos em milissegundos, salvo `*Seconds`.
  *
  *   speakerPhotoTimeoutMs foto de palestrante que passar disso vira iniciais (a cena "rolando agora" não espera foto lenta)
