@@ -11,6 +11,7 @@ const MURAL_CAPTIONS = {
     { from: 7.0, to: 10.3, text: "com muitas palestras de temas diferentes para o mercado." },
   ] },
   "devfest-2025-chegada": { burned: true, cues: [] },
+  "fiap-institucional": { burned: true, cues: [] }, // institucional da FIAP: sem fala, o texto já está na própria imagem
   "devfest-2025-palco": { cues: [
     { from: 0.0, to: 6.4, text: "Eu estou aqui hoje no DevFest Campinas para apresentar um pouco sobre essa plataforma" },
     { from: 6.5, to: 9.4, text: "do Google, que é focada em dados geoespaciais." },

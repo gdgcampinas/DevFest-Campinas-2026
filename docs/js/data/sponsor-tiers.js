@@ -7,7 +7,10 @@ const SPONSOR_TIER_STYLES = {
   master: { description: true },
   especialista: { description: true },
   senior: { description: true },
+  pleno: { description: true },
+  junior: { description: true },
   intern: { description: true },
+  permuta: { description: false },
   apoio: { description: false },
 };
 

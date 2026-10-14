@@ -24,20 +24,28 @@ const SPONSORS = [
     sponsor("Vértice Dados", "Plataforma de análise de dados e inteligência de negócios para varejo e indústria.", "bars", "#34a853"),
     sponsor("Órbita Cloud", "Infraestrutura em nuvem com suporte em português e operação no interior de São Paulo.", "ring", "#7c3aed"),
   ] },
-  { id: "senior", tier: "Senior", elements: [
+  { id: "senior", tier: "Sênior", elements: [
     sponsor("Brisa Pagamentos", "Meios de pagamento e antifraude para lojas online e marketplaces.", "circle", "#ea4335"),
     sponsor("Nuvem Sul Tecnologia", "Consultoria em arquitetura de software e cultura DevOps.", "triangle", "#0ea5e9"),
     sponsor("Pixel Forge Studio", "Estúdio de produtos digitais, design de interfaces e prototipação.", "square", "#f59e0b"),
   ] },
-  { id: "intern", tier: "Intern", elements: [
+  { id: "pleno", tier: "Pleno", elements: [
+    // REAL (ainda não liberada: sem `public`, só em DEV ou depois da revelação). Logo vetorial do arquivo oficial da FIAP, versão rosa na caixa branca.
+    { name: "FIAP", link: "https://www.fiap.com.br/", imageUrl: "assets/brand/fiap.webp", description: "Faculdade com graduações, MBAs, pós-graduações Tech Intensive e imersões." },
     sponsor("Astro Labs", "Laboratório de inovação e prototipagem rápida para startups.", "ring", "#14b8a6"),
+  ] },
+  { id: "junior", tier: "Júnior", elements: [
     sponsor("Campo Digital", "Soluções de tecnologia e dados para o agronegócio.", "bars", "#65a30d"),
+  ] },
+  { id: "intern", tier: "Intern", elements: [
     sponsor("Trilha Educação", "Cursos e bootcamps de programação para quem está começando.", "triangle", "#f43f5e"),
   ] },
-  { id: "apoio", tier: "Apoio", elements: [
+  { id: "permuta", tier: "Cota Permuta", elements: [
     sponsor("Café do Dev", "Cafeteria e espaço de cowork no coração de Campinas.", "circle", "#92400e"),
-    sponsor("Cowork Barão", "Espaços de trabalho compartilhados em Barão Geraldo.", "square", "#6366f1"),
     sponsor("Gráfica Expressa", "Impressos, banners e brindes para eventos.", "hex", "#64748b"),
+  ] },
+  { id: "apoio", tier: "Apoio", elements: [
+    sponsor("Cowork Barão", "Espaços de trabalho compartilhados em Barão Geraldo.", "square", "#6366f1"),
   ] },
 ];
 

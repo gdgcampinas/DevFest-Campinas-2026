@@ -19,13 +19,16 @@ const MURAL_VIDEO_CLIPS = [
   { id: "devfest-2025-equipe", file: "devfest-2025-equipe.mp4", label: "DevFest 2025: equipe", seconds: 16.0, fit: VIDEO_FIT },
   { id: "devfest-2025-aprendizado", file: "devfest-2025-aprendizado.mp4", label: "DevFest 2025: aprendizado", seconds: 13.8, fit: VIDEO_FIT },
   { id: "devfest-2025-final", file: "devfest-2025-final.mp4", label: "DevFest 2025: final", seconds: 13.4, fit: VIDEO_FIT },
+  // Institucional da patrocinadora FIAP (1920 x 1080, 15 s, sem áudio): playlist própria, só entra na cena `video-fiap` (atrás da revelação).
+  { id: "fiap-institucional", file: "fiap-institucional.mp4", label: "FIAP", seconds: 15.0, fit: VIDEO_FIT },
 ];
 
 const MURAL_VIDEO_PLAYLISTS = {
   "devfest-2025": {
-    clips: MURAL_VIDEO_CLIPS.map(clip => clip.id),
+    clips: MURAL_VIDEO_CLIPS.filter(clip => clip.id.startsWith("devfest-2025-")).map(clip => clip.id),
     // sem `sound`: o telão toca os vídeos SEMPRE MUDOS (decisão do Renato em 2026-10-08, o som não ficou bom). Pra voltar o som é só pôr aqui, ex.: sound: { moments: ["lunch"], phases: ["after"] }
   },
+  fiap: { clips: ["fiap-institucional"] },
 };
 
 const muralVideosRepository = createRepository({ clips: MURAL_VIDEO_CLIPS, playlists: MURAL_VIDEO_PLAYLISTS }, {
