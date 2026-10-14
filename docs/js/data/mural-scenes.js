@@ -69,7 +69,7 @@ const MURAL_SCENES = [
   { id: "time-2", label: "Quem faz o DevFest Campinas (2)", type: "team", seconds: 11, transition: "rise", params: { kicker: "Gente como você, de casa", title: "Quem faz o DevFest Campinas acontecer" } },
   { id: "album-2025", label: "Fotos DevFest 2025", type: "album", seconds: 14, requires: { live: "albums" }, params: { album: "devfest-2025", model: "auto" } },
   { id: "patrocinio-demais", label: "Demais patrocinadores", type: "sponsors", seconds: 14, requires: { reveal: true }, params: { tiers: ["Especialista", "Sênior", "Pleno"], title: "Quem faz o DevFest Campinas acontecer" } },
-  { id: "patrocinio-apoio", label: "Patrocinadores de apoio", type: "sponsors", seconds: 12, requires: { reveal: true }, params: { tiers: ["Júnior", "Intern", "Cota Permuta", "Apoio"], title: "Quem faz o DevFest Campinas acontecer" } },
+  { id: "patrocinio-apoio", label: "Patrocinadores de apoio", type: "sponsors", seconds: 12, requires: { reveal: true }, params: { tiers: ["Júnior", "Intern", "Cota Permuta", "Apoio"], title: "Quem faz o DevFest Campinas acontecer", layout: "compact" } },
   { id: "agradecimento-patrocinio", label: "Agradecimento aos patrocinadores", type: "sponsors", seconds: 20, transition: "zoom", requires: { reveal: true, moments: ["lunch", "closing"] }, params: { kicker: "Muito obrigado", title: "A quem faz o DevFest acontecer", layout: "thanks" } },
   { id: "selfie", label: "Selfie", type: "selfie", seconds: 20, transition: "zoom", params: { hashtag: "", art: "sunset" } },
   { id: "arte-gumbleton", label: "Arte do Gumbleton", type: "art", seconds: 8, transition: "zoom", params: { art: "gumbleton" } },
