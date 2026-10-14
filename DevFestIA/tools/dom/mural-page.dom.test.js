@@ -20,7 +20,7 @@ const PAGE = fs.readFileSync(path.join(DOCS, "js", "pages", "mural.js"), "utf8")
 const BODY = `<!doctype html><html><body><div class="mural-backdrop"><div class="mural-stage" id="muralStage"><main id="muralContent"></main><footer id="muralFooter"></footer><aside id="muralDiag" hidden></aside></div></div></body></html>`;
 
 /** Sobe a página com tudo de fora substituído. `search` = parâmetros de URL; `overrides` ajusta o que pode mudar (rede, QR, registered). */
-function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => true, registered = { total: 120 }, initialPodium = null, albums = null, initialControl = null }) {
+function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => true, registered = { total: 120 }, initialPodium = null, albums = null, initialControl = null, rawUrl = null, beforePage = null }) {
   const contestListeners = new Map();
   const hiddenListeners = new Map();
   const controlListeners = new Map();
@@ -42,7 +42,7 @@ function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => t
     muralControlRepository: { listen: (key, onNext) => { controlListeners.set(key, onNext); onNext(initialControl); return () => controlListeners.delete(key); } },
     contestResultsRepository: { listen: (key, onNext) => { contestListeners.set(key, onNext); onNext(initialPodium ? { podium: initialPodium } : null); return () => contestListeners.delete(key); } },
   };
-  const site = loadSite({ scripts: SCRIPTS, html: BODY, url: `http://localhost/telao.html?lineup=1&demo=${demo}&${search}`, globals });
+  const site = loadSite({ scripts: SCRIPTS, html: BODY, url: rawUrl ?? `http://localhost/telao.html?lineup=1&demo=${demo}&${search}`, globals });
   // tempos curtos (o rodízio roda no relógio real aqui) e papel picado espiado
   site.run(`
     MURAL_SCENES.forEach(scene => { scene.seconds = 0.15; });
@@ -60,6 +60,7 @@ function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => t
     globalThis.__confetti = 0;
     createConfetti = () => ({ fire: () => { __confetti++; return true; } });
   `);
+  beforePage?.(site);
   site.run(PAGE, "pages/mural.js");
   const document = site.document;
   return {
@@ -401,4 +402,22 @@ test("as cenas de patrocínio e o vídeo da FIAP não dependem da revelação (o
   });
   page.site.window.close();
   assert.ok(!/schedule\.dev\.js/.test(HTML), "o telão não carrega o schedule.dev.js: os dados vêm de produção");
+});
+
+test("telão: a URL normal é SEMPRE produção; modo DEV e ensaio gravados na aba não vazam (valem só quando estão na URL)", () => {
+  const page = boot({
+    search: "",
+    rawUrl: "http://localhost/telao.html?demo=2026-11-28T09:10",
+    beforePage: site => {
+      site.window.sessionStorage.setItem("devfest-campinas-2026:dev-mode", "1");
+      site.window.sessionStorage.setItem("devfest-campinas-2026:rehearsal", "08:00");
+    },
+  });
+  assert.equal(page.site.run("sessionStorage.getItem('devfest-campinas-2026:dev-mode')"), null, "modo DEV gravado foi limpo");
+  assert.equal(page.site.run("sessionStorage.getItem('devfest-campinas-2026:rehearsal')"), null, "ensaio gravado foi limpo");
+  assert.equal(page.site.run("resolveReveal()"), false, "line-up escondido: dados de produção");
+  page.site.window.close();
+  const dev = boot({ search: "", rawUrl: "http://localhost/telao.html?lineup=1&demo=2026-11-28T09:10" });
+  assert.equal(dev.site.run("resolveReveal()"), true, "com ?lineup=1 na URL o modo DEV continua valendo");
+  dev.site.window.close();
 });

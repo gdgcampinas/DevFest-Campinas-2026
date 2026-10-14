@@ -14,6 +14,9 @@ function initMural() {
   window.__muralBooted = true;
   const config = muralConfigRepository.getAll();
   const params = new URLSearchParams(location.search);
+  // A URL normal do telão é SEMPRE produção: modo DEV e ensaio valem só quando estão na URL (não ficam gravados na aba, que o app.js grava pro resto do site).
+  if (!params.has("lineup")) setDevModeStorage(false);
+  if (!params.has("ensaio")) rehearsalStore.set(null);
   const rehearsal = setupRehearsal();
   const reveal = resolveReveal();
   const clock = resolveNow();
