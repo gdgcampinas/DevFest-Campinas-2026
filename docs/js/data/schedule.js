@@ -88,8 +88,8 @@ function eventTime(hhmm) {
  * o catálogo mock (mock-talks.js + mock-speakers.js) até o line-up real ser fechado.
  */
 const DAY_PLAN = [
-  { banner: "Credenciamento", moment: "registration", room: "Recepção", start: "08:00", end: "08:30" },
-  { banner: "Abertura: GDG Campinas", moment: "opening", room: roomFor("Calçadão Central"), start: "08:30", end: "08:55" },
+  { banner: "Credenciamento", moment: "registration", room: "Recepção", start: "08:00", end: "08:20" },
+  { banner: "Abertura: GDG Campinas", moment: "opening", room: roomFor("Calçadão Central"), start: "08:20", end: "08:50" },
   { talks: talkWindows("09:00", 4) },
   { banner: "Almoço", moment: "lunch", start: "12:00", end: "13:20" },
   { banner: "Retorno para a sala", moment: "back-to-room", start: "13:20", end: "13:30" },
