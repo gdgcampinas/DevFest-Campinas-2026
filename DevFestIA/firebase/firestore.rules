@@ -376,6 +376,24 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // LISTA DE ESPERA dos ingressos (`waitlist/<uid>_interest`): quem quer ser avisado quando os ingressos abrirem. Qualquer aparelho com login (anônimo) cadastra UMA vez (id `<uid>_interest`, como o resto do
+    // projeto: criar de novo vira "update" e é recusado) e só lê o próprio registro (pra mostrar "você já está na lista"); quem lista e apaga é o moderador (a seção Lista de espera do admin). Dado pessoal: nunca
+    // público e fora da limpeza de dados de teste. Formato fechado. ESPELHAR `maxName` e `maxEmail` de docs/js/data/waitlist-config.js (80 = "size() < 81", 120 = "size() < 121").
+    match /waitlist/{docId} {
+      allow get: if isOwnDoc(docId) || isModerator();
+      allow list: if isModerator();
+      allow create: if isOwnDoc(docId) && idMatchesEntry(docId) && hasValidBaseFields()
+        && request.resource.data.entryKey == 'interest'
+        && request.resource.data.keys().hasOnly(['edition', 'entryKey', 'createdAt', 'name', 'email', 'source', 'lang'])
+        && requiredText(request.resource.data, 'name', 81)
+        && requiredText(request.resource.data, 'email', 121)
+        && request.resource.data.email.matches('^[^@ ]+@[^@ ]+[.][^@ ]+$')
+        && optionalText(request.resource.data, 'source', 21)
+        && optionalText(request.resource.data, 'lang', 6);
+      allow update: if false;
+      allow delete: if isModerator();
+    }
+
     // LISTA DE MODERADORES (`moderators/<e-mail em minúsculas>`): só o DONO lista, cadastra e apaga (a tela do admin).
     // Formato fechado: { email (igual ao id), addedBy (o dono), createdAt (horário do servidor) }.
     match /moderators/{email} {
