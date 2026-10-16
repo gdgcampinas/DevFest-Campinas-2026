@@ -11,6 +11,7 @@
  *   ADMIN_BEFORE_EVENT  a seção "Antes do evento": a limpeza do BANCO (roda no GitHub, com as travas dela) e a limpeza deste APARELHO; só texto e endereço
  *   ADMIN_MODERATORS    a seção Moderadores: limite da lista, prazo da confirmação de remoção e os textos da tela
  *   ADMIN_WALL          a seção Recados (moderação do mural de recados): os textos da tela
+ *   ADMIN_WAITLIST      a seção Lista de espera dos ingressos: os textos da tela, o CSV e o prazo da confirmação de remover
  *   ADMIN_TALKS         ritmo da seção Palestras (`refreshMs`: de quanto em quanto tempo ela confere se a palestra da trilha mudou)
  * Todas as telas são internas (fora do menu e do sitemap, sem versão /DEV/): abrem na raiz. As de moderação pedem login Google de moderador.
  */
@@ -24,6 +25,7 @@ const ADMIN_SECTIONS = [
   { id: "fotos", title: "Fotos", icon: "photos" },
   { id: "palestras", title: "Palestras", icon: "talks" },
   { id: "recados", title: "Recados", icon: "chat" },
+  { id: "lista-de-espera", title: "Lista de espera", icon: "mail" },
   { id: "moderadores", title: "Moderadores", icon: "users", ownerOnly: true },
   { id: "antes-do-evento", title: "Antes do evento", icon: "checklist", ownerOnly: true },
   { id: "atalhos", title: "Atalhos", icon: "link" },
@@ -46,6 +48,7 @@ const ADMIN_OVERVIEW = [
   { id: "pending", title: "Perguntas pendentes", intervalMs: 60000 },
   { id: "photos", title: "Fotos do telão", intervalMs: 60000 },
   { id: "wall", title: "Recados para aprovar", intervalMs: 30000 },
+  { id: "waitlist", title: "Lista de espera", intervalMs: 60000 },
   { id: "registered", title: "Inscritos", intervalMs: 300000 },
 ];
 
@@ -66,6 +69,30 @@ const ADMIN_WALL = {
   noPermission: "Sem permissão: esta conta não é de moderador.",
   readFailed: "Não consegui ler os recados. Confira a conexão.",
   saveFailed: "Não consegui salvar. Tente de novo.",
+};
+
+const ADMIN_WAITLIST = {
+  confirmMs: 5000,
+  title: "Lista de espera dos ingressos",
+  intro: "Quem pediu para ser avisado quando os ingressos abrirem. Baixe o CSV ou copie os e-mails (sem repetidos) e cole no campo Cco de um e-mail para avisar todo mundo de uma vez. Para tirar alguém, remova aqui.",
+  searchPlaceholder: "Buscar por nome ou e-mail",
+  downloadButton: "Baixar CSV",
+  copyButton: "Copiar e-mails",
+  removeButton: "Remover",
+  removeConfirm: "Toque de novo para REMOVER",
+  sourceLabel: "origem",
+  duplicates: "{n} cadastro(s) repetido(s) (mesmo e-mail em mais de um aparelho) contam uma pessoa só.",
+  empty: "Ninguém na lista ainda.",
+  noMatch: "Ninguém encontrado com essa busca.",
+  downloaded: "Arquivo baixado.",
+  copied: "E-mails copiados.",
+  removed: "Pessoa removida da lista.",
+  noPermission: "Sem permissão: esta conta não é de moderador.",
+  readFailed: "Não consegui ler a lista. Confira a conexão.",
+  removeFailed: "Não consegui remover. Tente de novo.",
+  copyFailed: "Não consegui copiar. Baixe o CSV.",
+  csvFile: "lista-de-espera-devfest-campinas-2026.csv",
+  csvHeaders: ["nome", "email", "origem", "idioma", "data"],
 };
 
 const ADMIN_MODERATORS = {
@@ -123,3 +150,4 @@ const adminTalksConfigRepository = createRepository(ADMIN_TALKS);
 const adminModeratorsRepository = createRepository(ADMIN_MODERATORS);
 const adminBrandRepository = createRepository(ADMIN_BRAND);
 const adminWallRepository = createRepository(ADMIN_WALL);
+const adminWaitlistRepository = createRepository(ADMIN_WAITLIST);

@@ -117,7 +117,7 @@ test("conta que não é dona: o menu esconde as seções só do dono; a rota esc
   const helper = loadSite({ scripts: UNITS, html: BODY });
   const denied = setup({ restoreAs: "mod@gmail.com", hash: "#moderadores", access: { resolve: () => helper.get("resolveAdminAccess")({ probe: async () => { throw { code: "permission-denied" }; } }) } });
   await waitFor(() => denied.body.querySelector("[data-mounted]"));
-  assert.deepEqual([...denied.nav.querySelectorAll("a")].map(link => textOf(link)), ["Visão geral", "Telão", "Fotos", "Palestras", "Recados", "Atalhos"]);
+  assert.deepEqual([...denied.nav.querySelectorAll("a")].map(link => textOf(link)), ["Visão geral", "Telão", "Fotos", "Palestras", "Recados", "Lista de espera", "Atalhos"]);
   assert.deepEqual(denied.events, ["mount:visao-geral"]);
   assert.equal(denied.window.location.hash, "#visao-geral");
   denied.window.close();
@@ -131,7 +131,7 @@ test("conta dona (a leitura da lista passa) ou sem saber (erro de rede): o menu 
     const resolve = () => helper.get("resolveAdminAccess")({ probe });
     const { body, nav, window } = setup({ restoreAs: "mod@gmail.com", access: { resolve } });
     await waitFor(() => body.querySelector("[data-mounted]"));
-    assert.equal(nav.querySelectorAll("a").length, 8, name);
+    assert.equal(nav.querySelectorAll("a").length, 9, name);
     window.close();
     helper.window.close();
   }
@@ -213,7 +213,7 @@ test("a página admin.html inteira: abre logado na seção Atalhos com os links 
   const hrefs = [...body.querySelectorAll("[data-shortcut] a")].map(link => link.getAttribute("href"));
   assert.deepEqual(hrefs, ["telao.html", "DEV/sorteio.html?telao=1"]);
   assert.ok([...body.querySelectorAll("[data-shortcut] a")].every(link => link.target === "_blank" && link.rel === "noopener"));
-  assert.deepEqual([...site.document.querySelectorAll("#adminNav a")].map(link => link.getAttribute("href")), ["#visao-geral", "#telao", "#fotos", "#palestras", "#recados", "#moderadores", "#antes-do-evento", "#atalhos"]);
+  assert.deepEqual([...site.document.querySelectorAll("#adminNav a")].map(link => link.getAttribute("href")), ["#visao-geral", "#telao", "#fotos", "#palestras", "#recados", "#lista-de-espera", "#moderadores", "#antes-do-evento", "#atalhos"]);
   site.window.close();
 });
 
@@ -231,6 +231,11 @@ function bootAdminPage(hash) {
       moderationMuralHiddenRepository: { listen: (id, onNext) => { hiddenListeners.push(id); onNext({ ids: [] }); return () => hiddenListeners.pop(); }, set: async () => {} },
       moderationQuestionsRepository: { countWhere: async filters => (filters.talkKey.endsWith("|ia") ? 4 : 0) },
       moderationWallRepository: { countWhere: async () => 2, listen: (filters, onNext) => { onNext([{ id: "a", status: "pending", text: "oi", prompt: "buscar", createdAtMs: 1 }]); return () => {}; }, update: async () => {} },
+      moderationWaitlistRepository: {
+        countWhere: async () => 7,
+        listen: (filters, onNext) => { onNext([{ id: "u1_interest", name: "Geovanna Silva", email: "geovanna@example.com", source: "home", lang: "pt", createdAtMs: 1 }]); return () => {}; },
+        remove: async () => {},
+      },
       eventStatsRepository: { get: async () => ({ total: 321 }) },
       firebaseClient: { ensureAnonymousUid: async () => "uid" },
       resolveNow: () => () => new Date("2026-11-28T12:10:00Z"), // 09:10 locais, 1ª palestra no ar (no navegador vem do app.js, que não roda aqui)
@@ -265,16 +270,17 @@ test("a página admin.html: a seção Fotos lê o álbum ao vivo pelo intermedi�
   site.window.close();
 });
 
-test("a página admin.html: a visão geral abre por padrão com os 5 cartões do dado, cada um com o seu número, e sair da seção desliga as escutas", async () => {
+test("a página admin.html: a visão geral abre por padrão com os 7 cartões do dado, cada um com o seu número, e sair da seção desliga as escutas", async () => {
   const { site, controlListeners, hiddenListeners, body } = bootAdminPage("");
-  await waitFor(() => body.querySelectorAll("[data-card]").length === 6 && !/Carregando/.test(textOf(body)));
-  assert.deepEqual([...body.querySelectorAll("[data-card]")].map(card => card.dataset.card), ["control", "rooms", "pending", "photos", "wall", "registered"]);
+  await waitFor(() => body.querySelectorAll("[data-card]").length === 7 && !/Carregando/.test(textOf(body)));
+  assert.deepEqual([...body.querySelectorAll("[data-card]")].map(card => card.dataset.card), ["control", "rooms", "pending", "photos", "wall", "waitlist", "registered"]);
   const card = id => textOf(body.querySelector(`[data-card="${id}"]`));
   assert.match(card("control"), /Telão normal/);
   assert.match(card("rooms"), /4 de 4 com palestra no ar/);
   assert.match(card("pending"), /4 na fila/);
   assert.match(card("photos"), /1 foto\(s\)/);
   assert.match(card("wall"), /2 esperando/);
+  assert.match(card("waitlist"), /7 na lista/);
   assert.match(card("registered"), /321/);
   assert.equal(body.querySelector("[data-admin-title]").textContent, "Visão geral");
   assert.deepEqual(controlListeners, ["current"]);
@@ -283,6 +289,17 @@ test("a página admin.html: a visão geral abre por padrão com os 5 cartões do
   site.window.dispatchEvent(new site.window.Event("hashchange"));
   assert.equal(controlListeners.length, 0);
   assert.equal(hiddenListeners.length, 0);
+  site.window.close();
+});
+
+test("a página admin.html: a seção Lista de espera mostra quem pediu pra ser avisado, com o botão de baixar o CSV e o de copiar os e-mails", async () => {
+  const { site, body } = bootAdminPage("#lista-de-espera");
+  await waitFor(() => body.querySelector(".ad-person"));
+  assert.equal(body.querySelector("[data-admin-title]").textContent, "Lista de espera");
+  assert.match(textOf(body), /Geovanna Silva/);
+  assert.match(textOf(body), /geovanna@example\.com/);
+  assert.ok(body.querySelector("[data-waitlist-download]"));
+  assert.ok(body.querySelector("[data-waitlist-copy]"));
   site.window.close();
 });
 

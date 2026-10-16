@@ -7,6 +7,7 @@
  *   pending      perguntas pendentes por trilha: conta no servidor (1 leitura por consulta) a cada `intervalMs`
  *   photos       fotos do álbum ao vivo e quantas estão fora do ar (cada metade falha sozinha)
  *   wall         recados do mural esperando aprovação (conta no servidor a cada `intervalMs`)
+ *   waitlist     quantas pessoas pediram pra ser avisadas quando os ingressos abrirem (conta no servidor a cada `intervalMs`)
  *   registered   total de inscritos do Sympla (`event-stats`)
  * Nomes: `schedule` = a grade do evento; `timer` = o agendador de tempo (`defaultSchedule`).
  */
@@ -79,12 +80,20 @@ function createAdminWallCard({ definition, wallRepository, timer }) {
   );
 }
 
+function createAdminWaitlistCard({ definition, waitlistRepository, timer }) {
+  return (onView, onError) => pollOpen({ read: () => waitlistRepository.countWhere({}), intervalMs: definition.intervalMs, schedule: timer, keepAlive: true })(
+    total => onView({ headline: total ? `${total} na lista` : "Ninguém na lista", tone: total ? undefined : "ok", lines: [total ? "Abra Lista de espera para baixar" : "Ainda não pediram para ser avisados"] }),
+    onError,
+  );
+}
+
 const ADMIN_OVERVIEW_CARD_FACTORIES = {
   control: createAdminControlCard,
   rooms: createAdminRoomsCard,
   pending: createAdminPendingQuestionsCard,
   photos: createAdminPhotosCard,
   wall: createAdminWallCard,
+  waitlist: createAdminWaitlistCard,
   registered: createAdminRegisteredCard,
 };
 
@@ -112,6 +121,7 @@ function defaultAdminOverviewDeps({ album, albumsRepository }) {
     pickTalk: pickModerationTalk,
     album, albumsRepository,
     wallRepository: window.moderationWallRepository,
+    waitlistRepository: window.moderationWaitlistRepository,
     hiddenRepository: window.moderationMuralHiddenRepository,
     statsRepository: window.eventStatsRepository,
     edition: CURRENT_EDITION,

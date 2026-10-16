@@ -73,6 +73,10 @@
 .ad-cols--wall{grid-template-columns:minmax(0,1fr)}
 @media(min-width:900px){.ad-cols--wall{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
 .ad-card--wide{margin-top:16px}
+/* Lista de espera: busca + botões na mesma linha (no celular quebram em linhas) */
+.ad-wl-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:12px 0}
+.ad-wl-bar .feedback-input{flex:1 1 220px;min-width:0}
+.ad-wl-bar .chip-btn{flex:none;min-height:44px}
 
 /* marca: Gumbleton nos estados vazios e na porta de entrada, logo do GDG na barra do admin */
 .ad-empty-mascot{width:72px;height:auto;opacity:.95}
