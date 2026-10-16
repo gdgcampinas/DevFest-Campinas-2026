@@ -2,6 +2,8 @@
 function initIngressos() {
   const reveal = initShell("ingressos");
 
+  initWaitlist(document.getElementById("waitlist"), { ...defaultWaitlistDeps(), source: "ingressos", openAtStart: location.hash === "#waitlist" });
+
   renderOrConstruction(reveal, document.getElementById("ticketsSection"),
     () => renderTickets(EVENT.tickets, ticketsRepository.getAll(), document.getElementById("ticketsSection"), { note: tt(TICKETS_NOTE) }),
     t("tickets.soon", "Os tipos e valores de ingresso serão revelados em breve."));

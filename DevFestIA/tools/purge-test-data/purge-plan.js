@@ -1,7 +1,7 @@
 /**
  * Regras (puras) da limpeza dos dados de teste. Apagar dado de verdade é
  * irreversível, então TODAS as travas ficam aqui, num lugar só e testável:
- *   1) só coleções da lista fixa PURGEABLE_COLLECTIONS (nunca Sympla: registrations,
+ *   1) só coleções da lista fixa PURGEABLE_COLLECTIONS (nunca Sympla: registrations, nem a lista de espera dos ingressos: waitlist,
  *      event-stats, sync-state), sem parâmetro que permita outra;
  *   2) recusa a partir do início do evento (depois disso os dados são reais);
  *   3) simulação por padrão: só apaga com dryRun falso E confirmação exata.

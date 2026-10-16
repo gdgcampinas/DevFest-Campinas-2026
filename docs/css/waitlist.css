@@ -1,0 +1,30 @@
+/* LISTA DE ESPERA dos ingressos (home e página Ingressos): cartão "Ingressos em breve" com os 3 passos e o formulário no próprio cartão. Usa só os tokens do site (tokens.css), nenhuma cor nova. */
+.waitlist{max-width:1180px;margin:0 auto;padding:0 24px;scroll-margin-top:16px}
+.wl-card{padding:22px;border:1px solid var(--card-border);border-top:3px solid var(--google-blue);border-radius:var(--radius);background:linear-gradient(180deg,var(--card-a),var(--card-b))}
+.wl-head{display:flex;gap:18px;align-items:center}
+.wl-icon{flex:none;width:72px;height:72px;border-radius:50%;display:grid;place-items:center;background:color-mix(in oklch,var(--google-blue) 16%,var(--card-b));color:var(--google-blue)}
+.wl-icon .icon{width:34px;height:34px}
+.wl-badge{display:inline-block;padding:3px 10px;border-radius:999px;border:1px solid color-mix(in oklch,var(--google-blue) 55%,transparent);background:color-mix(in oklch,var(--google-blue) 14%,transparent);color:var(--google-blue);font:700 12px var(--font-body);letter-spacing:.04em}
+.wl-title{margin:8px 0 4px;font:800 24px/1.2 var(--font-display);color:oklch(95% 0.005 260)}
+.wl-intro{margin:0;font:500 15px/1.6 var(--font-body);color:var(--muted)}
+.wl-steps{list-style:none;margin:18px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.wl-step{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--card-border);border-radius:12px;background:oklch(14% 0.012 260);font:600 14px var(--font-body);color:oklch(90% 0.008 260)}
+.wl-step-n{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--google-blue);color:oklch(14% 0.01 260);font:800 13px var(--font-body)}
+.wl-open{margin-top:18px}
+.wl-panel{margin-top:18px;padding-top:18px;border-top:1px solid var(--card-border)}
+.wl-loading{margin:0;color:var(--muted);font:500 14px var(--font-body)}
+.wl-form{max-width:460px;display:flex;flex-direction:column;gap:12px}
+.wl-form-title{margin:0;font:800 18px var(--font-display);color:oklch(95% 0.005 260)}
+.wl-form-intro{margin:0;font:500 14px/1.5 var(--font-body);color:var(--muted)}
+.wl-field{display:flex;flex-direction:column;gap:6px;font:600 13px var(--font-body);color:oklch(88% 0.01 260)}
+.wl-field input{min-height:44px;padding:0 14px;border:1px solid var(--card-border);border-radius:12px;background:oklch(12% 0.01 260);color:var(--text);font:500 16px var(--font-body)}
+.wl-field input:focus-visible{outline:2px solid var(--google-blue);outline-offset:1px}
+.wl-field input[aria-invalid="true"]{border-color:var(--google-red)}
+.wl-message{margin:0;min-height:1.2em;font:600 14px var(--font-body);color:var(--google-red)}
+.wl-privacy,.wl-privacy-leave{margin:0;font:500 13px/1.5 var(--font-body);color:var(--muted)}
+.wl-result{display:flex;gap:14px;align-items:center;max-width:460px}
+.wl-result-icon{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:color-mix(in oklch,var(--google-green) 18%,var(--card-b));color:var(--google-green)}
+.wl-result-icon .icon{width:24px;height:24px}
+.wl-result-title{margin:0;font:800 17px var(--font-display);color:oklch(95% 0.005 260)}
+.wl-result-body{margin:2px 0 0;font:500 14px/1.5 var(--font-body);color:var(--muted)}
+@media(max-width:560px){.waitlist{padding:0 16px}.wl-card{padding:18px}.wl-head{align-items:flex-start}.wl-icon{width:52px;height:52px}.wl-icon .icon{width:26px;height:26px}.wl-title{font-size:20px}.wl-open .cta{width:100%}}

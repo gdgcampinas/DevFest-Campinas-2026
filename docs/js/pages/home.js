@@ -7,6 +7,7 @@ function initHome() {
   const reveal = initShell("principal");
   const wallInvite = defaultWallInvite();
   initWallInviteCard(document.getElementById("wallInvite"), { invite: wallInvite });
+  initWaitlist(document.getElementById("waitlist"), { ...defaultWaitlistDeps(), source: "home" });
 
   initStickyStatus(document.getElementById("hero"), document.getElementById("stickyStatus"));
   initHeroGalaxy({ mountEl: document.getElementById("heroStage"), config: heroGalaxyRepository.getAll() });

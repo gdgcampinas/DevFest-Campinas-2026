@@ -3,6 +3,7 @@
  * CTA" (ticketCtaState) alimenta todos os lugares onde o botão aparece:
  * cabeçalho, barra fixa no mobile, cards de ingresso e hero da home.
  *
+ *   waitlistOn   → "Avise-me quando abrir": leva ao cartão da lista de espera (ingressos.html#waitlist), ver applyWaitlistMode
  *   url          → botão de compra (Sympla)
  *   sem url, mas waitlistUrl → "Avise-me quando abrir" (Instagram/WhatsApp)
  *   nenhum dos dois → só o status ("Em breve"), sem link morto
@@ -16,7 +17,23 @@ function ticketPriceMarkup(price, { tbdLabel = "" } = {}) {
   return `<div class="ticket-price">${priceFormatter().format(price)}</div>`;
 }
 
+/**
+ * Modo LISTA DE ESPERA (os ingressos ainda não abriram): com `EVENT.tickets.waitlist.enabled` ligado o site oferece "Avise-me quando abrir" (cartão com formulário, features/waitlist.js) no lugar do
+ * botão de compra. `waitlist.public: false` mostra isso só no modo DEV (pra testar antes), `true` libera em produção. Muda o `EVENT.tickets` no lugar, uma vez, antes de qualquer tela ler: `salesOpen`
+ * vira falso (faixa "Ingressos em breve", sem contador, oferta "PreOrder"), o link de compra sai (quem clica cairia numa página do Sympla sem ingresso) e `waitlistOn` liga o botão novo.
+ * Pra abrir as vendas de verdade: `waitlist.enabled: false` e `salesOpen: true`. Devolve se o modo ficou ligado.
+ */
+function applyWaitlistMode(tickets, { devMode = false } = {}) {
+  const waitlist = tickets.waitlist;
+  if (!waitlist?.enabled || !(waitlist.public || devMode)) return false;
+  tickets.salesOpen = false;
+  tickets.url = "";
+  tickets.waitlistOn = true;
+  return true;
+}
+
 function ticketCtaState(tickets, { label = tickets.label, url = tickets.url } = {}) {
+  if (tickets.waitlistOn) return { kind: "waitlist-form", href: tickets.waitlist.href ?? "ingressos.html#waitlist", internal: true, label: t("tickets.waitlist", "Avise-me quando abrir") };
   if (url) return { kind: "buy", href: url, label };
   if (tickets.waitlistUrl) return { kind: "waitlist", href: tickets.waitlistUrl, label: t("tickets.waitlist", "Avise-me quando abrir") };
   return { kind: "soon", label: tickets.status };
@@ -26,7 +43,8 @@ function ticketCtaState(tickets, { label = tickets.label, url = tickets.url } = 
 function ticketButtonMarkup(state, { className = "cta", place = "" } = {}) {
   if (!state.href) return `<span class="${className} cta--soon">${state.label}</span>`;
   const tracking = place ? ` data-track-event="cta_click" data-track-place="${place}" data-track-kind="${state.kind}"` : "";
-  return `<a class="${className}" href="${state.href}" target="_blank" rel="noopener"${tracking}>${state.label}</a>`;
+  const target = state.internal ? "" : ' target="_blank" rel="noopener"'; // o cartão da lista de espera é do próprio site: abre na mesma aba
+  return `<a class="${className}" href="${state.href}"${target}${tracking}>${state.label}</a>`;
 }
 
 function ticketCardMarkup(type, tickets) {

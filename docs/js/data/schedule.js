@@ -40,10 +40,12 @@ const EVENT = {
     label: "Garanta sua vaga",
     status: "Ingressos em breve",
     openStatus: "abertos", // texto do ticker quando salesOpen for true
+    tickerStatus: "em breve", // texto do ticker quando salesOpen for false (cabe depois de "Ingressos:"; sem ele usa `status`, que já é uma frase)
     salesOpen: true, // true quando as vendas abrirem de verdade (dados estruturados: PreOrder vira InStock)
     counterMin: 30, // só mostra o contador "N pessoas já garantiram a vaga" a partir desse total de inscritos
     registrationGate: false, // true SÓ depois que o sync do Sympla estiver rodando (secrets + regras publicadas); false = o cartão "Eu vou!" continua livre
     waitlistUrl: "", // opcional: sem url de compra, vira "Avise-me quando abrir" (Instagram/WhatsApp)
+    waitlist: { enabled: true, public: false }, // LISTA DE ESPERA (formulário no site, grava no Firestore): `public: false` = só em modo DEV; `true` libera em produção. Ver applyWaitlistMode (features/tickets.js)
   },
 };
 

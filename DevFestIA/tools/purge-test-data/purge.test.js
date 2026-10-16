@@ -9,7 +9,7 @@ const startsAt = new Date("2026-11-28T11:00:00Z");
 
 test("lista fixa: só as coleções de teste (feedback, perguntas, sorteio e concurso da sessão), nunca as do Sympla", () => {
   assert.deepEqual(PURGEABLE_COLLECTIONS, ["checkins", "talk-feedback", "event-feedback", "talk-questions", "talk-question-votes", "raffle-checkins", "raffle-entries", "raffle-draws", "raffle-session", "raffle-state", "contest-projects", "contest-votes", "contest-results"]);
-  ["registrations", "event-stats", "sync-state"].forEach(name => assert.equal(PURGEABLE_COLLECTIONS.includes(name), false));
+  ["registrations", "event-stats", "sync-state", "waitlist"].forEach(name => assert.equal(PURGEABLE_COLLECTIONS.includes(name), false)); // waitlist = gente de verdade que pediu pra ser avisada: nunca entra na limpeza
 });
 
 test("plano: recusa depois do início do evento, mesmo com confirmação", () => {
