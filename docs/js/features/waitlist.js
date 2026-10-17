@@ -66,7 +66,10 @@ function initWaitlist(rootEl, { enabled, repository, getUid, config, text, rules
   });
 
   if (openAtStart) open();
-  return { stop: () => { stopped = true; } };
+  const win = rootEl.ownerDocument.defaultView;
+  const onHash = () => { if (win.location.hash === "#waitlist" && !rootEl.querySelector("[data-waitlist-form]")) open(); }; // o botão do bloco "ingressos em breve" (href="#waitlist") abre o formulário sem recarregar a página
+  win.addEventListener("hashchange", onHash);
+  return { stop: () => { stopped = true; win.removeEventListener("hashchange", onHash); } };
 }
 
 /** As dependências de verdade da página (a plateia): lazy, porque os módulos do Firebase carregam depois do script da página. */

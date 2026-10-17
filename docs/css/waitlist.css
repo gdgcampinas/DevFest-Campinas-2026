@@ -28,3 +28,18 @@
 .wl-result-title{margin:0;font:800 17px var(--font-display);color:oklch(95% 0.005 260)}
 .wl-result-body{margin:2px 0 0;font:500 14px/1.5 var(--font-body);color:var(--muted)}
 @media(max-width:560px){.waitlist{padding:0 16px}.wl-card{padding:18px}.wl-head{align-items:flex-start}.wl-icon{width:52px;height:52px}.wl-icon .icon{width:26px;height:26px}.wl-title{font-size:20px}.wl-open .cta{width:100%}}
+/* bloco "ingressos em breve" (página Ingressos, no lugar da caixa de "serão revelados"): aviso, cartões-fantasma bloqueados (sem nome nem valor) e o botão da lista de espera */
+.wl-soon{max-width:1180px;margin:0 auto;padding:8px 24px 24px;text-align:center}
+.wl-soon-title{margin:0;font:800 22px var(--font-display);color:oklch(95% 0.005 260)}
+.wl-soon-body{margin:6px auto 0;max-width:520px;font:500 15px/1.6 var(--font-body);color:var(--muted)}
+.wl-ghosts{margin:18px 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}
+.wl-ghost{padding:18px 16px;border:1px solid var(--card-border);border-radius:var(--radius);background:linear-gradient(180deg,var(--card-a),var(--card-b));border-top:3px solid var(--google-blue)}
+.wl-ghost:nth-child(2){border-top-color:var(--google-yellow)}
+.wl-ghost:nth-child(3){border-top-color:var(--google-green)}
+.wl-ghost-lock{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:50%;background:oklch(23% 0.02 260);color:var(--muted)}
+.wl-ghost-lock .icon{width:20px;height:20px}
+.wl-ghost-line{display:block;height:10px;margin:10px auto 0;border-radius:6px;background:oklch(26% 0.02 260);width:78%}
+.wl-ghost-line--short{width:50%}
+.wl-ghost-line--price{height:16px;width:34%}
+.wl-ghost small{display:block;margin-top:12px;font:600 12px var(--font-body);color:var(--muted);letter-spacing:.04em}
+@media(max-width:560px){.wl-soon{padding:8px 16px 20px}}

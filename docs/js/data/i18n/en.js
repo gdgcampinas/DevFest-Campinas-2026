@@ -313,6 +313,9 @@ I18N_DICTIONARIES.en = {
     "raffle.soon": "The raffle will be available soon.",
   },
   texts: {
+    "Estamos preparando os ingressos": "We're getting the tickets ready",
+    "Os tipos e os valores serão revelados em breve. Quem está na lista de espera sabe primeiro.": "Ticket types and prices will be revealed soon. People on the waitlist hear first.",
+    "Em breve": "Soon",
     "em breve": "soon",
     "Os ingressos do DevFest Campinas abrem em breve": "DevFest Campinas tickets open soon",
     "Deixe seu e-mail e a gente avisa você assim que as vagas abrirem. Quem está na lista fica sabendo primeiro.": "Leave your email and we'll let you know as soon as spots open. People on the list hear first.",

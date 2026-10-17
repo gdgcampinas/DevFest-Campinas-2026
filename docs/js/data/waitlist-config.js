@@ -10,6 +10,7 @@ const WAITLIST_CONFIG = {
   maxName: 80,
   maxEmail: 120,
   sources: ["home", "ingressos"],
+  soonCards: 3, // quantos cartões-fantasma o bloco "ingressos em breve" mostra (sem nome nem valor: os tipos ainda não foram revelados)
 };
 
 const waitlistConfigRepository = createRepository(WAITLIST_CONFIG);

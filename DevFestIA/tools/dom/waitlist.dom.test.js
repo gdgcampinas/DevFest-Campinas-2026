@@ -9,7 +9,7 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, waitFor, settle, textOf } = require("../lib/dom-harness.js");
 
 const site = loadSite({
-  scripts: [...SITE_BASE, "data/email-hash.js", "components/escape-html.js", "data/waitlist-config.js", "data/waitlist-texts.js", "features/waitlist-rules.js", "components/waitlist.js", "features/waitlist.js", "features/tickets.js"],
+  scripts: [...SITE_BASE, "data/email-hash.js", "components/escape-html.js", "data/waitlist-config.js", "data/waitlist-texts.js", "features/waitlist-rules.js", "components/waitlist.js", "components/tickets-soon.js", "features/waitlist.js", "features/tickets.js"],
 });
 const { window, document } = site;
 test.after(() => window.close());
@@ -184,4 +184,25 @@ test("modo lista de espera dos ingressos: só em DEV até liberar (public); liga
   const off = { ...tickets(), waitlist: { enabled: false, public: true } };
   assert.equal(apply(off, { devMode: true }), false, "desligado não liga nem em DEV");
   assert.equal(apply({ url: "x" }, { devMode: true }), false, "sem a chave no dado nada acontece");
+});
+
+test("bloco 'ingressos em breve': aviso, cartões-fantasma bloqueados (sem nome nem valor), o botão leva ao #waitlist e o texto do dado é escapado", () => {
+  const html = g("ticketsSoonMarkup")({ text: { ...text, soonTitle: "<i>x</i>" }, count: config.soonCards });
+  const box = document.createElement("div");
+  box.innerHTML = html;
+  assert.equal(box.querySelectorAll(".wl-ghost").length, config.soonCards);
+  assert.ok([...box.querySelectorAll(".wl-ghost")].every(card => card.getAttribute("aria-hidden") === "true"), "decoração: escondida do leitor de tela");
+  assert.equal(box.querySelector(".wl-soon-title i"), null, "texto escapado");
+  assert.match(textOf(box.querySelector(".wl-soon-body")), /Quem está na lista de espera sabe primeiro/);
+  assert.equal(box.querySelector("a.cta").getAttribute("href"), "#waitlist");
+  assert.doesNotMatch(textOf(box), /R\$|Grátis|VIP|camiseta/i, "nenhum tipo nem valor de ingresso aparece antes da revelação");
+});
+
+test("o botão do bloco (href #waitlist) abre o formulário sem recarregar a página; stop solta o ouvinte", async () => {
+  const { root, view } = mount();
+  assert.equal(root.querySelector("[data-waitlist-form]"), null);
+  window.location.hash = "#waitlist";
+  window.dispatchEvent(new window.Event("hashchange"));
+  await waitFor(() => root.querySelector("[data-waitlist-form]"));
+  view.stop();
 });
