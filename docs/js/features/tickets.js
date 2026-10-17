@@ -9,21 +9,25 @@
  *   nenhum dos dois → só o status ("Em breve"), sem link morto
  */
 /** Preço sempre em reais (o valor é em BRL), só a formatação segue o idioma. */
-const priceFormatter = () => new Intl.NumberFormat(i18n.locale, { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+const priceFormatter = price => new Intl.NumberFormat(i18n.locale, { style: "currency", currency: "BRL", minimumFractionDigits: Number.isInteger(price) ? 0 : 2, maximumFractionDigits: 2 });
 
 /** Preço ausente (ainda não definido) vira o texto de `tbdLabel`, em vez de um valor inventado. */
 function ticketPriceMarkup(price, { tbdLabel = "" } = {}) {
   if (price == null) return `<div class="ticket-price ticket-price--tbd">${tbdLabel}</div>`;
-  return `<div class="ticket-price">${priceFormatter().format(price)}</div>`;
+  return `<div class="ticket-price">${priceFormatter(price).format(price)}</div>`;
 }
 
 /**
  * Modo LISTA DE ESPERA (os ingressos ainda não abriram): com `EVENT.tickets.waitlist.enabled` ligado o site oferece "Avise-me quando abrir" (cartão com formulário, features/waitlist.js) no lugar do
  * botão de compra. `waitlist.public: false` mostra isso só no modo DEV (pra testar antes), `true` libera em produção. Muda o `EVENT.tickets` no lugar, uma vez, antes de qualquer tela ler: `salesOpen`
  * vira falso (faixa "Ingressos em breve", sem contador, oferta "PreOrder"), o link de compra sai (quem clica cairia numa página do Sympla sem ingresso) e `waitlistOn` liga o botão novo.
- * Pra abrir as vendas de verdade: `waitlist.enabled: false` e `salesOpen: true`. Devolve se o modo ficou ligado.
+ * Pra abrir as vendas de verdade: `waitlist.enabled: false` e `salesOpen: true`; pra ver isso antes, em DEV, `?vendas=1`. Devolve se o modo ficou ligado.
  */
-function applyWaitlistMode(tickets, { devMode = false } = {}) {
+function applyWaitlistMode(tickets, { devMode = false, previewSales = false } = {}) {
+  if (devMode && previewSales) { // só em DEV (`?vendas=1`): mostra como o site fica com as vendas abertas, pra conferir antes de abrir de verdade
+    tickets.salesOpen = true;
+    return false;
+  }
   const waitlist = tickets.waitlist;
   if (!waitlist?.enabled || !(waitlist.public || devMode)) return false;
   tickets.salesOpen = false;

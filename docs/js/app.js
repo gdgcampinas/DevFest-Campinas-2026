@@ -351,7 +351,7 @@ function initShell(activePageId) {
   initSkipLink();
   initStarfield(document.body, { layers: starfieldRepository.getAll(), circuitSrc: BG_CIRCUIT_SRC });
   const reveal = resolveReveal();
-  applyWaitlistMode(EVENT.tickets, { devMode: isDevModeStored() }); // antes de qualquer tela ler EVENT.tickets (ticker, botões, SEO)
+  applyWaitlistMode(EVENT.tickets, { devMode: isDevModeStored(), previewSales: getParam("vendas") === "1" }); // antes de qualquer tela ler EVENT.tickets (ticker, botões, SEO)
   warnIfDevMode(); // depois de resolveReveal(): pega o sessionStorage já atualizado por ?lineup=1/0 nesta mesma carga de página
 
   renderBrand(EVENT.hosts, document.getElementById("brand"));

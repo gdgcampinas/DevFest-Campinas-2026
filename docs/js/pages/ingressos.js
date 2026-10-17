@@ -10,7 +10,7 @@ function initIngressos() {
     ticketsSection.innerHTML = ticketsSoonMarkup({ text: waitlistTextsRepository.getAll(), count: waitlistConfigRepository.getAll().soonCards });
     document.querySelector(".share-card-cta").hidden = true;
   } else {
-    renderOrConstruction(reveal, ticketsSection,
+    renderOrConstruction(reveal || EVENT.tickets.salesOpen, ticketsSection,
       () => renderTickets(EVENT.tickets, ticketsRepository.getAll(), ticketsSection, { note: tt(TICKETS_NOTE) }),
       t("tickets.soon", "Os tipos e valores de ingresso serão revelados em breve."));
   }
