@@ -14,11 +14,12 @@ const g = name => site.get(name);
 const types = () => g("ticketsRepository").getAll();
 const tickets = () => ({ url: "https://sympla.test/evento", label: "Garanta sua vaga", status: "Ingressos em breve", salesOpen: false, waitlist: { enabled: true, public: true } });
 
-test("dois tipos reais: Grátis (R$ 0) e Ingresso + Kit Camiseta (R$ 45,10), vagas limitadas nos dois, sem VIP", () => {
+test("dois tipos reais: Grátis (R$ 0) e Ingresso + Kit Camiseta (R$ 45,10), selo Só 100 vagas nos dois (escassez real: são 100 vagas por tipo no Sympla), sem VIP", () => {
   assert.equal(JSON.stringify(types().map(type => [type.id, type.name, type.price])), JSON.stringify([["gratis", "Ingresso Grátis", 0], ["camiseta", "Ingresso + Kit Camiseta", 45.1]]));
-  assert.ok(types().every(type => type.badge === "Vagas limitadas"));
+  assert.ok(types().every(type => type.badge === "Só 100 vagas"));
   assert.match(types()[0].benefits.join(" "), /Certificado de participação \(para quem fizer check-in em ao menos uma palestra\)/);
   assert.match(types()[1].benefits.join(" "), /Camiseta oficial do DevFest Campinas 2026/);
+  assert.ok(types().every(type => type.benefits.includes("Certificado de participação (para quem fizer check-in em ao menos uma palestra)")), "o certificado vale nos dois ingressos");
 });
 
 test("o preço aparece com centavos só quando precisa (R$ 0 e R$ 45,10) e a taxa do Sympla não é detalhada em lugar nenhum do cartão", () => {

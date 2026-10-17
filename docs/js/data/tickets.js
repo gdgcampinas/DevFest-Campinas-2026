@@ -11,7 +11,7 @@ const TICKET_TYPES = [
     name: "Ingresso Grátis",
     price: 0,
     color: "var(--google-blue)",
-    badge: "Vagas limitadas",
+    badge: "Só 100 vagas",
     description: "Para viver o evento e aprender junto com a comunidade.",
     benefits: ["Acesso a todas as palestras e trilhas", "Credencial de participante", "Certificado de participação (para quem fizer check-in em ao menos uma palestra)"],
   },
@@ -21,9 +21,9 @@ const TICKET_TYPES = [
     price: 45.1, // o que o comprador paga no Sympla (valor do ingresso mais a taxa dele, que NÃO é detalhada no site)
     color: "var(--google-yellow)",
     featured: true,
-    badge: "Vagas limitadas",
+    badge: "Só 100 vagas",
     description: "Leve a lembrança do DevFest para casa.",
-    benefits: ["Tudo do ingresso Grátis", "Camiseta oficial do DevFest Campinas 2026"],
+    benefits: ["Tudo do ingresso Grátis", "Camiseta oficial do DevFest Campinas 2026", "Certificado de participação (para quem fizer check-in em ao menos uma palestra)"],
   },
 ];
 
