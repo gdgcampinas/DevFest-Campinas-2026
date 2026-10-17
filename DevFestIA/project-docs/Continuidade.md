@@ -94,3 +94,6 @@ Depois de terminar qualquer task:
 Nunca commitar com assinatura de IA (nem `Co-Authored-By`, nem rodapé
 de PR). Nunca mudar nada sem autorização explícita de quem está pedindo
 o trabalho.
+
+## ai-memory (memória de longo prazo, desde 2026-10-17)
+O Claude Code deste projeto usa o **ai-memory** (servidor local `127.0.0.1:49374`, hooks e skills em `~/.claude`). Páginas duráveis do projeto: `_rules/diretivas-do-projeto`, `notes/projeto-visao-geral`, `decisions/*`, `procedures/ci-deploy-e-testes`, `gotchas/armadilhas-do-projeto`, `notes/pendencias-e-ideias`; o handoff da última sessão é consumido sozinho no início da próxima. Eles COMPLEMENTAM (não substituem) `HANDOFF_CURRENT.md` e `PROJECT_CONTEXT.md`: o repositório continua sendo a fonte de verdade versionada. Diagnóstico: `ai-memory doctor`; fila de hooks: `ai-memory recover`.
