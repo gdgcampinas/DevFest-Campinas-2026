@@ -53,6 +53,7 @@ function initHome() {
     },
     now: resolveNow(),
     onEventEnd: containerEl => eventFeedback.render(containerEl),
+    ticketsHighlight: () => heroTicketsHighlight({ tickets: EVENT.tickets, types: ticketsRepository.getAll(), text: heroTicketsTextsRepository.getAll() }),
   });
 
   liveStatus.tick();

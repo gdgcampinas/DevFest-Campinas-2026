@@ -169,6 +169,13 @@ header{
   border-radius:100px;padding:5px 14px;
 }
 .hero-hint{font:500 14px var(--font-body);color:var(--muted)}
+.hero-open-badge{display:inline-flex;align-items:center;gap:8px;margin-bottom:10px;font:700 12px var(--font-body);letter-spacing:.06em;color:oklch(85% 0.14 155);background:color-mix(in oklch,var(--live) 14%,transparent);border:1px solid color-mix(in oklch,var(--live) 55%,transparent);border-radius:100px;padding:5px 14px}
+.hero-open-badge .dot{width:8px;height:8px;border-radius:50%;background:var(--live);animation:pulse 1.6s infinite}
+.hero-open-cards{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:0 auto 16px;max-width:560px}
+.hero-open-card{flex:1 1 200px;text-align:left;border:1px solid color-mix(in oklch,var(--ticket-color) 55%,transparent);background:color-mix(in oklch,var(--ticket-color) 9%,transparent);border-radius:12px;padding:10px 14px}
+.hero-open-name{font:700 13px var(--font-body);color:oklch(95% 0.006 260)}
+.hero-open-price{font:800 20px var(--font-display);color:var(--ticket-color)}
+.hero-open-note{font:500 12px var(--font-body);color:var(--muted)}
 
 .hero-live-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
 .next-change{font:500 13px var(--font-body);color:var(--muted);font-variant-numeric:tabular-nums}

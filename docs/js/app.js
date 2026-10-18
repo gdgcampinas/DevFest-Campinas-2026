@@ -298,6 +298,7 @@ const LOCALIZED_DATASETS = [
   () => venueRepository.getAll(),
   () => tshirtsRepository.getAll(),
   () => tshirtTextsRepository.getAll(),
+  () => heroTicketsTextsRepository.getAll(),
   () => statsRepository.getAll(),
   () => aboutRepository.getAll(),
   () => footerRepository.getAll(),

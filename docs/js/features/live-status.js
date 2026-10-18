@@ -68,7 +68,7 @@ function resolveEventState(now, schedule) {
  * que só tem a agenda) passam só o que têm; o resto vira no-op sem
  * precisar de outra função duplicada só pra isso.
  */
-function createLiveStatus({ schedule, tracks, event, elements = {}, now = () => new Date(), reveal = true, favorites = null, soonMinutes = 15, onEventEnd = null }) {
+function createLiveStatus({ schedule, tracks, event, elements = {}, now = () => new Date(), reveal = true, favorites = null, soonMinutes = 15, onEventEnd = null, ticketsHighlight = () => ({ badge: "", cards: "" }) }) {
   const { statusPill, hero, stickyTxt, stickyPulse } = elements;
 
   // Textos que se repetem em mais de um lugar do hero, da pílula e da barra fixa.
@@ -94,10 +94,13 @@ function createLiveStatus({ schedule, tracks, event, elements = {}, now = () => 
 
   function renderHeroBefore(state) {
     if (!hero) return;
+    const open = ticketsHighlight(); // com as vendas abertas: selo "ingressos abertos" e os preços acima do botão
     hero.innerHTML = `
       <div class="hero-card hero-before">
+        ${open.badge}
         <div class="hero-label">${t("live.heroStarts", "O EVENTO COMEÇA EM")}</div>
         <div class="countdown" id="heroCountdown">${formatDaysHMS(state.first - now())}</div>
+        ${open.cards}
         <div class="hero-before-row">
           ${event.tickets ? ticketButtonMarkup(ticketCtaState(event.tickets), { className: "cta", place: "hero" }) : ""}
           <span class="hero-hint">${t("live.preview", "Programação abaixo em modo prévia")}</span>

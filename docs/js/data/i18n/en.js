@@ -451,6 +451,7 @@ I18N_DICTIONARIES.en = {
     "PUC Campinas - Campus I": "PUC Campinas - Campus I",
     "Av. Reitor Benedito José Barreto Fonseca, Parque dos Jacarandás, Campinas, SP, 13086-900": "Av. Reitor Benedito José Barreto Fonseca, Parque dos Jacarandás, Campinas, SP, 13086-900",
     "PUC Campinas - Campus I, Av. Reitor Benedito José Barreto Fonseca, Parque dos Jacarandás, Campinas, SP, 13086-900": "PUC Campinas - Campus I, Av. Reitor Benedito José Barreto Fonseca, Parque dos Jacarandás, Campinas, SP, 13086-900",
+    "INGRESSOS ABERTOS": "TICKETS ON SALE",
     "Masculina": "Men's",
     "Feminina": "Women's",
     "Infantil": "Kids'",
