@@ -150,13 +150,16 @@ function warnIfDemoMode() {
 }
 
 /** Único lugar que sabe montar URLs do Google Maps a partir de um endereço. */
-function googleMapsUrls(address) {
+function googleMapsUrls(address, { zoom } = {}) {
   const q = encodeURIComponent(address);
   return {
     directions: `https://www.google.com/maps/dir/?api=1&destination=${q}`,
-    embed: `https://www.google.com/maps?q=${q}&output=embed`,
+    embed: `https://www.google.com/maps?q=${q}${zoom ? `&z=${zoom}` : ""}&output=embed`,
   };
 }
+
+/** O que o Google Maps procura pro evento: `mapQuery` (nome + rua, quando o local está confirmado) ou o endereço escrito. */
+const eventMapUrls = event => googleMapsUrls(event.mapQuery ?? event.address, { zoom: event.mapZoom });
 
 function googleCalendarUrl(event, schedule) {
   return googleCalendarLink({
@@ -194,7 +197,7 @@ function renderHeaderMeta(event, schedule, mountEl) {
   const start = hourLabel(schedule[0].start, event.timezone);
   const end = hourLabel(schedule[schedule.length - 1].end, event.timezone);
   const dateLabel = eventDateLabel(schedule, event.timezone);
-  const { directions } = googleMapsUrls(event.address);
+  const { directions } = eventMapUrls(event);
   mountEl.innerHTML = `
     <span class="when">${dateLabel}</span>
     <span class="sep">·</span>
@@ -204,7 +207,7 @@ function renderHeaderMeta(event, schedule, mountEl) {
 }
 
 function renderVenueInfo(event, mountEl, schedule) {
-  const { directions } = googleMapsUrls(event.address);
+  const { directions } = eventMapUrls(event);
   const gcal = googleCalendarUrl(event, schedule);
   mountEl.innerHTML = `
     <p class="venue-addr">${event.venue}<br>${event.address}</p>
@@ -217,7 +220,7 @@ function renderVenueInfo(event, mountEl, schedule) {
 
 function renderVenueMap(event, mountEl) {
   // mapa externo (endereço/entrada) pode; planta interna do prédio, não.
-  const { embed } = googleMapsUrls(event.address);
+  const { embed } = eventMapUrls(event);
   mountEl.innerHTML = `
     <div class="venue-map-head">
       <div class="label">${t("venue.label", "Local")}</div>
@@ -356,7 +359,7 @@ function initShell(activePageId) {
   initSkipLink();
   initStarfield(document.body, { layers: starfieldRepository.getAll(), circuitSrc: BG_CIRCUIT_SRC });
   const reveal = resolveReveal();
-  applyWaitlistMode(EVENT.tickets, { devMode: isDevModeStored(), previewSales: getParam("vendas") === "1" }); // antes de qualquer tela ler EVENT.tickets (ticker, botões, SEO)
+  applyWaitlistMode(EVENT.tickets, { devMode: isDevModeStored() }); // antes de qualquer tela ler EVENT.tickets (ticker, botões, SEO)
   applyVenue(EVENT, venueRepository.getAll(), { devMode: isDevModeStored() }); // local confirmado (data/venue.js): só em DEV até `public: true`; antes de qualquer tela ler EVENT.venue/address
   warnIfDevMode(); // depois de resolveReveal(): pega o sessionStorage já atualizado por ?lineup=1/0 nesta mesma carga de página
 

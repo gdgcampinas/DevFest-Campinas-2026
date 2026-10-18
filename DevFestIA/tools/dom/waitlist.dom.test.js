@@ -162,7 +162,7 @@ test("o texto do dado nunca vira HTML e `openAtStart` já abre o formulário (in
   assert.match(document.querySelector(".wl-title").textContent, /<img/);
 });
 
-test("modo lista de espera dos ingressos: só em DEV até liberar (public); ligado, tira o link de compra, desliga as vendas e o botão leva ao cartão; desligado não mexe em nada", () => {
+test("modo lista de espera dos ingressos: só em produção e só com `public`; ligado, tira o link de compra, desliga as vendas e o botão leva ao cartão; desligado não mexe em nada", () => {
   const tickets = () => ({ url: "https://sympla.test/x", label: "Garanta sua vaga", status: "Ingressos em breve", salesOpen: true, waitlist: { enabled: true, public: false } });
   const apply = g("applyWaitlistMode");
   const prod = tickets();
@@ -171,18 +171,19 @@ test("modo lista de espera dos ingressos: só em DEV até liberar (public); liga
   assert.equal(prod.url, "https://sympla.test/x");
   assert.equal(g("ticketCtaState")(prod).kind, "buy");
   const dev = tickets();
-  assert.equal(apply(dev, { devMode: true }), true, "em DEV liga");
-  assert.equal(dev.salesOpen, false);
-  assert.equal(dev.url, "");
-  const state = g("ticketCtaState")(dev);
+  assert.equal(apply(dev, { devMode: true }), false, "em DEV os ingressos já estão abertos: sem lista de espera");
+  assert.equal(dev.salesOpen, true);
+  const live = { ...tickets(), waitlist: { enabled: true, public: true } };
+  assert.equal(apply(live, { devMode: false }), true, "em produção (public) liga");
+  assert.equal(live.salesOpen, false);
+  assert.equal(live.url, "");
+  const state = g("ticketCtaState")(live);
   assert.equal(state.kind, "waitlist-form");
   assert.equal(state.href, "ingressos.html#waitlist");
   assert.match(g("ticketButtonMarkup")(state, { place: "header" }), /<a class="cta" href="ingressos\.html#waitlist" data-track-event="cta_click"/);
   assert.doesNotMatch(g("ticketButtonMarkup")(state), /target="_blank"/, "o cartão é do próprio site: mesma aba");
-  const released = { ...tickets(), waitlist: { enabled: true, public: true } };
-  assert.equal(apply(released, { devMode: false }), true, "liberado (public) vale em produção");
   const off = { ...tickets(), waitlist: { enabled: false, public: true } };
-  assert.equal(apply(off, { devMode: true }), false, "desligado não liga nem em DEV");
+  assert.equal(apply(off, { devMode: false }), false, "desligado não liga");
   assert.equal(apply({ url: "x" }, { devMode: true }), false, "sem a chave no dado nada acontece");
 });
 

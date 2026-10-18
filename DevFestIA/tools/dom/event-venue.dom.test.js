@@ -24,7 +24,9 @@ test("DEV ou `public: true`: o local da PUC entra no EVENT, confirmado, com os l
     const event = newEvent();
     assert.equal(applyVenue(event, data, options), true);
     assert.equal(event.venue, "PUC Campinas - Campus I");
-    assert.match(event.address, /Campus I.*13086-900/);
+    assert.match(event.address, /^Av\. Reitor.*13086-900$/, "o endereço escrito não repete o nome do local");
+    assert.match(event.mapQuery, /^PUC Campinas - Campus I, Av\./, "o mapa procura nome + rua");
+    assert.equal(event.mapZoom, 16);
     assert.equal(event.venueConfirmed, true);
     assert.equal(event.venueLinks.map(link => link.id).join(), "map,about");
     assert.ok(event.venueLinks.every(link => link.url.startsWith("https://www.puc-campinas.edu.br/")));

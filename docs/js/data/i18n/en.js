@@ -449,6 +449,7 @@ I18N_DICTIONARIES.en = {
     "Um dia de tecnologia em Campinas: 4 trilhas de palestras, comunidade e networking. 28 de novembro de 2026.": "A day of technology in Campinas: 4 tracks of talks, community and networking. November 28, 2026.",
     "Local a definir": "Venue to be announced",
     "PUC Campinas - Campus I": "PUC Campinas - Campus I",
+    "Av. Reitor Benedito José Barreto Fonseca, Parque dos Jacarandás, Campinas, SP, 13086-900": "Av. Reitor Benedito José Barreto Fonseca, Parque dos Jacarandás, Campinas, SP, 13086-900",
     "PUC Campinas - Campus I, Av. Reitor Benedito José Barreto Fonseca, Parque dos Jacarandás, Campinas, SP, 13086-900": "PUC Campinas - Campus I, Av. Reitor Benedito José Barreto Fonseca, Parque dos Jacarandás, Campinas, SP, 13086-900",
     "Mapa do campus (PDF)": "Campus map (PDF)",
     "Sobre o Campus I": "About Campus I",

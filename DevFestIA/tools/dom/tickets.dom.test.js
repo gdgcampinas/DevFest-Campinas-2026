@@ -42,14 +42,14 @@ test("com a lista de espera ligada os cartões viram 'Avise-me quando abrir' (se
   assert.equal(box.querySelector('a[href^="https://sympla"]'), null);
 });
 
-test("`?vendas=1` só vale em DEV: mostra as vendas abertas pra conferir antes, e em produção é ignorado", () => {
+test("em DEV as vendas aparecem abertas (sem lista de espera); em produção a lista de espera segue enquanto for pública", () => {
   const apply = g("applyWaitlistMode");
   const dev = tickets();
-  assert.equal(apply(dev, { devMode: true, previewSales: true }), false, "sem lista de espera");
+  assert.equal(apply(dev, { devMode: true }), false, "sem lista de espera");
   assert.equal(dev.salesOpen, true);
   assert.equal(dev.waitlistOn, undefined);
   assert.equal(g("ticketCtaState")(dev).kind, "buy");
   const prod = tickets();
-  assert.equal(apply(prod, { devMode: false, previewSales: true }), true, "em produção o parâmetro é ignorado e a lista de espera segue");
+  assert.equal(apply(prod, { devMode: false }), true);
   assert.equal(prod.salesOpen, false);
 });

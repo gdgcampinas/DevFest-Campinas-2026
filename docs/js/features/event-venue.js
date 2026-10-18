@@ -6,6 +6,8 @@ function applyVenue(event, venue, { devMode = false } = {}) {
   if (!venue?.venue || !(venue.public || devMode)) return false;
   event.venue = venue.venue;
   event.address = venue.address;
+  event.mapQuery = venue.mapQuery ?? venue.address;
+  event.mapZoom = venue.mapZoom;
   event.venueConfirmed = true;
   event.venueLinks = venue.links ?? [];
   return true;

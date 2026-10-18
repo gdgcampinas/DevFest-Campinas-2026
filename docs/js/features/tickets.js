@@ -18,18 +18,18 @@ function ticketPriceMarkup(price, { tbdLabel = "" } = {}) {
 }
 
 /**
- * Modo LISTA DE ESPERA (os ingressos ainda não abriram): com `EVENT.tickets.waitlist.enabled` ligado o site oferece "Avise-me quando abrir" (cartão com formulário, features/waitlist.js) no lugar do
- * botão de compra. `waitlist.public: false` mostra isso só no modo DEV (pra testar antes), `true` libera em produção. Muda o `EVENT.tickets` no lugar, uma vez, antes de qualquer tela ler: `salesOpen`
- * vira falso (faixa "Ingressos em breve", sem contador, oferta "PreOrder"), o link de compra sai (quem clica cairia numa página do Sympla sem ingresso) e `waitlistOn` liga o botão novo.
- * Pra abrir as vendas de verdade: `waitlist.enabled: false` e `salesOpen: true`; pra ver isso antes, em DEV, `?vendas=1`. Devolve se o modo ficou ligado.
+ * Modo LISTA DE ESPERA (os ingressos ainda não abriram em PRODUÇÃO): com `EVENT.tickets.waitlist.enabled` e `waitlist.public` ligados o site oferece "Avise-me quando abrir" (cartão com formulário,
+ * features/waitlist.js) no lugar do botão de compra. Muda o `EVENT.tickets` no lugar, uma vez, antes de qualquer tela ler: `salesOpen` vira falso (faixa "Ingressos em breve", sem contador, oferta
+ * "PreOrder"), o link de compra sai (quem clica cairia numa página do Sympla sem ingresso) e `waitlistOn` liga o botão novo. Em modo DEV os ingressos já estão abertos no Sympla: o site mostra as vendas
+ * abertas (é a prévia do que a produção vira) e a lista de espera não aparece. Pra abrir em produção: `waitlist.enabled: false`. Devolve se a lista de espera ficou ligada.
  */
-function applyWaitlistMode(tickets, { devMode = false, previewSales = false } = {}) {
-  if (devMode && previewSales) { // só em DEV (`?vendas=1`): mostra como o site fica com as vendas abertas, pra conferir antes de abrir de verdade
+function applyWaitlistMode(tickets, { devMode = false } = {}) {
+  if (devMode) {
     tickets.salesOpen = true;
     return false;
   }
   const waitlist = tickets.waitlist;
-  if (!waitlist?.enabled || !(waitlist.public || devMode)) return false;
+  if (!waitlist?.enabled || !waitlist.public) return false;
   tickets.salesOpen = false;
   tickets.url = "";
   tickets.waitlistOn = true;
