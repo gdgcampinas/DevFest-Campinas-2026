@@ -19,6 +19,7 @@ const SITE_PAGES = [
   { id: "patrocinio", label: "Patrocínio", href: "patrocinio.html" },
   { id: "sorteio", label: "Sorteio", href: "sorteio.html", devOnly: true },
   { id: "recados", label: "Recados no telão", href: "recado.html" },
+  { id: "fundos", label: "Fundos de tela", href: "fundos.html", devOnly: true }, // tira o `devOnly` junto com `public: true` em data/wallpapers.js
   { id: "cod", label: "Código de Conduta", href: "codigo-de-conduta.html" },
   { id: "quiz", label: "Monte sua trilha", href: "quiz.html", nav: false },
 ];
