@@ -3,7 +3,7 @@
  * só em modo DEV (pra conferir); `true` libera em produção (ver wallpapersVisible, features/wallpapers.js). Os textos são traduzidos por igualdade (data/i18n/en.js); nada daqui é HTML.
  */
 const WALLPAPERS_CONFIG = {
-  public: false,
+  public: true, // LIBERADA em produção em 2026-10-18
 };
 
 const WALLPAPERS = [

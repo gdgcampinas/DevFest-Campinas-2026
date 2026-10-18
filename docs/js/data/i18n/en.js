@@ -242,6 +242,7 @@ I18N_DICTIONARIES.en = {
     "page.team.title": "Team • DevFest Campinas 2026",
     "page.sponsorship.title": "Sponsorship • DevFest Campinas 2026",
     "page.wallpapers.title": "Wallpapers • DevFest Campinas 2026",
+    "footer.wallpapers": "Wallpapers",
     "page.conduct.title": "Code of Conduct • DevFest Campinas 2026",
     "page.wall.title": "Messages on the big screen • DevFest Campinas 2026",
     "page.quiz.title": "Find your track • DevFest Campinas 2026",
