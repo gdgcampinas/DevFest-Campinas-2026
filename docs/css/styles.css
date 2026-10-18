@@ -672,11 +672,13 @@ a.featured-speaker:focus-visible{outline:2px solid var(--text);outline-offset:4p
   margin-top:12px;
   background:linear-gradient(180deg,var(--card-a),var(--card-b));
   border:1px solid var(--card-border);border-radius:var(--radius);
-  padding:16px 18px 0;
+  padding:16px 18px 18px;
 }
-.venue-map-card .label{margin-bottom:12px;font:700 15px var(--font-display);color:oklch(95% 0.006 260)}
-.venue-map-card .frame{border-radius:10px;overflow:hidden;margin:0 -1px -1px}
-.venue-map-card iframe{width:100%;height:180px;border:0;display:block;filter:grayscale(1) invert(.92) brightness(.9)}
+.venue-map-head{display:flex;flex-direction:column;gap:2px;margin-bottom:12px}
+.venue-map-card .label{font:700 15px var(--font-display);color:oklch(95% 0.006 260)}
+.venue-map-name{font:500 13px var(--font-body);color:var(--muted)}
+.venue-map-card .frame{border-radius:12px;overflow:hidden;border:1px solid var(--card-border)}
+.venue-map-card iframe{width:100%;height:clamp(240px,34vw,340px);border:0;display:block;filter:grayscale(1) invert(.92) brightness(.9)}
 
 /* galeria de palestrantes — extraída do schedule, some antes da revelação */
 .speakers{max-width:1180px;margin:36px auto 0;padding:0 24px}
@@ -994,7 +996,16 @@ a.detail-speaker .li-icon{
 textarea.feedback-input{resize:vertical;min-height:44px}
 
 /* botão "Já vou!" (ingressos.html) e cartão pessoal (components/share-card.js) */
-.share-card-cta{max-width:1180px;margin:0 auto;padding:0 24px 40px;text-align:center}
+.share-card-cta{max-width:1180px;margin:0 auto;padding:0 24px 40px}
+.share-card-banner{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:linear-gradient(180deg,var(--card-a),var(--card-b));border:1px solid var(--card-border);border-radius:var(--radius);padding:16px 18px}
+.share-card-thumb{flex:none;width:56px;height:70px;border-radius:8px;border:1px solid var(--card-border);background:oklch(24% 0.02 260);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;transform:rotate(-4deg)}
+.share-card-thumb i{width:22px;height:22px;border-radius:50%;background:var(--mentoring)}
+.share-card-thumb b{width:32px;height:4px;border-radius:2px;background:var(--card-border)}
+.share-card-thumb b+b{width:24px}
+.share-card-copy{flex:1;min-width:200px;display:flex;flex-direction:column;gap:3px}
+.share-card-copy strong{font:700 16px var(--font-display);color:oklch(97% 0.005 260)}
+.share-card-copy span{font:500 13.5px/1.5 var(--font-body);color:var(--muted)}
+.share-card-banner .chip-btn{margin-left:auto}
 .share-card{display:flex;flex-direction:column;gap:10px}
 .share-card .feedback-input{margin-bottom:4px}
 .share-card-title{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 0 8px;font:700 19px var(--font-display);color:oklch(97% 0.005 260)}

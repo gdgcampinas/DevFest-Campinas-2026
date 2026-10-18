@@ -201,6 +201,8 @@ I18N_DICTIONARIES.en = {
     "tickets.soon": "Ticket types and prices will be revealed soon.",
     "tickets.title": "Tickets",
     "tickets.sub": "Pick your ticket type and secure your spot at DevFest Campinas 2026.",
+    "tickets.shareCardTitle": "Already got your spot?",
+    "tickets.shareCardHint": "Create your DevFest card and share it on social media.",
     "tickets.shareCardButton": "I'm going! Create my card",
     "tabs.all": "All tracks",
     "video.play": "Play video: {title}",

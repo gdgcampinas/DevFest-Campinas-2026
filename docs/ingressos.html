@@ -28,7 +28,7 @@
 <link rel="preload" href="assets/fonts/google-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=1">
 <link rel="stylesheet" href="css/tokens.css?v=3">
-<link rel="stylesheet" href="css/styles.css?v=106">
+<link rel="stylesheet" href="css/styles.css?v=107">
 <link rel="stylesheet" href="css/waitlist.css?v=2">
 </head>
 <body>
@@ -60,7 +60,14 @@
 </section>
 
 <section class="share-card-cta">
+  <div class="share-card-banner">
+    <span class="share-card-thumb" aria-hidden="true"><i></i><b></b><b></b></span>
+    <div class="share-card-copy">
+      <strong data-i18n="tickets.shareCardTitle">Já garantiu a sua vaga?</strong>
+      <span data-i18n="tickets.shareCardHint">Gere o seu cartão do DevFest e compartilhe nas redes com a galera.</span>
+    </div>
   <button type="button" class="chip-btn chip-btn--primary" data-share-card-open data-track-event="share_card_open" data-i18n="tickets.shareCardButton">Já vou! Gerar meu cartão</button>
+  </div>
 </section>
 
 <footer>
@@ -80,7 +87,7 @@
 
 <script src="js/data/repository.js?v=1"></script>
 <script src="js/data/i18n/languages.js?v=1"></script>
-<script src="js/data/i18n/en.js?v=43"></script>
+<script src="js/data/i18n/en.js?v=44"></script>
 <script src="js/features/i18n-core.js?v=1"></script>
 <script src="js/features/i18n.js?v=1"></script>
 <script src="js/data/firebase-config.js?v=1"></script>
@@ -142,7 +149,7 @@
 <script src="js/features/registration-gate.js?v=1"></script>
 <script src="js/features/share-card.js?v=6"></script>
 <script src="js/features/rehearsal.js?v=2"></script>
-<script src="js/app.js?v=33"></script>
+<script src="js/app.js?v=34"></script>
 <script src="js/pages/ingressos.js?v=9"></script>
 </body>
 </html>

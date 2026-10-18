@@ -219,7 +219,10 @@ function renderVenueMap(event, mountEl) {
   // mapa externo (endereço/entrada) pode; planta interna do prédio, não.
   const { embed } = googleMapsUrls(event.address);
   mountEl.innerHTML = `
-    <div class="label">${t("venue.label", "Local")}</div>
+    <div class="venue-map-head">
+      <div class="label">${t("venue.label", "Local")}</div>
+      <div class="venue-map-name">${escapeHtml(event.venue)}</div>
+    </div>
     <div class="frame"><iframe src="${embed}" loading="lazy" title="${t("venue.mapTitle", "Mapa até {venue}", { venue: event.venue })}"></iframe></div>`;
 }
 
