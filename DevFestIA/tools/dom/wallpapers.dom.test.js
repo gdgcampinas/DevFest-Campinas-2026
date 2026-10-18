@@ -46,6 +46,7 @@ test("visível: um cartão por fundo, com o botão de baixar (download) e o nome
   assert.match(textOf(section), /Baixar fundo/);
   assert.match(textOf(cards[0]), /9:41[\s\S]*28 de novembro/, "relógio e data da tela de bloqueio na prévia");
   assert.equal(section.querySelectorAll(".wp-guide").length, 2, "iPhone e Android");
+  assert.equal(section.querySelectorAll(".wp-guide[data-guide=ios] li").length, 3, "passos numerados do iPhone");
 });
 
 test("o cabeçalho traz o selo, o título e a frase de apoio", () => {

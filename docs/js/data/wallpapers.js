@@ -18,6 +18,7 @@ const WALLPAPERS = [
 }));
 
 const WALLPAPER_TEXTS = {
+  guidesTitle: "Como usar",
   badge: "GRÁTIS PARA BAIXAR",
   title: "Fundos de tela",
   sub: "Leve o DevFest Campinas 2026 no seu celular. Escolha um fundo e baixe.",
@@ -27,8 +28,8 @@ const WALLPAPER_TEXTS = {
   photoOf: "Fundo de tela",
   soon: "Os fundos de tela do evento chegam em breve.",
   guides: [
-    { title: "iPhone", text: "Abra a imagem, toque e segure, escolha Salvar na Fotos e depois Definir como fundo." },
-    { title: "Android", text: "Baixe a imagem, abra na Galeria, toque no menu e escolha Definir como papel de parede." },
+    { id: "ios", title: "iPhone", steps: ["Toque na imagem para abri-la.", "Segure o dedo sobre ela e escolha Salvar na Fotos.", "Em Fotos, toque em Compartilhar e depois em Usar como fundo de tela."] },
+    { id: "android", title: "Android", steps: ["Toque em Baixar fundo.", "Abra a imagem na Galeria.", "No menu, escolha Definir como papel de parede."] },
   ],
 };
 

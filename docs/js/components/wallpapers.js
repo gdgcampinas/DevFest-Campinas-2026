@@ -23,10 +23,17 @@ function wallpaperCardMarkup(wallpaper, text) {
     </figure>`;
 }
 
+/** Um cartão "Como usar" por sistema: nome e passos numerados. */
+function wallpaperGuideMarkup(guide) {
+  const steps = guide.steps.map(step => `<li>${escapeHtml(step)}</li>`).join("");
+  return `<div class="wp-guide" data-guide="${escapeHtml(guide.id)}"><strong>${escapeHtml(guide.title)}</strong><ol>${steps}</ol></div>`;
+}
+
 function wallpapersGalleryMarkup({ wallpapers, text }) {
   return `
     <div class="wp-grid">${wallpapers.map(item => wallpaperCardMarkup(item, text)).join("")}</div>
-    <div class="wp-guides">${text.guides.map(guide => `<div class="wp-guide"><strong>${escapeHtml(guide.title)}</strong><span>${escapeHtml(guide.text)}</span></div>`).join("")}</div>`;
+    <h3 class="wp-guides-title">${escapeHtml(text.guidesTitle)}</h3>
+    <div class="wp-guides">${text.guides.map(wallpaperGuideMarkup).join("")}</div>`;
 }
 
 function wallpapersSoonMarkup(text) {
