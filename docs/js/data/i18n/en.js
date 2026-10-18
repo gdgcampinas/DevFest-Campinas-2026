@@ -177,7 +177,6 @@ I18N_DICTIONARIES.en = {
     "live.nextBlock": "next block at {time}",
     "live.live": "LIVE",
     "live.heroStarts": "THE EVENT STARTS IN",
-    "live.preview": "Schedule below is a preview",
     "live.thanks": "Thanks for joining us! 🎉",
     "live.endedText": "{event} {year} has ended. Photos and content coming soon from GDG Campinas.",
     "live.breakLong": "Break between sessions",

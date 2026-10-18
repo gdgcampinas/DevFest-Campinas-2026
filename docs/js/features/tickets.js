@@ -4,7 +4,7 @@
  * cabeçalho, barra fixa no mobile, cards de ingresso e hero da home.
  *
  *   waitlistOn   → "Avise-me quando abrir": leva ao cartão da lista de espera (ingressos.html#waitlist), ver applyWaitlistMode
- *   url          → botão de compra (Sympla)
+ *   url          → botão de compra (Sympla); com `pageHref` (EVENT.tickets.pageHref) o botão leva à página de ingressos
  *   sem url, mas waitlistUrl → "Avise-me quando abrir" (Instagram/WhatsApp)
  *   nenhum dos dois → só o status ("Em breve"), sem link morto
  */
@@ -36,7 +36,8 @@ function applyWaitlistMode(tickets, { devMode = false } = {}) {
   return true;
 }
 
-function ticketCtaState(tickets, { label = tickets.label, url = tickets.url } = {}) {
+function ticketCtaState(tickets, { label = tickets.label, url = tickets.url, pageHref = "" } = {}) {
+  if (url && pageHref && !tickets.waitlistOn) return { kind: "tickets-page", href: pageHref, internal: true, label }; // cabeçalho, barra e topo da home levam à página de ingressos, que escolhe o tipo e só então vai ao Sympla
   if (tickets.waitlistOn) return { kind: "waitlist-form", href: tickets.waitlist.href ?? "ingressos.html#waitlist", internal: true, label: t("tickets.waitlist", "Avise-me quando abrir") };
   if (url) return { kind: "buy", href: url, label };
   if (tickets.waitlistUrl) return { kind: "waitlist", href: tickets.waitlistUrl, label: t("tickets.waitlist", "Avise-me quando abrir") };
@@ -80,7 +81,7 @@ function renderTickets(tickets, types, sectionEl, { note = "", showcase } = {}) 
  * porque aí os próprios cards já são o CTA.
  */
 function initTicketCta(tickets, { headerTopEl, sectionEl = null }) {
-  const state = ticketCtaState(tickets);
+  const state = ticketCtaState(tickets, { pageHref: tickets.pageHref });
 
   const actionsEl = document.createElement("div");
   actionsEl.className = "header-actions";

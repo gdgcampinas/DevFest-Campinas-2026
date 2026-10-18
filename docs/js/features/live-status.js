@@ -102,8 +102,7 @@ function createLiveStatus({ schedule, tracks, event, elements = {}, now = () => 
         <div class="countdown" id="heroCountdown">${formatDaysHMS(state.first - now())}</div>
         ${open.cards}
         <div class="hero-before-row">
-          ${event.tickets ? ticketButtonMarkup(ticketCtaState(event.tickets), { className: "cta", place: "hero" }) : ""}
-          <span class="hero-hint">${t("live.preview", "Programação abaixo em modo prévia")}</span>
+          ${event.tickets ? ticketButtonMarkup(ticketCtaState(event.tickets, { pageHref: event.tickets.pageHref }), { className: "cta", place: "hero" }) : ""}
         </div>
       </div>`;
     stickyPulse.style.display = "none";

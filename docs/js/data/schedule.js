@@ -37,6 +37,7 @@ const EVENT = {
   // os dois vazios = só o status. Tipos de ingresso: data/tickets.js.
   tickets: {
     url: "https://www.sympla.com.br/evento/devfest-campinas-2026/3591517", // link do evento no Sympla; vazio = todos os botões viram o status ("Ingressos em breve") (sem link morto)
+    pageHref: "ingressos.html", // os botões "Garanta sua vaga" (cabeçalho, barra, topo da home) levam à página de ingressos; os cards dela vão ao Sympla (url acima)
     label: "Garanta sua vaga",
     status: "Ingressos em breve",
     openStatus: "abertos", // texto do ticker quando salesOpen for true
