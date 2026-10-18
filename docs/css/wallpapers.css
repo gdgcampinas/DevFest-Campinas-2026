@@ -1,0 +1,11 @@
+/* página de fundos de tela (components/wallpapers.js) */
+.wp-head{max-width:1180px;margin:0 auto;padding:8px 24px 0}
+.wp-head h2{margin:0 0 6px;font:800 clamp(1.5rem,4vw,2.1rem) var(--font-display);color:oklch(97% 0.005 260)}
+.wp-head p{margin:0;font:500 14px/1.5 var(--font-body);color:var(--muted)}
+.wp-section{max-width:1180px;margin:20px auto 40px;padding:0 24px}
+.wp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:22px;justify-items:center}
+.wp-card{margin:0;display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;max-width:260px}
+.wp-phone{display:block;width:100%;aspect-ratio:1080/2340;border-radius:34px;overflow:hidden;border:6px solid oklch(22% 0.01 260);background:#000;box-shadow:0 0 0 1px var(--card-border)}
+.wp-phone img{width:100%;height:100%;object-fit:cover;display:block}
+.wp-card figcaption{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;font:500 13.5px var(--font-body);color:var(--text)}
+.wp-tip,.wp-soon{margin:22px auto 0;max-width:560px;text-align:center;font:500 13.5px/1.55 var(--font-body);color:var(--muted)}
