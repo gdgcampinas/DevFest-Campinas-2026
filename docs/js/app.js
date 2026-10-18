@@ -296,6 +296,8 @@ const LOCALIZED_DATASETS = [
   () => SCHEDULE.filter(slot => slot.banner), // só os blocos combinados (o conteúdo das palestras é do line-up, não do site)
   () => ticketsRepository.getAll(),
   () => venueRepository.getAll(),
+  () => tshirtsRepository.getAll(),
+  () => tshirtTextsRepository.getAll(),
   () => statsRepository.getAll(),
   () => aboutRepository.getAll(),
   () => footerRepository.getAll(),

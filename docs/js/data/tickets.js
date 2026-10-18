@@ -21,6 +21,7 @@ const TICKET_TYPES = [
     price: 45.1, // o que o comprador paga no Sympla (valor do ingresso mais a taxa dele, que NÃO é detalhada no site)
     color: "var(--google-yellow)",
     featured: true,
+    showcase: "tshirt", // vitrine das fotos da camiseta no card (pages/ingressos.js)
     badge: "Só 100 vagas",
     description: "Leve a lembrança do DevFest para casa.",
     benefits: ["Tudo do ingresso Grátis", "Camiseta oficial do DevFest Campinas 2026", "Certificado de participação (para quem fizer check-in em ao menos uma palestra)"],

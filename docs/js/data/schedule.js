@@ -45,7 +45,7 @@ const EVENT = {
     counterMin: 30, // só mostra o contador "N pessoas já garantiram a vaga" a partir desse total de inscritos
     registrationGate: false, // true SÓ depois que o sync do Sympla estiver rodando (secrets + regras publicadas); false = o cartão "Eu vou!" continua livre
     waitlistUrl: "", // opcional: sem url de compra, vira "Avise-me quando abrir" (Instagram/WhatsApp)
-    waitlist: { enabled: true, public: true }, // LISTA DE ESPERA (formulário no site, grava no Firestore): `public: false` = só em modo DEV; `true` = em produção (LIBERADA em 2026-10-16). Ver applyWaitlistMode (features/tickets.js)
+    waitlist: { enabled: false, public: true }, // LISTA DE ESPERA ENCERRADA em 2026-10-18 (ingressos abertos em produção; `enabled: true` volta a oferecer o "Avise-me"). Antes: `public: false` = só em modo DEV; `true` = em produção (LIBERADA em 2026-10-16). Ver applyWaitlistMode (features/tickets.js)
   },
 };
 

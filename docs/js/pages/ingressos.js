@@ -4,6 +4,10 @@ function initIngressos() {
 
   initWaitlist(document.getElementById("waitlist"), { ...defaultWaitlistDeps(), source: "ingressos", openAtStart: location.hash === "#waitlist" });
 
+  const tshirtDeps = { models: tshirtsRepository.getAll(), text: tshirtTextsRepository.getAll() };
+  const showcases = { tshirt: () => tshirtShowcaseMarkup(tshirtDeps) }; // vitrine extra por tipo de ingresso (`showcase` em data/tickets.js)
+  initTshirtGallery(document.body, { createModal, ...tshirtDeps });
+
   const ticketsSection = document.getElementById("ticketsSection");
   if (EVENT.tickets.waitlistOn && !reveal) { // ingressos ainda não abriram e os tipos não foram revelados: aviso bonito em vez da caixa vazia, e sem "gerar cartão" (ninguém tem ingresso ainda)
     ticketsSection.hidden = false;
@@ -11,7 +15,7 @@ function initIngressos() {
     document.querySelector(".share-card-cta").hidden = true;
   } else {
     renderOrConstruction(reveal || EVENT.tickets.salesOpen, ticketsSection,
-      () => renderTickets(EVENT.tickets, ticketsRepository.getAll(), ticketsSection, { note: tt(TICKETS_NOTE) }),
+      () => renderTickets(EVENT.tickets, ticketsRepository.getAll(), ticketsSection, { note: tt(TICKETS_NOTE), showcase: type => showcases[type.showcase]?.() ?? "" }),
       t("tickets.soon", "Os tipos e valores de ingresso serão revelados em breve."));
   }
 

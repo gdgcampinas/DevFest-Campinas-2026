@@ -51,7 +51,7 @@ function ticketButtonMarkup(state, { className = "cta", place = "" } = {}) {
   return `<a class="${className}" href="${state.href}"${target}${tracking}>${state.label}</a>`;
 }
 
-function ticketCardMarkup(type, tickets) {
+function ticketCardMarkup(type, tickets, { showcase = () => "" } = {}) {
   const state = ticketCtaState(tickets, { label: t("tickets.buy", "Garantir ingresso"), url: type.url ?? tickets.url });
   const benefits = type.benefits.map(benefit => `<li>${iconMarkup("check")}<span>${benefit}</span></li>`).join("");
   return `
@@ -59,17 +59,18 @@ function ticketCardMarkup(type, tickets) {
       ${type.badge ? `<span class="ticket-badge">${type.badge}</span>` : ""}
       <h3 class="ticket-name">${type.name}</h3>
       ${ticketPriceMarkup(type.price, { tbdLabel: tt(TICKET_PRICE_TBD) })}
+      ${showcase(type)}
       <p class="ticket-desc">${type.description}</p>
       <ul class="ticket-benefits">${benefits}</ul>
       ${ticketButtonMarkup(state, { className: "cta cta--block", place: `ticket-${type.id}` })}
     </div>`;
 }
 
-/** Seção de ingressos: cards (um por tipo) + aviso. Some se não houver tipos. */
-function renderTickets(tickets, types, sectionEl, { note = "" } = {}) {
+/** Seção de ingressos: cards (um por tipo) + aviso. `showcase(type)` (opcional) devolve a vitrine extra do card (ex.: as fotos da camiseta). Some se não houver tipos. */
+function renderTickets(tickets, types, sectionEl, { note = "", showcase } = {}) {
   sectionEl.hidden = types.length === 0;
   if (types.length === 0) return;
-  sectionEl.querySelector(".tickets-grid").innerHTML = types.map(type => ticketCardMarkup(type, tickets)).join("");
+  sectionEl.querySelector(".tickets-grid").innerHTML = types.map(type => ticketCardMarkup(type, tickets, { showcase })).join("");
   sectionEl.querySelector(".tickets-note").textContent = note;
 }
 
