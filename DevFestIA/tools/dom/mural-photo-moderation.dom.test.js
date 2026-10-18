@@ -8,7 +8,7 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, waitFor, textOf } = require("../lib/dom-harness.js");
 const { createFakeClock } = require("../lib/fake-clock.js");
 
-const site = loadSite({ scripts: [...SITE_BASE, "features/scheduler.js", "data/mural-albums.js", "data/albums-repository.js", "features/album-photo-url.js", "components/moderator-login.js", "components/mural-photo-moderation.js", "features/moderator-login.js", "features/mural-photo-moderation.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "features/scheduler.js", "data/mural-albums.js", "data/albums-repository.js", "features/album-photo-url.js", "data/moderator-access-texts.js", "components/moderator-access.js", "features/moderator-access.js", "components/moderator-login.js", "components/mural-photo-moderation.js", "features/moderator-login.js", "features/mural-photo-moderation.js"] });
 const { window, document } = site;
 test.after(() => window.close());
 const initMuralPhotoModeration = site.get("initMuralPhotoModeration");
@@ -17,7 +17,7 @@ const mountMuralPhotoModeration = site.get("mountMuralPhotoModeration");
 const photo = (id, addedAt) => ({ id, url: `https://lh3.googleusercontent.com/pw/${id}`, width: 4000, height: 3000, addedAt });
 const album = { id: "ao-vivo", label: "DevFest 2026 ao vivo" };
 
-function setup({ photos = [photo("c", 3), photo("b", 2), photo("a", 1)], hiddenInitial = null, email = "mod@gmail.com", limit = 60, setImpl } = {}) {
+function setup({ photos = [photo("c", 3), photo("b", 2), photo("a", 1)], hiddenInitial = null, email = "mod@gmail.com", limit = 60, setImpl, access } = {}) {
   document.body.innerHTML = `<main id="modBody"></main>`;
   const clock = createFakeClock();
   const writes = [];
@@ -32,7 +32,7 @@ function setup({ photos = [photo("c", 3), photo("b", 2), photo("a", 1)], hiddenI
   const login = { signIn: async () => email, restore: async () => (email === "restore" ? "mod@gmail.com" : null), signOut: async () => { calls.signOut++; } };
   const rootEl = document.getElementById("modBody");
   initMuralPhotoModeration(rootEl, {
-    album, hiddenRepository, login, schedule: clock.schedule, refreshMs: 30000, limit, formatTime: item => `h${item.addedAt}`,
+    album, hiddenRepository, login, ...(access ? { access, accessText: site.get("moderatorAccessTextsRepository").getAll() } : {}), schedule: clock.schedule, refreshMs: 30000, limit, formatTime: item => `h${item.addedAt}`,
     albumsRepository: { get: async () => { calls.album++; if (albumFails) throw new Error("sem rede"); return { photos: albumPhotos }; } },
     whenReady: task => task(),
   });
@@ -195,4 +195,27 @@ test("montagem pronta (usada pela página e pelo admin): álbum desconhecido lis
   await waitFor(() => rootEl.querySelectorAll(".mf-tile").length === 1);
   assert.deepEqual(asked, ["https://proxy.test/albums/ao-vivo"]);
   view.stop();
+});
+
+test("conta Google que não é moderadora: tela de bloqueio com a troca de conta, sem ler álbum nem banco", async () => {
+  const { rootEl, calls, listeners } = setup({ access: { resolve: async () => ({ moderator: false }) } });
+  rootEl.querySelector("[data-mod-signin]").click();
+  await waitFor(() => rootEl.querySelector("[data-mod-signout]"));
+  assert.match(textOf(rootEl), /não está liberada/i);
+  assert.match(textOf(rootEl), /mod@gmail\.com/);
+  assert.equal(rootEl.querySelector(".mf-grid"), null);
+  assert.equal(calls.album, 0);
+  assert.equal(listeners.length, 0);
+});
+
+test("não deu pra verificar a conta (rede): bloqueia com 'tentar de novo', que abre as fotos quando passa", async () => {
+  let moderator = null;
+  const { rootEl, listeners } = setup({ access: { resolve: async () => ({ moderator }) } });
+  rootEl.querySelector("[data-mod-signin]").click();
+  await waitFor(() => rootEl.querySelector("[data-mod-retry]"));
+  assert.equal(listeners.length, 0);
+  moderator = true;
+  rootEl.querySelector("[data-mod-retry]").click();
+  await waitFor(() => rootEl.querySelector(".mf-tile"));
+  assert.equal(listeners.length, 1);
 });

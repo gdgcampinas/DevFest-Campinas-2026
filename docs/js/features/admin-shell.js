@@ -1,12 +1,12 @@
 /**
  * Feature: o casco da área de admin. Liga a sessão (login único), o menu e as rotas por hash: sem login mostra só a porta de entrada; com login descobre o que a conta pode usar
- * (features/admin-access.js: o menu esconde o que só o dono usa), desenha a barra da conta e a SEÇÃO da rota. Cada seção é uma função `mounts[id](containerEl, { email })` que devolve `{ stop }`:
+ * (features/admin-access.js: o menu esconde o que só o dono usa; conta que NÃO é moderadora vê só a tela de bloqueio, features/moderator-access.js), desenha a barra da conta e a SEÇÃO da rota. Cada seção é uma função `mounts[id](containerEl, { email })` que devolve `{ stop }`:
  * o casco cria um contêiner NOVO a cada visita e chama o `stop` da seção anterior ao sair (nenhuma escuta do Firestore fica aberta fora da seção que está na tela). Seção sem tela montada ou que dá
  * erro ao abrir vira um aviso no lugar: uma seção quebrada nunca derruba as outras. Rota de seção escondida cai na primeira visível.
  * Começa restaurando o login que já existe; enquanto isso a página mostra "Carregando…". Tudo por parâmetro: `session` (features/admin-session.js), `router` (features/hash-router.js), `navEl` (o menu,
- * features/admin-nav.js), `sections` (data/admin-sections.js), `brand` (ADMIN_BRAND), `mounts`, `access` ({ resolve() -> { owner } }, padrão: ninguém escondido), `doc`.
+ * features/admin-nav.js), `sections` (data/admin-sections.js), `brand` (ADMIN_BRAND), `mounts`, `access` ({ resolve() -> { owner, moderator } }, padrão: ninguém escondido nem bloqueado), `accessText` (data/moderator-access-texts.js), `doc`.
  */
-function initAdminShell(rootEl, { session, router, navEl, sections, brand, mounts, access = { resolve: async () => ({ owner: null }) }, doc = document }) {
+function initAdminShell(rootEl, { session, router, navEl, sections, brand, mounts, access = { resolve: async () => ({ owner: null }) }, accessText = moderatorAccessTextsRepository.getAll(), doc = document }) {
   let nav = null;
   let visible = sections;
   let openedId = null;
@@ -56,6 +56,12 @@ function initAdminShell(rootEl, { session, router, navEl, sections, brand, mount
     gateMessage = "";
     const granted = await access.resolve();
     if (turn !== drawing) return; // saiu ou trocou de conta enquanto descobria
+    const accessState = moderatorAccessState(granted);
+    if (accessState !== "allowed") { // conta que não é moderadora (ou acesso que não deu pra verificar): nenhuma seção abre e nenhuma escuta no banco é ligada
+      navEl.hidden = true;
+      rootEl.innerHTML = moderatorBlockedMarkup({ state: accessState, email: session.email(), text: accessText });
+      return;
+    }
     visible = visibleSections(sections, granted);
     navEl.hidden = false;
     rootEl.innerHTML = adminShellMarkup({ brand, email: session.email() });
@@ -71,6 +77,8 @@ function initAdminShell(rootEl, { session, router, navEl, sections, brand, mount
         gateMessage = signInErrorMessage(error);
         draw();
       }
+    } else if (event.target.closest("[data-mod-retry]")) {
+      draw();
     } else if (event.target.closest("[data-mod-signout]")) {
       await session.signOut();
     }

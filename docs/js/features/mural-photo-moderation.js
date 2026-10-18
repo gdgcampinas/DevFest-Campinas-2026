@@ -5,7 +5,7 @@
  * Tudo por parâmetro: `album` (data/mural-albums.js), `albumsRepository` (lê a lista), `hiddenRepository` ({ listen, set }), `login` (defaultModeratorLoginDeps), `schedule`, `refreshMs`, `limit`.
  * `embedded` (dentro da área de admin, que faz o login uma vez): sem porta de entrada, conta nem título; liga na hora, já logado. Devolve `{ stop }` (desliga a escuta e a releitura).
  */
-function initMuralPhotoModeration(rootEl, { album, albumsRepository, hiddenRepository, login = defaultModeratorLoginDeps(), schedule = defaultSchedule, refreshMs = 30000, limit = 60, formatTime = () => "", thumbSize = { width: 400, height: 400 }, whenReady = runAfterModules, embedded = false }) {
+function initMuralPhotoModeration(rootEl, { album, albumsRepository, hiddenRepository, login = defaultModeratorLoginDeps(), access = { resolve: async () => ({}) }, accessText = {}, schedule = defaultSchedule, refreshMs = 30000, limit = 60, formatTime = () => "", thumbSize = { width: 400, height: 400 }, whenReady = runAfterModules, embedded = false }) {
   let email = "";
   let photos = [];
   let hidden = new Set();
@@ -31,6 +31,13 @@ function initMuralPhotoModeration(rootEl, { album, albumsRepository, hiddenRepos
     if (!active) return;
     drawReady();
     cancelRefresh = schedule(refresh, refreshMs);
+  }
+
+  /** Conta entrou: só segue se for moderadora (o painel embutido no admin já passou pela porta do admin). */
+  async function enter() {
+    const state = moderatorAccessState(await access.resolve());
+    if (state === "allowed") return start();
+    rootEl.innerHTML = moderatorBlockedMarkup({ state, email, text: accessText });
   }
 
   function start() {
@@ -72,11 +79,13 @@ function initMuralPhotoModeration(rootEl, { album, albumsRepository, hiddenRepos
     if (event.target.closest("[data-mod-signin]")) {
       try {
         email = await login.signIn();
-        start();
+        await enter();
       } catch (error) {
         message = signInErrorMessage(error);
         draw("signin");
       }
+    } else if (event.target.closest("[data-mod-retry]")) {
+      await enter();
     } else if (event.target.closest("[data-mod-signout]")) {
       stop();
       await login.signOut();
@@ -95,7 +104,7 @@ function initMuralPhotoModeration(rootEl, { album, albumsRepository, hiddenRepos
     draw("signin");
     whenReady(async () => {
       email = (await login.restore().catch(() => null)) ?? "";
-      if (email) start();
+      if (email) await enter();
     });
   }
   return { stop };
@@ -117,6 +126,7 @@ function mountMuralPhotoModeration(rootEl, { album, proxyUrl, albumIds = [], tim
     hiddenRepository,
     formatTime,
     embedded,
+    ...defaultModeratorAccessDeps(),
   });
 }
 

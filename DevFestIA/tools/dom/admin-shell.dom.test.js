@@ -15,7 +15,7 @@ const SCRIPTS = [...HTML.matchAll(/<script src="(js\/[^"?]+)[^"]*"/g)].map(match
 const PAGE = fs.readFileSync(path.join(DOCS, "js", "pages", "admin.js"), "utf8");
 const BODY = `<!doctype html><html><body><nav id="adminNav" hidden></nav><main id="adminBody">Carregando…</main></body></html>`;
 
-const UNITS = [...SITE_BASE, "data/admin-sections.js", "components/escape-html.js", "components/moderator-login.js", "data/brand.js", "components/brand.js", "components/admin-icons.js", "components/initial-avatar.js", "components/admin-card.js", "features/admin-access.js", "components/admin-nav.js", "components/admin-shell.js", "features/moderator-login.js", "features/admin-session.js", "features/hash-router.js", "features/admin-nav.js", "features/admin-shell.js"];
+const UNITS = [...SITE_BASE, "data/admin-sections.js", "components/escape-html.js", "components/moderator-login.js", "data/brand.js", "components/brand.js", "components/admin-icons.js", "components/initial-avatar.js", "components/admin-card.js", "data/moderator-access-texts.js", "components/moderator-access.js", "features/moderator-access.js", "features/admin-access.js", "components/admin-nav.js", "components/admin-shell.js", "features/moderator-login.js", "features/admin-session.js", "features/hash-router.js", "features/admin-nav.js", "features/admin-shell.js"];
 
 /** Login de mentira: `restoreAs` = e-mail já logado ("" = ninguém); `signIn` pode falhar. */
 function fakeLogin({ restoreAs = "", signInImpl } = {}) {
@@ -115,7 +115,7 @@ test("hash desconhecido cai na primeira seção", async () => {
 
 test("conta que não é dona: o menu esconde as seções só do dono; a rota escondida cai na primeira visível e o hash é corrigido", async () => {
   const helper = loadSite({ scripts: UNITS, html: BODY });
-  const denied = setup({ restoreAs: "mod@gmail.com", hash: "#moderadores", access: { resolve: () => helper.get("resolveAdminAccess")({ probe: async () => { throw { code: "permission-denied" }; } }) } });
+  const denied = setup({ restoreAs: "mod@gmail.com", hash: "#moderadores", access: { resolve: () => helper.get("resolveAdminAccess")({ probe: async () => { throw { code: "permission-denied" }; }, probeModerator: async () => ({}) }) } });
   await waitFor(() => denied.body.querySelector("[data-mounted]"));
   assert.deepEqual([...denied.nav.querySelectorAll("a")].map(link => textOf(link)), ["Visão geral", "Telão", "Fotos", "Palestras", "Recados", "Lista de espera", "Atalhos"]);
   assert.deepEqual(denied.events, ["mount:visao-geral"]);
@@ -128,13 +128,43 @@ test("conta dona (a leitura da lista passa) ou sem saber (erro de rede): o menu 
   const probes = { dono: async () => {}, rede: async () => { throw new Error("sem rede") } };
   for (const [name, probe] of Object.entries(probes)) {
     const helper = loadSite({ scripts: UNITS, html: BODY });
-    const resolve = () => helper.get("resolveAdminAccess")({ probe });
+    const resolve = () => helper.get("resolveAdminAccess")({ probe, probeModerator: async () => ({}) });
     const { body, nav, window } = setup({ restoreAs: "mod@gmail.com", access: { resolve } });
     await waitFor(() => body.querySelector("[data-mounted]"));
     assert.equal(nav.querySelectorAll("a").length, 9, name);
     window.close();
     helper.window.close();
   }
+});
+
+test("conta Google que NÃO é moderadora: só a tela de bloqueio, menu escondido, nenhuma seção aberta; 'tentar de novo' reconsulta", async () => {
+  const helper = loadSite({ scripts: UNITS, html: BODY });
+  let allowed = false;
+  const resolve = () => helper.get("resolveAdminAccess")({ probe: async () => { throw { code: "permission-denied" }; }, probeModerator: async () => { if (!allowed) throw { code: "permission-denied" }; } });
+  const { body, nav, events, window } = setup({ restoreAs: "fora@gmail.com", access: { resolve } });
+  await waitFor(() => body.querySelector("[data-mod-signout]"));
+  assert.match(textOf(body), /não está liberada/i);
+  assert.match(textOf(body), /fora@gmail\.com/);
+  assert.equal(nav.hidden, true);
+  assert.deepEqual(events, []);
+  assert.equal(body.querySelector("[data-mounted]"), null);
+  window.close();
+  helper.window.close();
+});
+
+test("não deu pra verificar a conta (rede): bloqueia com 'tentar de novo', que abre a área quando a leitura passa", async () => {
+  const helper = loadSite({ scripts: UNITS, html: BODY });
+  let net = false;
+  const resolve = () => helper.get("resolveAdminAccess")({ probe: async () => { throw { code: "permission-denied" }; }, probeModerator: async () => { if (!net) throw new Error("sem rede"); } });
+  const { body, events, window } = setup({ restoreAs: "mod@gmail.com", access: { resolve } });
+  await waitFor(() => body.querySelector("[data-mod-retry]"));
+  assert.deepEqual(events, []);
+  net = true;
+  body.querySelector("[data-mod-retry]").click();
+  await waitFor(() => body.querySelector("[data-mounted]"));
+  assert.deepEqual(events, ["mount:visao-geral"]);
+  window.close();
+  helper.window.close();
 });
 
 test("sair: desliga a seção aberta e volta pra porta de entrada", async () => {
@@ -205,7 +235,7 @@ test("a página admin.html inteira: abre logado na seção Atalhos com os links 
     scripts: SCRIPTS,
     html: BODY,
     url: "http://localhost/admin.html#atalhos",
-    globals: { moderatorClient: { restoreModerator: async () => "mod@gmail.com", signInWithGoogle: async () => "mod@gmail.com", signOutModerator: async () => {} } },
+    globals: { moderatorAccessRepository: { probe: async () => ({}) }, moderatorClient: { restoreModerator: async () => "mod@gmail.com", signInWithGoogle: async () => "mod@gmail.com", signOutModerator: async () => {} } },
   });
   site.run(PAGE, "pages/admin.js");
   const body = site.document.getElementById("adminBody");
@@ -226,6 +256,7 @@ function bootAdminPage(hash) {
     html: BODY,
     url: `http://localhost/admin.html${hash}`,
     globals: {
+      moderatorAccessRepository: { probe: async () => ({}) },
       moderatorClient: { restoreModerator: async () => "mod@gmail.com", signInWithGoogle: async () => "mod@gmail.com", signOutModerator: async () => {} },
       moderationMuralControlRepository: { listen: (key, onNext) => { controlListeners.push(key); onNext(null); return () => controlListeners.pop(); }, set: async () => {} },
       moderationMuralHiddenRepository: { listen: (id, onNext) => { hiddenListeners.push(id); onNext({ ids: [] }); return () => hiddenListeners.pop(); }, set: async () => {} },

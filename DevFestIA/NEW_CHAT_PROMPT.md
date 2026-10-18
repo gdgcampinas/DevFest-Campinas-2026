@@ -2,17 +2,32 @@
 
 Cole o bloco abaixo como primeira mensagem do novo chat. Sem precisar adicionar contexto extra — tudo está nos arquivos do projeto.
 
+**Atualizado em 2026-10-18.** O estado de código em `handoff/HANDOFF_CURRENT.md` prevalece sobre o histórico longo abaixo. Para um chat de comunicação visual/redes sociais, consultar também a continuidade geral do projeto guarda-chuva GDG Campinas.
+
 ---
 
 ```
 Você está entrando no repositório do site do DevFest Campinas 2026 (GDG Campinas).
+
+CONTEXTO PRIORITÁRIO (2026-10-18)
+O foco que está sendo transferido inclui comunicação e identidade do DevFest Campinas 2026, além do site. Antes de trabalhar em cards, camiseta, patrocínio, Sympla ou redes sociais, leia também os arquivos gerais do projeto guarda-chuva:
+- `../../PROJECT_CONTEXT.md`
+- `../../handoff/HANDOFF_CURRENT.md`
+- `../../docs/Marca_e_Mascote_2026.md`
+- `../../Design/gdg-sympla/`
+A wiki ai-memory do projeto contém `notes/comunicacao-e-identidade-2026.md`.
+Pendências criativas: estratégia editorial para Instagram/LinkedIn; cards distintos para voluntários e palestrantes; camiseta, começando pela frente. Nada disso está aprovado/publicado só por existir como render. Manter fidelidade absoluta aos logos oficiais; lockup Google Developer Groups horizontal, símbolo à esquerda e texto branco em três linhas à direita para fundo escuro; mascote aprovado não pode cobrir fotos.
+
+VERIFICAÇÃO GIT LOCAL (2026-10-18, não tratar como estado remoto atual)
+`development` = `d0ae6cc` e os refs locais `origin/development`/`origin/main` apontam para ele; `main` local está 324 commits atrás. Há mudanças locais de segurança/moderação no worktree, não tocar nem descartar. A conexão ao GitHub/CI falhou nesta sessão; revalidar quando houver rede.
 
 PASSO 1 — Leia o contexto (nesta ordem)
 1. DevFestIA/project-docs/PROJECT_CONTEXT.md  ← arquitetura permanente, decisões de design
 2. DevFestIA/handoff/HANDOFF_CURRENT.md       ← estado atual, pendências, próximos passos
 3. DevFestIA/CLAUDE.md                        ← diretivas de comportamento
 4. DevFestIA/project-docs/Continuidade.md     ← como o processo de continuidade funciona (opcional)
-5. Se a solicitação envolver o mascote, comunicação visual ou marca: `../../../docs/Marca_e_Mascote_2026.md` ← identidade, arquivos e restrições de uso
+5. Se a solicitação envolver o mascote, comunicação visual ou marca: `../../docs/Marca_e_Mascote_2026.md` ← identidade, arquivos e restrições de uso
+6. Para cards, camiseta, campanha social ou Sympla, ler também `../../handoff/HANDOFF_CURRENT.md` e `../../Design/gdg-sympla/`; esses materiais são separados do site e não estão automaticamente publicados/aprovados.
 
 PASSO 2 — Valide o estado Git (o handoff pode estar desatualizado — o git não mente)
 git status --short --branch
@@ -73,7 +88,7 @@ verificado, o que depende dele. Armadilhas e como testar: seção "Como
 trabalhar e testar aqui" do handoff (bump de ?v=N, cache do
 schedule.dev.js, painel do app sem service worker, etc.).
 
-ESTADO: sessão 12 abaixo (histórico); a sessão 14 (2026-10-09) é a mais nova, logo depois da sessão 13
+ESTADO HISTÓRICO ABAIXO: snapshots antigos preservados para referência, não usar como status atual. O handoff no topo deste arquivo é a fonte atual e deve ser validado com Git e CI quando houver rede.
 Site de 8 páginas (Principal, Grade, Palestrantes, Ingressos, Time — PÚBLICO em PROD, 23 pessoas reais, 17 bios —, Patrocínio, Sorteio — atrás de `devOnly`, só em DEV —, Código de Conduta);
 em PROD, Grade, Palestrantes e Patrocínio abrem mas mostram "será revelado em breve" no lugar do conteúdo mock, que só aparece em `/DEV/<página>` ou `?lineup=1`. Ferramentas internas, SEM versão `/DEV/` (use na raiz):
 quadro da sala (`checkin-display.html?trilha=<id>`), moderação de perguntas (`moderacao.html?trilha=<id>`), `reset-teste.html`, **mural do telão** (`mural.html`) e **moderação das fotos do mural** (`mural-fotos.html?album=ao-vivo`).

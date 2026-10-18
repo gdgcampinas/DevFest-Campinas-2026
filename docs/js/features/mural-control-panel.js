@@ -7,7 +7,7 @@
  * `templates` (data/mural-notices.js: frases prontas, os anúncios ao vivo prontos `announce` e o texto de cada tipo de aviso `kinds`), `login`, `nowMs`, `makeId`, `schedule`, `formatTime`, `refreshMs`, `confirmMs`.
  * `embedded` (dentro da área de admin, que faz o login uma vez): sem porta de entrada, conta nem título; liga na hora, já logado. Devolve `{ stop }` (desliga a escuta e os temporizadores).
  */
-function initMuralControlPanel(rootEl, { repository, rules, limits, scenes, templates, login = defaultModeratorLoginDeps(), nowMs = () => Date.now(), makeId = () => Math.random().toString(36).slice(2, 10), schedule = defaultSchedule, formatTime = () => "", refreshMs = 15000, confirmMs = 5000, whenReady = runAfterModules, embedded = false }) {
+function initMuralControlPanel(rootEl, { repository, rules, limits, scenes, templates, login = defaultModeratorLoginDeps(), access = { resolve: async () => ({}) }, accessText = {}, nowMs = () => Date.now(), makeId = () => Math.random().toString(36).slice(2, 10), schedule = defaultSchedule, formatTime = () => "", refreshMs = 15000, confirmMs = 5000, whenReady = runAfterModules, embedded = false }) {
   let email = "";
   let doc = null;
   let busy = false;
@@ -42,6 +42,13 @@ function initMuralControlPanel(rootEl, { repository, rules, limits, scenes, temp
     if (!active) return;
     drawSlots(); // avisos que venceram saem da lista
     cancelRefresh = schedule(tick, refreshMs);
+  }
+
+  /** Conta entrou: só segue se for moderadora (o painel embutido no admin já passou pela porta do admin). */
+  async function enter() {
+    const state = moderatorAccessState(await access.resolve());
+    if (state === "allowed") return start();
+    rootEl.innerHTML = moderatorBlockedMarkup({ state, email, text: accessText });
   }
 
   function start() {
@@ -127,13 +134,14 @@ function initMuralControlPanel(rootEl, { repository, rules, limits, scenes, temp
     if (event.target.closest("[data-mod-signin]")) {
       try {
         email = await login.signIn();
-        start();
+        await enter();
       } catch (error) {
         ui.message = signInErrorMessage(error);
         drawSignIn();
       }
       return;
     }
+    if (event.target.closest("[data-mod-retry]")) return enter();
     if (event.target.closest("[data-mod-signout]")) {
       stop();
       await login.signOut();
@@ -151,7 +159,7 @@ function initMuralControlPanel(rootEl, { repository, rules, limits, scenes, temp
     drawSignIn();
     whenReady(async () => {
       email = (await login.restore().catch(() => null)) ?? "";
-      if (email) start();
+      if (email) await enter();
     });
   }
   return { stop };
@@ -166,5 +174,6 @@ function defaultMuralControlPanelDeps() {
     scenes: muralScenesRepository.options(),
     templates: muralNoticeTemplatesRepository.getAll(),
     formatTime: date => formatEventTime(date, EVENT.timezone),
+    ...defaultModeratorAccessDeps(),
   };
 }

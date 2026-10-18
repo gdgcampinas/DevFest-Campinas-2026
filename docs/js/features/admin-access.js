@@ -1,15 +1,13 @@
 /**
- * Feature: o que a conta logada pode USAR no admin, pra o menu esconder o que ela não usa. Não repete nenhum e-mail no código: tenta ler a lista de moderadores (`probe`), que só o DONO consegue
- * pelas regras do Firestore. Leu = dono; "sem permissão" = moderador comum; outro erro (rede) = não sabe (`owner: null`) e o menu mostra tudo. Esconder do menu é conforto: quem decide mesmo é a regra.
- * `resolveAdminAccess({ probe })` devolve { owner: true | false | null }; `visibleSections(sections, access)` filtra as seções `ownerOnly` de quem sabidamente não é dono.
+ * Feature: o que a conta logada pode USAR no admin. Duas perguntas, as duas ao banco (sem repetir nenhum e-mail no código): é MODERADORA? (features/moderator-access.js: uma leitura que só moderador
+ * consegue; quem não é fica na tela de bloqueio) e é o DONO? (tenta ler a lista de moderadores, que só o dono consegue pelas regras; o menu esconde o que só o dono usa). Quem decide é a regra do Firestore;
+ * a tela barra a entrada e esconde do menu. `resolveAdminAccess({ probe, probeModerator })` devolve { owner, moderator }, cada um true | false | null (null = não deu pra saber, rede): o dono é moderador;
+ * `visibleSections(sections, access)` filtra as seções `ownerOnly` de quem sabidamente não é dono.
  */
-async function resolveAdminAccess({ probe }) {
-  try {
-    await probe();
-    return { owner: true };
-  } catch (error) {
-    return { owner: error?.code === "permission-denied" ? false : null };
-  }
+async function resolveAdminAccess({ probe, probeModerator }) {
+  const owner = await probeAllowed(probe);
+  if (owner === true) return { owner: true, moderator: true };
+  return { owner, moderator: await probeAllowed(probeModerator) };
 }
 
 const visibleSections = (sections, access) => sections.filter(section => !section.ownerOnly || access.owner !== false);

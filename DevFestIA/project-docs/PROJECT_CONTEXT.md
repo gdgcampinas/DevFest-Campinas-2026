@@ -1,5 +1,9 @@
 # DevFest Campinas 2026 — Project Context
 
+## Continuidade cruzada de marca e campanha
+
+O repositório guarda-chuva GDG Campinas mantém a identidade visual, materiais de comunicação e regras gerais de marca em `../../../../docs/Marca_e_Mascote_2026.md`, com arquivos em `../../../../Design/`. Os materiais comunitários do Sympla estão em `../../../../Design/gdg-sympla/`; são ativos de comunicação separados do site, e não há confirmação de publicação. Ao receber tarefa de marca, cards, camiseta ou redes sociais, consultar essa fonte e o handoff raiz (`../../../../handoff/HANDOFF_CURRENT.md`) antes de agir. Estratégia para Instagram/LinkedIn continua pendente.
+
 Multi-page site for DevFest Campinas 2026 (GDG Campinas), built the same way as [EloTech 2026](https://github.com/gdgcampinas/EloTech-Agibank): static HTML/CSS/JS, no build step, no framework, deployed via GitHub Pages from `docs/`. The only shared data (check-in, ratings, registrations total) lives in Firebase (Spark plan, free) and is fed by a scheduled GitHub Actions job that reads Sympla; there is no server of ours.
 
 ## Stack (non-negotiable)

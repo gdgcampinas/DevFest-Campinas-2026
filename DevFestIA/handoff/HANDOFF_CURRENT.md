@@ -1,5 +1,18 @@
 # Handoff — Current State
 
+## CONTINUIDADE CRUZADA DE MARCA E REDES SOCIAIS (2026-10-18)
+
+- O contexto de identidade e comunicação do projeto guarda-chuva GDG Campinas foi consolidado em `../../../../handoff/HANDOFF_CURRENT.md` e `../../../../docs/Marca_e_Mascote_2026.md`. A tarefa inclui peças comunitárias para Sympla, cards de palestrantes/voluntários, camiseta e futura estratégia de Instagram/LinkedIn; essas artes não são parte do código do site e não estão automaticamente aprovadas/publicadas.
+- Materiais de perfil Sympla estão em `../../../../Design/gdg-sympla/`; não tratar o arquivo final ou a variante como publicados. A transferência do chat misturado com GitFlow foi documentada no handoff raiz.
+- Para qualquer peça, preservar os logos oficiais. Lockup Google Developer Groups: símbolo colorido à esquerda, texto à direita em três linhas, branco em fundo escuro. Preservar o Gumbleton aprovado e não o colocar sobre retrato/foto de palestrante.
+- O chat novo para trabalho de marca/redes pode começar pelo prompt em `NEW_CHAT_PROMPT.md`, que aponta os arquivos de continuidade geral e específicos do site.
+
+## Verificação Git local do protocolo (2026-10-18)
+
+- `development` = `d0ae6cc`; os refs locais `origin/development` e `origin/main` também apontam para esse commit. A branch local `main` permanece em `a2124cc`, 324 commits atrás de `development`.
+- Worktree já continha alterações locais em segurança/moderação (`docs/admin.html`, `docs/js/**`, `docs/mural-*.html`, `.claude/`). Nenhuma foi alterada pelo protocolo. Consulta à rede para GitHub/CI falhou por indisponibilidade de conexão; estado remoto e CI não foram confirmados nesta sessão. Não houve commit nem push.
+- Com acesso autorizado ao servidor local ai-memory do Akita, foi atualizada a página `notes/comunicacao-e-identidade-2026.md` no projeto `default/gdgcampinas-devfest-campinas-2026`, preservando as diretrizes de marca e pendências de campanha.
+
 ## SESSÃO 15B (2026-10-14 a 2026-10-17): TELÃO EM PRODUÇÃO, PATROCÍNIO, LISTA DE ESPERA DOS INGRESSOS E ai-memory
 **Estado:** `main` = `development`, CI verde, Pages publicado. Detalhes de cada item em `PROJECT_CONTEXT.md` (blocos "Cotas de patrocínio e vídeo da FIAP", "Patrocínio em PRODUÇÃO só com o Master", "Revisão de inglês", "Telão com dados de PRODUÇÃO", "URL do telão = produção", "Página do telão renomeada", "LISTA DE ESPERA dos ingressos", "Admin > Lista de espera", "Página Ingressos em lista de espera"). Memória durável dessa sessão também no **ai-memory** (páginas `_rules/`, `decisions/`, `procedures/`, `gotchas/`, `notes/`; handoff compartilhado).
 **Feito:**

@@ -133,6 +133,7 @@ test("a página admin.html abre a seção Moderadores com a lista do repository"
   const page = loadSite({
     scripts, html: `<!doctype html><html><body><nav id="adminNav" hidden></nav><main id="adminBody">Carregando…</main></body></html>`, url: "http://localhost/admin.html#moderadores",
     globals: {
+      moderatorAccessRepository: { probe: async () => ({}) },
       moderatorClient: { restoreModerator: async () => "dono@gmail.com", signInWithGoogle: async () => "dono@gmail.com", signOutModerator: async () => {} },
       moderationModeratorsRepository: { listen: (onNext) => { onNext([{ id: "ana@gmail.com" }]); return () => {}; }, set: async () => {}, remove: async () => {} },
     },

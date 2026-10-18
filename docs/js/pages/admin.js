@@ -13,7 +13,7 @@ function initAdminPage() {
     navEl: document.getElementById("adminNav"),
     sections,
     brand: adminBrandRepository.getAll(),
-    access: { resolve: () => resolveAdminAccess({ probe: () => window.moderationModeratorsRepository.probe() }) },
+    access: { resolve: () => resolveAdminAccess({ probe: () => window.moderationModeratorsRepository.probe(), probeModerator: () => window.moderatorAccessRepository.probe() }) },
     mounts: {
       "visao-geral": containerEl => initAdminOverview(containerEl, { cards: buildAdminOverviewCards({ definitions: adminOverviewRepository.getAll(), deps: defaultAdminOverviewDeps({ album: liveAlbum, albumsRepository }) }) }),
       telao: containerEl => initMuralControlPanel(containerEl, { ...defaultMuralControlPanelDeps(), embedded: true }),

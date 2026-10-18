@@ -24,6 +24,7 @@ trabalho sem depender do histórico de uma conversa específica.
   `build-brand-assets.sh` que regera favicon, ícones do app e imagem de compartilhamento a partir do
   SVG do logo. **[../firebase/](../firebase/)** — `firestore.rules` (colar à mão no console).
   Como usar cada um: seção "Como trabalhar e testar aqui" do handoff.
+- Comunicação visual transversal ao site (marca, cards, camiseta, estratégia social e perfil comunitário Sympla) é mantida no projeto guarda-chuva em `../../../../docs/Marca_e_Mascote_2026.md`, `../../../../handoff/HANDOFF_CURRENT.md` e `../../../../Design/`; não confundir esse arquivo de design com mudança publicada no site.
 - **[`.github/workflows/`](../../.github/workflows/)** — ✅ Validar, 🚀 Publicar no main, 🎫 Sincronizar
   Sympla, 📊 Relatório do evento, 🧹 Limpar dados de teste. Ver PROJECT_CONTEXT ("Inscritos do
   Sympla", "Limpeza dos dados de teste") e o aviso sobre renomear o Validar no handoff.

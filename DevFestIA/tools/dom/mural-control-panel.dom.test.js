@@ -8,7 +8,7 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, waitFor, textOf } = require("../lib/dom-harness.js");
 const { createFakeClock } = require("../lib/fake-clock.js");
 
-const site = loadSite({ scripts: [...SITE_BASE, "features/scheduler.js", "data/mock-links.js", "data/mock-photo.js", "data/mock-speakers.js", "data/mock-talks.js", "data/schedule-builder.js", "data/schedule.js", "data/mural-config.js", "data/wall-config.js", "data/mural-scenes.js", "data/mural-notices.js", "components/moderator-login.js", "components/mural-control-panel.js", "features/moderator-login.js", "features/mural-control.js", "features/two-tap-confirm.js", "features/mural-control-panel.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "features/scheduler.js", "data/mock-links.js", "data/mock-photo.js", "data/mock-speakers.js", "data/mock-talks.js", "data/schedule-builder.js", "data/schedule.js", "data/mural-config.js", "data/wall-config.js", "data/mural-scenes.js", "data/mural-notices.js", "data/moderator-access-texts.js", "components/moderator-access.js", "features/moderator-access.js", "components/moderator-login.js", "components/mural-control-panel.js", "features/moderator-login.js", "features/mural-control.js", "features/two-tap-confirm.js", "features/mural-control-panel.js"] });
 const { window, document } = site;
 test.after(() => window.close());
 const g = name => site.get(name);
@@ -18,7 +18,7 @@ const rules = ["normalizeControl", "summarizeControl", "addNotice", "removeNotic
 const scenes = [{ id: "agora", label: "Agora e próximas" }, { id: "dicas", label: "Dicas" }];
 const templates = { notice: ["A próxima palestra começa em 5 minutos"], emergency: ["Evacuação: sigam as saídas de emergência com calma"], announce: [{ label: "Foto da galera", kind: "countdown", text: "Foto da galera: venham para perto" }, { label: "Pausa para o café", kind: "break", text: "Pausa para o café" }], kinds: g("muralNoticeTemplatesRepository").getAll().kinds };
 
-function setup({ email = "mod@gmail.com", initial = null, setImpl } = {}) {
+function setup({ email = "mod@gmail.com", initial = null, setImpl, access } = {}) {
   document.body.innerHTML = `<main id="modBody"></main>`;
   const clock = createFakeClock(1_700_000_000_000);
   const writes = [];
@@ -30,7 +30,7 @@ function setup({ email = "mod@gmail.com", initial = null, setImpl } = {}) {
   };
   const login = { signIn: async () => email, restore: async () => null, signOut: async () => {} };
   const rootEl = document.getElementById("modBody");
-  g("initMuralControlPanel")(rootEl, { repository, rules, limits, scenes, templates, login, nowMs: clock.nowMs, makeId: () => `id${++ids}`, schedule: clock.schedule, formatTime: date => `${date.getUTCHours()}h`, whenReady: task => task() });
+  g("initMuralControlPanel")(rootEl, { repository, rules, limits, scenes, templates, login, ...(access ? { access, accessText: g("moderatorAccessTextsRepository").getAll() } : {}), nowMs: clock.nowMs, makeId: () => `id${++ids}`, schedule: clock.schedule, formatTime: date => `${date.getUTCHours()}h`, whenReady: task => task() });
   const click = selector => rootEl.querySelector(selector).click();
   return { rootEl, clock, writes, listeners, click, signIn: async () => { click("[data-mod-signin]"); await waitFor(() => rootEl.querySelector("[data-notice-publish]")); } };
 }
@@ -226,4 +226,20 @@ test("anúncio ao vivo: a pausa vira aviso do tipo pausa; trocar o tipo na mão 
   await settle();
   assert.equal(writes[1].data.notices.at(-1).kind, "info");
   assert.doesNotMatch(textOf(rootEl.querySelector("[data-slot=notices]")).split("Uma frase")[1] ?? "", /Aviso ·/);
+});
+
+test("conta Google que não é moderadora: tela de bloqueio, sem ler o banco; 'tentar de novo' abre o painel quando a leitura passa", async () => {
+  let moderator = false;
+  const { rootEl, listeners } = setup({ access: { resolve: async () => ({ moderator }) } });
+  rootEl.querySelector("[data-mod-signin]").click();
+  await waitFor(() => rootEl.querySelector("[data-mod-signout]"));
+  assert.match(textOf(rootEl), /não está liberada/i);
+  assert.equal(rootEl.querySelector("[data-notice-publish]"), null);
+  assert.equal(listeners.length, 0);
+  moderator = null;
+  rootEl.querySelector("[data-mod-signout]");
+  const again = setup({ access: { resolve: async () => ({ moderator: null }) } });
+  again.rootEl.querySelector("[data-mod-signin]").click();
+  await waitFor(() => again.rootEl.querySelector("[data-mod-retry]"));
+  assert.equal(again.listeners.length, 0);
 });
