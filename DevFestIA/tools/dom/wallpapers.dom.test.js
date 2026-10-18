@@ -44,4 +44,12 @@ test("visível: um cartão por fundo, com o botão de baixar (download) e o nome
   assert.equal(link.getAttribute("href"), wallpapers[0].image);
   assert.match(link.getAttribute("download"), /^devfest-campinas-2026-fundo-.*\.jpg$/);
   assert.match(textOf(section), /Baixar fundo/);
+  assert.match(textOf(cards[0]), /9:41[\s\S]*28 de novembro/, "relógio e data da tela de bloqueio na prévia");
+  assert.equal(section.querySelectorAll(".wp-guide").length, 2, "iPhone e Android");
+});
+
+test("o cabeçalho traz o selo, o título e a frase de apoio", () => {
+  const head = document.createElement("section");
+  head.innerHTML = g("wallpapersHeadMarkup")(text);
+  assert.match(textOf(head), /GRÁTIS PARA BAIXAR[\s\S]*Fundos de tela[\s\S]*Leve o DevFest/);
 });

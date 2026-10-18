@@ -18,12 +18,18 @@ const WALLPAPERS = [
 }));
 
 const WALLPAPER_TEXTS = {
+  badge: "GRÁTIS PARA BAIXAR",
   title: "Fundos de tela",
   sub: "Leve o DevFest Campinas 2026 no seu celular. Escolha um fundo e baixe.",
+  lockTime: "9:41",
+  lockDate: "sábado, 28 de novembro",
   download: "Baixar fundo",
   photoOf: "Fundo de tela",
   soon: "Os fundos de tela do evento chegam em breve.",
-  tip: "No celular: abra a imagem, toque e segure e escolha \"Salvar\" (ou \"Baixar\"). Depois defina como papel de parede.",
+  guides: [
+    { title: "iPhone", text: "Abra a imagem, toque e segure, escolha Salvar na Fotos e depois Definir como fundo." },
+    { title: "Android", text: "Baixe a imagem, abra na Galeria, toque no menu e escolha Definir como papel de parede." },
+  ],
 };
 
 const wallpapersRepository = createRepository(WALLPAPERS, {

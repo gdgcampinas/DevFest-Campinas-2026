@@ -2,8 +2,7 @@
 function initFundosPage() {
   initShell("fundos");
   const text = wallpaperTextsRepository.getAll();
-  document.getElementById("wpTitle").textContent = text.title;
-  document.getElementById("wpSub").textContent = text.sub;
+  document.getElementById("wpHead").innerHTML = wallpapersHeadMarkup(text);
   renderWallpapers(document.getElementById("wpSection"), { config: wallpapersConfigRepository.getAll(), wallpapers: wallpapersRepository.getAll(), text, devMode: isDevModeStored() });
 }
 
