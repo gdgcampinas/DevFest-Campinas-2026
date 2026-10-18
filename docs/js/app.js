@@ -210,6 +210,7 @@ function renderVenueInfo(event, mountEl, schedule) {
     <p class="venue-addr">${event.venue}<br>${event.address}</p>
     <div class="venue-actions">
       <a class="go go-primary" href="${directions}" target="_blank" rel="noopener">${t("venue.directions", "Como chegar")}</a>
+      ${(event.venueLinks ?? []).map(link => `<a class="go" href="${escapeHtml(link.url)}" target="_blank" rel="noopener">${escapeHtml(link.label)}</a>`).join("")}
       <a class="go go-cal" href="${gcal}" target="_blank" rel="noopener">${t("venue.calendar", "+ Calendário")}</a>
     </div>`;
 }
@@ -288,6 +289,7 @@ const LOCALIZED_DATASETS = [
   () => TRACKS,
   () => SCHEDULE.filter(slot => slot.banner), // só os blocos combinados (o conteúdo das palestras é do line-up, não do site)
   () => ticketsRepository.getAll(),
+  () => venueRepository.getAll(),
   () => statsRepository.getAll(),
   () => aboutRepository.getAll(),
   () => footerRepository.getAll(),
@@ -352,6 +354,7 @@ function initShell(activePageId) {
   initStarfield(document.body, { layers: starfieldRepository.getAll(), circuitSrc: BG_CIRCUIT_SRC });
   const reveal = resolveReveal();
   applyWaitlistMode(EVENT.tickets, { devMode: isDevModeStored(), previewSales: getParam("vendas") === "1" }); // antes de qualquer tela ler EVENT.tickets (ticker, botões, SEO)
+  applyVenue(EVENT, venueRepository.getAll(), { devMode: isDevModeStored() }); // local confirmado (data/venue.js): só em DEV até `public: true`; antes de qualquer tela ler EVENT.venue/address
   warnIfDevMode(); // depois de resolveReveal(): pega o sessionStorage já atualizado por ?lineup=1/0 nesta mesma carga de página
 
   renderBrand(EVENT.hosts, document.getElementById("brand"));
