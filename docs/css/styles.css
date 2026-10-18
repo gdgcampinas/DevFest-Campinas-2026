@@ -678,7 +678,7 @@ a.featured-speaker:focus-visible{outline:2px solid var(--text);outline-offset:4p
 .venue-map-card .label{font:700 15px var(--font-display);color:oklch(95% 0.006 260)}
 .venue-map-name{font:500 13px var(--font-body);color:var(--muted)}
 .venue-map-card .frame{border-radius:12px;overflow:hidden;border:1px solid var(--card-border)}
-.venue-map-card iframe{width:100%;height:clamp(240px,34vw,340px);border:0;display:block;filter:grayscale(1) invert(.92) brightness(.9)}
+.venue-map-card iframe{width:100%;height:clamp(240px,34vw,340px);border:0;display:block;filter:saturate(1.05) brightness(.95)}
 
 /* galeria de palestrantes — extraída do schedule, some antes da revelação */
 .speakers{max-width:1180px;margin:36px auto 0;padding:0 24px}
