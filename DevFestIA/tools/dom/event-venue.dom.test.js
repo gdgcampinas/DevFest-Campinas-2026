@@ -23,8 +23,8 @@ test("DEV ou `public: true`: o local da PUC entra no EVENT, confirmado, com os l
   for (const [options, data] of [[{ devMode: true }, { ...venue, public: false }], [{}, { ...venue, public: true }]]) {
     const event = newEvent();
     assert.equal(applyVenue(event, data, options), true);
-    assert.match(event.venue, /PUC-Campinas/);
-    assert.match(event.address, /Prédio H15.*13086-900/);
+    assert.equal(event.venue, "PUC Campinas - Campus I");
+    assert.match(event.address, /Campus I.*13086-900/);
     assert.equal(event.venueConfirmed, true);
     assert.equal(event.venueLinks.map(link => link.id).join(), "map,about");
     assert.ok(event.venueLinks.every(link => link.url.startsWith("https://www.puc-campinas.edu.br/")));
