@@ -9,9 +9,9 @@ const WALLPAPERS_CONFIG = {
 const WALLPAPERS = [
   { id: "guarda-chuvas", title: "Rua dos guarda-chuvas" },
   { id: "lagoa-do-taquaral", title: "Lagoa do Taquaral" },
-  { id: "campinas-entardecer", title: "Campinas ao entardecer" },
-  { id: "por-do-sol-na-lagoa", title: "Pôr do sol na lagoa" },
-  { id: "predio-de-tijolos", title: "Prédio de tijolos" },
+  { id: "campinas-entardecer", title: "Torre do Castelo ao entardecer" },
+  { id: "por-do-sol-na-lagoa", title: "Pôr do sol na Lagoa do Taquaral" },
+  { id: "predio-de-tijolos", title: "Prédio do Relógio" },
   { id: "parque-entre-as-rochas", title: "Parque entre as rochas" },
 ].map(item => ({
   ...item,
