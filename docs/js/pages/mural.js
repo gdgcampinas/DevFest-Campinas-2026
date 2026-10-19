@@ -80,6 +80,8 @@ function initMural() {
   const talkIndex = buildTalkIndex(SCHEDULE, TRACKS, EVENT.timezone);
   const grid = { schedule: SCHEDULE, tracks: TRACKS, timezone: EVENT.timezone, phaseOf: resolveEventState };
   const rotation = createRotation();
+  const qrTargets = createQrTargets({ siteUrl: EVENT.url, extraQuery: () => rehearsal.query, albumProxyUrl: proxyUrl, links: contactRepository.getAll() });
+  const qrRenderer = createQrRenderer();
   const registry = {
     "now-next": createNowNextScene(grid),
     album: createAlbumScene({
@@ -100,7 +102,8 @@ function initMural() {
     notice: createNoticeScene({ nowMs }),
     emergency: createEmergencyScene(),
     video: createVideoScene({ videos: muralVideosRepository, cache: videoCache, baseUrl: mediaBase, slackSeconds: config.video.slackSeconds, captions: muralCaptionsRepository }),
-    qr: createQrScene({ targets: createQrTargets({ siteUrl: EVENT.url, extraQuery: () => rehearsal.query, albumProxyUrl: proxyUrl, links: contactRepository.getAll() }), qr: createQrRenderer() }),
+    wallpapers: createWallpapersScene({ repository: wallpapersRepository, preload, targets: qrTargets, qr: qrRenderer, lock: { time: wallpaperTextsRepository.getAll().lockTime, date: wallpaperTextsRepository.getAll().lockDate } }),
+    qr: createQrScene({ targets: qrTargets, qr: qrRenderer }),
     registered: createRegisteredScene({ motion: config.motion }),
     tips: createTipsScene({ repository: muralTipsRepository }),
     message: createMessageScene({ repository: muralMessagesRepository, rotation, timezone: EVENT.timezone, formatTime: (date, zone) => formatEventTime(date, zone, CODE_LOCALE), preload, mascotUrl: brandRepository.getAll().mascot }),

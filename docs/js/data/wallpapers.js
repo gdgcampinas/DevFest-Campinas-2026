@@ -10,6 +10,9 @@ const WALLPAPERS = [
   { id: "guarda-chuvas", title: "Rua dos guarda-chuvas" },
   { id: "lagoa-do-taquaral", title: "Lagoa do Taquaral" },
   { id: "campinas-entardecer", title: "Campinas ao entardecer" },
+  { id: "por-do-sol-na-lagoa", title: "Pôr do sol na lagoa" },
+  { id: "predio-de-tijolos", title: "Prédio de tijolos" },
+  { id: "parque-entre-as-rochas", title: "Parque entre as rochas" },
 ].map(item => ({
   ...item,
   image: `assets/img/wallpapers/fundo-${item.id}.jpg`,

@@ -28,6 +28,7 @@
  * saiu do rodízio (a plateia já está no evento); a página do cartão continua existindo e o QR volta se for preciso, é uma cena nova com `path: "ingressos.html?cartao=1"`.
  * O convite ("abertura") só entra ANTES do evento: ele chama pra comprar ingresso, e durante o evento todo mundo já está lá.
  *
+ * "Fundos de tela" (`type: "wallpapers"`): três celulares com os fundos do evento (data/wallpapers.js) e um QR pra página fundos.html (com `?origem=telao`, pra contar quem veio do telão); duas entradas dão duas passadas por volta, cada uma com outros três fundos. Só entra com a página pública (`WALLPAPERS_CONFIG.public`).
  * "Álbum" (`type: "album"`): X fotos de um álbum do Google Fotos (data/mural-albums.js) no modelo de `params.model` (collage, portrait-strip, polaroid, feature, mosaic ou auto, que escolhe pela
  * orientação das fotos). REGRA: o telão NUNCA mostra uma foto sozinha (só a arte do selfie é uma imagem só): cada modelo tem um mínimo de fotos e a cena some até o álbum encher. `foto-nova` aparece sozinha quando chega foto nova no álbum ao vivo (grande, com as mais recentes ao lado; fica no rodízio por 2 min). Sem o intermediário ligado (MURAL_CONFIG.albums.proxyUrl vazio) nenhuma aparece.
  *
@@ -72,10 +73,12 @@ const MURAL_SCENES = [
   { id: "patrocinio-apoio", label: "Patrocinadores de apoio", type: "sponsors", seconds: 12, params: { tiers: ["Júnior", "Intern", "Cota Permuta", "Apoio"], title: "Quem faz o DevFest Campinas acontecer", layout: "compact" } },
   { id: "agradecimento-patrocinio", label: "Agradecimento aos patrocinadores", type: "sponsors", seconds: 20, transition: "zoom", requires: { moments: ["lunch", "closing"] }, params: { kicker: "Muito obrigado", title: "A quem faz o DevFest acontecer", layout: "thanks" } },
   { id: "selfie", label: "Selfie", type: "selfie", seconds: 20, transition: "zoom", params: { hashtag: "", art: "sunset" } },
+  { id: "fundos-1", label: "Fundos de tela (QR)", type: "wallpapers", seconds: 16, transition: "zoom", enabled: WALLPAPERS_CONFIG.public, params: { kicker: "Fundos de tela", heading: "A fênix agora mora no seu celular", hint: "Escaneie e escolha o seu fundo", path: "fundos.html?origem=telao" } },
   { id: "arte-gumbleton", label: "Arte do Gumbleton", type: "art", seconds: 8, transition: "zoom", params: { art: "gumbleton" } },
   { id: "video-fiap", label: "Vídeo FIAP (patrocinadora)", type: "video", transition: "zoom", params: { playlist: "fiap" } },
   { id: "video-2025-2", label: "Vídeo DevFest 2025 (2ª vez)", type: "video", transition: "zoom", params: { playlist: "devfest-2025" } },
   { id: "album-bosch", label: "Fotos Bosch 2026", type: "album", seconds: 14, requires: { live: "albums" }, params: { album: "gdg-talks-bosch-2026", model: "auto" } },
+  { id: "fundos-2", label: "Fundos de tela (QR, 2ª vez)", type: "wallpapers", seconds: 16, transition: "zoom", enabled: WALLPAPERS_CONFIG.public, params: { kicker: "Fundos de tela", heading: "A fênix agora mora no seu celular", hint: "Escaneie e escolha o seu fundo", path: "fundos.html?origem=telao" } },
   { id: "fenix", label: "Fênix", type: "phoenix", seconds: 10, transition: "zoom", params: {} },
   { id: "podio-jam", label: "Pódio do Coding Jam", type: "podium", seconds: 20, requires: { reveal: true, live: "podium" }, params: {} },
   { id: "video-2025-intervalo", label: "Vídeo DevFest 2025 (intervalo)", type: "video", transition: "zoom", requires: { moments: ["lunch", "closing"] }, params: { playlist: "devfest-2025" } },
