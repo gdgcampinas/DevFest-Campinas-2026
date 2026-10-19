@@ -23,6 +23,7 @@ declare -a PHOTOS=(
   "Carlos Santos.png|carlos-santos"
   "Camila Fernanda Ignacio .jpeg|camila-fernanda-ignacio"
   "Davi Andrade.jpeg|davi-andrade"
+  "Dayane Trevisan.jpeg|dayane-trevisan"
   "Débora Nortes.jpg|debora-nortes"
   "Felipe de Oliveira .jpeg|felipe-de-oliveira"
   "Gustavo Costa .jpeg|gustavo-costa"
