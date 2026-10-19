@@ -13,6 +13,7 @@ const WALLPAPERS = [
   { id: "por-do-sol-na-lagoa", title: "Pôr do sol na Lagoa do Taquaral" },
   { id: "predio-de-tijolos", title: "Prédio do Relógio" },
   { id: "parque-entre-as-rochas", title: "Parque entre as rochas" },
+  { id: "parque-entre-as-rochas-ao-por-do-sol", title: "Parque entre as rochas ao pôr do sol" },
 ].map(item => ({
   ...item,
   image: `assets/img/wallpapers/fundo-${item.id}.jpg`,
