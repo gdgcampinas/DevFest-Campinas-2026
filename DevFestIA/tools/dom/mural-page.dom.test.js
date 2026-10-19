@@ -82,13 +82,21 @@ test("a página sobe e roda o rodízio: 'agora e próximas' com a grade, e a tel
   page.site.window.close();
 });
 
-test("o line-up só aparece revelado: sem ?lineup=1 a cena 'agora' (dado mock) não entra e a reserva sustenta a tela", async () => {
+test("com `alwaysReveal` desligado o line-up só aparece revelado: sem ?lineup=1 a cena 'agora' (dado mock) não entra e a reserva sustenta a tela", async () => {
   const dom = loadSite({ scripts: SCRIPTS, html: BODY, url: "http://localhost/telao.html?cenas=agora&ensaio=0&demo=2026-11-28T09:10", globals: { fetch: async () => ({ ok: true, text: async () => HTML }), Image: class { set src(url) { setTimeout(() => this.onload?.(), 0); } } } });
-  dom.run("Object.assign(MURAL_CONFIG, { reserveSeconds: 0.15 }); MURAL_CONFIG.network.probeEveryMs = 1000000;");
+  dom.run("Object.assign(MURAL_CONFIG, { reserveSeconds: 0.15, alwaysReveal: false }); MURAL_CONFIG.network.probeEveryMs = 1000000;");
   dom.run(PAGE, "pages/mural.js");
   await waitFor(() => dom.document.querySelector(".mural-scene.is-active")?.dataset.scene === "reserva");
   assert.equal(dom.document.querySelector('[data-scene="agora"]'), null);
   dom.window.close();
+});
+
+test("telão: com `alwaysReveal` (o padrão) o line-up aparece mesmo sem ?lineup=1, e todas as cotas de patrocínio entram", async () => {
+  const page = boot({ search: "cenas=linha-do-dia", rawUrl: "http://localhost/telao.html?cenas=linha-do-dia&demo=2026-11-28T09:10" });
+  assert.equal(page.site.run("MURAL_CONFIG.alwaysReveal"), true);
+  await waitFor(() => page.active() === "linha-do-dia");
+  assert.match(page.activeText(), /Hoje no DevFest|Abertura|Almoço/);
+  page.site.window.close();
 });
 
 test("a arte do convite abre o mural ANTES do evento e não entra durante ele (a reserva segura a tela)", async () => {
@@ -404,7 +412,7 @@ test("as cenas de patrocínio e o vídeo da FIAP não dependem da revelação (o
   assert.ok(!/schedule\.dev\.js/.test(HTML), "o telão não carrega o schedule.dev.js: os dados vêm de produção");
 });
 
-test("telão: a URL normal é SEMPRE produção; modo DEV e ensaio gravados na aba não vazam (valem só quando estão na URL)", () => {
+test("telão: só produção; modo DEV (gravado ou na URL) nunca vale, e o ensaio gravado na aba não vaza", () => {
   const page = boot({
     search: "",
     rawUrl: "http://localhost/telao.html?demo=2026-11-28T09:10",
@@ -418,6 +426,6 @@ test("telão: a URL normal é SEMPRE produção; modo DEV e ensaio gravados na a
   assert.equal(page.site.run("resolveReveal()"), false, "line-up escondido: dados de produção");
   page.site.window.close();
   const dev = boot({ search: "", rawUrl: "http://localhost/telao.html?lineup=1&demo=2026-11-28T09:10" });
-  assert.equal(dev.site.run("resolveReveal()"), true, "com ?lineup=1 na URL o modo DEV continua valendo");
+  assert.equal(dev.site.run("sessionStorage.getItem('devfest-campinas-2026:dev-mode')"), null, "o telão é só produção: ?lineup=1 não liga o modo DEV");
   dev.site.window.close();
 });

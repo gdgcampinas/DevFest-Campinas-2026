@@ -1,5 +1,5 @@
 /**
- * Página: MURAL DO TELÃO (telao.html), ferramenta interna (fora do menu e do sitemap, sem versão /DEV/: abra na raiz, `?lineup=1` mostra o mock).
+ * Página: MURAL DO TELÃO (telao.html), ferramenta interna (fora do menu e do sitemap, sem versão /DEV/: abra na raiz; é SÓ produção, sem modo DEV, e o line-up aparece sempre: `alwaysReveal` em data/mural-config.js).
  * É a RAIZ DE COMPOSIÇÃO: aqui, e só aqui, as peças soltas (motor, vigia, rede, fontes ao vivo, cenas, palco) são ligadas, cada uma recebendo o que precisa
  * por parâmetro. Nada de regra de negócio neste arquivo.
  *
@@ -8,17 +8,17 @@
  *   ?videos=<endereço>                            troca de onde vêm os clipes de vídeo (teste local); sem isso vale <intermediário>/media/
  *   ?cenas=agora,album-2025                          só essas cenas, na ordem pedida
  *   ?diag=1                                       painel de saúde (cena, falhas, rede, fontes, recargas)
- *   ?lineup=1 | ?demo=AAAA-MM-DDTHH:MM | ?ensaio=HH:MM   os mesmos modos de teste do resto do site (app.js)
+ *   ?demo=AAAA-MM-DDTHH:MM | ?ensaio=HH:MM       os mesmos modos de teste do resto do site (app.js); `?lineup=` NÃO vale no telão (só produção)
  */
 function initMural() {
   window.__muralBooted = true;
   const config = muralConfigRepository.getAll();
   const params = new URLSearchParams(location.search);
-  // A URL normal do telão é SEMPRE produção: modo DEV e ensaio valem só quando estão na URL (não ficam gravados na aba, que o app.js grava pro resto do site).
-  if (!params.has("lineup")) setDevModeStorage(false);
+  // O telão é SÓ produção: não existe modo DEV aqui (`?lineup=` é ignorado e o que estiver gravado na aba, que o app.js grava pro resto do site, é limpo). O ensaio só vale quando está na URL.
+  setDevModeStorage(false);
   if (!params.has("ensaio")) rehearsalStore.set(null);
   const rehearsal = setupRehearsal();
-  const reveal = resolveReveal();
+  const reveal = config.alwaysReveal || resolveReveal(); // o telão mostra o line-up sempre (data/mural-config.js: alwaysReveal)
   const clock = resolveNow();
   const schedule = defaultSchedule;
   const nowMs = () => Date.now();

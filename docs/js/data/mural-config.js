@@ -2,6 +2,8 @@
  * Configuração do MURAL do telão (telao.html). Só números e endereços, nada de lógica: o motor (features/mural.js), o vigia
  * (features/mural-health.js), a rede e o palco leem daqui. Tempos em milissegundos, salvo `*Seconds`.
  *
+ *   alwaysReveal         o telão mostra SEMPRE as cenas do line-up (agora, rolando, linha do dia, daqui a pouco, pódio) e todas as cotas de patrocínio, mesmo com o line-up escondido no resto do site (EVENT.lineupRevealed false). Decisão do
+ *                        Renato (2026-10-19): enquanto o dado de teste estiver no lugar ele aparece no telão e SOME conforme os dados reais entram; quando o line-up real estiver todo no ar, o site revela e esta chave deixa de importar
  *   speakerPhotoTimeoutMs foto de palestrante que passar disso vira iniciais (a cena "rolando agora" não espera foto lenta)
  *   prepareTimeoutMs     quanto uma cena pode demorar pra preparar (foto, leitura) antes de ser pulada
  *   failureCooldownMs    cena que falhou descansa esse tempo antes de tentar de novo; skipCooldownMs = a que não tinha nada pra mostrar; waitCooldownMs = a que tem conteúdo ainda chegando (vídeo baixando), volta logo
@@ -24,6 +26,7 @@
  *   stage                margem segura (%) e as formas do palco por proporção, do mais largo ao mais alto (data-shape; o CSS escolhe o desenho)
  */
 const MURAL_CONFIG = {
+  alwaysReveal: true,
   defaultSeconds: 12,
   transitionMs: 700,
   prepareTimeoutMs: 8000,
