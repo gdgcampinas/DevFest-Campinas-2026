@@ -4,6 +4,7 @@
  *
  *   alwaysReveal         o telão mostra SEMPRE as cenas do line-up (agora, rolando, linha do dia, daqui a pouco, pódio) e todas as cotas de patrocínio, mesmo com o line-up escondido no resto do site (EVENT.lineupRevealed false). Decisão do
  *                        Renato (2026-10-19): enquanto o dado de teste estiver no lugar ele aparece no telão e SOME conforme os dados reais entram; quando o line-up real estiver todo no ar, o site revela e esta chave deixa de importar
+ *   fullscreenHint       dica discreta enquanto o telão não está em tela cheia (features/telao-fullscreen.js); o clique ou a tecla F entram em tela cheia. O jeito certo no dia é o Chrome em `--kiosk` (DevFestIA/tools/telao/)
  *   speakerPhotoTimeoutMs foto de palestrante que passar disso vira iniciais (a cena "rolando agora" não espera foto lenta)
  *   prepareTimeoutMs     quanto uma cena pode demorar pra preparar (foto, leitura) antes de ser pulada
  *   failureCooldownMs    cena que falhou descansa esse tempo antes de tentar de novo; skipCooldownMs = a que não tinha nada pra mostrar; waitCooldownMs = a que tem conteúdo ainda chegando (vídeo baixando), volta logo
@@ -42,6 +43,7 @@ const MURAL_CONFIG = {
   speakerPhotoTimeoutMs: 2500,
   clockEveryMs: 1000,
   kioskEnsureEveryMs: 60000,
+  fullscreenHint: "Clique ou aperte F para tela cheia",
   health: {
     checkEveryMs: 5000,
     maxConsecutiveFailures: 6,

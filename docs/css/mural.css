@@ -414,3 +414,7 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .ms-video-sub{position:absolute;left:50%;bottom:calc(var(--u) * 4);transform:translateX(-50%);width:max-content;max-width:86%;margin:0;padding:calc(var(--u) * 1.2) calc(var(--u) * 3);border-radius:calc(var(--u) * 1.8);background:oklch(8% .01 260 / .78);color:#fff;font:700 calc(var(--u) * 4.4) / 1.22 var(--font-display);text-align:center;text-wrap:balance;text-shadow:0 calc(var(--u) * .2) calc(var(--u) * .8) oklch(0% 0 0 / .6)}
 .ms-video-sub[hidden]{display:none}
 .mural-stage[data-shape="tall"] .ms-video-sub{font-size:calc(var(--u) * 5.2);max-width:92%}
+
+/* dica de tela cheia (features/telao-fullscreen.js): some em tela cheia e em quiosque */
+.telao-fs-hint{position:fixed;left:50%;bottom:calc(var(--u, 1vmin) * 1.2);transform:translateX(-50%);z-index:5;padding:.4em 1em;border-radius:999px;background:rgb(0 0 0 / .72);color:#fff;font:600 14px var(--font-body);pointer-events:none}
+.telao-fs-hint[hidden]{display:none}

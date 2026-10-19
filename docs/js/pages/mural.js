@@ -44,6 +44,7 @@ function initMural() {
   if (spec.mode === "fill" && !diagOn) {
     const kiosk = createKiosk(); // telão de verdade: sem cursor e sem tela apagando (na simulação e no diagnóstico o cursor fica)
     kiosk.start();
+    createTelaoFullscreen({ hintText: config.fullscreenHint }).start(); // janela comum: a dica e o primeiro clique (ou F) põem em tela cheia; em `--kiosk` já abre assim
     scheduleEvery(schedule, config.kioskEnsureEveryMs, () => kiosk.ensure());
   }
 
