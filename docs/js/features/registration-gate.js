@@ -7,10 +7,11 @@
  *                          depois que os módulos do Firebase rodaram)
  *   verifiedRepository   → conjunto persistido de chaves já verificadas
  *   toKey(edition,email) → registrationKey (email-hash.js)
+ *   sync                 (opcional, features/registration-sync.js) e-mail ainda não encontrado: mostra "estamos confirmando", pede o sync do Sympla na hora e consulta de novo por até ~90 s
  * Devolve { isVerified, verify, mount }. `mount` desenha o formulário num
  * elemento e chama `onVerified` quando a inscrição é confirmada.
  */
-function createRegistrationGate({ getRegistrations, edition, verifiedRepository, toKey = registrationKey }) {
+function createRegistrationGate({ getRegistrations, edition, verifiedRepository, toKey = registrationKey, sync = null }) {
   const isVerified = () => verifiedRepository.count() > 0;
 
   async function verify(email) {
@@ -31,7 +32,11 @@ function createRegistrationGate({ getRegistrations, edition, verifiedRepository,
         const email = form.elements.email.value;
         render("checking");
         try {
-          const result = await verify(email);
+          let result = await verify(email);
+          if (!result.ok && sync) {
+            render("confirming");
+            await sync.confirm(async () => { result = await verify(email); return result.ok; });
+          }
           if (result.ok) onVerified(result);
           else render("not-found");
         } catch {

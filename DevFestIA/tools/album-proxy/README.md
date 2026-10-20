@@ -12,11 +12,14 @@ extrai a lista de fotos e a devolve como JSON pro mural. **Leitura não oficial:
 
 - `GET /media/<arquivo.mp4>` -> um clipe de vídeo do mural (`media-service.mjs`), com `content-type: video/mp4`, CORS pros endereços permitidos e cache de 1 dia (e cache da borda da Cloudflare: o GitHub é consultado uma vez). Os arquivos ficam num anexo de release do GitHub (variável `MEDIA_BASE` em `wrangler.toml`, ex.: `https://github.com/gdgcampinas/DevFest-Campinas-2026/releases/download/mural-video-2025/`): o repositório é público e não guarda mídia pesada, e o GitHub não manda CORS, por isso o mural pede ao intermediário. Só nomes `.mp4` simples (sem caminho, sem `..`). Teste local: `MEDIA_DIR=<pasta com os .mp4> node DevFestIA/tools/album-proxy/dev-server.mjs` e `telao.html?albuns=http://localhost:8787`.
 
+- `POST /sync` -> pede ao GitHub pra rodar o job **🎫 Sincronizar Sympla** agora (`sync-trigger.mjs`, `sync-handler.mjs`). O agendamento do próprio GitHub roda em média a cada 4 h, então o Worker também dispara o job **a cada 5 min** (`[triggers] crons` em `wrangler.toml`) e o site chama `/sync` quando alguém acabou de comprar o ingresso e quer liberar o cartão "Eu vou!" ou entrar no sorteio. Respostas: `202 { status: "started" }`, `429 { status: "cooldown", retryInMs }` (rodou há menos de 2 min), `503` (sem token) e `502` (o GitHub recusou). Nunca devolve o token. CORS só pro site.
+  **Configuração única (feita pelo Renato no Terminal, o token nunca vai pro repositório nem pro chat):** crie um token do GitHub **fine-grained**, só neste repositório, permissão **Actions: Read and write** (nenhuma outra), vencimento no fim de novembro; depois `cd DevFestIA/tools/album-proxy && npx wrangler secret put SYNC_GITHUB_TOKEN` (cole o token) e `npx wrangler deploy`. As variáveis `SYNC_REPO` e `SYNC_WORKFLOW` já estão em `wrangler.toml`. Sem o token o `/sync` responde 503 e o resto do intermediário segue igual.
+
 Cache por álbum: o álbum ao vivo vale 45 s e os demais 10 min, e pedidos simultâneos dividem UMA busca, então o Google recebe poucas consultas por minuto não importa quantas telas pedirem.
 
 ## Peças (uma responsabilidade por arquivo, tudo injetado)
 `parse-album.mjs` (leitor puro) · `google-photos-repository.mjs` (busca a página; link curto em dois passos) · `album-service.mjs` (cache, busca compartilhada, lista antiga em falha) ·
-`album-handler.mjs` (HTTP e CORS, independente do provedor) · `worker.mjs` (adaptador Cloudflare) · `dev-server.mjs` (servidor local) · `memory-cache.mjs`.
+`album-handler.mjs` (HTTP e CORS, independente do provedor) · `sync-trigger.mjs` e `sync-handler.mjs` (disparo do sync do Sympla) · `worker.mjs` (adaptador Cloudflare) · `dev-server.mjs` (servidor local) · `memory-cache.mjs`.
 
 ## Os links dos álbuns NUNCA vão pro repositório
 O repositório é público e a chave do link dá acesso ao álbum. Os links ficam num segredo/variável `ALBUMS` (JSON):

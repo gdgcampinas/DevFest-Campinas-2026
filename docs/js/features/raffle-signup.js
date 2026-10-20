@@ -17,9 +17,10 @@ const RAFFLE_ENTRY_KEY = "raffle";
  * `requireTicket` (data/raffle-config.js, espelho de `raffleRequiresTicket()` nas regras): pede o e-mail do ingresso do
  * Sympla e cadastra UM por ingresso: o id do cadastro é a chave da inscrição (email-hash.js, a mesma do cartão
  * "Eu vou!"), então o mesmo e-mail em 2 aparelhos cai no mesmo documento e o banco recusa o segundo.
+ *   sync           (opcional, features/registration-sync.js) e-mail ainda não achado: avisa que está confirmando, pede o sync do Sympla na hora e consulta de novo por até ~90 s
  *   registrations  repository de consulta das inscrições (`get(chave)`); toKey(edition, email) = registrationKey.
  */
-function initRaffleSignup(rootEl, { myRaffle, myRaffleCheckin, requireTicket = false, registrations = () => window.registrationsRepository, toKey = registrationKey, edition = CURRENT_EDITION, rules = raffleRulesRepository.getAll(), whenReady = runAfterModules }) {
+function initRaffleSignup(rootEl, { myRaffle, myRaffleCheckin, requireTicket = false, sync = null, registrations = () => window.registrationsRepository, toKey = registrationKey, edition = CURRENT_EDITION, rules = raffleRulesRepository.getAll(), whenReady = runAfterModules }) {
   const phaseNow = () => {
     if (myRaffle.has(RAFFLE_ENTRY_KEY)) return "done";
     return myRaffleCheckin.has(RAFFLE_ENTRY_KEY) ? "signup" : "locked";
@@ -75,7 +76,12 @@ function initRaffleSignup(rootEl, { myRaffle, myRaffleCheckin, requireTicket = f
       const data = { entryKey: RAFFLE_ENTRY_KEY, firstName, lastName };
       if (requireTicket) {
         const key = await toKey(edition, email);
-        if (!(await registrations().get(key))) {
+        let registered = await registrations().get(key);
+        if (!registered && sync) {
+          showFormError(formEl, submitBtn, t("raffle.confirming", "Estamos confirmando o seu ingresso, pode levar até 2 minutos…"));
+          registered = await sync.confirm(async () => Boolean(await registrations().get(key)));
+        }
+        if (!registered) {
           submitBtn.disabled = false;
           return showFormError(formEl, submitBtn, t("raffle.ticketNotFound", "Não encontramos inscrição com esse e-mail. Se você acabou de se inscrever, aguarde até 10 minutos e tente de novo."));
         }

@@ -36,6 +36,16 @@ function applyWaitlistMode(tickets, { devMode = false } = {}) {
   return true;
 }
 
+/**
+ * O cartão "Eu vou!" só pra quem tem ingresso (gate pelo e-mail do Sympla)? `EVENT.tickets.registrationGate` é `true`/`false`, ou `{ enabled, public }`: com `public: false` só em modo DEV (pra testar
+ * antes de liberar), `true` em produção.
+ */
+function registrationGateOn(tickets, { devMode = false } = {}) {
+  const gate = tickets.registrationGate;
+  if (gate && typeof gate === "object") return Boolean(gate.enabled && (gate.public || devMode));
+  return Boolean(gate);
+}
+
 function ticketCtaState(tickets, { label = tickets.label, url = tickets.url, pageHref = "" } = {}) {
   if (url && pageHref && !tickets.waitlistOn) return { kind: "tickets-page", href: pageHref, internal: true, label }; // cabeçalho, barra e topo da home levam à página de ingressos, que escolhe o tipo e só então vai ao Sympla
   if (tickets.waitlistOn) return { kind: "waitlist-form", href: tickets.waitlist.href ?? "ingressos.html#waitlist", internal: true, label: t("tickets.waitlist", "Avise-me quando abrir") };

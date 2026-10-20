@@ -19,11 +19,13 @@ function initIngressos() {
       t("tickets.soon", "Os tipos e valores de ingresso serão revelados em breve."));
   }
 
-  const gate = EVENT.tickets.registrationGate
+  const syncConfig = registrationSyncConfigRepository.getAll();
+  const gate = registrationGateOn(EVENT.tickets, { devMode: isDevModeStored() })
     ? createRegistrationGate({
         getRegistrations: () => window.registrationsRepository,
         edition: CURRENT_EDITION,
         verifiedRepository: verifiedRegistrationsRepository,
+        sync: createRegistrationSync({ syncUrl: syncConfig.url, waitMs: syncConfig.waitMs, pollMs: syncConfig.pollMs }),
       })
     : null;
   initShareCard(document.body, {

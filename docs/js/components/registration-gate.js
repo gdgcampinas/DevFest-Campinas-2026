@@ -3,6 +3,7 @@
  * features/registration-gate.js decide a fase e liga o envio. Fases:
  *   "form"      → pedir o e-mail
  *   "checking"  → consultando
+ *   "confirming" → e-mail ainda não achado: o site pediu o sync do Sympla e consulta de novo (até ~90 s)
  *   "not-found" → e-mail sem inscrição (mostra o botão de ingresso)
  *   "error"     → falha de rede ao consultar
  * `ticketButtonHtml` já vem pronto de quem chama (mesmo botão de compra do site).
@@ -13,6 +14,9 @@ const registrationGateMessage = phase => ({
 })[phase];
 
 function registrationGateMarkup({ phase = "form", ticketButtonHtml = "" } = {}) {
+  if (phase === "confirming") {
+    return `<div class="registration-gate"><p class="registration-gate-hint">${t("gate.confirming", "Estamos confirmando sua inscrição, pode levar até 2 minutos…")}</p></div>`;
+  }
   if (phase === "checking") {
     return `<div class="registration-gate"><p class="registration-gate-hint">${t("gate.checking", "Verificando sua inscrição…")}</p></div>`;
   }

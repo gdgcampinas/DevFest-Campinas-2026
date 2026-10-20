@@ -14,7 +14,7 @@ const SCRIPTS = [...SITE_BASE, "data/raffle-rules.js", "data/raffle-config.js", 
 const windows = [];
 test.after(() => windows.forEach(window => window.close()));
 
-function setup({ alreadyIn = false, checkedIn = false, url = "http://localhost/", requireTicket = false, registered = [] } = {}) {
+function setup({ alreadyIn = false, checkedIn = false, url = "http://localhost/", requireTicket = false, registered = [], sync = null } = {}) {
   const calls = [];
   const checkinCalls = [];
   const fail = { add: null, checkinAdd: null, hasCheckin: false, lookup: null };
@@ -52,7 +52,7 @@ function setup({ alreadyIn = false, checkedIn = false, url = "http://localhost/"
   const rootEl = document.getElementById("raffle");
   const lookups = [];
   const registrations = () => ({ async get(key) { lookups.push(key); if (fail.lookup) throw fail.lookup; return registered.includes(key) ? { ticketName: "Grátis" } : null; } });
-  const { render } = site.get("initRaffleSignup")(rootEl, { myRaffle, myRaffleCheckin, requireTicket, registrations, toKey: async (edition, email) => `${edition}_${email.toLowerCase()}`, edition: "2026" });
+  const { render } = site.get("initRaffleSignup")(rootEl, { myRaffle, myRaffleCheckin, requireTicket, sync, registrations, toKey: async (edition, email) => `${edition}_${email.toLowerCase()}`, edition: "2026" });
   render(rootEl);
   const fill = (name, value) => { rootEl.querySelector(`[name=${name}]`).value = value; };
   const check = name => { rootEl.querySelector(`[name=${name}]`).checked = true; };
@@ -227,6 +227,25 @@ test("ingresso: e-mail sem inscrição é recusado na tela, não grava e deixa t
   await settle();
   assert.match(textOf(world.rootEl), /Não encontramos inscrição com esse e-mail/);
   assert.equal(world.calls.length, 0);
+  assert.equal(world.myRaffle.has("raffle"), false);
+  assert.equal(world.rootEl.querySelector("[data-raffle-signup-form] [type=submit]").disabled, false);
+});
+
+test("ingresso recém-comprado: avisa que está confirmando, pede o sync e, achando a inscrição, cadastra", async () => {
+  const registered = [];
+  const world = setup({ checkedIn: true, requireTicket: true, registered, sync: { confirm: async check => { registered.push("2026_novo@x.com"); return check(); } } });
+  fillTicketForm(world, "novo@x.com");
+  world.submit();
+  await settle();
+  assert.ok(world.myRaffle.has("raffle"), "depois de confirmar o ingresso o cadastro é gravado");
+});
+
+test("ingresso: se nem o sync achar a inscrição, mostra a recusa e deixa tentar de novo", async () => {
+  const world = setup({ checkedIn: true, requireTicket: true, registered: [], sync: { confirm: async () => false } });
+  fillTicketForm(world, "intruso@x.com");
+  world.submit();
+  await settle();
+  assert.match(textOf(world.rootEl), /Não encontramos inscrição com esse e-mail/);
   assert.equal(world.myRaffle.has("raffle"), false);
   assert.equal(world.rootEl.querySelector("[data-raffle-signup-form] [type=submit]").disabled, false);
 });
