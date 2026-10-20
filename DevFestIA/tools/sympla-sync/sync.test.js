@@ -45,6 +45,14 @@ test("estatísticas contam aprovados, check-in e respostas do formulário", () =
   assert.deepEqual(stats, { total: 1, byTicket: { VIP: 1 }, checkedIn: 1, notApproved: 1, formAnswers: { "Camiseta: M": 1 } });
 });
 
+test("o resumo NUNCA imprime telefone, nome ou campo livre do formulário (o repositório é público): só as respostas de camiseta", () => {
+  const withForm = { ...person("a@x.com", "VIP", "o1"), customForm: [{ name: "WhatsApp: (43) 90000-0000", value: "" }, { name: "Telefone", value: "11 90000-0000" }, { name: "Camiseta: Masculina P (Largura: 54cm)", value: "" }, { name: "Camiseta", value: "M" }, { name: "Nome completo", value: "Fulano" }] };
+  const stats = buildStats([withForm], APPROVED);
+  assert.deepEqual(stats.formAnswers, { "Camiseta: Masculina P (Largura: 54cm): ": 1, "Camiseta: M": 1 });
+  const text = JSON.stringify(stats);
+  assert.doesNotMatch(text, /WhatsApp|Telefone|Fulano|90000/);
+});
+
 function fakeDatabase(initial = {}) {
   const docs = new Map(Object.entries(initial));
   const commits = [];

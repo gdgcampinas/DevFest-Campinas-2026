@@ -42,10 +42,16 @@ function diffRegistrations(previous, desired) {
 
 const tally = (items, keyFn) => items.reduce((acc, item) => ({ ...acc, [keyFn(item)]: (acc[keyFn(item)] ?? 0) + 1 }), {});
 
-/** Números do painel privado (só no resumo do job, nunca no Firestore público). */
-function buildStats(participants, approvedStatuses) {
+/**
+ * Só as perguntas de camiseta (tamanho e modelo) entram no resumo do job. O repositório é PÚBLICO, então o resumo e o log do GitHub Actions também são: telefone, nome ou qualquer campo
+ * livre do formulário do Sympla NUNCA pode ser impresso (aconteceu uma vez com um WhatsApp). `answerFilter` é injetável.
+ */
+const isShirtAnswer = answer => /camiseta/i.test(answer?.name ?? "");
+
+/** Números do resumo do job (nunca no Firestore público). */
+function buildStats(participants, approvedStatuses, { answerFilter = isShirtAnswer } = {}) {
   const approved = approvedParticipants(participants, approvedStatuses);
-  const formAnswers = approved.flatMap(participant => participant.customForm ?? []);
+  const formAnswers = approved.flatMap(participant => participant.customForm ?? []).filter(answerFilter);
   return {
     total: approved.length,
     byTicket: tally(approved, participant => participant.ticketName || "(sem nome)"),
@@ -55,4 +61,4 @@ function buildStats(participants, approvedStatuses) {
   };
 }
 
-module.exports = { approvedParticipants, buildDesiredRegistrations, diffRegistrations, buildStats };
+module.exports = { approvedParticipants, buildDesiredRegistrations, diffRegistrations, buildStats, isShirtAnswer };
