@@ -470,6 +470,7 @@ I18N_DICTIONARIES.en = {
     "Parque entre as rochas": "Park among the rocks",
     "Parque entre as rochas ao pôr do sol": "Park among the rocks at sunset",
     "Torre do Castelo à noite": "Castle Tower at night",
+    "Fênix no circuito": "Phoenix on the circuit",
     "Fundos de tela": "Wallpapers",
     "Leve o DevFest Campinas 2026 no seu celular. Escolha um fundo e baixe.": "Take DevFest Campinas 2026 with you on your phone. Pick a wallpaper and download it.",
     "Baixar fundo": "Download wallpaper",

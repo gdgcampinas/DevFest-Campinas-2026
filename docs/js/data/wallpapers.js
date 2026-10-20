@@ -15,6 +15,7 @@ const WALLPAPERS = [
   { id: "parque-entre-as-rochas", title: "Parque entre as rochas" },
   { id: "parque-entre-as-rochas-ao-por-do-sol", title: "Parque entre as rochas ao pôr do sol" },
   { id: "torre-do-castelo-a-noite", title: "Torre do Castelo à noite" },
+  { id: "fenix-no-circuito", title: "Fênix no circuito" },
 ].map(item => ({
   ...item,
   image: `assets/img/wallpapers/fundo-${item.id}.jpg`,
