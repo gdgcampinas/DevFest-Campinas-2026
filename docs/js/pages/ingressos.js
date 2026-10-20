@@ -30,7 +30,6 @@ function initIngressos() {
     : null;
   initShareCard(document.body, {
     event: EVENT,
-    schedule: SCHEDULE,
     createModal,
     gate,
     ticketButtonHtml: ticketButtonMarkup(ticketCtaState(EVENT.tickets), { className: "chip-btn", place: "share-card-gate" }),

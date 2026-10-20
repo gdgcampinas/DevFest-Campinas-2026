@@ -1,15 +1,9 @@
 /**
- * Cartão pessoal "Eu vou!" — sem backend, sem dependência de logo novo
- * (troca sozinho quando os tokens de cor mudarem). Duas camadas, mesmo
- * princípio de live-status.js:
- *   drawShareCard() → só desenha no canvas recebido, nenhum acesso a
- *                      repository/DOM fora dele (fácil de re-testar isolado)
- *   initShareCard() → comportamento: abre o modal, redesenha ao digitar
- *                      o nome, baixa ou compartilha o PNG gerado
- *
- * Cores vêm dos design tokens (getComputedStyle em --google-* e --bg),
- * nunca hex fixo — herda qualquer troca de paleta em tokens.css sem
- * precisar tocar aqui (mesma regra de "zero por-track CSS").
+ * Cartão pessoal "Eu vou!" — sem backend. A arte é uma imagem pronta do design (assets/img/share-card/, escolhida por idioma em data/share-card-design.js); a pessoa só acrescenta o nome. Duas
+ * camadas, mesmo princípio de live-status.js:
+ *   drawShareCard() → só desenha no canvas recebido (a arte e a faixa com o nome, peças em features/share-card-art.js)
+ *   initShareCard() → comportamento: abre o modal, redesenha ao digitar o nome, baixa ou compartilha o PNG gerado
+ * Cores e fonte vêm dos design tokens (getComputedStyle), nunca fixas.
  */
 /** Carrega uma imagem (null se não houver `src` ou se falhar): o cartão desenha sem logo em vez de quebrar. */
 function loadImage(src) {
@@ -27,127 +21,43 @@ function cssToken(name) {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 
-/** Desenha o cartão 1080x1350 (formato feed/stories) no canvas recebido. `logo` é uma imagem já carregada (opcional). */
-function drawShareCard(canvas, { event, dateLabel, name = "", logo = null }) {
+/**
+ * Desenha o cartão (formato feed/stories, 1080x1350) no canvas recebido: a ARTE PRONTA (assets/img/share-card/, feita no design: fênix, trilhas, data, logos) e, se a pessoa digitou o nome, a faixa
+ * "NOME vai!" por cima, numa área livre da arte. Tudo por parâmetro: `template` (imagem já carregada; sem ela o cartão fica só com o fundo), `design` (data/share-card-design.js) e `texts`
+ * ({ nameGoes }, já traduzido). As cores vêm dos tokens (getComputedStyle), nunca hex fixo.
+ */
+function drawShareCard(canvas, { template = null, name = "", texts, design = SHARE_CARD_DESIGN }) {
   const ctx = canvas.getContext("2d");
   const { width, height } = canvas;
-  const display = cssToken("--font-display");
-  const body = cssToken("--font-body");
-  const blue = cssToken("--google-blue");
-  const green = cssToken("--google-green");
-  const yellow = cssToken("--google-yellow");
-  const red = cssToken("--google-red");
-
   ctx.fillStyle = cssToken("--bg");
   ctx.fillRect(0, 0, width, height);
-
-  const glowTop = ctx.createRadialGradient(width * 0.85, height * 0.05, 0, width * 0.85, height * 0.05, width * 0.75);
-  glowTop.addColorStop(0, withAlpha(blue, 0.55));
-  glowTop.addColorStop(1, withAlpha(blue, 0));
-  ctx.fillStyle = glowTop;
-  ctx.fillRect(0, 0, width, height);
-
-  const glowBottom = ctx.createRadialGradient(width * 0.1, height * 0.95, 0, width * 0.1, height * 0.95, width * 0.7);
-  glowBottom.addColorStop(0, withAlpha(green, 0.32));
-  glowBottom.addColorStop(1, withAlpha(green, 0));
-  ctx.fillStyle = glowBottom;
-  ctx.fillRect(0, 0, width, height);
-
-  ctx.textAlign = "left";
-  if (logo) {
-    const logoHeight = 84;
-    ctx.drawImage(logo, 72, 70, (logo.naturalWidth / logo.naturalHeight) * logoHeight, logoHeight);
-  } else {
-    ctx.fillStyle = "#dfe3ea";
-    ctx.font = `700 34px ${display}`;
-    ctx.fillText("GDG Campinas", 72, 130);
-  }
-
-  ctx.fillStyle = cssToken("--accent");
-  ctx.font = `700 52px ${display}`;
-  ctx.fillText(name ? t("shareCard.nameGoes", "{name} vai!", { name }) : t("shareCard.going", "Eu vou!"), 72, 340);
-
-  ctx.fillStyle = "#f4f5f8";
-  wrapText(ctx, event.name.toUpperCase(), 72, 460, width - 144, 92, `700 88px ${display}`);
-  ctx.fillText("2026", 72, 640);
-
-  ctx.fillStyle = "#aab2c0";
-  ctx.font = `500 38px ${body}`;
-  ctx.fillText(`${dateLabel} · ${event.address}`, 72, 720);
-
-  const tracks = [
-    { label: t("shareCard.trackIa", "IA"), color: blue },
-    { label: t("shareCard.trackWeb", "Front-end / Back-end / Data - Full Stack"), color: yellow },
-    { label: t("shareCard.trackMobile", "Mobile e Agile"), color: green },
-    { label: t("shareCard.trackCareers", "Carreira em Tecnologia"), color: red },
-  ];
-  let ty = height - 260;
-  ctx.font = `500 30px ${body}`;
-  tracks.forEach(track => {
-    ctx.fillStyle = track.color;
-    ctx.beginPath();
-    ctx.arc(84, ty - 10, 12, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = "#aab2c0";
-    ctx.fillText(track.label, 112, ty);
-    ty += 48;
-  });
-
-  ctx.fillStyle = "#7d8794";
-  ctx.font = `500 28px ${body}`;
-  ctx.fillText("#DevFestCampinas2026", 72, height - 48);
-}
-
-/** oklch()/hex + alpha, funciona com qualquer token (mesmo em oklch()). */
-function withAlpha(token, alpha) {
-  return token.startsWith("oklch(") ? token.replace(")", ` / ${alpha})`) : token;
-}
-
-/** Quebra de linha simples por largura máxima, uma função reusada por qualquer texto do cartão. */
-function wrapText(ctx, text, x, y, maxWidth, lineHeight, font) {
-  ctx.font = font;
-  const words = text.split(" ");
-  let line = "";
-  let cursorY = y;
-  words.forEach((word, index) => {
-    const test = line ? `${line} ${word}` : word;
-    if (ctx.measureText(test).width > maxWidth && line) {
-      ctx.fillText(line, x, cursorY);
-      line = word;
-      cursorY += lineHeight;
-    } else {
-      line = test;
-    }
-    if (index === words.length - 1) ctx.fillText(line, x, cursorY);
-  });
+  if (template) ctx.drawImage(template, 0, 0, width, height);
+  if (name) drawNamePill(ctx, { text: texts.nameGoes.replace("{name}", name).toUpperCase(), box: design.namePill, font: cssToken("--font-display"), accent: cssToken("--accent"), bg: cssToken("--bg") });
 }
 
 /**
  * Comportamento do modal: abrir, redesenhar ao digitar, baixar ou
- * compartilhar. `schedule` só serve pra reusar eventDateLabel()
- * (features/agenda.js, mesma função do header e do ticker: "28 de
- * novembro de 2026" em 1 lugar só, nunca recalculada aqui).
+ * compartilhar.
  *
  * `gate` (opcional, ver features/registration-gate.js): se vier e a
  * inscrição ainda não foi verificada neste navegador, o modal pede o
  * e-mail do Sympla antes de mostrar o cartão. Sem `gate` o cartão é livre.
  * `?cartao=1` na URL abre o modal sozinho (link do e-mail de confirmação).
  */
-function initShareCard(rootEl, { event, schedule, createModal, gate = null, ticketButtonHtml = "" }) {
+function initShareCard(rootEl, { event, createModal, gate = null, ticketButtonHtml = "", design = SHARE_CARD_DESIGN, locale = i18n.locale }) {
   let modal = null;
-  let logo = null;
-  loadImage(event.hosts?.[0]?.logo).then(image => {
-    logo = image;
-    if (modal && !modal.el.hidden) redraw(modal.el); // o modal abriu antes do logo chegar
-  });
+  let template = null;
+  const redrawIfOpen = () => { if (modal && !modal.el.hidden) redraw(modal.el); };
+  loadImage(design.templates[locale] ?? design.templates.default).then(image => { template = image; redrawIfOpen(); }); // o modal pode abrir antes da arte chegar
+  document.fonts?.ready.then(redrawIfOpen); // a fonte do site pode chegar depois do primeiro desenho
   const ensureModal = () => modal ?? (modal = createModal("shareCardModal", { label: t("shareCard.modalLabel", "Cartão de compartilhamento") }));
-  const dateLabel = eventDateLabel(schedule, event.timezone);
+  const texts = { nameGoes: t("shareCard.nameGoes", "{name} vai!") };
 
   function redraw(modalEl) {
     const canvas = modalEl.querySelector("[data-share-card-canvas]");
     if (!canvas) return; // o modal está no passo do e-mail (gate), ainda sem cartão
     const name = modalEl.querySelector("[data-share-card-name]").value.trim();
-    drawShareCard(canvas, { event, dateLabel, name, logo });
+    drawShareCard(canvas, { template, name, texts, design });
   }
 
   function showCard({ el, openHTML }) {
