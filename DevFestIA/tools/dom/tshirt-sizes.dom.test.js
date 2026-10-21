@@ -50,6 +50,23 @@ test("clicar numa aba troca a tabela", () => {
   assert.equal(section.querySelector('[data-sizes-model="infantil"]').getAttribute("aria-pressed"), "true");
 });
 
+test("clicar no atalho rola até o guia sem navegar (na versão /DEV/ o link #tamanhos abriria a página principal)", () => {
+  const dom = loadSite({ scripts: [...SITE_BASE, "components/escape-html.js", "features/release-gate.js", "data/tshirt-sizes.js", "components/tshirt-sizes.js", "features/tshirt-sizes.js"] });
+  const section = dom.document.createElement("section");
+  dom.document.body.appendChild(section);
+  let scrolled = 0;
+  section.scrollIntoView = () => { scrolled++; };
+  dom.get("initTshirtSizes")(section, { models: dom.get("tshirtSizesRepository").getAll(), text: dom.get("tshirtSizesTextsRepository").getAll(), config: { public: true }, doc: dom.document });
+  const holder = dom.document.createElement("div");
+  holder.innerHTML = dom.get("tshirtSizesLinkMarkup")(dom.get("tshirtSizesTextsRepository").getAll());
+  dom.document.body.appendChild(holder);
+  const click = new dom.window.MouseEvent("click", { bubbles: true, cancelable: true });
+  holder.querySelector("a").dispatchEvent(click);
+  assert.equal(click.defaultPrevented, true);
+  assert.equal(scrolled, 1);
+  dom.window.close();
+});
+
 test("o atalho leva ao guia e o texto do dado é escapado", () => {
   const link = document.createElement("div");
   link.innerHTML = g("tshirtSizesLinkMarkup")(text);
