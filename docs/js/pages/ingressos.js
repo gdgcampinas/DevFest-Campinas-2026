@@ -8,6 +8,8 @@ function initIngressos() {
   const showcases = { tshirt: () => tshirtShowcaseMarkup(tshirtDeps) }; // vitrine extra por tipo de ingresso (`showcase` em data/tickets.js)
   initTshirtGallery(document.body, { createModal, ...tshirtDeps });
 
+  document.getElementById("ticketsHero").innerHTML = ticketsHeroMarkup({ text: ticketsHeroTextsRepository.getAll(), open: EVENT.tickets.salesOpen });
+
   const ticketsSection = document.getElementById("ticketsSection");
   if (EVENT.tickets.waitlistOn && !reveal) { // ingressos ainda não abriram e os tipos não foram revelados: aviso bonito em vez da caixa vazia, e sem "gerar cartão" (ninguém tem ingresso ainda)
     ticketsSection.hidden = false;
