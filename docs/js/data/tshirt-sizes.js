@@ -20,8 +20,10 @@ const TSHIRT_SIZES = [
 
 const TSHIRT_SIZES_TEXTS = {
   badge: "GUIA DE TAMANHOS",
-  title: "Qual é o seu tamanho?",
+  title: "Qual é o seu",
+  titleAccent: "tamanho?",
   sub: "As medidas da camiseta do kit, para você escolher o tamanho certo na hora da inscrição.",
+  subStrong: "Confira antes de se inscrever.",
   columns: { sizeName: "Tamanho", height: "Altura", width: "Largura" },
   unit: "cm",
   heightLabel: "Altura",

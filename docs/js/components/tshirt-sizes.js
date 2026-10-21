@@ -19,8 +19,8 @@ function tshirtSizesMarkup({ models, text, activeId }) {
   return `
     <div class="ts-head">
       <span class="ts-badge">${escapeHtml(text.badge)}</span>
-      <h2>${escapeHtml(text.title)}</h2>
-      <p>${escapeHtml(text.sub)}</p>
+      <h2>${escapeHtml(text.title)} <span>${escapeHtml(text.titleAccent)}</span></h2>
+      <p>${escapeHtml(text.sub)} <strong>${escapeHtml(text.subStrong)}</strong></p>
     </div>
     <div class="ts-tabs" role="group">${tabs}</div>
     <div class="ts-body">

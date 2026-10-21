@@ -13,12 +13,14 @@
 .tshirt-note{margin:0;font:500 12.5px/1.5 var(--font-body);color:var(--muted);text-align:center}
 
 /* guia de tamanhos (components/tshirt-sizes.js) */
-.tshirt-sizes{max-width:880px;margin:44px auto 0;padding:0 24px;scroll-margin-top:16px}
+.tshirt-sizes{max-width:880px;margin:72px auto 0;padding:0 24px;scroll-margin-top:16px}
 .tshirt-sizes[hidden]{display:none}
-.ts-head{text-align:center;margin-bottom:16px}
-.ts-badge{display:inline-block;margin-bottom:10px;font:700 11px var(--font-body);letter-spacing:.12em;color:oklch(88% 0.12 95);border:1px solid color-mix(in oklch,var(--google-yellow) 55%,transparent);background:color-mix(in oklch,var(--google-yellow) 12%,transparent);border-radius:100px;padding:5px 14px}
-.ts-head h2{margin:0 0 6px;font:800 clamp(1.5rem,4.5vw,2.1rem) var(--font-display);color:oklch(97% 0.005 260)}
-.ts-head p{margin:0 auto;max-width:520px;font:500 14.5px/1.55 var(--font-body);color:var(--muted)}
+.ts-head{text-align:center;margin-bottom:22px}
+.ts-badge{display:inline-block;margin-bottom:14px;font:800 13px var(--font-body);letter-spacing:.14em;color:oklch(92% 0.13 95);border:1.5px solid color-mix(in oklch,var(--google-yellow) 70%,transparent);background:color-mix(in oklch,var(--google-yellow) 16%,transparent);border-radius:100px;padding:7px 18px}
+.ts-head h2{margin:0 0 12px;font:800 clamp(2rem,6vw,3rem)/1.08 var(--font-display);color:oklch(99% 0.003 260);letter-spacing:-.01em}
+.ts-head h2 span{background:linear-gradient(90deg,var(--google-yellow),var(--google-green));-webkit-background-clip:text;background-clip:text;color:transparent}
+.ts-head p{margin:0 auto;max-width:620px;font:500 clamp(1rem,2.6vw,1.2rem)/1.55 var(--font-body);color:oklch(90% 0.01 260)}
+.ts-head p strong{display:block;margin-top:4px;font-weight:800;color:oklch(98% 0.005 260)}
 .ts-tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:0 0 16px}
 .ts-body{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:20px;align-items:center;border:1px solid var(--card-border);border-radius:var(--radius);padding:18px;background:linear-gradient(180deg,var(--card-a),var(--card-b))}
 .ts-figure{display:flex;justify-content:center}
