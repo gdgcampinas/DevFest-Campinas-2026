@@ -27,7 +27,8 @@ const TSHIRT_SIZES_TEXTS = {
   heightLabel: "Altura",
   widthLabel: "Largura",
   approx: "Medidas aproximadas: podem variar até 2 cm.",
-  tip: "Dica: deite uma camiseta sua que serve bem e compare a largura (de axila a axila) e a altura (do ombro até a barra).",
+  tipTitle: "Como escolher o seu tamanho",
+  tip: "Deite uma camiseta sua que serve bem e compare a largura (de axila a axila) e a altura (do ombro até a barra).",
   shortcut: "Guia de tamanhos",
   diagramLabel: "Desenho da camiseta com a altura e a largura marcadas",
 };
