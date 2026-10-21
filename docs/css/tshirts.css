@@ -13,7 +13,7 @@
 .tshirt-note{margin:0;font:500 12.5px/1.5 var(--font-body);color:var(--muted);text-align:center}
 
 /* guia de tamanhos (components/tshirt-sizes.js) */
-.tshirt-sizes{max-width:880px;margin:72px auto 0;padding:0 24px;scroll-margin-top:16px}
+.tshirt-sizes{max-width:880px;margin:72px auto 64px;padding:0 24px;scroll-margin-top:16px}
 .tshirt-sizes[hidden]{display:none}
 .ts-head{text-align:center;margin-bottom:22px}
 .ts-badge{display:inline-block;margin-bottom:14px;font:800 13px var(--font-body);letter-spacing:.14em;color:oklch(92% 0.13 95);border:1.5px solid color-mix(in oklch,var(--google-yellow) 70%,transparent);background:color-mix(in oklch,var(--google-yellow) 16%,transparent);border-radius:100px;padding:7px 18px}
@@ -44,7 +44,7 @@
 .ts-note .icon{flex:none;width:26px;height:26px}
 .ts-note p{margin:0;font:500 15px/1.55 var(--font-body);color:oklch(90% 0.01 260)}
 .ts-note strong{display:block;margin-bottom:2px;font:800 15.5px var(--font-display);color:oklch(98% 0.005 260)}
-.ts-note--warn{border-color:color-mix(in oklch,var(--google-yellow) 60%,transparent);background:color-mix(in oklch,var(--google-yellow) 11%,transparent)}
+.ts-note--warn{align-items:center;border-color:color-mix(in oklch,var(--google-yellow) 60%,transparent);background:color-mix(in oklch,var(--google-yellow) 11%,transparent)}
 .ts-note--warn .icon{color:var(--google-yellow)}
 .ts-note--warn p{font:700 15.5px/1.45 var(--font-body);color:oklch(96% 0.07 95)}
 .ts-note--tip .icon{color:var(--google-green)}
