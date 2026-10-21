@@ -1,5 +1,5 @@
 /**
- * Tipos de ingresso REAIS (definidos pelo Renato em 2026-10-17, iguais aos do Sympla: Grátis e Ingresso + Kit Camiseta, 100 vagas cada). Aparecem no site quando as vendas abrem (`EVENT.tickets.salesOpen`) ou em DEV. Cada tipo é só dado: quantos existirem, o
+ * Tipos de ingresso REAIS (definidos pelo Renato em 2026-10-17, iguais aos do Sympla: Grátis e Ingresso + Kit Camiseta; o selo diz só "Vagas limitadas", sem número, por decisão do Renato em 2026-10-21: o Sympla limita cada tipo, e o site não promete uma quantidade). Aparecem no site quando as vendas abrem (`EVENT.tickets.salesOpen`) ou em DEV. Cada tipo é só dado: quantos existirem, o
  * card e o CTA se ajustam. `price` em reais (0 = grátis, ausente = ainda
  * não definido, o card mostra TICKET_PRICE_TBD); `url` é
  * opcional (padrão: EVENT.tickets.url); `featured` destaca o card;
@@ -11,7 +11,7 @@ const TICKET_TYPES = [
     name: "Ingresso Grátis",
     price: 0,
     color: "var(--google-blue)",
-    badge: "Só 100 vagas",
+    badge: "Vagas limitadas",
     description: "Para viver o evento e aprender junto com a comunidade.",
     benefits: ["Acesso a todas as palestras e trilhas", "Credencial de participante", "Certificado de participação (para quem fizer check-in em ao menos uma palestra)"],
   },
@@ -22,7 +22,7 @@ const TICKET_TYPES = [
     color: "var(--google-yellow)",
     featured: true,
     showcase: "tshirt", // vitrine das fotos da camiseta no card (pages/ingressos.js)
-    badge: "Só 100 vagas",
+    badge: "Vagas limitadas",
     description: "Leve a lembrança do DevFest para casa.",
     benefits: ["Tudo do ingresso Grátis", "Camiseta oficial do DevFest Campinas 2026", "Certificado de participação (para quem fizer check-in em ao menos uma palestra)"],
   },

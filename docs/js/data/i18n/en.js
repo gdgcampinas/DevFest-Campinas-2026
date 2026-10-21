@@ -314,7 +314,7 @@ I18N_DICTIONARIES.en = {
   },
   texts: {
     "Ingresso Grátis": "Free ticket",
-    "Só 100 vagas": "Only 100 spots",
+    "Vagas limitadas": "Limited spots",
     "Para viver o evento e aprender junto com a comunidade.": "To live the event and learn together with the community.",
     "Certificado de participação (para quem fizer check-in em ao menos uma palestra)": "Certificate of participation (for those who check in to at least one talk)",
     "Ingresso + Kit Camiseta": "Ticket + T-shirt kit",

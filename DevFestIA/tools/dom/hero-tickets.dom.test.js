@@ -27,8 +27,8 @@ test("vendas abertas: o selo e um cartão por tipo de ingresso, com nome, preço
   box.innerHTML = open.cards;
   const cards = [...box.querySelectorAll(".hero-open-card")];
   assert.equal(cards.length, types.length);
-  assert.match(cards[0].textContent, /Ingresso Grátis[\s\S]*R\$ 0[\s\S]*Só 100 vagas/);
-  assert.match(cards[1].textContent, /Ingresso \+ Kit Camiseta[\s\S]*R\$ 45,10[\s\S]*Só 100 vagas/);
+  assert.match(cards[0].textContent, /Ingresso Grátis[\s\S]*R\$ 0[\s\S]*Vagas limitadas/);
+  assert.match(cards[1].textContent, /Ingresso \+ Kit Camiseta[\s\S]*R\$ 45,10[\s\S]*Vagas limitadas/);
 });
 
 test("o texto vindo do dado é escapado", () => {

@@ -387,7 +387,7 @@ function initShell(activePageId) {
     getStatsRepository: () => window.eventStatsRepository,
     edition: CURRENT_EDITION,
     minToShow: EVENT.tickets.counterMin,
-    enabled: EVENT.tickets.salesOpen,
+    enabled: EVENT.tickets.salesOpen && EVENT.tickets.showCounter,
   });
 
   document.documentElement.style.setProperty("--track-count", TRACKS.length);
