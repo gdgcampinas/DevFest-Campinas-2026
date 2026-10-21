@@ -502,7 +502,7 @@ I18N_DICTIONARIES.en = {
     "Largura": "Width",
     "Medidas aproximadas: podem variar até 2 cm.": "Approximate measurements: they may vary by up to 2 cm.",
     "Dica: deite uma camiseta sua que serve bem e compare a largura (de axila a axila) e a altura (do ombro até a barra).": "Tip: lay one of your own T-shirts that fits well flat and compare the width (armpit to armpit) and the height (shoulder to hem).",
-    "Tabela de medidas": "Size chart",
+    "Guia de tamanhos": "Size guide",
     "Desenho da camiseta com a altura e a largura marcadas": "T-shirt drawing with the height and width marked",
     "Mapa do campus (PDF)": "Campus map (PDF)",
     "Sobre o Campus I": "About Campus I",

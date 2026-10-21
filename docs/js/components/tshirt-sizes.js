@@ -36,7 +36,7 @@ function tshirtSizesMarkup({ models, text, activeId }) {
     <p class="ts-tip">${escapeHtml(text.tip)}</p>`;
 }
 
-/** O atalho "Tabela de medidas" (card do ingresso e galeria da camiseta): leva ao guia da página de ingressos. */
+/** O atalho "Guia de tamanhos" (botão no card do ingresso e na galeria da camiseta): leva ao guia da página de ingressos. */
 function tshirtSizesLinkMarkup(text) {
-  return `<a class="ts-link" href="#tamanhos" data-tshirt-sizes-link>${escapeHtml(text.shortcut)}</a>`;
+  return `<a class="ts-link" href="#tamanhos" data-tshirt-sizes-link>${iconMarkup("ruler")}<span>${escapeHtml(text.shortcut)}</span></a>`;
 }

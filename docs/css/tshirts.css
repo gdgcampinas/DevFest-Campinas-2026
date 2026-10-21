@@ -39,5 +39,8 @@
 .ts-table tbody tr:nth-child(even){background:color-mix(in oklch,var(--card-border) 35%,transparent)}
 .ts-approx{margin:14px 0 4px;text-align:center;font:700 13.5px var(--font-body);color:oklch(88% 0.12 95)}
 .ts-tip{margin:0 auto;max-width:620px;text-align:center;font:500 13px/1.55 var(--font-body);color:var(--muted)}
-.ts-link{display:inline-block;margin:2px 0 4px;font:700 13px var(--font-body);color:var(--ticket-color,var(--accent));text-decoration:underline;text-underline-offset:3px}
+.ts-link{display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 0 4px;padding:10px 14px;border:1.5px solid var(--ticket-color,var(--accent));border-radius:100px;background:color-mix(in oklch,var(--ticket-color,var(--accent)) 12%,transparent);font:700 13.5px var(--font-body);color:var(--ticket-color,var(--accent));text-decoration:none;transition:background .15s ease}
+.ts-link:hover{background:color-mix(in oklch,var(--ticket-color,var(--accent)) 22%,transparent)}
+.ts-link .icon{width:18px;height:18px}
+.ts-link::after{content:"\2193";font-weight:800}
 @media (max-width:640px){.ts-body{grid-template-columns:1fr}}
