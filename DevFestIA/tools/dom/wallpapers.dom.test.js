@@ -9,7 +9,7 @@ const path = require("node:path");
 const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 
 const DOCS = path.join(__dirname, "..", "..", "..", "docs");
-const site = loadSite({ scripts: [...SITE_BASE, "components/escape-html.js", "data/wallpapers.js", "components/wallpapers.js", "features/wallpapers.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "components/escape-html.js", "data/wallpapers.js", "components/wallpapers.js", "features/release-gate.js", "features/wallpapers.js"] });
 const { document } = site;
 test.after(() => site.window.close());
 const g = name => site.get(name);

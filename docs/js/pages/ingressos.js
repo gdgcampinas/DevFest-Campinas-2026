@@ -5,8 +5,11 @@ function initIngressos() {
   initWaitlist(document.getElementById("waitlist"), { ...defaultWaitlistDeps(), source: "ingressos", openAtStart: location.hash === "#waitlist" });
 
   const tshirtDeps = { models: tshirtsRepository.getAll(), text: tshirtTextsRepository.getAll() };
-  const showcases = { tshirt: () => tshirtShowcaseMarkup(tshirtDeps) }; // vitrine extra por tipo de ingresso (`showcase` em data/tickets.js)
-  initTshirtGallery(document.body, { createModal, ...tshirtDeps });
+  const sizesText = tshirtSizesTextsRepository.getAll();
+  const sizesShown = initTshirtSizes(document.getElementById("tamanhos"), { models: tshirtSizesRepository.getAll(), text: sizesText, config: tshirtSizesConfigRepository.getAll(), devMode: isDevModeStored() });
+  const sizesLinkHtml = sizesShown ? tshirtSizesLinkMarkup(sizesText) : ""; // o atalho só existe com o guia visível
+  const showcases = { tshirt: () => tshirtShowcaseMarkup(tshirtDeps) + sizesLinkHtml }; // vitrine extra por tipo de ingresso (`showcase` em data/tickets.js)
+  initTshirtGallery(document.body, { createModal, ...tshirtDeps, sizesLinkHtml });
 
   document.getElementById("ticketsHero").innerHTML = ticketsHeroMarkup({ text: ticketsHeroTextsRepository.getAll(), open: EVENT.tickets.salesOpen });
 

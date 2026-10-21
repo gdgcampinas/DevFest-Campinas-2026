@@ -14,8 +14,8 @@ function tshirtShowcaseMarkup({ models, text }) {
     </button>`;
 }
 
-/** Conteúdo do modal: abas dos modelos, a foto grande e o alternador frente/costas. */
-function tshirtGalleryMarkup({ models, text, view }) {
+/** Conteúdo do modal: abas dos modelos, a foto grande e o alternador frente/costas. `sizesLinkHtml` (opcional) é o atalho pro guia de tamanhos. */
+function tshirtGalleryMarkup({ models, text, view, sizesLinkHtml = "" }) {
   const model = models.find(item => item.id === view.modelId) ?? models[0];
   const tabs = models.map(item => `<button type="button" class="chip-btn${item.id === model.id ? " chip-btn--primary" : ""}" data-tshirt-model="${escapeHtml(item.id)}" aria-pressed="${item.id === model.id}">${escapeHtml(item.label)}</button>`).join("");
   const sides = Object.keys(text.sides).map(side => `<button type="button" class="chip-btn${side === view.side ? " chip-btn--primary" : ""}" data-tshirt-side="${escapeHtml(side)}" aria-pressed="${side === view.side}">${escapeHtml(text.sides[side])}</button>`).join("");
@@ -26,5 +26,6 @@ function tshirtGalleryMarkup({ models, text, view }) {
       <div class="tshirt-stage"><img src="${escapeHtml(model.images[view.side])}" alt="${escapeHtml(tshirtAlt(text, model, view.side))}" decoding="async"></div>
       <div class="tshirt-tabs" role="group">${sides}</div>
       <p class="tshirt-note">${escapeHtml(text.note)}</p>
+      ${sizesLinkHtml}
     </div>`;
 }

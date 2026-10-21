@@ -11,3 +11,33 @@
 .tshirt-stage{width:100%;max-width:420px;border-radius:14px;overflow:hidden;background:#fff}
 .tshirt-stage img{display:block;width:100%;height:auto}
 .tshirt-note{margin:0;font:500 12.5px/1.5 var(--font-body);color:var(--muted);text-align:center}
+
+/* guia de tamanhos (components/tshirt-sizes.js) */
+.tshirt-sizes{max-width:880px;margin:44px auto 0;padding:0 24px;scroll-margin-top:16px}
+.tshirt-sizes[hidden]{display:none}
+.ts-head{text-align:center;margin-bottom:16px}
+.ts-badge{display:inline-block;margin-bottom:10px;font:700 11px var(--font-body);letter-spacing:.12em;color:oklch(88% 0.12 95);border:1px solid color-mix(in oklch,var(--google-yellow) 55%,transparent);background:color-mix(in oklch,var(--google-yellow) 12%,transparent);border-radius:100px;padding:5px 14px}
+.ts-head h2{margin:0 0 6px;font:800 clamp(1.5rem,4.5vw,2.1rem) var(--font-display);color:oklch(97% 0.005 260)}
+.ts-head p{margin:0 auto;max-width:520px;font:500 14.5px/1.55 var(--font-body);color:var(--muted)}
+.ts-tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:0 0 16px}
+.ts-body{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:20px;align-items:center;border:1px solid var(--card-border);border-radius:var(--radius);padding:18px;background:linear-gradient(180deg,var(--card-a),var(--card-b))}
+.ts-figure{display:flex;justify-content:center}
+.ts-diagram{width:100%;max-width:240px;height:auto}
+.ts-shirt{fill:oklch(22% 0.015 260);stroke:oklch(60% 0.02 260);stroke-width:2.5;stroke-linejoin:round}
+.ts-collar{fill:none;stroke:oklch(60% 0.02 260);stroke-width:2.5}
+.ts-height line,.ts-height path{stroke:var(--google-red);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.ts-width line,.ts-width path{stroke:var(--google-blue);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.ts-height text{fill:var(--google-red);font:700 14px var(--font-body)}
+.ts-width text{fill:var(--google-blue);font:700 14px var(--font-body)}
+.ts-table-wrap{overflow-x:auto}
+.ts-table{width:100%;border-collapse:collapse;font:600 15px var(--font-body);color:var(--text);text-align:center}
+.ts-table th,.ts-table td{padding:9px 10px;border-bottom:1px solid var(--card-border)}
+.ts-table thead th{font:700 12px var(--font-body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ts-table thead th:nth-child(2){color:var(--google-red)}
+.ts-table thead th:nth-child(3){color:var(--google-blue)}
+.ts-table tbody th{font:800 17px var(--font-display);color:oklch(97% 0.005 260)}
+.ts-table tbody tr:nth-child(even){background:color-mix(in oklch,var(--card-border) 35%,transparent)}
+.ts-approx{margin:14px 0 4px;text-align:center;font:700 13.5px var(--font-body);color:oklch(88% 0.12 95)}
+.ts-tip{margin:0 auto;max-width:620px;text-align:center;font:500 13px/1.55 var(--font-body);color:var(--muted)}
+.ts-link{display:inline-block;margin:2px 0 4px;font:700 13px var(--font-body);color:var(--ticket-color,var(--accent));text-decoration:underline;text-underline-offset:3px}
+@media (max-width:640px){.ts-body{grid-template-columns:1fr}}

@@ -2,7 +2,7 @@
  * Feature: a página de fundos de tela. `wallpapersVisible(config, { devMode })` é a regra (só em DEV até `public: true`); `renderWallpapers(sectionEl, { config, wallpapers, text, devMode })` mostra a galeria
  * ou o aviso "em breve". Tudo por parâmetro. Devolve se a galeria apareceu.
  */
-const wallpapersVisible = (config, { devMode = false } = {}) => Boolean(config.public || devMode);
+const wallpapersVisible = isReleased; // a regra única (features/release-gate.js)
 
 function renderWallpapers(sectionEl, { config, wallpapers, text, devMode = false }) {
   const visible = wallpapersVisible(config, { devMode }) && wallpapers.length > 0;
