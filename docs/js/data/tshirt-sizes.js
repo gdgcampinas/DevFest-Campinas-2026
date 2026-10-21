@@ -2,7 +2,7 @@
  * Guia de tamanhos da camiseta do kit, só dado. Medidas em CENTÍMETROS (altura: do ombro até a barra; largura: de axila a axila), aproximadas: podem variar até 2 cm. `public: false` mostra o guia só em
  * modo DEV (pra conferir); `true` libera em produção (ver features/release-gate.js). Os textos são traduzidos por igualdade (data/i18n/en.js); os tamanhos (PP, P, M...) são códigos, não texto.
  */
-const TSHIRT_SIZES_CONFIG = { public: false };
+const TSHIRT_SIZES_CONFIG = { public: true }; // LIBERADO em produção em 2026-10-21
 
 const TSHIRT_SIZES = [
   { id: "masculina", label: "Masculina", sizes: [
