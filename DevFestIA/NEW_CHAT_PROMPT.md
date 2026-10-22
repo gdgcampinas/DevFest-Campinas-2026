@@ -2,24 +2,32 @@
 
 Cole o bloco abaixo como primeira mensagem do novo chat. Sem precisar adicionar contexto extra — tudo está nos arquivos do projeto.
 
-**Atualizado em 2026-10-18.** O estado de código em `handoff/HANDOFF_CURRENT.md` prevalece sobre o histórico longo abaixo. Para um chat de comunicação visual/redes sociais, consultar também a continuidade geral do projeto guarda-chuva GDG Campinas.
+**Atualizado em 2026-10-22.** O estado de código em `handoff/HANDOFF_CURRENT.md` prevalece sobre o histórico longo abaixo. Para comunicação visual/redes sociais, ler primeiro a continuidade do projeto guarda-chuva GDG Campinas, em especial `../../handoff/HANDOFF_CURRENT.md` e `../../docs/Marca_e_Mascote_2026.md`.
+
+## Continuidade mais recente — campanha social (22/10/2026)
+
+A versão mais recente é `../../Design/devfest-ingressos-liberados-2026/instagram-ingressos-camiseta-sem-mascote-v16.png` (1080 × 1350) e sua fonte SVG. É um rascunho para Instagram/tráfego pago, sem Gumbleton, com a camiseta masculina G (frente e costas), menção aos modelos feminino e infantil, categorias de tecnologia/computação/inovação/empreendedorismo, ingresso gratuito ou com kit camiseta sem preço, data/horário e o endereço fornecido pelo usuário: PUC-Campinas, Campus I, prédio H-02. Os lockups oficiais ficam no canto inferior esquerdo. A arte ainda aguarda aprovação; não foi publicada nem impulsionada.
+
+Risco prioritário: a página pública do Sympla ainda mostrava “Local a definir” em 22/10/2026. Atualizar e revalidar o local no evento antes de impulsionar, para não haver divergência com a arte. O handoff geral atualizado está em `../../handoff/HANDOFF_CURRENT.md`; inventário visual em `../../docs/Marca_e_Mascote_2026.md` e no README da pasta da campanha.
+
+Estado Git local conferido em 22/10/2026: branch `development`, commit `eb96e21`, alinhada com `origin/development`; `main` local em `a2124cc`, 370 commits atrás de `origin/main`. Há `?? .claude/` no worktree; preservar. A verificação do GitHub Actions/CI ficou indisponível por erro de conexão com `api.github.com`. Nenhum commit, push ou publicação foi feito nesta continuidade.
 
 ---
 
 ```
 Você está entrando no repositório do site do DevFest Campinas 2026 (GDG Campinas).
 
-CONTEXTO PRIORITÁRIO (2026-10-18)
-O foco que está sendo transferido inclui comunicação e identidade do DevFest Campinas 2026, além do site. Antes de trabalhar em cards, camiseta, patrocínio, Sympla ou redes sociais, leia também os arquivos gerais do projeto guarda-chuva:
+CONTEXTO PRIORITÁRIO (2026-10-22)
+O foco imediato transferido é a campanha de ingressos/camiseta para Instagram e tráfego pago, além da continuidade do site. Leia primeiro estes arquivos do projeto guarda-chuva:
 - `../../PROJECT_CONTEXT.md`
 - `../../handoff/HANDOFF_CURRENT.md`
 - `../../docs/Marca_e_Mascote_2026.md`
-- `../../Design/gdg-sympla/`
-A wiki ai-memory do projeto contém `notes/comunicacao-e-identidade-2026.md`.
-Pendências criativas: estratégia editorial para Instagram/LinkedIn; cards distintos para voluntários e palestrantes; camiseta, começando pela frente. Nada disso está aprovado/publicado só por existir como render. Manter fidelidade absoluta aos logos oficiais; lockup Google Developer Groups horizontal, símbolo à esquerda e texto branco em três linhas à direita para fundo escuro; mascote aprovado não pode cobrir fotos.
+- `../../Design/devfest-ingressos-liberados-2026/README.md`
+O rascunho mais recente é `../../Design/devfest-ingressos-liberados-2026/instagram-ingressos-camiseta-sem-mascote-v16.png` e SVG: camiseta masculina G frente/costas, nota sobre modelos feminino/infantil, ingresso gratuito ou com kit sem preço, categoria tecnologia/computação/inovação/empreendedorismo e slogan “Troque ideias. Explore tecnologia. Construa o futuro.” A arte inclui endereço PUC-Campinas, Campus I, prédio H-02, fornecido pelo usuário, mas aguarda aprovação e não foi publicada/impulsionada.
+Risco prioritário: Sympla ainda indicava “Local a definir” em 22/10/2026; atualizar e revalidar o local antes de tráfego pago. Manter fidelidade absoluta aos logos oficiais. Não alterar materiais, Sympla, código ou publicar sem autorização explícita.
 
-VERIFICAÇÃO GIT LOCAL (2026-10-18, não tratar como estado remoto atual)
-`development` = `d0ae6cc` e os refs locais `origin/development`/`origin/main` apontam para ele; `main` local está 324 commits atrás. Há mudanças locais de segurança/moderação no worktree, não tocar nem descartar. A conexão ao GitHub/CI falhou nesta sessão; revalidar quando houver rede.
+VERIFICAÇÃO GIT LOCAL (22/10/2026; revalidar em nova sessão)
+No repo `FrontEnd/DevFest-Campinas-2026/`, `development` = `eb96e21`, alinhada com `origin/development`; `main` local em `a2124cc`, 370 commits atrás de `origin/main`. Há `.claude/` não rastreado; preservar. Não foi possível verificar GitHub Actions/CI por falha de conexão a `api.github.com`.
 
 PASSO 1 — Leia o contexto (nesta ordem)
 1. DevFestIA/project-docs/PROJECT_CONTEXT.md  ← arquitetura permanente, decisões de design

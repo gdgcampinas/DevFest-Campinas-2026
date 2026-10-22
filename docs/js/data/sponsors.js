@@ -21,8 +21,8 @@ const SPONSORS = [
     { public: true, name: "Google Developer Groups", link: "https://gdg.community.dev/", imageUrl: "assets/brand/google-developer-groups.webp", description: "Comunidade global de desenvolvedores do Google Developer Groups." },
   ] },
   { id: "especialista", tier: "Especialista", elements: [
-    // REAL, CONFIRMADA (2026-10-22), ainda SÓ EM DEV (sem `public: true`): vira `public: true` quando o Renato mandar liberar. Logo oficial do brandbook (preto horizontal, com o slogan; não recolorir nem alterar).
-    { name: "FalaBoss", link: "https://falaboss.com", imageUrl: "assets/brand/falaboss.svg", description: "Contrate pelo chat. Simples assim!" },
+    // REAL, CONFIRMADA e LIBERADA em produção (2026-10-22, `public: true`). Logo oficial do brandbook (preto horizontal, com o slogan; não recolorir nem alterar).
+    { public: true, name: "FalaBoss", link: "https://falaboss.com", imageUrl: "assets/brand/falaboss.svg", description: "Contrate pelo chat. Simples assim!" },
     sponsor("Vértice Dados", "Plataforma de análise de dados e inteligência de negócios para varejo e indústria.", "bars", "#34a853"),
     sponsor("Órbita Cloud", "Infraestrutura em nuvem com suporte em português e operação no interior de São Paulo.", "ring", "#7c3aed"),
   ] },
