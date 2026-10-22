@@ -507,6 +507,7 @@ I18N_DICTIONARIES.en = {
     "Deite uma camiseta sua que serve bem e compare a largura (de axila a axila) e a altura (do ombro até a barra).": "Lay one of your own T-shirts that fits well flat and compare the width (armpit to armpit) and the height (shoulder to hem).",
     "Guia de tamanhos": "Size guide",
     "Desenho da camiseta com a altura e a largura marcadas": "T-shirt drawing with the height and width marked",
+    "Contrate pelo chat. Simples assim!": "Hire through chat. It's that simple!",
     "Mapa do campus (PDF)": "Campus map (PDF)",
     "Sobre o Campus I": "About Campus I",
     "Garanta sua vaga": "Secure your spot",
