@@ -126,6 +126,8 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .ms-sponsors-scene--thanks .ms-sponsor,.ms-sponsors-scene--compact .ms-sponsor{padding:calc(var(--u) * 1.1)}
 .ms-sponsors-scene--thanks .ms-sponsor img,.ms-sponsors-scene--compact .ms-sponsor img,.ms-sponsors-scene--thanks .ms-tier[data-count="1"] .ms-sponsor img,.ms-sponsors-scene--compact .ms-tier[data-count="1"] .ms-sponsor img{height:calc(var(--u) * 6)}
 .ms-sponsors-scene--thanks .ms-tier[data-count="1"] .ms-sponsors,.ms-sponsors-scene--compact .ms-tier[data-count="1"] .ms-sponsors{grid-template-columns:minmax(0,calc(var(--u) * 30))}
+/* agradecimento em telão 4:3 ou vertical: as cotas também em duas colunas, senão a última passa do palco */
+.mural-stage:is([data-shape="standard"],[data-shape="tall"]) .ms-sponsors-scene--thanks .ms-tiers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:center;gap:calc(var(--u) * 2.4) calc(var(--u) * 2.4)}
 /* compacto de várias cotas: duas colunas de cotas (cabem em telão 16:9 e 4:3) e cartões de largura igual, centralizados, em vez de esticar */
 .ms-sponsors-scene--compact .ms-tiers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:center;gap:calc(var(--u) * 3.2) calc(var(--u) * 3)}
 .ms-sponsors-scene--compact .ms-tier-name{text-align:center}
