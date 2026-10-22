@@ -46,7 +46,7 @@ function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => t
   // tempos curtos (o rodízio roda no relógio real aqui) e papel picado espiado
   site.run(`
     MURAL_SCENES.forEach(scene => { scene.seconds = 0.15; });
-    Object.assign(MURAL_CONFIG, { transitionMs: 20, retryDelayMs: 10, clockEveryMs: 20, reserveSeconds: 0.15, idleRetryMs: 50, failureCooldownMs: 50, skipCooldownMs: 50, waitCooldownMs: 50, kioskEnsureEveryMs: 1000000, health: { ...MURAL_CONFIG.health, versionCheckEveryMs: 1000000 } });
+    Object.assign(MURAL_CONFIG, { alwaysReveal: true, transitionMs: 20, retryDelayMs: 10, clockEveryMs: 20, reserveSeconds: 0.15, idleRetryMs: 50, failureCooldownMs: 50, skipCooldownMs: 50, waitCooldownMs: 50, kioskEnsureEveryMs: 1000000, health: { ...MURAL_CONFIG.health, versionCheckEveryMs: 1000000 } });
     Object.assign(MURAL_CONFIG.network, { probeEveryMs: 25, backoff: { baseMs: 20, maxMs: 40, factor: 1, jitter: 0 } });
     Object.assign(MURAL_CONFIG.motion, { countUpMs: 60, countUpStepMs: 20 });
     MURAL_ALBUMS.forEach(album => { album.pollMs = 40; });
@@ -82,7 +82,7 @@ test("a página sobe e roda o rodízio: 'agora e próximas' com a grade, e a tel
   page.site.window.close();
 });
 
-test("com `alwaysReveal` desligado o line-up só aparece revelado: sem ?lineup=1 a cena 'agora' (dado mock) não entra e a reserva sustenta a tela", async () => {
+test("`alwaysReveal` desligado (o padrão do telão): o line-up só aparece revelado: sem ?lineup=1 a cena 'agora' (dado mock) não entra e a reserva sustenta a tela", async () => {
   const dom = loadSite({ scripts: SCRIPTS, html: BODY, url: "http://localhost/telao.html?cenas=agora&ensaio=0&demo=2026-11-28T09:10", globals: { fetch: async () => ({ ok: true, text: async () => HTML }), Image: class { set src(url) { setTimeout(() => this.onload?.(), 0); } } } });
   dom.run("Object.assign(MURAL_CONFIG, { reserveSeconds: 0.15, alwaysReveal: false }); MURAL_CONFIG.network.probeEveryMs = 1000000;");
   dom.run(PAGE, "pages/mural.js");
@@ -91,9 +91,9 @@ test("com `alwaysReveal` desligado o line-up só aparece revelado: sem ?lineup=1
   dom.window.close();
 });
 
-test("telão: com `alwaysReveal` (o padrão) o line-up aparece mesmo sem ?lineup=1, e todas as cotas de patrocínio entram", async () => {
+test("telão: com `alwaysReveal` ligado (só pra ensaio) o line-up aparece mesmo sem ?lineup=1", async () => {
   const page = boot({ search: "cenas=linha-do-dia", rawUrl: "http://localhost/telao.html?cenas=linha-do-dia&demo=2026-11-28T09:10" });
-  assert.equal(page.site.run("MURAL_CONFIG.alwaysReveal"), true);
+  page.site.run("MURAL_CONFIG.alwaysReveal = true");
   await waitFor(() => page.active() === "linha-do-dia");
   assert.match(page.activeText(), /Hoje no DevFest|Abertura|Almoço/);
   page.site.window.close();
@@ -428,4 +428,9 @@ test("telão: só produção; modo DEV (gravado ou na URL) nunca vale, e o ensai
   const dev = boot({ search: "", rawUrl: "http://localhost/telao.html?lineup=1&demo=2026-11-28T09:10" });
   assert.equal(dev.site.run("sessionStorage.getItem('devfest-campinas-2026:dev-mode')"), null, "o telão é só produção: ?lineup=1 não liga o modo DEV");
   dev.site.window.close();
+});
+
+test("o telão de produção NÃO mostra dado de teste: `alwaysReveal` fica desligado no dado entregue", () => {
+  const config = fs.readFileSync(path.join(DOCS, "js", "data", "mural-config.js"), "utf8");
+  assert.match(config, /^\s*alwaysReveal: false,/m);
 });

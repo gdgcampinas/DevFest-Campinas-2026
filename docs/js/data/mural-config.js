@@ -2,8 +2,8 @@
  * Configuração do MURAL do telão (telao.html). Só números e endereços, nada de lógica: o motor (features/mural.js), o vigia
  * (features/mural-health.js), a rede e o palco leem daqui. Tempos em milissegundos, salvo `*Seconds`.
  *
- *   alwaysReveal         o telão mostra SEMPRE as cenas do line-up (agora, rolando, linha do dia, daqui a pouco, pódio) e todas as cotas de patrocínio, mesmo com o line-up escondido no resto do site (EVENT.lineupRevealed false). Decisão do
- *                        Renato (2026-10-19): enquanto o dado de teste estiver no lugar ele aparece no telão e SOME conforme os dados reais entram; quando o line-up real estiver todo no ar, o site revela e esta chave deixa de importar
+ *   alwaysReveal         `true` mostra no telão as cenas do line-up (agora, rolando, linha do dia, daqui a pouco, pódio) e todas as cotas de patrocínio mesmo com o line-up escondido no resto do site (EVENT.lineupRevealed false):
+ *                        só pra ensaio com dado de teste. Fica `false`: o telão é só produção. Quando o line-up real estiver no ar, `EVENT.lineupRevealed` vira `true` e as cenas entram sozinhas
  *   fullscreenHint       dica discreta enquanto o telão não está em tela cheia (features/telao-fullscreen.js); o clique ou a tecla F entram em tela cheia. O jeito certo no dia é o Chrome em `--kiosk` (DevFestIA/tools/telao/)
  *   speakerPhotoTimeoutMs foto de palestrante que passar disso vira iniciais (a cena "rolando agora" não espera foto lenta)
  *   prepareTimeoutMs     quanto uma cena pode demorar pra preparar (foto, leitura) antes de ser pulada
@@ -27,7 +27,7 @@
  *   stage                margem segura (%) e as formas do palco por proporção, do mais largo ao mais alto (data-shape; o CSS escolhe o desenho)
  */
 const MURAL_CONFIG = {
-  alwaysReveal: true,
+  alwaysReveal: false, // DESLIGADO em 2026-10-23 (decisão do Renato): o telão mostra só dado de PRODUÇÃO, sem line-up de teste nem patrocinadores de teste
   defaultSeconds: 12,
   transitionMs: 700,
   prepareTimeoutMs: 8000,
