@@ -1271,6 +1271,18 @@ que já devia estar limpa). `dev-loader.js` também busca a página real com
 - Before the event: run "🧹 Limpar dados de teste" (dry run, then for real) and `reset-teste.html` on the test devices; switch `EVENT.tickets.registrationGate` on after a real registration test; see handoff "Pendências".
 - Logística física do QR ao vivo (`checkin-display.html`): qual tela/tablet por sala, quem monta no dia.
 
+## Fase 18 a 23 de outubro de 2026 (sessão 15B, resumo técnico)
+
+- **Ingressos abertos em PROD** (Sympla): `data/schedule.js` com `waitlist.enabled:false`, `registrationGate:{enabled:true}`, `showCounter:false`; selo "Vagas limitadas" (sem número); hero da home (`hero-tickets`) e topo de `ingressos.html` (`tickets-hero`); camiseta como destaque (`showcase:"tshirt"`), galeria (`tshirt-gallery`) e guia de tamanhos (`tshirt-sizes`, atalho no cartão). Nada sobre o fornecedor das camisetas em lugar nenhum.
+- **Cartão "Eu vou" e trava de inscrição:** `share-card.js` com arte única `assets/img/share-card/eu-vou.webp` e plaquinha do nome; só quem se inscreveu pelo Sympla gera o cartão (`registration-gate.js` + `registration-sync.js`). O Worker `devfest-album-proxy` ganhou `POST /sync` (cooldown 2 min) que dispara o workflow `sync-sympla.yml` (só `workflow_dispatch`) e cron horário `0 * * * *`; subir para `*/15` na semana do evento. Repositório público: logs do sync NUNCA com dado pessoal.
+- **Fundos de tela:** `fundos.html` (+ `/DEV/`), 9 fundos (`data/wallpapers.js`), cena do telão `mural-wallpapers-scene` (`fundos-1`, `fundos-2`) com QR.
+- **Telão 4:3 1080p:** `telao.html` sempre com dados de PRODUÇÃO (`setDevModeStorage(false)`), `alwaysReveal:false`, modo quiosque (`iniciar-telao.bat`, `TELAO_WINDOWS.md`), `telao-fullscreen.js`, margem segura 3%. Sem line-up/patrocinador de teste.
+- **Local do evento:** `data/venue.js` com `public:false` (PUC Campinas - Campus I) até o Renato mandar "libera o local".
+- **Patrocinadores reais apenas:** GDG (Master), FalaBoss (Especialista), FIAP (Pleno); demais cotas vazias.
+- **Portão de moderador:** `moderator-access.js` (+ componente, textos, repositório) protege admin e telas de moderação.
+- **Armadilha:** o GitHub pode não disparar Validar/Pages; conferir o site NO AR e, se preciso, `gh api -X POST repos/gdgcampinas/DevFest-Campinas-2026/pages/builds`.
+- Pendências e ideias: bloco "Pendente com o Renato (2026-10-23)" no `handoff/HANDOFF_CURRENT.md`.
+
 ## Documentation upkeep (standing directive)
 
 Documentation must stay in sync with the real state of the repo, not

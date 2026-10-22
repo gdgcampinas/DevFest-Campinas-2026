@@ -98,3 +98,5 @@ o trabalho.
 
 ## ai-memory (memória de longo prazo, desde 2026-10-17)
 O Claude Code deste projeto usa o **ai-memory** (servidor local `127.0.0.1:49374`, hooks e skills em `~/.claude`). Páginas duráveis do projeto: `_rules/diretivas-do-projeto`, `notes/projeto-visao-geral`, `decisions/*`, `procedures/ci-deploy-e-testes`, `gotchas/armadilhas-do-projeto`, `notes/pendencias-e-ideias`; o handoff da última sessão é consumido sozinho no início da próxima. Eles COMPLEMENTAM (não substituem) `HANDOFF_CURRENT.md` e `PROJECT_CONTEXT.md`: o repositório continua sendo a fonte de verdade versionada. Diagnóstico: `ai-memory doctor`; fila de hooks: `ai-memory recover`.
+
+SESSÃO 15B, FIM (2026-10-23; itens 9 a 21 do bloco "SESSÃO 15B" no handoff): ingressos abertos em PROD, cartão + trava de inscrição + sync do Sympla pelo Worker, fundos de tela (página e telão), guia de tamanhos, telão só com dados de PRODUÇÃO em 4:3 (quiosque), patrocinadores reais (GDG, FalaBoss, FIAP), portão de moderador. Resumo técnico no PROJECT_CONTEXT ("Fase 18 a 23 de outubro"). Pendências do Renato: handoff, "Pendente com o Renato (2026-10-23)".
