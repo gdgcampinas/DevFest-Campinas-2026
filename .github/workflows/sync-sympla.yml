@@ -2,14 +2,12 @@ name: 🎫 Sincronizar Sympla
 
 run-name: 🎫 Sincronizar Sympla${{ inputs.dry_run && ' (simulação)' || '' }}
 
-# Sincroniza inscritos do Sympla com o Firestore a cada 10 minutos (o Sympla
-# não tem webhook). Agendamento só roda no branch padrão (main). Sem os
-# secrets configurados o job só avisa e termina com sucesso, sem gravar nada.
+# Sincroniza inscritos do Sympla com o Firestore (o Sympla não tem webhook). Quem dispara é o Worker do intermediário (DevFestIA/tools/album-proxy): cron de 1 em 1 hora e
+# POST /sync na hora, quando o cartão "Eu vou!" não acha o e-mail. O agendamento do próprio GitHub saiu: rodava em média a cada 4 h e duplicava as rodadas. Sem os secrets
+# configurados o job só avisa e termina com sucesso, sem gravar nada.
 # Configuração (uma vez): secrets SYMPLA_TOKEN e FIREBASE_SERVICE_ACCOUNT no
 # repositório. O hash do evento não é segredo e fica aqui.
 on:
-  schedule:
-    - cron: "*/10 * * * *"
   workflow_dispatch:
     inputs:
       dry_run:
