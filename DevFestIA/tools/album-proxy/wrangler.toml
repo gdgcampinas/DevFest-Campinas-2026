@@ -3,9 +3,9 @@ name = "devfest-album-proxy"
 main = "worker.mjs"
 compatibility_date = "2026-01-01"
 
-# O sync do Sympla (🎫 Sincronizar Sympla) roda no GitHub só a cada ~4 h; o Worker o dispara a cada 5 min e a pedido do site (POST /sync). O token fica no segredo SYNC_GITHUB_TOKEN (nunca aqui).
+# O sync do Sympla (🎫 Sincronizar Sympla) é disparado pelo Worker: de 1 em 1 hora (rede de segurança) e na hora, a pedido do site (POST /sync, quando o cartão não acha o e-mail). Na semana do evento dá pra subir pra */15. O token fica no segredo SYNC_GITHUB_TOKEN (nunca aqui).
 [triggers]
-crons = ["*/5 * * * *"]
+crons = ["0 * * * *"]
 
 [vars]
 SYNC_REPO = "gdgcampinas/DevFest-Campinas-2026"

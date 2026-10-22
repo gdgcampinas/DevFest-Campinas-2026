@@ -92,7 +92,7 @@ const MURAL_CONFIG = {
     countUpStepMs: 40,
   },
   stage: {
-    safeMarginPct: 2,
+    safeMarginPct: 3, // painel de LED costuma cortar a borda: 3% de folga (era 2); `?margem=N` testa outro valor
     shapes: [
       { id: "ultrawide", minRatio: 2.4 },
       { id: "wide", minRatio: 1.5 },
