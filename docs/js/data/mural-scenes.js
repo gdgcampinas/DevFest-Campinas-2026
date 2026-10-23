@@ -71,6 +71,7 @@ const MURAL_SCENES = [
   { id: "album-2025", label: "Fotos DevFest 2025", type: "album", seconds: 14, requires: { live: "albums" }, params: { album: "devfest-2025", model: "auto" } },
   { id: "patrocinio-demais", label: "Demais patrocinadores", type: "sponsors", seconds: 14, params: { tiers: ["Especialista", "Sênior", "Pleno"], title: "Quem faz o DevFest Campinas acontecer" } },
   { id: "patrocinio-apoio", label: "Patrocinadores de apoio", type: "sponsors", seconds: 12, params: { tiers: ["Júnior", "Intern", "Cota Permuta", "Apoio"], title: "Quem faz o DevFest Campinas acontecer", layout: "compact" } },
+  { id: "parceiros", label: "Parceiros", type: "sponsors", seconds: 10, params: { tiers: ["Parceiros"], kicker: "Quem caminha com a gente", title: "Quem faz o DevFest Campinas acontecer", layout: "compact" } },
   { id: "agradecimento-patrocinio", label: "Agradecimento aos patrocinadores", type: "sponsors", seconds: 20, transition: "zoom", requires: { moments: ["lunch", "closing"] }, params: { kicker: "Muito obrigado", title: "A quem faz o DevFest acontecer", layout: "thanks" } },
   { id: "selfie", label: "Selfie", type: "selfie", seconds: 20, transition: "zoom", params: { hashtag: "", art: "sunset" } },
   { id: "fundos-1", label: "Fundos de tela (QR)", type: "wallpapers", seconds: 16, transition: "zoom", enabled: WALLPAPERS_CONFIG.public, params: { kicker: "Fundos de tela", heading: "A fênix agora mora no seu celular", hint: "Escaneie e escolha o seu fundo", path: "fundos.html?origem=telao" } },
