@@ -39,7 +39,7 @@ test("não aparece enquanto não for público; em DEV ou `public: true` aparece 
 });
 
 test("clicar num pino ou na lista abre o ponto, e o botão aproxima e afasta", () => {
-  const { el } = mount({ public: false }, true);
+  const { el } = mount({ public: false }, true, { reveal: () => {} });
   assert.match(textOf(el.querySelector(".vm-detail")), /Prédio H-02/);
   el.querySelector('.vm-pin[data-map-point="gate3"]').click();
   assert.match(textOf(el.querySelector(".vm-detail")), /Portão 3/);
@@ -48,12 +48,40 @@ test("clicar num pino ou na lista abre o ponto, e o botão aproxima e afasta", (
   assert.equal(el.querySelectorAll(".vm-tip").length, 1);
   assert.match(textOf(el.querySelector(".vm-detail")), /Estacionamento C/);
   assert.equal(el.querySelectorAll('[aria-pressed="true"][data-map-point]').length, 2); // o pino e o botão do ponto aberto
-  assert.match(el.querySelector(".vm-stage").getAttribute("style"), /scale\(1\)/);
-  el.querySelector("[data-map-zoom]").click();
-  assert.match(el.querySelector(".vm-stage").getAttribute("style"), /scale\(2\.3\)/);
+  assert.match(el.querySelector(".vm-stage").getAttribute("style"), /scale\(2\.3\)/, "escolher na lista aproxima no ponto");
   assert.match(textOf(el.querySelector("[data-map-zoom]")), /campus inteiro/);
   el.querySelector("[data-map-zoom]").click();
   assert.match(el.querySelector(".vm-stage").getAttribute("style"), /scale\(1\)/);
+  assert.match(textOf(el.querySelector("[data-map-zoom]")), /Aproximar/);
+  el.querySelector("[data-map-zoom]").click();
+  assert.match(el.querySelector(".vm-stage").getAttribute("style"), /scale\(2\.3\)/);
+});
+
+test("escolher na lista aproxima o mapa no ponto e leva a tela até o mapa; o pino só troca o ponto", () => {
+  const revealed = [];
+  const { el } = mount({ public: false }, true, { reveal: viewport => revealed.push(viewport) });
+  const stage = () => el.querySelector(".vm-stage").getAttribute("style");
+  el.querySelector('.vm-pin[data-map-point="gate3"]').click();
+  assert.equal(revealed.length, 0, "o pino já está no mapa: não rola");
+  assert.match(stage(), /scale\(1\)/, "o pino não aproxima");
+  el.querySelector('.vm-card[data-map-point="gate3"]').click();
+  assert.equal(revealed.length, 1);
+  assert.ok(revealed[0].classList.contains("vm-viewport"));
+  assert.match(stage(), /scale\(2\.3\)/);
+  const gate3 = deps().points.find(point => point.id === "gate3");
+  assert.ok(stage().includes(`translate(${g("venueMapShift")(gate3.x, 2.3)}%,${g("venueMapShift")(gate3.y, 2.3)}%)`), "centraliza no ponto escolhido");
+  assert.match(textOf(el.querySelector("[data-map-zoom]")), /campus inteiro/);
+  el.querySelector("[data-map-zoom]").click();
+  assert.match(stage(), /scale\(1\)/, "o botão volta ao campus inteiro");
+  el.querySelector("[data-map-zoom]").click();
+  assert.ok(stage().includes(`translate(${g("venueMapShift")(47, 2.3)}%`), "e aproxima de novo no H-02");
+});
+
+test("o deslocamento nunca mostra além da borda do mapa", () => {
+  const shift = g("venueMapShift");
+  assert.equal(shift(0, 2.3), 0);
+  assert.ok(Math.abs(shift(100, 2.3) - (100 - 230)) < 1e-9);
+  assert.ok(Math.abs(shift(50, 2.3) - (50 - 115)) < 1e-9);
 });
 
 test("a página mostra o aviso em breve enquanto o mapa não é público, e a principal não mostra nada", () => {

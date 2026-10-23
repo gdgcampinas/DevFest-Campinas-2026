@@ -24,11 +24,17 @@ function venueMapCardMarkup(point, types, selectedId) {
   return `<button type="button" class="vm-card${on ? " is-on" : ""}" data-map-point="${escapeHtml(point.id)}" aria-pressed="${on}"${venueMapTrack("map_point", point.id)} style="--pin:${escapeHtml(venueMapColor(point, types))}"><i>${escapeHtml(point.mark)}</i><span>${escapeHtml(point.name)}</span></button>`;
 }
 
-/** O estilo do palco: sem aproximar, a imagem inteira; aproximado, a área `map.focus` no centro (o pino usa `--zoom` para não crescer junto). */
-function venueMapStageStyle(map, zoomed) {
-  const { x, y, zoom } = map.focus;
+/** Onde o palco se desloca (em % do mapa) para pôr `center` (em %) no meio da tela com o aumento `zoom`, sem mostrar além da borda da imagem. */
+const venueMapShift = (center, zoom) => Math.min(0, Math.max(100 - 100 * zoom, 50 - center * zoom));
+
+/**
+ * O estilo do palco: sem aproximar, a imagem inteira; aproximado, a área de `focus` ({ x, y } em %, `map.focus` por padrão, que também traz o aumento) no centro.
+ * O pino usa `--zoom` para não crescer junto.
+ */
+function venueMapStageStyle(map, zoomed, focus = map.focus) {
+  const zoom = map.focus.zoom;
   const scale = zoomed ? zoom : 1;
-  return `--zoom:${scale};transform:translate(${zoomed ? 50 - x * zoom : 0}%,${zoomed ? 50 - y * zoom : 0}%) scale(${scale})`;
+  return `--zoom:${scale};transform:translate(${zoomed ? venueMapShift(focus.x, zoom) : 0}%,${zoomed ? venueMapShift(focus.y, zoom) : 0}%) scale(${scale})`;
 }
 
 function venueMapDetailMarkup(point) {
@@ -76,4 +82,4 @@ function venueMapCalloutMarkup(text, access = "") {
   return `<a class="vm-callout" href="${escapeHtml(callout.href)}" ${trackAttrs("venue_map_open", { place: "home" })}><span class="vm-callout-icon">${iconMarkup("pin")}</span><span class="vm-callout-text"><strong>${escapeHtml(callout.title)}</strong><small>${escapeHtml(access || callout.sub)}</small></span><b class="vm-callout-cta chip-btn chip-btn--primary">${escapeHtml(callout.cta)}</b></a>`;
 }
 
-if (typeof module !== "undefined") module.exports = { venueCampusMapMarkup, venueMapStageStyle, venueMapDetailMarkup, venueMapTipMarkup, venueMapSoonMarkup, venueMapCalloutMarkup };
+if (typeof module !== "undefined") module.exports = { venueCampusMapMarkup, venueMapShift, venueMapStageStyle, venueMapDetailMarkup, venueMapTipMarkup, venueMapSoonMarkup, venueMapCalloutMarkup };
