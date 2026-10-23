@@ -2,13 +2,16 @@
  * Componente: o mapa do campus com pontos clicáveis (só marcação, tudo escapado e por parâmetro): `map` (data/venue-map.js), `points`, `groups` (ordem dos grupos), `types` (cor por tipo), `text` e `selectedId`.
  * Hooks: `data-map-point` (pino e cartão da lista), `data-map-zoom` (aproximar/afastar), `.vm-tip` (o rótulo do ponto aberto).
  */
+/** A medição dos cliques do mapa: sempre `place: "map"`, com o ponto como `target`. */
+const venueMapTrack = (name, target) => trackAttrs(name, { place: "map", target });
+
 const venueMapColor = (point, types) => types[point.kind]?.color ?? "#2b2b33";
 
 function venueMapPinMarkup(point, types, selectedId, text) {
   const on = point.id === selectedId;
   const modifier = point.kind === "entrance" ? " vm-pin--entrance" : point.minor ? " vm-pin--minor" : "";
   const tag = point.kind === "entrance" ? `<em class="vm-pin-tag">${escapeHtml(text.entranceTag)}</em>` : "";
-  return `<button type="button" class="vm-pin${modifier}${on ? " is-on" : ""}" data-map-point="${escapeHtml(point.id)}" style="left:${point.x}%;top:${point.y}%;--pin:${escapeHtml(venueMapColor(point, types))}" aria-label="${escapeHtml(point.name)}" aria-pressed="${on}"><span>${escapeHtml(point.mark)}</span>${tag}</button>`;
+  return `<button type="button" class="vm-pin${modifier}${on ? " is-on" : ""}" data-map-point="${escapeHtml(point.id)}" style="left:${point.x}%;top:${point.y}%;--pin:${escapeHtml(venueMapColor(point, types))}" aria-label="${escapeHtml(point.name)}" aria-pressed="${on}"${venueMapTrack("map_point", point.id)}><span>${escapeHtml(point.mark)}</span>${tag}</button>`;
 }
 
 /** O rótulo flutuante com o nome do ponto aberto, em cima do pino. */
@@ -18,7 +21,7 @@ function venueMapTipMarkup(point) {
 
 function venueMapCardMarkup(point, types, selectedId) {
   const on = point.id === selectedId;
-  return `<button type="button" class="vm-card${on ? " is-on" : ""}" data-map-point="${escapeHtml(point.id)}" aria-pressed="${on}" style="--pin:${escapeHtml(venueMapColor(point, types))}"><i>${escapeHtml(point.mark)}</i><span>${escapeHtml(point.name)}</span></button>`;
+  return `<button type="button" class="vm-card${on ? " is-on" : ""}" data-map-point="${escapeHtml(point.id)}" aria-pressed="${on}"${venueMapTrack("map_point", point.id)} style="--pin:${escapeHtml(venueMapColor(point, types))}"><i>${escapeHtml(point.mark)}</i><span>${escapeHtml(point.name)}</span></button>`;
 }
 
 /** O estilo do palco: sem aproximar, a imagem inteira; aproximado, a área `map.focus` no centro (o pino usa `--zoom` para não crescer junto). */
@@ -55,11 +58,11 @@ function venueCampusMapMarkup({ map, points, groups, types, text, selectedId, zo
         ${venueMapTipMarkup(selected)}
       </div>
       <span class="vm-hint">${escapeHtml(text.hint)}</span>
-      <button type="button" class="vm-zoom" data-map-zoom aria-pressed="${zoomed}">${escapeHtml(zoomed ? text.zoomOut : text.zoomIn)}</button>
+      <button type="button" class="vm-zoom" data-map-zoom aria-pressed="${zoomed}"${venueMapTrack("map_zoom")}>${escapeHtml(zoomed ? text.zoomOut : text.zoomIn)}</button>
     </div>
     <div class="vm-detail" aria-live="polite" style="--pin:${escapeHtml(venueMapColor(selected, types))}">${venueMapDetailMarkup(selected)}</div>
     ${venueMapGroupsMarkup({ points, groups, types, text, selectedId: selected.id })}
-    <p class="vm-foot"><a class="chip-btn" href="${escapeHtml(text.officialUrl)}" target="_blank" rel="noopener">${iconMarkup("link")}<span>${escapeHtml(text.official)}</span></a><small>${escapeHtml(text.credit)}</small></p>`;
+    <p class="vm-foot"><a class="chip-btn" href="${escapeHtml(text.officialUrl)}" target="_blank" rel="noopener"${venueMapTrack("map_official")}>${iconMarkup("link")}<span>${escapeHtml(text.official)}</span></a><small>${escapeHtml(text.credit)}</small></p>`;
 }
 
 /** O aviso "em breve" da página enquanto o mapa não é público. */
@@ -70,7 +73,7 @@ function venueMapSoonMarkup(text) {
 /** O cartão-destaque da página principal que leva à página "Como chegar" (`text.callout`: title, sub, cta, href). `access` ("Prédio H-02 · Entrada pelo portão 2", venueAccessLine) vira o texto de apoio quando existe. */
 function venueMapCalloutMarkup(text, access = "") {
   const callout = text.callout;
-  return `<a class="vm-callout" href="${escapeHtml(callout.href)}" data-track-event="venue_map_open" data-track-place="home"><span class="vm-callout-icon">${iconMarkup("pin")}</span><span class="vm-callout-text"><strong>${escapeHtml(callout.title)}</strong><small>${escapeHtml(access || callout.sub)}</small></span><b class="vm-callout-cta chip-btn chip-btn--primary">${escapeHtml(callout.cta)}</b></a>`;
+  return `<a class="vm-callout" href="${escapeHtml(callout.href)}" ${trackAttrs("venue_map_open", { place: "home" })}><span class="vm-callout-icon">${iconMarkup("pin")}</span><span class="vm-callout-text"><strong>${escapeHtml(callout.title)}</strong><small>${escapeHtml(access || callout.sub)}</small></span><b class="vm-callout-cta chip-btn chip-btn--primary">${escapeHtml(callout.cta)}</b></a>`;
 }
 
 if (typeof module !== "undefined") module.exports = { venueCampusMapMarkup, venueMapStageStyle, venueMapDetailMarkup, venueMapTipMarkup, venueMapSoonMarkup, venueMapCalloutMarkup };

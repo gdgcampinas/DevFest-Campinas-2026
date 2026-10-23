@@ -36,10 +36,10 @@ function eventFromElement(el) {
 
 /**
  * Liga a medição. Devolve { enabled, track } (track é no-op sem provedor).
- * `adapters` e `debug` são injetáveis pra teste.
+ * `adapters`, `debug` e `enabled` são injetáveis (`enabled: false` = nenhum provedor carregado, usado no modo DEV pra não contar a nossa conferência).
  */
-function initAnalytics(config, { rootEl = document, adapters = ANALYTICS_ADAPTERS, debug = getParam("analytics") === "debug" } = {}) {
-  const adapter = config.endpoint ? adapters[config.provider]?.(config) : null;
+function initAnalytics(config, { rootEl = document, adapters = ANALYTICS_ADAPTERS, debug = getParam("analytics") === "debug", enabled = true } = {}) {
+  const adapter = enabled && config.endpoint ? adapters[config.provider]?.(config) : null;
   if (adapter) adapter.load();
   if (!adapter && !debug) return { enabled: false, track: () => {} };
 

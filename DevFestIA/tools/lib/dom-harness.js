@@ -26,6 +26,7 @@ const SITE_BASE = [
   "data/talk-highlights.js",
   "components/icon.js",
   "components/escape-html.js",
+  "components/track-attrs.js",
   "data/persisted-set-repository.js",
   "data/persisted-value-repository.js",
 ];

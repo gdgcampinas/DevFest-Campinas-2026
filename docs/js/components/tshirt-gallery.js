@@ -8,7 +8,7 @@ const tshirtAlt = (text, model, side) => `${text.photoOf}: ${model.label}, ${tex
 function tshirtShowcaseMarkup({ models, text }) {
   const images = models.map(model => `<img src="${escapeHtml(model.thumbs.frente)}" alt="${escapeHtml(tshirtAlt(text, model, "frente"))}" loading="lazy" decoding="async">`).join("");
   return `
-    <button type="button" class="tshirt-showcase" data-tshirt-open aria-label="${escapeHtml(text.showcaseLabel)}">
+    <button type="button" class="tshirt-showcase" data-tshirt-open aria-label="${escapeHtml(text.showcaseLabel)}"${trackAttrs("tshirt_open", { place: "tickets" })}>
       <span class="tshirt-showcase-imgs">${images}</span>
       <span class="tshirt-showcase-cta">${escapeHtml(text.showcaseButton)}</span>
     </button>`;
@@ -17,8 +17,8 @@ function tshirtShowcaseMarkup({ models, text }) {
 /** Conteúdo do modal: abas dos modelos, a foto grande e o alternador frente/costas. `sizesLinkHtml` (opcional) é o atalho pro guia de tamanhos. */
 function tshirtGalleryMarkup({ models, text, view, sizesLinkHtml = "" }) {
   const model = models.find(item => item.id === view.modelId) ?? models[0];
-  const tabs = models.map(item => `<button type="button" class="chip-btn${item.id === model.id ? " chip-btn--primary" : ""}" data-tshirt-model="${escapeHtml(item.id)}" aria-pressed="${item.id === model.id}">${escapeHtml(item.label)}</button>`).join("");
-  const sides = Object.keys(text.sides).map(side => `<button type="button" class="chip-btn${side === view.side ? " chip-btn--primary" : ""}" data-tshirt-side="${escapeHtml(side)}" aria-pressed="${side === view.side}">${escapeHtml(text.sides[side])}</button>`).join("");
+  const tabs = models.map(item => `<button type="button" class="chip-btn${item.id === model.id ? " chip-btn--primary" : ""}" data-tshirt-model="${escapeHtml(item.id)}" aria-pressed="${item.id === model.id}"${trackAttrs("tshirt_model", { place: "gallery", target: item.id })}>${escapeHtml(item.label)}</button>`).join("");
+  const sides = Object.keys(text.sides).map(side => `<button type="button" class="chip-btn${side === view.side ? " chip-btn--primary" : ""}" data-tshirt-side="${escapeHtml(side)}" aria-pressed="${side === view.side}"${trackAttrs("tshirt_side", { place: "gallery", target: side })}>${escapeHtml(text.sides[side])}</button>`).join("");
   return `
     <div class="tshirt-gallery">
       <h3 class="tshirt-title">${escapeHtml(text.galleryTitle)}</h3>

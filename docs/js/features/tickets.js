@@ -57,7 +57,7 @@ function ticketCtaState(tickets, { label = tickets.label, url = tickets.url, pag
 /** `place` (opcional) marca de onde veio o clique, pra medição (ver analytics.js). */
 function ticketButtonMarkup(state, { className = "cta", place = "" } = {}) {
   if (!state.href) return `<span class="${className} cta--soon">${state.label}</span>`;
-  const tracking = place ? ` data-track-event="cta_click" data-track-place="${place}" data-track-kind="${state.kind}"` : "";
+  const tracking = place ? trackAttrs("cta_click", { place, kind: state.kind }) : "";
   const target = state.internal ? "" : ' target="_blank" rel="noopener"'; // o cartão da lista de espera é do próprio site: abre na mesma aba
   return `<a class="${className}" href="${state.href}"${target}${tracking}>${state.label}</a>`;
 }

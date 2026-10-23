@@ -14,7 +14,7 @@ function tshirtDiagramMarkup(text) {
 
 function tshirtSizesMarkup({ models, text, activeId }) {
   const model = models.find(item => item.id === activeId) ?? models[0];
-  const tabs = models.map(item => `<button type="button" class="chip-btn${item.id === model.id ? " chip-btn--primary" : ""}" data-sizes-model="${escapeHtml(item.id)}" aria-pressed="${item.id === model.id}">${escapeHtml(item.label)}</button>`).join("");
+  const tabs = models.map(item => `<button type="button" class="chip-btn${item.id === model.id ? " chip-btn--primary" : ""}" data-sizes-model="${escapeHtml(item.id)}"${trackAttrs("tshirt_sizes_model", { place: "sizes", target: item.id })} aria-pressed="${item.id === model.id}">${escapeHtml(item.label)}</button>`).join("");
   const rows = model.sizes.map(row => `<tr><th scope="row">${escapeHtml(row.size)}</th><td>${row.height} ${escapeHtml(text.unit)}</td><td>${row.width} ${escapeHtml(text.unit)}</td></tr>`).join("");
   return `
     <div class="ts-head">
@@ -40,5 +40,5 @@ function tshirtSizesMarkup({ models, text, activeId }) {
 
 /** O atalho "Guia de tamanhos" (botão no card do ingresso e na galeria da camiseta): leva ao guia da página de ingressos. */
 function tshirtSizesLinkMarkup(text) {
-  return `<a class="ts-link" href="#tamanhos" data-tshirt-sizes-link>${iconMarkup("ruler")}<span>${escapeHtml(text.shortcut)}</span></a>`;
+  return `<a class="ts-link" href="#tamanhos" data-tshirt-sizes-link${trackAttrs("tshirt_sizes_open", { place: "ticket" })}>${iconMarkup("ruler")}<span>${escapeHtml(text.shortcut)}</span></a>`;
 }
