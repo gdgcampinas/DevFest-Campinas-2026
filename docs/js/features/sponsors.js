@@ -21,11 +21,14 @@ function publicSponsorTiers(tiers) {
     .filter(tier => tier.elements.length);
 }
 
-/** Monta a seção na página: tudo depois da revelação, só as liberadas antes dela, aviso "em breve" se não houver nenhuma. */
+/** Cota sem nenhuma marca não aparece (nem na revelação): só se mostra o que existe. */
+const filledSponsorTiers = tiers => tiers.filter(tier => tier.elements.length);
+
+/** Monta a seção na página: tudo o que existe depois da revelação, só as liberadas antes dela, aviso "em breve" se não houver nenhuma. */
 function initSponsorsSection({ reveal, tiers, sectionEl, gridEl, soonMessage }) {
-  const visible = reveal ? tiers : publicSponsorTiers(tiers);
+  const visible = reveal ? filledSponsorTiers(tiers) : publicSponsorTiers(tiers);
   if (reveal || visible.length) return renderSponsors(visible, sectionEl, gridEl);
   renderOrConstruction(false, sectionEl, () => {}, soonMessage);
 }
 
-if (typeof module !== "undefined") module.exports = { publicSponsorTiers };
+if (typeof module !== "undefined") module.exports = { publicSponsorTiers, filledSponsorTiers };

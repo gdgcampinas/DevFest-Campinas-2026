@@ -1,18 +1,7 @@
 /**
- * Comunidades parceiras — MOCK (fictícias) até confirmar as reais.
- * Mesmo formato de logo+link de sponsor-card.js, sem tier.
+ * Comunidades parceiras, só dado. Vazio até confirmar as reais: a seção some sozinha enquanto não há nenhuma (features/partner-communities.js).
+ * Mesmo formato de logo+link de sponsor-card.js, sem cota: `{ name, link, imageUrl }`.
  */
-const community = (name, shape, color) => ({
-  name,
-  link: MOCK_SPONSOR_URL,
-  imageUrl: mockLogo({ name, shape, color }),
-});
-
-const PARTNER_COMMUNITIES = [
-  community("Devs do Interior", "hex", "#4285f4"),
-  community("Campinas Front", "bars", "#f59e0b"),
-  community("Mulheres em Dados", "circle", "#ea4335"),
-  community("Cloud Meetup", "ring", "#34a853"),
-];
+const PARTNER_COMMUNITIES = [];
 
 const partnerCommunitiesRepository = createRepository(PARTNER_COMMUNITIES);

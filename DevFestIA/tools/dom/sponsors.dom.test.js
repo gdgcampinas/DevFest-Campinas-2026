@@ -75,6 +75,14 @@ test("em produção (antes da revelação) só as marcas `public` aparecem; cota
   assert.equal(JSON.stringify(shown), JSON.stringify(["Google Developer Groups", "FalaBoss", "FIAP"]), "hoje o Master (GDG), a FalaBoss (Especialista) e a FIAP (Pleno) estão liberados em produção");
 });
 
+test("depois da revelação (DEV) a cota vazia também não aparece, nem como rótulo", () => {
+  const section = document.createElement("section");
+  const grid = document.createElement("div");
+  site.get("initSponsorsSection")({ reveal: true, tiers: site.get("sponsorsRepository").getAll(), sectionEl: section, gridEl: grid, soonMessage: "em breve" });
+  const labels = [...grid.querySelectorAll(".sponsor-tier-label")].map(el => textOf(el));
+  assert.equal(labels.join(), "Master,Especialista,Pleno");
+});
+
 test("Realização: logo do GDG Campinas + \"by\" + logo oficial do Google Developer Groups (arquivo existe); sem `by` fica só o organizador", () => {
   const by = site.get("REALIZATION_BY");
   assert.ok(fs.existsSync(path.join(__dirname, "../../../docs", by.logo)), "logo do GDG existe");
