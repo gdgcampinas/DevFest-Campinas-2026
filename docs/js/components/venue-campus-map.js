@@ -57,7 +57,7 @@ function venueCampusMapMarkup({ map, points, groups, types, text, selectedId, zo
     </div>
     <div class="vm-detail" aria-live="polite" style="--pin:${escapeHtml(venueMapColor(selected, types))}">${venueMapDetailMarkup(selected)}</div>
     ${venueMapGroupsMarkup({ points, groups, types, text, selectedId: selected.id })}
-    <p class="vm-foot"><a class="chip-btn" href="${escapeHtml(text.officialUrl)}" target="_blank" rel="noopener">${escapeHtml(text.official)}</a><small>${escapeHtml(text.credit)}</small></p>`;
+    <p class="vm-foot"><a class="chip-btn" href="${escapeHtml(text.officialUrl)}" target="_blank" rel="noopener">${iconMarkup("link")}<span>${escapeHtml(text.official)}</span></a><small>${escapeHtml(text.credit)}</small></p>`;
 }
 
 /** O aviso "em breve" da página enquanto o mapa não é público. */
@@ -68,7 +68,7 @@ function venueMapSoonMarkup(text) {
 /** O cartão-destaque da página principal que leva à página "Como chegar" (`text.callout`: mark, title, sub, cta, href). */
 function venueMapCalloutMarkup(text) {
   const callout = text.callout;
-  return `<a class="vm-callout" href="${escapeHtml(callout.href)}" data-track-event="venue_map_open" data-track-place="home"><i aria-hidden="true">${escapeHtml(callout.mark)}</i><span class="vm-callout-text"><strong>${escapeHtml(callout.title)}</strong><small>${escapeHtml(callout.sub)}</small></span><b class="vm-callout-cta">${escapeHtml(callout.cta)}</b></a>`;
+  return `<a class="vm-callout" href="${escapeHtml(callout.href)}" data-track-event="venue_map_open" data-track-place="home"><span class="vm-callout-icon">${iconMarkup("pin")}</span><span class="vm-callout-text"><strong>${escapeHtml(callout.title)}</strong><small>${escapeHtml(callout.sub)}</small></span><b class="vm-callout-cta chip-btn chip-btn--primary">${escapeHtml(callout.cta)}</b></a>`;
 }
 
 if (typeof module !== "undefined") module.exports = { venueCampusMapMarkup, venueMapStageStyle, venueMapDetailMarkup, venueMapTipMarkup, venueMapSoonMarkup, venueMapCalloutMarkup };

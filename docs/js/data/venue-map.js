@@ -45,7 +45,7 @@ const VENUE_MAP_TEXTS = {
   groups: { arrival: "Chegada", onsite: "No local", food: "Comer" },
   soon: "O mapa do local chega em breve.",
   pageTitle: "Como chegar",
-  callout: { mark: "H", title: "Como chegar ao H-02", sub: "Portões, estacionamento, ônibus e food trucks no mapa", cta: "Ver o mapa", href: "local.html" },
+  callout: { title: "Como chegar ao H-02", sub: "Portões, estacionamento, ônibus e food trucks no mapa", cta: "Ver o mapa", href: "local.html" },
   zoomIn: "Aproximar do H-02",
   zoomOut: "Ver o campus inteiro",
   official: "Mapa oficial (PDF)",
