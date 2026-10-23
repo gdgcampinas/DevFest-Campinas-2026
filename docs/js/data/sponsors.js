@@ -23,7 +23,10 @@ const SPONSORS = [
   { id: "junior", tier: "Júnior", elements: [] },
   { id: "intern", tier: "Intern", elements: [] },
   { id: "permuta", tier: "Cota Permuta", elements: [] },
-  { id: "apoio", tier: "Apoio", elements: [] },
+  { id: "apoio", tier: "Apoio", elements: [
+    // REAL, só em DEV até o Renato liberar (sem `public`). Logo institucional da PUC-Campinas (brasão + nome), baixado do site oficial, na caixa branca padrão; não recolorir nem alterar. É a casa do evento (Campus I).
+    { name: "PUC-Campinas", link: "https://www.puc-campinas.edu.br/", imageUrl: "assets/brand/puc-campinas.webp" },
+  ] },
 ];
 
 const sponsorsRepository = createRepository(SPONSORS, {
