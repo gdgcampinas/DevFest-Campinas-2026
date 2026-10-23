@@ -463,6 +463,8 @@ I18N_DICTIONARIES.en = {
     "Leve o DevFest Campinas 2026 no seu celular. Escolha um fundo e baixe.": "Take DevFest Campinas 2026 with you on your phone. Pick a wallpaper and download it.",
     "Baixar fundo": "Download wallpaper",
     "Fundo de tela": "Wallpaper",
+    "Parceiros": "Partners",
+    "Publicando livros de qualidade nas áreas de tecnologia, negócios e educação desde 1988.": "Publishing quality books in technology, business and education since 1988.",
     "Entrada pelo portão 2": "Entrance through gate 2",
     "Entrada": "Entrance",
     "A entrada do DevFest: use o portão 2, pela Av. Reitor Benedito José Barreto Fonseca.": "The DevFest entrance: use gate 2, on Av. Reitor Benedito José Barreto Fonseca.",

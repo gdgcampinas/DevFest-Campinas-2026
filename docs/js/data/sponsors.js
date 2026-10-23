@@ -27,6 +27,10 @@ const SPONSORS = [
     // REAL, só em DEV até o Renato liberar (sem `public`). Logo institucional da PUC-Campinas (brasão + nome), baixado do site oficial, na caixa branca padrão; não recolorir nem alterar. É a casa do evento (Campus I), cede o local sem custo: `featured` dá o destaque do Master só para ela.
     { featured: true, name: "PUC-Campinas", link: "https://www.puc-campinas.edu.br/", imageUrl: "assets/brand/puc-campinas.webp" },
   ] },
+  { id: "parceiros", tier: "Parceiros", elements: [
+    // REAL, só em DEV até o Renato liberar (sem `public`). Logo vetorial oficial (versão positiva, texto preto e laranja) na caixa branca padrão.
+    { name: "Novatec Editora", link: "https://novatec.com.br/", imageUrl: "assets/brand/novatec.svg", description: "Publicando livros de qualidade nas áreas de tecnologia, negócios e educação desde 1988." },
+  ] },
 ];
 
 const sponsorsRepository = createRepository(SPONSORS, {

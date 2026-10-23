@@ -80,7 +80,7 @@ test("depois da revelação (DEV) a cota vazia também não aparece, nem como r�
   const grid = document.createElement("div");
   site.get("initSponsorsSection")({ reveal: true, tiers: site.get("sponsorsRepository").getAll(), sectionEl: section, gridEl: grid, soonMessage: "em breve" });
   const labels = [...grid.querySelectorAll(".sponsor-tier-label")].map(el => textOf(el));
-  assert.equal(labels.join(), "Master,Especialista,Pleno,Apoio"); // a PUC-Campinas (Apoio) aparece só em DEV até ganhar `public: true`
+  assert.equal(labels.join(), "Master,Especialista,Pleno,Apoio,Parceiros"); // PUC-Campinas (Apoio) e Novatec (Parceiros) aparecem só em DEV até ganharem `public: true`
 });
 
 test("a marca `featured` ganha o destaque do Master sem mudar a cota (PUC-Campinas no Apoio)", () => {
