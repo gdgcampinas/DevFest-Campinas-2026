@@ -83,6 +83,17 @@ test("depois da revelação (DEV) a cota vazia também não aparece, nem como r�
   assert.equal(labels.join(), "Master,Especialista,Pleno,Apoio"); // a PUC-Campinas (Apoio) aparece só em DEV até ganhar `public: true`
 });
 
+test("a marca `featured` ganha o destaque do Master sem mudar a cota (PUC-Campinas no Apoio)", () => {
+  const apoio = site.get("sponsorsRepository").getByTier("Apoio");
+  assert.equal(apoio.elements[0].featured, true);
+  const box = document.createElement("div");
+  box.innerHTML = site.get("sponsorTierMarkup")(apoio);
+  assert.ok(box.querySelector(".sponsor-logos--featured .sponsor-item--featured"));
+  const plain = document.createElement("div");
+  plain.innerHTML = site.get("sponsorTierMarkup")({ id: "apoio", tier: "Apoio", elements: [{ name: "Outra", link: "https://o.test/", imageUrl: "o.webp" }] });
+  assert.equal(plain.querySelector(".sponsor-item--featured"), null);
+});
+
 test("Realização: logo do GDG Campinas + \"by\" + logo oficial do Google Developer Groups (arquivo existe); sem `by` fica só o organizador", () => {
   const by = site.get("REALIZATION_BY");
   assert.ok(fs.existsSync(path.join(__dirname, "../../../docs", by.logo)), "logo do GDG existe");

@@ -5,7 +5,7 @@
  * usado hoje pelas comunidades parceiras; com ela, vira o card completo
  * (logo em caixa branca + nome + texto), usado pelos patrocinadores.
  * Mesma função pros dois — o "tamanho" do card é decidido só pelo dado.
- * O logo já traz o nome da marca: o nome em TEXTO só aparece quando o card não mostra descrição (item simples); com descrição o nome
+ * `featured: true` (por marca, em data/sponsors.js) dá ao cartão o destaque do Master (logo maior, cartão mais largo) sem mudar a cota. O logo já traz o nome da marca: o nome em TEXTO só aparece quando o card não mostra descrição (item simples); com descrição o nome
  * fica no `alt`/`title` do logo (sem repetir); `showName` força um ou outro (comunidades: só o logo). `sponsorTierStyle` (data/sponsor-tiers.js) diz o layout e se a cota mostra a descrição.
  */
 function sponsorLogoMarkup(sponsor, { showDescription = true, showName } = {}) {
@@ -14,7 +14,7 @@ function sponsorLogoMarkup(sponsor, { showDescription = true, showName } = {}) {
   const description = hasDescription ? `<p class="sponsor-desc">${sponsor.description}</p>` : "";
   const name = (showName ?? !hasDescription) ? `<div class="sponsor-name">${sponsor.name}</div>` : "";
   return `
-    <a class="sponsor-item" href="${sponsor.link}" target="_blank" rel="noopener" title="${sponsor.name}" data-track-event="sponsor_click" data-track-target="${sponsor.name}">
+    <a class="sponsor-item${sponsor.featured ? " sponsor-item--featured" : ""}" href="${sponsor.link}" target="_blank" rel="noopener" title="${sponsor.name}" data-track-event="sponsor_click" data-track-target="${sponsor.name}">
       <div class="sponsor-logo-box"><img src="${sponsor.imageUrl}" alt="${sponsor.name}" loading="lazy"${widthStyle}></div>
       ${name}
       ${description}
@@ -27,6 +27,6 @@ function sponsorTierMarkup(tier) {
   return `
     <div class="sponsor-tier" data-tier="${tier.id}">
       <div class="sponsor-tier-label">${tier.tier}</div>
-      <div class="sponsor-logos">${tier.elements.map(element => sponsorLogoMarkup(element, { showDescription: style.description })).join("")}</div>
+      <div class="sponsor-logos${tier.elements.some(element => element.featured) ? " sponsor-logos--featured" : ""}">${tier.elements.map(element => sponsorLogoMarkup(element, { showDescription: style.description })).join("")}</div>
     </div>`;
 }
