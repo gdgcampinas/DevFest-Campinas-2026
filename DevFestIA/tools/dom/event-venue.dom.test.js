@@ -40,6 +40,6 @@ test("sem local confirmado não há linha de acesso", () => {
   assert.equal(site.get("venueAccessLine")(newEvent()), "");
 });
 
-test("a produção continua sem o local enquanto `public` for false (o dado entregue)", () => {
-  assert.equal(venue.public, false);
+test("o local está liberado em produção (o dado entregue)", () => {
+  assert.equal(venue.public, true);
 });

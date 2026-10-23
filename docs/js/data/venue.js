@@ -4,7 +4,7 @@
  * igualdade (data/i18n/en.js); os endereços são do site oficial da universidade.
  */
 const VENUE = {
-  public: false,
+  public: true, // LIBERADO em produção em 2026-10-23
   venue: "PUC-Campinas, Campus I",
   building: "Prédio H-02", // o prédio do evento
   entrance: "Entrada pelo portão 2", // por onde entrar (aparece junto do endereço e no mapa)

@@ -15,7 +15,7 @@ const SITE_PAGES = [
   { id: "grade", label: "Grade", href: "grade.html" },
   { id: "palestrantes", label: "Palestrantes", href: "palestrantes.html" },
   { id: "ingressos", label: "Ingressos", href: "ingressos.html" },
-  { id: "local", label: "Como chegar", href: "local.html", devOnly: true }, // tirar o `devOnly` junto com `public: true` em data/venue-map.js (testado em venue-campus-map.dom.test.js)
+  { id: "local", label: "Como chegar", href: "local.html" }, // sem `devOnly` enquanto o mapa for público (data/venue-map.js; testado em venue-campus-map.dom.test.js)
   { id: "time", label: "Time", href: "time.html" },
   { id: "patrocinio", label: "Patrocínio", href: "patrocinio.html" },
   { id: "sorteio", label: "Sorteio", href: "sorteio.html", devOnly: true },

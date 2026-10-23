@@ -3,7 +3,7 @@
  * `image` é o mapa oficial do Campus I (PUC-Campinas); `x` e `y` são a posição de cada ponto em % da imagem; `focus` é a área que o botão "Aproximar" mostra (centro e aumento).
  * Cada `kind` tem uma cor em `VENUE_MAP_TYPES`; `group` agrupa na lista (`VENUE_MAP_TEXTS.groups`, na ordem de `VENUE_MAP_GROUPS`). Os textos são traduzidos por igualdade (data/i18n/en.js). Para um ponto novo, é só uma linha em VENUE_MAP_POINTS.
  */
-const VENUE_MAP_CONFIG = { public: false };
+const VENUE_MAP_CONFIG = { public: true }; // LIBERADO em produção em 2026-10-23
 
 const VENUE_MAP = {
   image: "assets/img/campus/mapa-campus-i.webp",
