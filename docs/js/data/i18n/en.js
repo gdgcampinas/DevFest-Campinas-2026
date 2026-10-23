@@ -491,7 +491,7 @@ I18N_DICTIONARIES.en = {
     "Entrada pelo sul, perto da Rua Dom Paulo de Tarso Campos.": "Entrance on the south side, near Rua Dom Paulo de Tarso Campos.",
     "COMO CHEGAR": "GETTING THERE",
     "O campus e o": "The campus and",
-    "Toque num ponto do mapa para ver o que é. Tudo o que você precisa fica perto do prédio H-02.": "Tap a point on the map to see what it is. Everything you need is close to building H-02.",
+    "Tudo o que você precisa fica perto do prédio H-02. Toque num ponto do mapa para ver o que é.": "Everything you need is close to building H-02. Tap a point on the map to see what it is.",
     "Aproximar do H-02": "Zoom in on H-02",
     "Ver o campus inteiro": "See the whole campus",
     "Mapa oficial (PDF)": "Official map (PDF)",

@@ -23,10 +23,10 @@ const VENUE_MAP_TYPES = {
 };
 
 const VENUE_MAP_POINTS = [
-  { id: "parking", kind: "parking", mark: "C", x: 35.7, y: 58.4, group: "arrival", name: "Estacionamento C", text: "A poucos passos do H-02, pela Av. Dom Humberto Mozzoni." },
-  { id: "gate3", kind: "gate", mark: "3", x: 46.6, y: 90.3, group: "arrival", name: "Portão 3", text: "Entrada pelo sul, perto da Rua Dom Paulo de Tarso Campos." },
-  { id: "gate2", kind: "gate", mark: "2", x: 91.6, y: 73.5, group: "arrival", name: "Portão 2", text: "Entrada pela Av. Reitor Benedito José Barreto Fonseca." },
   { id: "gate1", kind: "gate", mark: "1", x: 70.4, y: 35.7, group: "arrival", name: "Portão 1", text: "Entrada pelo nordeste do campus." },
+  { id: "gate2", kind: "gate", mark: "2", x: 91.6, y: 73.5, group: "arrival", name: "Portão 2", text: "Entrada pela Av. Reitor Benedito José Barreto Fonseca." },
+  { id: "gate3", kind: "gate", mark: "3", x: 46.6, y: 90.3, group: "arrival", name: "Portão 3", text: "Entrada pelo sul, perto da Rua Dom Paulo de Tarso Campos." },
+  { id: "parking", kind: "parking", mark: "C", x: 35.7, y: 58.4, group: "arrival", name: "Estacionamento C", text: "A poucos passos do H-02, pela Av. Dom Humberto Mozzoni." },
   { id: "bus", kind: "transit", mark: "B", x: 46.7, y: 60.8, group: "arrival", name: "Ponto de ônibus", text: "Na Av. Dom Humberto Mozzoni, ao lado do H-Zero." },
   { id: "h2", kind: "venue", mark: "H", x: 40.1, y: 62.4, group: "onsite", name: "Prédio H-02", text: "Onde acontece o DevFest Campinas." },
   { id: "info", kind: "info", mark: "i", x: 49.0, y: 58.4, group: "onsite", name: "Posto de informações", text: "No H-Zero. Dúvidas e orientação do campus." },
@@ -40,7 +40,7 @@ const VENUE_MAP_TEXTS = {
   badge: "COMO CHEGAR",
   title: "O campus e o",
   titleAccent: "H-02",
-  sub: "Toque num ponto do mapa para ver o que é. Tudo o que você precisa fica perto do prédio H-02.",
+  sub: "Tudo o que você precisa fica perto do prédio H-02. Toque num ponto do mapa para ver o que é.",
   hint: "Toque nos pontos coloridos",
   groups: { arrival: "Chegada", onsite: "No local", food: "Comer" },
   soon: "O mapa do local chega em breve.",
