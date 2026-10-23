@@ -46,4 +46,4 @@
 .vm-callout-text small{font:500 14px/1.4 var(--font-body);color:var(--muted)}
 .vm-callout-cta{flex:none}
 @media (prefers-reduced-motion:reduce){.vm-stage{transition:none}.vm-pin.is-on::after{animation:none}.vm-callout{transition:none}}
-@media (max-width:560px){.campus-map,.campus-callout,.venue-page{padding:0 16px}.vm-pin{width:26px;height:26px;font-size:12px;border-width:2px}.vm-pin.is-on{width:32px;height:32px;font-size:14px}}
+@media (max-width:560px){.vm-callout-cta{flex:1 1 100%;display:flex;justify-content:center;padding:14px 18px;font-size:15px}.campus-map,.campus-callout,.venue-page{padding:0 16px}.vm-pin{width:26px;height:26px;font-size:12px;border-width:2px}.vm-pin.is-on{width:32px;height:32px;font-size:14px}}
