@@ -8,9 +8,14 @@ function applyVenue(event, venue, { devMode = false } = {}) {
   event.address = venue.address;
   event.mapQuery = venue.mapQuery ?? venue.address;
   event.mapZoom = venue.mapZoom;
+  event.building = venue.building;
+  event.entrance = venue.entrance;
   event.venueConfirmed = true;
   event.venueLinks = venue.links ?? [];
   return true;
 }
 
-if (typeof module !== "undefined") module.exports = { applyVenue };
+/** "Prédio H-02 · Entrada pelo portão 2": como achar o evento dentro do campus, a partir dos campos de EVENT (vazio quando o local não está confirmado). Usada no bloco do local e no cartão da principal. */
+const venueAccessLine = event => [event.building, event.entrance].filter(Boolean).join(" · ");
+
+if (typeof module !== "undefined") module.exports = { applyVenue, venueAccessLine };

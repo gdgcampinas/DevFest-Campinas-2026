@@ -77,6 +77,24 @@ test("o menu leva à página \"Como chegar\" e só sai do modo DEV junto com o m
   if (g("venueMapConfigRepository").getAll().public) assert.ok(!entry.devOnly, "mapa público: o menu não pode ficar escondido");
 });
 
+test("só o portão 2 é a entrada: ganha a etiqueta e a cor própria, e os outros portões ficam discretos", () => {
+  const { el } = mount({ public: false }, true);
+  const pin = id => el.querySelector(`.vm-pin[data-map-point="${id}"]`);
+  assert.ok(pin("gate2").classList.contains("vm-pin--entrance"));
+  assert.match(textOf(pin("gate2")), /Entrada/);
+  assert.ok(pin("gate1").classList.contains("vm-pin--minor") && pin("gate3").classList.contains("vm-pin--minor"));
+  assert.equal(el.querySelectorAll(".vm-pin-tag").length, 1);
+  assert.ok(g("venueMapTypesRepository").getAll().entrance.color !== g("venueMapTypesRepository").getAll().gate.color);
+});
+
+test("o cartão da principal mostra a linha de acesso do local quando existe", () => {
+  const callout = document.createElement("section");
+  g("initVenueMapCallout")(callout, { text: deps().text, config: { public: true }, access: "Prédio H-02 · Entrada pelo portão 2" });
+  assert.match(textOf(callout), /Prédio H-02 · Entrada pelo portão 2/);
+  g("initVenueMapCallout")(callout, { text: deps().text, config: { public: true } });
+  assert.match(textOf(callout), /A entrada, o estacionamento/);
+});
+
 test("tem o link do mapa oficial e escapa texto de ponto", () => {
   const { map, types, text } = deps();
   const html = g("venueCampusMapMarkup")({ map, types, groups: ["arrival"], text, selectedId: "x", zoomed: false, points: [{ id: "x", kind: "gate", group: "arrival", mark: "<b>", x: 10, y: 10, name: "<img src=x onerror=1>", text: "a & b" }] });

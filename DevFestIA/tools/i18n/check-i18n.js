@@ -20,7 +20,7 @@ const fail = message => errors.push(message);
 
 const KEEP_AS_IS = new Set(["cm", "DevFest", "Campinas", "Coding Jam", "Antigravity", "Antigravity IDE", "Gemini", "Meetup", "Instagram", "LinkedIn", "Linktree", "GDG Campinas", "DevFest Campinas", "EloTech 2026", "gdgcampinascontato@gmail.com", "Campinas, SP", "Sympla", "Links", "Networking", "Workshop", "Front-end / Back-end / Data - Full Stack", "Front/Back/Data - Full Stack", "Mobile / Agile", "Mobile/Agile", "Google Sans", "Master", "Intern", "H-02", "Food trucks"]);
 // Campos dos dados que não são texto de tela (ids, endereços, cores, arquivos, textos já gerados por t()).
-const SKIP_KEYS = new Set(["id", "size", "showcase", "pageHref", "filename", "noteIcon", "url", "href", "color", "trackColor", "icon", "date", "start", "end", "timezone", "utcOffset", "image", "logo", "photo", "file", "youtubeId", "shape", "endpoint", "provider", "alt", "waitlistUrl", "imageUrl", "link", "slug", "price", "value", "min", "max", "moment", "kind", "mark", "officialUrl", "selectedId", "group"]);
+const SKIP_KEYS = new Set(["id", "size", "showcase", "pageHref", "filename", "noteIcon", "url", "href", "color", "trackColor", "icon", "date", "start", "end", "timezone", "utcOffset", "image", "logo", "photo", "file", "youtubeId", "shape", "endpoint", "provider", "alt", "waitlistUrl", "imageUrl", "link", "slug", "price", "value", "min", "max", "moment", "kind", "mark", "officialUrl", "selectedId", "group", "minor"]);
 const isTechnical = value => /^(https?:|mailto:|var\(|assets\/|js\/|#)/.test(value) || /^[\d\s+.,%/-]+$/.test(value);
 
 // ---------- 1 e 2: chaves usadas no código ----------

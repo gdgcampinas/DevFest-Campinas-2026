@@ -23,7 +23,10 @@ test("DEV ou `public: true`: o local da PUC entra no EVENT, confirmado, com os l
   for (const [options, data] of [[{ devMode: true }, { ...venue, public: false }], [{}, { ...venue, public: true }]]) {
     const event = newEvent();
     assert.equal(applyVenue(event, data, options), true);
-    assert.equal(event.venue, "PUC Campinas - Campus I");
+    assert.equal(event.venue, "PUC-Campinas, Campus I");
+    assert.equal(event.building, "Prédio H-02");
+    assert.equal(event.entrance, "Entrada pelo portão 2");
+    assert.equal(site.get("venueAccessLine")(event), "Prédio H-02 · Entrada pelo portão 2");
     assert.match(event.address, /^Av\. Reitor.*13086-900$/, "o endereço escrito não repete o nome do local");
     assert.match(event.mapQuery, /^PUC Campinas - Campus I, Av\./, "o mapa procura nome + rua");
     assert.equal(event.mapZoom, 16);
@@ -31,6 +34,10 @@ test("DEV ou `public: true`: o local da PUC entra no EVENT, confirmado, com os l
     assert.equal(event.venueLinks.map(link => link.id).join(), "map,about");
     assert.ok(event.venueLinks.every(link => link.url.startsWith("https://www.puc-campinas.edu.br/")));
   }
+});
+
+test("sem local confirmado não há linha de acesso", () => {
+  assert.equal(site.get("venueAccessLine")(newEvent()), "");
 });
 
 test("a produção continua sem o local enquanto `public` for false (o dado entregue)", () => {

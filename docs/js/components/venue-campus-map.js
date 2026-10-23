@@ -4,9 +4,11 @@
  */
 const venueMapColor = (point, types) => types[point.kind]?.color ?? "#2b2b33";
 
-function venueMapPinMarkup(point, types, selectedId) {
+function venueMapPinMarkup(point, types, selectedId, text) {
   const on = point.id === selectedId;
-  return `<button type="button" class="vm-pin${on ? " is-on" : ""}" data-map-point="${escapeHtml(point.id)}" style="left:${point.x}%;top:${point.y}%;--pin:${escapeHtml(venueMapColor(point, types))}" aria-label="${escapeHtml(point.name)}" aria-pressed="${on}"><span>${escapeHtml(point.mark)}</span></button>`;
+  const modifier = point.kind === "entrance" ? " vm-pin--entrance" : point.minor ? " vm-pin--minor" : "";
+  const tag = point.kind === "entrance" ? `<em class="vm-pin-tag">${escapeHtml(text.entranceTag)}</em>` : "";
+  return `<button type="button" class="vm-pin${modifier}${on ? " is-on" : ""}" data-map-point="${escapeHtml(point.id)}" style="left:${point.x}%;top:${point.y}%;--pin:${escapeHtml(venueMapColor(point, types))}" aria-label="${escapeHtml(point.name)}" aria-pressed="${on}"><span>${escapeHtml(point.mark)}</span>${tag}</button>`;
 }
 
 /** O rótulo flutuante com o nome do ponto aberto, em cima do pino. */
@@ -49,7 +51,7 @@ function venueCampusMapMarkup({ map, points, groups, types, text, selectedId, zo
       <div class="vm-stage" style="${venueMapStageStyle(map, zoomed)}">
         <img src="${escapeHtml(map.image)}" alt="${escapeHtml(map.alt)}" loading="lazy" decoding="async">
         <div class="vm-dim"></div>
-        ${points.map(point => venueMapPinMarkup(point, types, selected.id)).join("")}
+        ${points.map(point => venueMapPinMarkup(point, types, selected.id, text)).join("")}
         ${venueMapTipMarkup(selected)}
       </div>
       <span class="vm-hint">${escapeHtml(text.hint)}</span>
@@ -65,10 +67,10 @@ function venueMapSoonMarkup(text) {
   return `<p class="vm-soon">${escapeHtml(text.soon)}</p>`;
 }
 
-/** O cartão-destaque da página principal que leva à página "Como chegar" (`text.callout`: mark, title, sub, cta, href). */
-function venueMapCalloutMarkup(text) {
+/** O cartão-destaque da página principal que leva à página "Como chegar" (`text.callout`: title, sub, cta, href). `access` ("Prédio H-02 · Entrada pelo portão 2", venueAccessLine) vira o texto de apoio quando existe. */
+function venueMapCalloutMarkup(text, access = "") {
   const callout = text.callout;
-  return `<a class="vm-callout" href="${escapeHtml(callout.href)}" data-track-event="venue_map_open" data-track-place="home"><span class="vm-callout-icon">${iconMarkup("pin")}</span><span class="vm-callout-text"><strong>${escapeHtml(callout.title)}</strong><small>${escapeHtml(callout.sub)}</small></span><b class="vm-callout-cta chip-btn chip-btn--primary">${escapeHtml(callout.cta)}</b></a>`;
+  return `<a class="vm-callout" href="${escapeHtml(callout.href)}" data-track-event="venue_map_open" data-track-place="home"><span class="vm-callout-icon">${iconMarkup("pin")}</span><span class="vm-callout-text"><strong>${escapeHtml(callout.title)}</strong><small>${escapeHtml(access || callout.sub)}</small></span><b class="vm-callout-cta chip-btn chip-btn--primary">${escapeHtml(callout.cta)}</b></a>`;
 }
 
 if (typeof module !== "undefined") module.exports = { venueCampusMapMarkup, venueMapStageStyle, venueMapDetailMarkup, venueMapTipMarkup, venueMapSoonMarkup, venueMapCalloutMarkup };

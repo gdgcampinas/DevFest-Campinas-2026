@@ -42,11 +42,11 @@ function initVenueCampusMap(sectionEl, { map, points, groups, types, text, confi
   return true;
 }
 
-function initVenueMapCallout(el, { text, config, devMode = false }) {
+function initVenueMapCallout(el, { text, config, devMode = false, access = "" }) {
   if (!el) return false;
   const visible = isReleased(config, { devMode });
   el.hidden = !visible;
-  el.innerHTML = visible ? venueMapCalloutMarkup(text) : "";
+  el.innerHTML = visible ? venueMapCalloutMarkup(text, access) : "";
   return visible;
 }
 

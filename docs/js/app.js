@@ -203,14 +203,16 @@ function renderHeaderMeta(event, schedule, mountEl) {
     <span class="sep">·</span>
     <span class="when">${t("header.hours", "das {start} às {end}", { start, end })}</span>
     <span class="sep">·</span>
-    <a class="venue-link" href="${directions}" target="_blank" rel="noopener">${event.venue} · ${t("header.directions", "como chegar")}</a>`;
+    <a class="venue-link" href="${directions}" target="_blank" rel="noopener">${[event.venue, event.building].filter(Boolean).join(" · ")} · ${t("header.directions", "como chegar")}</a>`;
 }
 
 function renderVenueInfo(event, mountEl, schedule) {
   const { directions } = eventMapUrls(event);
   const gcal = googleCalendarUrl(event, schedule);
+  const access = venueAccessLine(event);
   mountEl.innerHTML = `
     <p class="venue-addr">${event.venue}<br>${event.address}</p>
+    ${access ? `<p class="venue-access">${iconMarkup("pin")}<span>${escapeHtml(access)}</span></p>` : ""}
     <div class="venue-actions">
       <a class="go go-primary" href="${directions}" target="_blank" rel="noopener">${t("venue.directions", "Como chegar")}</a>
       ${(event.venueLinks ?? []).map(link => `<a class="go go-ghost" href="${escapeHtml(link.url)}" target="_blank" rel="noopener">${escapeHtml(link.label)}</a>`).join("")}

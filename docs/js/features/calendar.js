@@ -11,9 +11,9 @@ function calendarStamp(date) {
   return date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
 }
 
-/** "Sala X, Local, Cidade": o local só entra quando confirmado (EVENT.venueConfirmed). */
+/** "Sala X, Prédio, Local, Endereço": o prédio e o local só entram quando confirmados (EVENT.venueConfirmed). */
 function eventLocationLabel(event, room = "") {
-  return [room, event.venueConfirmed ? event.venue : "", event.address].filter(Boolean).join(", ");
+  return [room, event.venueConfirmed ? event.building : "", event.venueConfirmed ? event.venue : "", event.address].filter(Boolean).join(", ");
 }
 
 function googleCalendarLink({ title, start, end, location, details }) {
