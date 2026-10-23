@@ -68,7 +68,7 @@ test("a página mostra o aviso em breve enquanto o mapa não é público, e a pr
   assert.equal(callout.innerHTML, "");
   assert.equal(calloutInit(callout, { text: deps().text, config: { public: false }, devMode: true }), true);
   assert.equal(callout.querySelector("a.vm-callout").getAttribute("href"), "local.html");
-  assert.match(textOf(callout), /Como chegar ao H-02/);
+  assert.match(textOf(callout), /Como chegar ao local/);
 });
 
 test("o menu leva à página \"Como chegar\" e só sai do modo DEV junto com o mapa", () => {

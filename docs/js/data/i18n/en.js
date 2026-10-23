@@ -469,7 +469,7 @@ I18N_DICTIONARIES.en = {
     "Comer": "Food",
     "O mapa do local chega em breve.": "The venue map is coming soon.",
     "Como chegar": "Getting there",
-    "Como chegar ao H-02": "Getting to H-02",
+    "Como chegar ao local": "Getting to the venue",
     "Portões, estacionamento, ônibus e food trucks no mapa": "Gates, parking, bus stop and food trucks on the map",
     "Ver o mapa": "See the map",
     "A poucos passos do H-02, pela Av. Dom Humberto Mozzoni.": "A few steps from H-02, along Av. Dom Humberto Mozzoni.",
