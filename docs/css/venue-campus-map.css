@@ -1,0 +1,25 @@
+/* mapa do campus com pontos clicáveis (components/venue-campus-map.js) */
+.campus-map{max-width:980px;margin:26px auto 0;padding:0 24px}
+.vm-head{text-align:center;margin-bottom:16px}
+.vm-badge{display:inline-block;margin-bottom:10px;font:700 11px var(--font-body);letter-spacing:.12em;color:oklch(85% 0.14 25);border:1px solid oklch(85% 0.14 25 / .5);border-radius:999px;padding:4px 12px}
+.vm-head h3{margin:0 0 6px;font:800 clamp(1.4rem,4.5vw,2rem) var(--font-display);color:oklch(97% 0.005 260)}
+.vm-head h3 span{color:oklch(72% 0.2 25)}
+.vm-head p{margin:0 auto;max-width:560px;font:500 14.5px/1.5 var(--font-body);color:var(--muted)}
+.vm-viewport{position:relative;overflow:hidden;border-radius:16px;border:1px solid var(--card-border);aspect-ratio:1/1;background:#a5d92c}
+.vm-stage{position:absolute;inset:0;transform-origin:0 0;transition:transform .5s ease}
+.vm-stage img{width:100%;height:100%;display:block;user-select:none}
+.vm-pin{position:absolute;width:34px;height:34px;padding:0;border-radius:50%;border:3px solid #fff;background:var(--pin);color:#fff;font:800 15px var(--font-display);display:grid;place-items:center;cursor:pointer;transform:translate(-50%,-50%) scale(calc(1 / var(--zoom)));box-shadow:0 2px 8px rgb(0 0 0 / .45);transition:box-shadow .2s ease}
+.vm-pin.is-on{box-shadow:0 0 0 5px rgb(255 255 255 / .85),0 2px 10px rgb(0 0 0 / .55);z-index:2}
+.vm-pin:focus-visible,.vm-chip:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.vm-zoom{position:absolute;right:10px;bottom:10px;z-index:3;background:oklch(18% 0.02 260 / .92);color:#fff;border-color:#fff8}
+.vm-detail{display:flex;flex-direction:column;gap:2px;margin-top:12px;padding:12px 16px;border-radius:14px;border:1px solid var(--card-border);background:oklch(20% 0.02 260)}
+.vm-detail strong{font:800 16px var(--font-display);color:oklch(97% 0.005 260)}
+.vm-detail span{font:500 14px/1.45 var(--font-body);color:var(--muted)}
+.vm-legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.vm-chip{display:inline-flex;align-items:center;gap:8px;padding:6px 12px 6px 6px;border-radius:999px;border:1px solid var(--card-border);background:transparent;color:var(--text);font:600 13px var(--font-body);cursor:pointer}
+.vm-chip i{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;color:#fff;font:800 12px var(--font-display);font-style:normal}
+.vm-chip.is-on{border-color:#fff}
+.vm-foot{display:flex;align-items:center;gap:12px;margin:14px 0 0}
+.vm-foot small{color:var(--muted);font:500 12px var(--font-body)}
+@media (prefers-reduced-motion:reduce){.vm-stage{transition:none}}
+@media (max-width:560px){.campus-map{padding:0 16px}.vm-pin{width:30px;height:30px;font-size:13px}}

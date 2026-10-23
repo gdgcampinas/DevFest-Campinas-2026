@@ -28,6 +28,7 @@ function initHome() {
   renderInfoCards(buildBeforeYouComeItems(TRACKS), document.getElementById("beforeYouCome"));
   renderVenueInfo(EVENT, document.getElementById("venueInfo"), SCHEDULE);
   renderVenueMap(EVENT, document.getElementById("venueMap"));
+  initVenueCampusMap(document.getElementById("campusMap"), { map: venueMapRepository.getAll(), points: venueMapPointsRepository.getAll(), types: venueMapTypesRepository.getAll(), text: venueMapTextsRepository.getAll(), config: venueMapConfigRepository.getAll(), devMode: isDevModeStored() });
   initClickableCard(document.querySelector('[data-item="parking"]'), modal, () =>
     galleryMarkup(t("before.parking", "Estacionamento"), t("before.infoSoon", "Informações em breve."), PARKING_IMAGES));
   initClickableCard(document.querySelector('[data-item="food"]'), modal, () =>
