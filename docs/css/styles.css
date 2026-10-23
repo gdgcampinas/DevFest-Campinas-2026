@@ -1154,6 +1154,8 @@ body:has(.modal:not([hidden])) .feedback-nudge{display:none}
   flex:0 0 auto;font:700 13px var(--font-body);color:oklch(14% 0.01 260);
   background:var(--track-color);border-radius:100px;padding:10px 18px;white-space:nowrap;
 }
+/* celular: o botão ocupa a largura do cartão e fica grande, como o "Deixar meu recado" (css/wall.css) */
+@media(max-width:560px){.tracks-quiz-banner-cta{flex:1 1 100%;display:flex;align-items:center;justify-content:center;min-height:44px;font-size:15px;padding:14px 18px}}
 .quiz{max-width:720px;margin:36px auto 0;padding:0 24px 40px}
 .quiz h2{margin:0 0 6px;font:700 24px var(--font-display);color:oklch(95% 0.005 260)}
 .quiz h2:focus,.quiz legend:focus{outline:none}
