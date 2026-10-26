@@ -25,9 +25,27 @@ const SITE_PAGES = [
   { id: "quiz", label: "Monte sua trilha", href: "quiz.html", nav: false },
 ];
 
-function renderSiteNav(activeId, mountEl, { reveal = false } = {}) {
-  mountEl.innerHTML = SITE_PAGES
-    .filter(page => page.nav !== false && (!page.devOnly || reveal))
+/**
+ * A ordem do menu pela jornada de quem visita: entender o evento, comprar e chegar, participar, e por último as páginas institucionais. Nasce com `public: false` (só no modo DEV, `reveal`, pra conferir);
+ * `public: true` libera pra todo mundo. Página que não está na lista (ou ainda não existe) vai pro fim, na ordem de SITE_PAGES.
+ */
+const SITE_NAV_ORDER = {
+  public: false,
+  ids: ["principal", "grade", "palestrantes", "ingressos", "local", "sorteio", "recados", "fundos", "time", "patrocinio", "cod"],
+};
+
+/** Ordena `pages` pela lista `ids` (estável: o que não está na lista fica no fim, como veio). */
+function sortPagesByOrder(pages, ids) {
+  const rank = page => (ids.includes(page.id) ? ids.indexOf(page.id) : ids.length);
+  return pages.map((page, index) => ({ page, index })).sort((a, b) => rank(a.page) - rank(b.page) || a.index - b.index).map(({ page }) => page);
+}
+
+function renderSiteNav(activeId, mountEl, { reveal = false, order = SITE_NAV_ORDER } = {}) {
+  const visible = SITE_PAGES.filter(page => page.nav !== false && (!page.devOnly || reveal));
+  const pages = order.public || reveal ? sortPagesByOrder(visible, order.ids) : visible;
+  mountEl.innerHTML = pages
     .map(page => `<a href="${page.href}"${page.id === activeId ? ` class="current"` : ""}>${tt(page.label)}</a>`)
     .join("");
 }
+
+if (typeof module !== "undefined") module.exports = { SITE_PAGES, SITE_NAV_ORDER, sortPagesByOrder, renderSiteNav };
