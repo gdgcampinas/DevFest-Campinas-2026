@@ -30,6 +30,8 @@ const SPONSORS = [
   { id: "parceiros", tier: "Parceiros", elements: [
     // REAL e LIBERADA em produção (2026-10-23, `public: true`). Logo vetorial oficial (versão positiva, texto preto e laranja) na caixa branca padrão.
     { public: true, name: "Novatec Editora", link: "https://novatec.com.br/", imageUrl: "assets/brand/novatec.svg", description: "Publicando livros de qualidade nas áreas de tecnologia, negócios e educação desde 1988." },
+    // REAL, só em DEV até o Renato liberar (sem `public`). Logo horizontal (elefante e tagline verde) enviado pelo Renato, na caixa branca padrão.
+    { name: "Timbira", link: "https://www.timbira.com.br", imageUrl: "assets/brand/timbira.webp", description: "Inteligência em PostgreSQL em prol da sustentabilidade do seu negócio." },
   ] },
 ];
 
