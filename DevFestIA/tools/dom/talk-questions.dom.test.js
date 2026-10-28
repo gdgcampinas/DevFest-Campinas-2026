@@ -19,6 +19,8 @@ const initTalkQuestions = site.get("initTalkQuestions");
 const createSet = site.get("createPersistedSetRepository");
 const createValue = site.get("createPersistedValueRepository");
 const baseConfig = { ...site.get("TALK_QUESTIONS"), enforceWindow: false, pollMs: 40, mineRefreshMs: 80 };
+// Testes que olham um aviso passageiro (some no próximo redesenho): sem polling, senão a tela se redesenha no meio e o aviso some em máquina lenta.
+const NO_POLL = { pollMs: 3600000 };
 
 const slot = { start: new Date("2026-11-28T12:00:00Z"), end: new Date("2026-11-28T12:40:00Z") };
 const entry = { key: KEY, slot, data: { title: "Agentes de IA" } };
@@ -103,7 +105,7 @@ test("votar grava o voto, vira Votado e o navegador guarda o voto", async () => 
 });
 
 test("voto recusado pelo banco (ex.: palestra encerrada) NÃO vira Votado: mostra o aviso", async () => {
-  const world = setup();
+  const world = setup({ config: NO_POLL });
   world.boards.emit(KEY, board(["a_k", "Primeira"]));
   await world.open();
   world.votes.failAddWith = denied();
@@ -143,7 +145,7 @@ test("enviar pergunta grava pendente no primeiro espaço, mostra em Suas pergunt
 });
 
 test("pergunta ou nome em branco: avisa e não grava nada", async () => {
-  const world = setup();
+  const world = setup({ config: NO_POLL });
   await world.open();
   fillAndSend(world.containerEl, { text: "   ", name: "Renato" });
   await settle();
@@ -165,7 +167,7 @@ test("no limite de 3, a 4ª mostra o aviso do máximo e as próprias perguntas, 
 });
 
 test("erro do banco ao enviar: mostra o aviso geral e deixa a pessoa tentar de novo", async () => {
-  const world = setup();
+  const world = setup({ config: NO_POLL });
   await world.open();
   world.questions.failAddWith = Object.assign(new Error("offline"), { code: "unavailable" });
   fillAndSend(world.containerEl);
@@ -178,10 +180,10 @@ test("erro do banco ao enviar: mostra o aviso geral e deixa a pessoa tentar de n
 });
 
 test("só quem já perguntou nessa palestra relê as próprias perguntas ao abrir", async () => {
-  const stranger = setup({ asked: false });
+  const stranger = setup({ asked: false, config: NO_POLL });
   await stranger.open();
   assert.equal(stranger.questions.reads.length, 0);
-  const asker = setup({ asked: true });
+  const asker = setup({ asked: true, config: NO_POLL });
   asker.questions.seed({ id: `me_${KEY}#1`, entryKey: `${KEY}#1`, talkKey: KEY, uid: "me", text: "Minha", name: "Renato" });
   await asker.open();
   assert.equal(JSON.stringify(asker.questions.reads), JSON.stringify([{ talkKey: KEY, uid: "me" }])); // (objetos de outra janela: compara como texto)
