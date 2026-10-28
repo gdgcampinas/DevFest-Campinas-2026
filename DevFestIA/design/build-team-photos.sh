@@ -37,7 +37,6 @@ declare -a PHOTOS=(
   "Lorenzo da Cunha.jpeg|lorenzo-da-cunha"
   "Mayne Gabriele da Silva.jpeg|mayne-gabriele-da-silva"
   "Michel Salomé.png|michel-salome|300,240,0,50"
-  "Paula Santos.jpeg|paula-santos"
   "Pedro Missola.jpeg|pedro-escobar-missola"
   "Renato Ramos.jpeg|renato-ramos"
   "Ricardo Koiti Matsushita.jpeg|ricardo-koiti-matsushita"
