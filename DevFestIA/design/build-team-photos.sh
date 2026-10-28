@@ -21,6 +21,7 @@ declare -a PHOTOS=(
   "Bianca Issa.webp|bianca-issa"
   "Matheus Naitzki Angeloni.webp|matheus-naitzki-angeloni|1291,1033,0,54"
   "Rafael Rodrigues Vitor.jpg|rafael-rodrigues-vitor|1050,1050,60,115"
+  "William Lucio de Souza.jpeg|william-lucio-de-souza"
   "Carlos Santos.png|carlos-santos"
   "Camila Fernanda Ignacio .jpeg|camila-fernanda-ignacio"
   "Davi Andrade.jpeg|davi-andrade"

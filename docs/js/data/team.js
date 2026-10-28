@@ -84,6 +84,7 @@ const TEAM = [
   volunteer("Matheus Naitzki Angeloni", "https://www.linkedin.com/in/matheus-angeloni-013960227", "m", teamPhoto("matheus-naitzki-angeloni"), "Tenho 28 anos e moro em Americana, SP. Faço Análise e Desenvolvimento de Sistemas na Fatec de Americana, sou Assistente de TI na Faculdade FAM e também faço manutenção particular em computadores e notebooks.\n\nSempre tive o sonho de trabalhar com tecnologia. Hoje busco aprofundar meus conhecimentos e agregar com toda a comunidade."),
   // Entrou em 2026-10-28 (foto e LinkedIn pelo Renato; sem bio ainda).
   volunteer("Rafael Rodrigues Vitor", "https://www.linkedin.com/in/rafael-vitor-dev", "m", teamPhoto("rafael-rodrigues-vitor")),
+  volunteer("William Lucio de Souza", "https://www.linkedin.com/in/william-lucio-de-souza-193406166", "m", teamPhoto("william-lucio-de-souza")),
 ];
 
 const teamRepository = createRepository(TEAM, {
