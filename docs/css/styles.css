@@ -1411,3 +1411,19 @@ body.raffle-telao-open{overflow:hidden}
 .raffle-reset-actions{display:flex;gap:8px;flex-wrap:wrap}
 .raffle-reset-confirm[disabled]{opacity:.45;cursor:not-allowed}
 .raffle-telao .raffle-reset,.raffle-telao .raffle-reset-open{display:none} /* depois das regras acima, que ganhariam a disputa de ordem */
+
+/* alvos de toque (varredura mobile 2026-10-29): controles com texto próprio chegam a 44px de altura no celular.
+   Ficam de fora de propósito: links no meio de um texto corrido, os pinos do mapa (a lista logo abaixo escolhe o mesmo ponto) e o "pular para o conteúdo" (só aparece com o foco). */
+@media (pointer:coarse), (max-width:640px){
+  .site-nav{gap:0 4px}
+  .site-nav a,.lang-switcher a,.chip-btn,.cta,.featured-speakers-cta,.venue-actions .go,.venue-link,.ts-link,.vm-zoom,.social-links a,.footer-col a{
+    display:inline-flex;align-items:center;min-height:44px;box-sizing:border-box;
+  }
+  .lang-switcher a,.site-nav a{justify-content:center}
+  .lang-switcher a{min-width:44px;padding:0 10px}
+  .chip-btn,.cta,.featured-speakers-cta,.venue-actions .go,.ts-link{justify-content:center}
+  .cta--block{display:flex}
+  .footer-col a{display:flex}
+  .social-links{flex-wrap:wrap;gap:0 18px}
+  .social-icon{width:44px;height:44px}
+}
