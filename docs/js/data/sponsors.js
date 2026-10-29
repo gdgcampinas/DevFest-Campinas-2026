@@ -34,6 +34,8 @@ const SPONSORS = [
     { public: true, name: "Timbira", link: "https://www.timbira.com.br", imageUrl: "assets/brand/timbira.webp", description: "Inteligência em PostgreSQL em prol da sustentabilidade do seu negócio." },
     // REAL e LIBERADA em produção (2026-10-29, `public: true`). Logo empilhado (HACK3R_ rosa, RANGER5 azul) enviado pelo Renato, fundo cinza tornado transparente, na caixa branca padrão.
     { public: true, name: "Hacker Rangers", link: "https://hackerrangers.com/pt/", imageUrl: "assets/brand/hacker-rangers.webp", description: "Cultura de segurança com treinamentos gamificados." },
+    // REAL e LIBERADA em produção (2026-10-29, `public: true`). Comunidade parceira (GDG vizinho). Logo horizontal enviado pelo Renato; o texto "Google Developer Group" vem em BRANCO (feito pra fundo escuro), então foi trocado pelo cinza escuro oficial (#202124) pra aparecer na caixa branca padrão. Recortado rente ao desenho.
+    { public: true, name: "GDG Americana", link: "https://gdgamericana.com.br", imageUrl: "assets/brand/gdg-americana.webp", description: "Comunidade parceira de desenvolvedores do Google Developer Group de Americana." },
   ] },
 ];
 
