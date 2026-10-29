@@ -72,7 +72,7 @@ test("em produção (antes da revelação) só as marcas `public` aparecem; cota
   assert.equal(JSON.stringify(publicTiers(tiers).map(tier => [tier.tier, tier.elements.map(e => e.name)])), JSON.stringify([["Master", ["Real"]], ["Apoio", ["Outra real"]]]));
   const real = site.get("sponsorsRepository").getAll();
   const shown = publicTiers(real).flatMap(tier => tier.elements.map(e => e.name));
-  assert.equal(JSON.stringify(shown), JSON.stringify(["Google Developer Groups", "FalaBoss", "FIAP", "Novatec Editora", "Timbira"]), "hoje o Master (GDG), a FalaBoss (Especialista), a FIAP (Pleno), a Novatec e a Timbira (Parceiros) estão liberados em produção (a PUC, no Apoio, segue só em DEV)");
+  assert.equal(JSON.stringify(shown), JSON.stringify(["Google Developer Groups", "FalaBoss", "FIAP", "Novatec Editora", "Timbira", "Hacker Rangers"]), "hoje o Master (GDG), a FalaBoss (Especialista), a FIAP (Pleno), a Novatec, a Timbira e a Hacker Rangers (Parceiros) estão liberados em produção (a PUC, no Apoio, segue só em DEV)");
 });
 
 test("depois da revelação (DEV) a cota vazia também não aparece, nem como rótulo", () => {

@@ -32,6 +32,8 @@ const SPONSORS = [
     { public: true, name: "Novatec Editora", link: "https://novatec.com.br/", imageUrl: "assets/brand/novatec.svg", description: "Publicando livros de qualidade nas áreas de tecnologia, negócios e educação desde 1988." },
     // REAL e LIBERADA em produção (2026-10-26, `public: true`). Logo horizontal (elefante e tagline verde) enviado pelo Renato, na caixa branca padrão.
     { public: true, name: "Timbira", link: "https://www.timbira.com.br", imageUrl: "assets/brand/timbira.webp", description: "Inteligência em PostgreSQL em prol da sustentabilidade do seu negócio." },
+    // REAL e LIBERADA em produção (2026-10-29, `public: true`). Logo empilhado (HACK3R_ rosa, RANGER5 azul) enviado pelo Renato, fundo cinza tornado transparente, na caixa branca padrão.
+    { public: true, name: "Hacker Rangers", link: "https://hackerrangers.com/pt/", imageUrl: "assets/brand/hacker-rangers.webp", description: "Cultura de segurança com treinamentos gamificados." },
   ] },
 ];
 
