@@ -7,7 +7,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 
-const site = loadSite({ scripts: [...SITE_BASE, "components/escape-html.js", "features/mural.js", "data/mock-links.js", "data/mock-photo.js", "data/mock-speakers.js", "data/mock-talks.js", "data/schedule-builder.js", "data/schedule.js", "data/wallpapers.js", "data/wall-config.js", "data/mural-config.js", "data/mural-scenes.js", "components/mural-scenes/mural-scene-kit.js", "components/mural-scenes/mural-wallpapers-scene.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "components/escape-html.js", "features/mural.js", "data/mock-links.js", "data/mock-photo.js", "data/mock-speakers.js", "data/mock-talks.js", "data/schedule-builder.js", "data/schedule.js", "data/wallpapers.js", "data/wall-config.js", "data/mural-config.js", "data/venue-photos.js", "data/mural-scenes.js", "components/mural-scenes/mural-scene-kit.js", "components/mural-scenes/mural-wallpapers-scene.js"] });
 const { document } = site;
 test.after(() => site.window.close());
 const g = name => site.get(name);

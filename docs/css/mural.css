@@ -251,6 +251,12 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .ms-selfie-bar .ms-selfie-title{font-size:calc(var(--u) * 7)}
 .ms-selfie-bar .ms-selfie-date{font-size:calc(var(--u) * 3.6)}
 
+/* ---------- onde estamos: a foto do prédio do evento e, embaixo, o prédio, o campus, a entrada e o endereço (components/mural-scenes/mural-venue-scene.js) ---------- */
+.ms-venue-bar{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;gap:calc(var(--u) * .8);padding:calc(var(--u) * 9) calc(var(--u) * 3.4) calc(var(--u) * 3);background:linear-gradient(to top,oklch(8% .01 260 / .92),oklch(8% .01 260 / .55) 60%,transparent)}
+.ms-venue-title{margin:0;font:800 calc(var(--u) * 9) / 1 var(--font-display);color:#fff}
+.ms-venue-line{margin:0;font:700 calc(var(--u) * 3.6) var(--font-display);color:var(--google-yellow)}
+.ms-venue-address{margin:0;font:600 calc(var(--u) * 2.4) var(--font-body);color:oklch(88% .01 260)}
+
 /* ---------- álbuns do Google Fotos: modelos de exibição ---------- */
 .ms-album{position:relative}
 .ms-album-grid{flex:1;min-height:0;display:grid;gap:calc(var(--u) * 1.4)}

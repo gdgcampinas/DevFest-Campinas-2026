@@ -104,6 +104,7 @@ function initMural() {
     emergency: createEmergencyScene(),
     video: createVideoScene({ videos: muralVideosRepository, cache: videoCache, baseUrl: mediaBase, slackSeconds: config.video.slackSeconds, captions: muralCaptionsRepository }),
     wallpapers: createWallpapersScene({ repository: wallpapersRepository, preload, targets: qrTargets, qr: qrRenderer, lock: { time: wallpaperTextsRepository.getAll().lockTime, date: wallpaperTextsRepository.getAll().lockDate } }),
+    venue: createVenueScene({ photos: venuePhotosRepository, place: venueRepository.getAll, preload }),
     qr: createQrScene({ targets: qrTargets, qr: qrRenderer }),
     registered: createRegisteredScene({ motion: config.motion }),
     tips: createTipsScene({ repository: muralTipsRepository }),

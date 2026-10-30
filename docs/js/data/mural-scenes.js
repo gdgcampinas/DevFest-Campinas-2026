@@ -29,6 +29,7 @@
  * O convite ("abertura") só entra ANTES do evento: ele chama pra comprar ingresso, e durante o evento todo mundo já está lá.
  *
  * "Fundos de tela" (`type: "wallpapers"`): três celulares com os fundos do evento (data/wallpapers.js) e um QR pra página fundos.html (com `?origem=telao`, pra contar quem veio do telão); duas entradas dão duas passadas por volta, cada uma com outros três fundos. Só entra com a página pública (`WALLPAPERS_CONFIG.public`).
+ * "Onde estamos" (`type: "venue"`): a foto do prédio do evento (a `featured` de data/venue-photos.js, ou `params.photo`) com o prédio, o campus, a entrada e o endereço (data/venue.js) numa faixa embaixo. Só entra com as fotos do campus públicas (`VENUE_PHOTOS_CONFIG.public`), junto com a galeria da página Como chegar.
  * "Álbum" (`type: "album"`): X fotos de um álbum do Google Fotos (data/mural-albums.js) no modelo de `params.model` (collage, portrait-strip, polaroid, feature, mosaic ou auto, que escolhe pela
  * orientação das fotos). REGRA: o telão NUNCA mostra uma foto sozinha (só a arte do selfie é uma imagem só): cada modelo tem um mínimo de fotos e a cena some até o álbum encher. `foto-nova` aparece sozinha quando chega foto nova no álbum ao vivo (grande, com as mais recentes ao lado; fica no rodízio por 2 min). Sem o intermediário ligado (MURAL_CONFIG.albums.proxyUrl vazio) nenhuma aparece.
  *
@@ -57,6 +58,7 @@ const MURAL_SCENES = [
   { id: "aviso-2", label: "Avisos (2ª vez)", type: "notice", seconds: 12, transition: "zoom", requires: { live: "notices" }, params: {} },
   { id: "saudacao", label: "Saudação do horário", type: "message", seconds: 7, transition: "zoom", params: { set: "greeting", mascot: true } },
   { id: "primeira-vez", label: "Primeira vez aqui?", type: "message", seconds: 10, requires: { phases: ["before", "live"] }, params: { set: "welcome", mascot: true } },
+  { id: "onde-estamos", label: "Onde estamos (prédio H-02)", type: "venue", seconds: 10, transition: "zoom", enabled: VENUE_PHOTOS_CONFIG.public, requires: { phases: ["before", "live"] }, params: { kicker: "Onde estamos" } },
   { id: "quebra-gelo", label: "Quebra-gelo (pausa anunciada)", type: "message", seconds: 12, transition: "zoom", requires: { live: "break" }, params: { set: "icebreaker", mascot: true } },
   { id: "quebra-gelo-intervalo", label: "Quebra-gelo (almoço e café)", type: "message", seconds: 12, transition: "zoom", requires: { moments: ["lunch", "coffee", "back-to-room"] }, params: { set: "icebreaker", mascot: true } },
   { id: "linha-do-dia", label: "Hoje no DevFest (linha do dia)", type: "day-timeline", seconds: 14, requires: { reveal: true, phases: ["before", "live"] }, params: {} },
