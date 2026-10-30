@@ -1,10 +1,10 @@
 /**
- * As FOTOS do campus (PUC-Campinas, Campus I) da página "Como chegar" e da cena "Onde estamos" do telão, só dado. `public: false` mostra a galeria só no modo DEV (pra conferir); `true` libera em produção (ver features/release-gate.js).
+ * As FOTOS do campus (PUC-Campinas, Campus I) da página "Como chegar" e da cena "Onde estamos" do telão, só dado. `public: false` mostra a galeria e a cena do telão só no modo DEV (pra conferir); `true` libera em produção (ver features/release-gate.js).
  * Cada foto: `id` único | `name`, o arquivo em assets/img/campus/ (vira `file`, e `thumb` na pasta thumbs/ para as que não são `featured`) | `caption` (a legenda, também o texto alternativo da imagem) | `featured: true` na foto do prédio do evento (vai primeiro, grande, e é a da cena do telão).
  * Só a foto `featured` é do H-02: nas outras a legenda diz só o que se vê (o prédio H-13 e o H-15 têm a placa na foto). Os textos são traduzidos por igualdade (data/i18n/en.js). Para uma foto nova, é só uma linha em VENUE_PHOTOS.
  * As fotos são da PUC-Campinas, usadas com a autorização dela.
  */
-const VENUE_PHOTOS_CONFIG = { public: false };
+const VENUE_PHOTOS_CONFIG = { public: true }; // LIBERADO em produção em 2026-10-30 (galeria da página Como chegar e cena "Onde estamos" do telão)
 
 const VENUE_PHOTOS_DIR = "assets/img/campus";
 
