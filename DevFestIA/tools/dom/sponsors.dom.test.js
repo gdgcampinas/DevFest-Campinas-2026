@@ -72,7 +72,7 @@ test("em produção (antes da revelação) só as marcas `public` aparecem; cota
   assert.equal(JSON.stringify(publicTiers(tiers).map(tier => [tier.tier, tier.elements.map(e => e.name)])), JSON.stringify([["Master", ["Real"]], ["Apoio", ["Outra real"]]]));
   const real = site.get("sponsorsRepository").getAll();
   const shown = publicTiers(real).flatMap(tier => tier.elements.map(e => e.name));
-  assert.equal(JSON.stringify(shown), JSON.stringify(["Google Developer Groups", "FalaBoss", "FIAP", "Novatec Editora", "Timbira", "Hacker Rangers", "GDG Americana"]), "hoje o Master (GDG), a FalaBoss (Especialista), a FIAP (Pleno), a Novatec, a Timbira, a Hacker Rangers e o GDG Americana (Parceiros) estão liberados em produção (a PUC, no Apoio, segue só em DEV)");
+  assert.equal(JSON.stringify(shown), JSON.stringify(["Google Developer Groups", "FalaBoss", "FIAP", "Novatec Editora", "Timbira", "Hacker Rangers", "Datarock", "NewHack Campinas", "GDG Americana"]), "hoje o Master (GDG), a FalaBoss (Especialista), a FIAP (Pleno), a Novatec, a Timbira, a Hacker Rangers e a Datarock (Parceiros), a NewHack e o GDG Americana (Comunidades parceiras) estão liberados em produção (a PUC, no Apoio, segue só em DEV)");
 });
 
 test("depois da revelação (DEV) a cota vazia também não aparece, nem como rótulo", () => {
@@ -80,7 +80,7 @@ test("depois da revelação (DEV) a cota vazia também não aparece, nem como r�
   const grid = document.createElement("div");
   site.get("initSponsorsSection")({ reveal: true, tiers: site.get("sponsorsRepository").getAll(), sectionEl: section, gridEl: grid, soonMessage: "em breve" });
   const labels = [...grid.querySelectorAll(".sponsor-tier-label")].map(el => textOf(el));
-  assert.equal(labels.join(), "Master,Especialista,Pleno,Apoio,Parceiros"); // PUC-Campinas (Apoio) e Novatec (Parceiros) aparecem só em DEV até ganharem `public: true`
+  assert.equal(labels.join(), "Master,Especialista,Pleno,Apoio,Parceiros,Comunidades parceiras"); // PUC-Campinas (Apoio) e Novatec (Parceiros) aparecem só em DEV até ganharem `public: true`
 });
 
 test("a marca `featured` ganha o destaque do Master sem mudar a cota (PUC-Campinas no Apoio)", () => {

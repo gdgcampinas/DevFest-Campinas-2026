@@ -34,7 +34,13 @@ const SPONSORS = [
     { public: true, name: "Timbira", link: "https://www.timbira.com.br", imageUrl: "assets/brand/timbira.webp", description: "Inteligência em PostgreSQL em prol da sustentabilidade do seu negócio." },
     // REAL e LIBERADA em produção (2026-10-29, `public: true`). Logo empilhado (HACK3R_ rosa, RANGER5 azul) enviado pelo Renato, fundo cinza tornado transparente, na caixa branca padrão.
     { public: true, name: "Hacker Rangers", link: "https://hackerrangers.com/pt/", imageUrl: "assets/brand/hacker-rangers.webp", description: "Cultura de segurança com treinamentos gamificados." },
-    // REAL e LIBERADA em produção (2026-10-29, `public: true`). Comunidade parceira (GDG vizinho). Logo horizontal enviado pelo Renato; o texto "Google Developer Group" vem em BRANCO (feito pra fundo escuro), então foi trocado pelo cinza escuro oficial (#202124) pra aparecer na caixa branca padrão. Recortado rente ao desenho.
+    // REAL e LIBERADA em produção (2026-10-30, `public: true`). Logo oficial do site da empresa (versão escura horizontal), na caixa branca padrão. Realiza a NewHack Campinas.
+    { public: true, name: "Datarock", link: "https://datarocktecnologia.com", imageUrl: "assets/brand/datarock.svg", description: "Educação em dados e IA: treinamentos, mentorias e consultoria para empresas." },
+  ] },
+  { id: "comunidades", tier: "Comunidades parceiras", elements: [
+    // REAL e LIBERADA em produção (2026-10-30, `public: true`). Logo enviado pelo Renato, com o fundo preto original (texto branco e verde-limão), na caixa branca padrão.
+    { public: true, name: "NewHack Campinas", link: "https://luma.com/NewHack", imageUrl: "assets/brand/newhack-campinas.webp", description: "Comunidade de tecnologia e dados de Campinas, realizada pela Datarock." },
+    // REAL e LIBERADA em produção (2026-10-30, `public: true`). Logo horizontal enviado pelo Renato; o texto "Google Developer Group" veio em BRANCO (feito pra fundo escuro), então foi trocado pelo cinza escuro (#202124) pra aparecer na caixa branca padrão. Recortado rente ao desenho.
     { public: true, name: "GDG Americana", link: "https://gdgamericana.com.br", imageUrl: "assets/brand/gdg-americana.webp", description: "Comunidade parceira de desenvolvedores do Google Developer Group de Americana." },
   ] },
 ];

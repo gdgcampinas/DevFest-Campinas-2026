@@ -13,6 +13,7 @@ const SPONSOR_TIER_STYLES = {
   permuta: { description: false },
   apoio: { description: false },
   parceiros: { description: true },
+  comunidades: { description: true },
 };
 
 const sponsorTierStyle = tier => ({ description: true, ...SPONSOR_TIER_STYLES[tier.id] });
