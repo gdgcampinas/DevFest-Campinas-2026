@@ -1,0 +1,30 @@
+/* galeria de fotos do campus na página Como chegar e a foto ampliada (components/venue-photo-gallery.js) */
+.venue-photos{max-width:980px;margin:18px auto 44px;padding:0 24px}
+.vp-head{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;margin-bottom:16px;padding:22px 20px;border-radius:18px;border:1px solid var(--card-border);background:linear-gradient(160deg,oklch(21% 0.04 150 / .8),oklch(17% 0.03 260 / .8))}
+.vp-badge{display:inline-block;font:700 11px var(--font-body);letter-spacing:.12em;color:oklch(85% 0.14 150);border:1px solid oklch(85% 0.14 150 / .5);border-radius:999px;padding:4px 12px}
+.vp-head h3{margin:0;font:800 clamp(1.5rem,5vw,2.2rem) var(--font-display);color:oklch(97% 0.005 260)}
+.vp-head h3 span{color:oklch(76% 0.18 150)}
+.vp-head p{margin:0;max-width:480px;font:500 14.5px/1.5 var(--font-body);color:oklch(80% 0.01 260)}
+.vp-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.vp-item--featured{grid-column:1/-1}
+.vp-tile{position:relative;display:block;width:100%;padding:0;overflow:hidden;border-radius:14px;border:1px solid var(--card-border);background:oklch(17% 0.02 260);cursor:pointer;aspect-ratio:3/2;color:inherit}
+.vp-item--featured .vp-tile{aspect-ratio:16/9}
+.vp-tile img{width:100%;height:100%;display:block;object-fit:cover;transition:transform .35s ease}
+.vp-tile:hover img{transform:scale(1.04)}
+.vp-caption{position:absolute;left:0;right:0;bottom:0;padding:26px 12px 10px;text-align:left;background:linear-gradient(to top,rgb(0 0 0 / .78),transparent);color:#fff;font:700 13px/1.35 var(--font-body)}
+.vp-item--featured .vp-caption{padding:44px 18px 16px;font:800 clamp(15px,3.6vw,20px)/1.3 var(--font-display)}
+.vp-tile:focus-visible,.vp-step:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.vp-foot{display:flex;justify-content:center;margin-top:18px}
+.vp-link{display:inline-flex;align-items:center;justify-content:center;text-align:center}
+#venuePhotoModal .modal-card{max-width:min(940px,100%);--modal-pad-x:14px;--modal-pad-y:14px}
+.vp-view{margin:0;display:flex;flex-direction:column;gap:10px}
+.vp-view img{width:100%;max-height:60vh;object-fit:contain;border-radius:12px;background:#000}
+.vp-view figcaption{display:flex;flex-direction:column;gap:2px}
+.vp-view strong{font:800 16px/1.35 var(--font-display);color:var(--text)}
+.vp-view span{font:500 13px var(--font-body);color:var(--muted)}
+.vp-steps{display:flex;justify-content:space-between;gap:10px;margin-top:12px}
+.vp-step{flex:1;min-height:48px;border-radius:12px;border:1px solid var(--card-border);background:oklch(20% 0.02 260);color:var(--text);font:700 28px/1 var(--font-body);cursor:pointer}
+.vp-step:hover{border-color:#fff}
+@media (min-width:720px){.vp-grid{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:560px){.venue-photos{padding:0 16px}}
+@media (prefers-reduced-motion:reduce){.vp-tile img{transition:none}.vp-tile:hover img{transform:none}}
