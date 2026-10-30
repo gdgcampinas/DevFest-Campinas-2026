@@ -15,7 +15,7 @@ const { document, window } = site;
 test.after(() => window.close());
 const g = name => site.get(name);
 const photos = () => g("venuePhotosRepository").ordered();
-const link = { label: "Conheça o Campus I no site da PUC-Campinas", url: "https://www.puc-campinas.edu.br/campus-i/" };
+const link = { title: "Conheça o Campus I", sub: "Tudo sobre o campus no site da PUC-Campinas", url: "https://www.puc-campinas.edu.br/campus-i/" };
 const mount = (config, devMode, extra = {}) => {
   document.getElementById("venuePhotoModal")?.remove(); // cada galeria monta o seu modal, na primeira foto aberta
   const el = document.createElement("section");
@@ -87,7 +87,9 @@ test("o botão leva ao site do campus, em outra aba e sem janela de origem; sem 
   assert.equal(anchor.getAttribute("href"), link.url);
   assert.equal(anchor.getAttribute("target"), "_blank");
   assert.match(anchor.getAttribute("rel"), /noopener/);
-  assert.match(textOf(anchor), /site da PUC-Campinas/);
+  assert.match(textOf(anchor.querySelector("strong")), /Conheça o Campus I/);
+  assert.match(textOf(anchor.querySelector("small")), /site da PUC-Campinas/);
+  assert.ok(anchor.querySelector("svg"), "tem o ícone");
   assert.equal(mount({ public: true }, false, { link: null }).el.querySelector(".vp-link"), null);
 });
 

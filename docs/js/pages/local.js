@@ -9,7 +9,7 @@ function initLocalPage() {
   const photoText = venuePhotosTextsRepository.getAll();
   const about = (EVENT.venueLinks ?? []).find(link => link.id === "about");
   initVenuePhotoGallery(document.getElementById("venuePhotos"), {
-    photos: venuePhotosRepository.ordered(), text: photoText, link: about ? { label: photoText.linkLabel, url: about.url } : null,
+    photos: venuePhotosRepository.ordered(), text: photoText, link: about ? { title: photoText.linkTitle, sub: photoText.linkSub, url: about.url } : null,
     config: venuePhotosConfigRepository.getAll(), devMode: isDevModeStored(),
   });
 }

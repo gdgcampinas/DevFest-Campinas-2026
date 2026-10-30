@@ -26,13 +26,14 @@ const VENUE_PHOTOS = [
   { id: "patio-interno", name: "patio-interno.webp", caption: "Pátio interno do campus" },
 ].map(venuePhoto);
 
-/** Os textos da galeria (página "Como chegar"). `link.label` é o botão que leva ao site da PUC (o endereço vem de data/venue.js, `links` com id "about", injetado pela página). */
+/** Os textos da galeria (página "Como chegar"). `linkTitle` e `linkSub` são o cartão que leva ao site da PUC (o endereço vem de data/venue.js, `links` com id "about", injetado pela página). */
 const VENUE_PHOTOS_TEXTS = {
   badge: "O CAMPUS",
   title: "Conheça o",
   titleAccent: "Campus I",
   sub: "O campus da PUC-Campinas onde o DevFest acontece. Toque numa foto para ampliar.",
-  linkLabel: "Conheça o Campus I no site da PUC-Campinas",
+  linkTitle: "Conheça o Campus I",
+  linkSub: "Tudo sobre o campus no site da PUC-Campinas",
   open: "Ampliar a foto",
   previous: "Foto anterior",
   next: "Próxima foto",

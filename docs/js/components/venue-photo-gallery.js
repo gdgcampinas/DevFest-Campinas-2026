@@ -1,5 +1,5 @@
 /**
- * Componente: a galeria de fotos do campus e a foto ampliada (só marcação, tudo escapado e por parâmetro): `photos` (data/venue-photos.js, a `featured` primeiro), `text` e `link` ({ label, url }, opcional).
+ * Componente: a galeria de fotos do campus e a foto ampliada (só marcação, tudo escapado e por parâmetro): `photos` (data/venue-photos.js, a `featured` primeiro), `text` e `link` ({ title, sub, url }, opcional).
  * Hooks: `data-photo` (o botão de cada foto, com o id), `data-photo-step` (anterior/próxima na foto ampliada: -1 ou 1).
  */
 const venuePhotoTrack = (name, target) => trackAttrs(name, { place: "venue_photos", target });
@@ -10,8 +10,9 @@ function venuePhotoTileMarkup(photo, text) {
   return `<li class="vp-item${modifier}"><button type="button" class="vp-tile" data-photo="${escapeHtml(photo.id)}" aria-label="${escapeHtml(`${text.open}: ${photo.caption}`)}"${venuePhotoTrack("venue_photo_open", photo.id)}><img src="${escapeHtml(photo.thumb ?? photo.file)}" alt="${escapeHtml(photo.caption)}" loading="lazy" decoding="async"><span class="vp-caption">${escapeHtml(photo.caption)}</span></button></li>`;
 }
 
+/** O cartão que leva ao site do campus: ícone, título, subtítulo e seta (abre em outra aba). `link` = { title, sub, url }. */
 function venuePhotoLinkMarkup(link) {
-  return link?.url ? `<a class="chip-btn vp-link" href="${escapeHtml(link.url)}" target="_blank" rel="noopener"${venuePhotoTrack("venue_photo_link", "campus")}>${escapeHtml(link.label)}</a>` : "";
+  return link?.url ? `<a class="vp-link" href="${escapeHtml(link.url)}" target="_blank" rel="noopener"${venuePhotoTrack("venue_photo_link", "campus")}><span class="vp-link-icon">${iconMarkup("pin")}</span><span class="vp-link-text"><strong>${escapeHtml(link.title)}</strong><small>${escapeHtml(link.sub)}</small></span><span class="vp-link-go" aria-hidden="true">↗</span></a>` : "";
 }
 
 function venuePhotoGalleryMarkup({ photos, text, link = null }) {
