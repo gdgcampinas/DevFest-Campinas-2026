@@ -7,7 +7,7 @@ const venuePhotoTrack = (name, target) => trackAttrs(name, { place: "venue_photo
 /** Uma foto da galeria: um botão (abre ampliada) com a imagem e a legenda. A `featured` ocupa a linha inteira (classe `vp-item--featured`). */
 function venuePhotoTileMarkup(photo, text) {
   const modifier = photo.featured ? " vp-item--featured" : "";
-  return `<li class="vp-item${modifier}"><button type="button" class="vp-tile" data-photo="${escapeHtml(photo.id)}" aria-label="${escapeHtml(`${text.open}: ${photo.caption}`)}"${venuePhotoTrack("venue_photo_open", photo.id)}><img src="${escapeHtml(photo.file)}" alt="${escapeHtml(photo.caption)}" loading="lazy" decoding="async"><span class="vp-caption">${escapeHtml(photo.caption)}</span></button></li>`;
+  return `<li class="vp-item${modifier}"><button type="button" class="vp-tile" data-photo="${escapeHtml(photo.id)}" aria-label="${escapeHtml(`${text.open}: ${photo.caption}`)}"${venuePhotoTrack("venue_photo_open", photo.id)}><img src="${escapeHtml(photo.thumb ?? photo.file)}" alt="${escapeHtml(photo.caption)}" loading="lazy" decoding="async"><span class="vp-caption">${escapeHtml(photo.caption)}</span></button></li>`;
 }
 
 function venuePhotoLinkMarkup(link) {
@@ -29,14 +29,14 @@ function venuePhotoGalleryMarkup({ photos, text, link = null }) {
 /** "Foto 2 de 10": o contador da foto ampliada, a partir do modelo do texto (`{current}` e `{total}`). */
 const venuePhotoCounter = (text, current, total) => text.counter.replace("{current}", current).replace("{total}", total);
 
-/** A foto ampliada (dentro do modal): a imagem, a legenda e, com mais de uma foto, anterior/próxima e o contador. `index` é a posição em `photos`. */
+/** A foto ampliada (dentro do modal): a imagem com anterior/próxima em círculos sobre ela (só com mais de uma foto) e, embaixo, a legenda e o contador. `index` é a posição em `photos`. */
 function venuePhotoViewMarkup({ photos, index, text }) {
   const photo = photos[index];
-  const step = (delta, label, symbol) => `<button type="button" class="vp-step" data-photo-step="${delta}" aria-label="${escapeHtml(label)}"${venuePhotoTrack("venue_photo_step", String(delta))}>${symbol}</button>`;
+  const step = (delta, label, symbol) => `<button type="button" class="vp-step vp-step--${delta < 0 ? "prev" : "next"}" data-photo-step="${delta}" aria-label="${escapeHtml(label)}"${venuePhotoTrack("venue_photo_step", String(delta))}>${symbol}</button>`;
+  const steps = photos.length > 1 ? `${step(-1, text.previous, "‹")}${step(1, text.next, "›")}` : "";
   return `
     <figure class="vp-view">
-      <img src="${escapeHtml(photo.file)}" alt="${escapeHtml(photo.caption)}" decoding="async">
+      <div class="vp-frame"><img src="${escapeHtml(photo.file)}" alt="${escapeHtml(photo.caption)}" decoding="async">${steps}</div>
       <figcaption><strong>${escapeHtml(photo.caption)}</strong>${photos.length > 1 ? `<span>${escapeHtml(venuePhotoCounter(text, index + 1, photos.length))}</span>` : ""}</figcaption>
-    </figure>
-    ${photos.length > 1 ? `<div class="vp-steps">${step(-1, text.previous, "‹")}${step(1, text.next, "›")}</div>` : ""}`;
+    </figure>`;
 }

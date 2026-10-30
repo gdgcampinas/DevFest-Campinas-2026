@@ -17,6 +17,7 @@ const g = name => site.get(name);
 const photos = () => g("venuePhotosRepository").ordered();
 const link = { label: "Conheça o Campus I no site da PUC-Campinas", url: "https://www.puc-campinas.edu.br/campus-i/" };
 const mount = (config, devMode, extra = {}) => {
+  document.getElementById("venuePhotoModal")?.remove(); // cada galeria monta o seu modal, na primeira foto aberta
   const el = document.createElement("section");
   document.body.append(el);
   const shown = g("initVenuePhotoGallery")(el, { photos: photos(), text: g("venuePhotosTextsRepository").getAll(), link, config, devMode, ...extra });
@@ -34,6 +35,8 @@ test("o dado: 10 fotos, ids únicos, só uma em destaque (o H-02, primeiro) e ca
   list.forEach(photo => {
     assert.ok(photo.caption.trim(), `${photo.id} sem legenda`);
     assert.ok(fs.existsSync(path.join(DOCS, photo.file)), `${photo.id}: falta o arquivo ${photo.file}`);
+    if (photo.thumb) assert.ok(fs.statSync(path.join(DOCS, photo.thumb)).size < fs.statSync(path.join(DOCS, photo.file)).size / 2, `${photo.id}: a miniatura precisa ser bem mais leve que a foto`);
+    else assert.ok(photo.featured, `${photo.id}: só a foto em destaque dispensa miniatura`);
   });
   assert.equal(g("venuePhotosRepository").featured().id, "h02");
 });
@@ -57,6 +60,15 @@ test("não aparece enquanto não for público; em DEV ou `public: true` aparece 
   assert.equal(dev.el.querySelector(".vp-tile").dataset.photo, "h02", "o destaque vem primeiro");
   assert.equal(mount({ public: true }, false).shown, true);
   assert.match(textOf(dev.el.querySelector(".vp-head")), /Conheça o Campus I/);
+});
+
+test("a grade usa a miniatura leve (a foto em destaque, a grande) e a foto ampliada usa a grande", () => {
+  const { el } = mount({ public: true }, false);
+  const srcOf = id => el.querySelector(`[data-photo="${id}"] img`).getAttribute("src");
+  assert.match(srcOf("h02"), /^assets\/img\/campus\/predio-h02\.webp$/);
+  assert.match(srcOf("aerea-ampla"), /^assets\/img\/campus\/thumbs\/aerea-ampla\.webp$/);
+  el.querySelector('[data-photo="aerea-ampla"]').click();
+  assert.match(document.querySelector("#venuePhotoModal img").getAttribute("src"), /^assets\/img\/campus\/aerea-ampla\.webp$/);
 });
 
 test("cada foto tem texto alternativo (a legenda), carrega só quando chega perto e o botão diz o que faz", () => {
@@ -102,6 +114,19 @@ test("tocar numa foto abre ela ampliada com a legenda e o contador; anterior e p
   assert.equal(modal().hidden, true);
   press("ArrowRight");
   assert.equal(modal().hidden, true, "com o modal fechado as setas não abrem nada");
+});
+
+test("deslizar o dedo para o lado troca de foto; um toque curto não troca", () => {
+  const { el } = mount({ public: true }, false);
+  el.querySelector('[data-photo="h02"]').click();
+  const modal = document.getElementById("venuePhotoModal");
+  const fire = (type, x) => { const event = new window.Event(type, { bubbles: true }); event.changedTouches = [{ clientX: x }]; modal.dispatchEvent(event); };
+  fire("touchstart", 200); fire("touchend", 120);
+  assert.match(textOf(modal), /Foto 2 de 10/, "para a esquerda vai para a próxima");
+  fire("touchstart", 100); fire("touchend", 190);
+  assert.match(textOf(modal), /Foto 1 de 10/, "para a direita volta");
+  fire("touchstart", 100); fire("touchend", 120);
+  assert.match(textOf(modal), /Foto 1 de 10/, "movimento curto não conta");
 });
 
 test("com uma foto só não há anterior nem próxima", () => {
