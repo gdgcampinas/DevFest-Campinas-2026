@@ -26,11 +26,11 @@ const SITE_PAGES = [
 ];
 
 /**
- * A ordem do menu pela jornada de quem visita: entender o evento, comprar e chegar, participar, e por último as páginas institucionais. Nasce com `public: false` (só no modo DEV, `reveal`, pra conferir);
- * `public: true` libera pra todo mundo. Página que não está na lista (ou ainda não existe) vai pro fim, na ordem de SITE_PAGES.
+ * A ordem do menu pela jornada de quem visita: entender o evento, comprar e chegar, participar, e por último as páginas institucionais. Nasceu com `public: false` (só no modo DEV, `reveal`, pra conferir) e foi liberada em 2026-10-30 (`public: true`, vale pra todo mundo); `false` volta a segurar.
+ * Página que não está na lista (ou ainda não existe) vai pro fim, na ordem de SITE_PAGES.
  */
 const SITE_NAV_ORDER = {
-  public: false,
+  public: true,
   ids: ["principal", "grade", "palestrantes", "ingressos", "local", "sorteio", "recados", "fundos", "time", "patrocinio", "cod"],
 };
 
