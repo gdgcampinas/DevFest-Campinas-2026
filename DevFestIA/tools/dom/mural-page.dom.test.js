@@ -197,20 +197,12 @@ test("agradecimento aos patrocinadores: só no almoço e no encerramento da grad
   closing.site.window.close();
 });
 
-test("dado ao vivo: o total de inscritos lido do banco aparece na cena de inscritos", async () => {
-  const page = boot({ search: "cenas=inscritos" });
-  await waitFor(() => page.active() === "inscritos");
-  await waitFor(() => /120/.test(page.activeText()), { timeout: 3000 }); // o número sobe de 0 até o total
-  assert.match(page.activeText(), /120/);
-  assert.match(page.activeText(), /Já garantiram a vaga/);
-  page.site.window.close();
-});
-
-test("inscritos abaixo do mínimo não viram cena (a reserva segura a tela, sem falha)", async () => {
-  const page = boot({ search: "cenas=inscritos", registered: { total: 3 } });
-  await waitFor(() => page.active() === "reserva");
-  assert.equal(page.document.querySelector('[data-scene="inscritos"]'), null);
-  page.site.window.close();
+test("a cena de inscritos fica fora do rodízio enquanto o contador do site está desligado (EVENT.tickets.showCounter), mesmo com o total lido", async () => {
+  const site = boot({ search: "cenas=inscritos" });
+  await waitFor(() => site.active() === "reserva");
+  assert.equal(site.document.querySelector('[data-scene="inscritos"]'), null);
+  assert.equal(site.site.get("muralScenesRepository").getById("inscritos").enabled, site.site.get("EVENT").tickets.showCounter);
+  site.site.window.close();
 });
 
 /** O QR de avaliar só entra depois das 17:15, então estes testes usam um relógio simulado dessa hora. */
@@ -246,7 +238,7 @@ test("pódio que JÁ estava publicado quando o mural abriu: entra no rodízio, m
 test("cena quebrada não derruba o rodízio: sem a biblioteca de QR a cena de QR falha, descansa, e as outras seguem", async () => {
   const page = boot({ search: "cenas=qr-avaliar,dicas", demo: AFTER_FEEDBACK_OPENS, qr: false });
   await waitFor(() => page.active() === "dicas");
-  assert.match(page.activeText(), /Aproveite o DevFest/);
+  assert.match(page.activeText(), /Aproveite o DevFest Campinas 2026/);
   await waitFor(() => page.document.querySelector('[data-scene="dicas"]'));
   assert.equal(page.document.querySelector('[data-scene="qr-avaliar"]'), null);
   page.site.window.close();
