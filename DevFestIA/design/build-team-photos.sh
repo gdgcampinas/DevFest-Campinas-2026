@@ -43,6 +43,7 @@ declare -a PHOTOS=(
   "Pedro Missola.jpeg|pedro-escobar-missola"
   "Renato Ramos.jpeg|renato-ramos"
   "Ricardo Koiti Matsushita.jpeg|ricardo-koiti-matsushita"
+  "Rogério da Silva.jpg|rogerio-da-silva|1231,1231,0,0"
   "Vânia Gomes Marinelli .jpeg|vania-gomes-marinelli"
 )
 

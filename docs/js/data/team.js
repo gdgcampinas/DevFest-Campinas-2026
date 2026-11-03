@@ -87,6 +87,8 @@ const TEAM = [
   // Entrou em 2026-10-28 (foto e LinkedIn pelo Renato; sem bio ainda).
   volunteer("Rafael Rodrigues Vitor", "https://www.linkedin.com/in/rafael-vitor-dev", "m", teamPhoto("rafael-rodrigues-vitor")),
   volunteer("William Lucio de Souza", "https://www.linkedin.com/in/william-lucio-de-souza-193406166", "m", teamPhoto("william-lucio-de-souza")),
+  // Entrou em 2026-11-03 (foto e LinkedIn pelo Renato; sem bio ainda).
+  volunteer("Rogério da Silva", "https://www.linkedin.com/in/rogerio-da-silva", "m", teamPhoto("rogerio-da-silva")),
 ];
 
 const teamRepository = createRepository(TEAM, {
