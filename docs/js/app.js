@@ -254,15 +254,12 @@ const ICON_VENUE = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" 
  * número de trilhas mudar, os cards continuam funcionando sem editar
  * nada aqui.
  */
-function buildBeforeYouComeItems(tracks) {
-  // 3º card usa a última trilha (mantém o acento coral do Local, independente do nº de trilhas)
-  const [trackA, trackB] = tracks;
-  const trackC = tracks[tracks.length - 1];
-  const fallback = "var(--muted)";
+function buildBeforeYouComeItems() {
+  // cores fixas da marca (azul, amarelo, vermelho): não dependem da ordem nem do nº de trilhas (o roxo é só da Cyber)
   return [
     {
       id: "parking",
-      trackColor: trackA?.color ?? fallback,
+      trackColor: "var(--google-blue)",
       icon: ICON_PARKING,
       title: t("before.parking", "Estacionamento"),
       body: t("before.parkingSoon", "Informações do estacionamento em breve."),
@@ -271,7 +268,7 @@ function buildBeforeYouComeItems(tracks) {
     },
     {
       id: "food",
-      trackColor: trackB?.color ?? fallback,
+      trackColor: "var(--google-yellow)",
       icon: ICON_FOOD,
       title: t("before.food", "Comida"),
       body: t("before.foodSoon", "Opções de alimentação em breve."),
@@ -280,7 +277,7 @@ function buildBeforeYouComeItems(tracks) {
     },
     {
       id: "venue",
-      trackColor: trackC?.color ?? fallback,
+      trackColor: "var(--google-red)",
       icon: ICON_VENUE,
       title: t("venue.label", "Local"),
       mountId: "venueInfo",

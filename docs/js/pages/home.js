@@ -25,7 +25,7 @@ function initHome() {
   renderAbout(aboutRepository.getAll(), document.getElementById("aboutSection"));
   initMenuCarousel(modal.el);
 
-  renderInfoCards(buildBeforeYouComeItems(TRACKS), document.getElementById("beforeYouCome"));
+  renderInfoCards(buildBeforeYouComeItems(), document.getElementById("beforeYouCome"));
   renderVenueInfo(EVENT, document.getElementById("venueInfo"), SCHEDULE);
   renderVenueMap(EVENT, document.getElementById("venueMap"));
   initVenueMapCallout(document.getElementById("campusCallout"), { text: venueMapTextsRepository.getAll(), config: venueMapConfigRepository.getAll(), devMode: isDevModeStored(), access: venueAccessLine(EVENT) });

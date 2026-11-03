@@ -89,10 +89,10 @@ const LINEUP_TRACKS = [
     description: "Arquitetura, engenharia de dados e desenvolvimento web: as bases que sustentam qualquer produto digital." },
   { id: "mobile", label: "Mobile / Gerência de Projetos", shortLabel: "Mobile/Gerência de Projetos", room: roomFor("Lagoa do Taquaral"), mc: "MC a definir", color: "var(--mobile)", icon: "phone",
     description: "Apps nativos e multiplataforma e a gerência de projetos que faz times entregarem rápido e com qualidade." },
-  { id: "mentoring", label: "Carreira em Tecnologia", shortLabel: "Carreira em Tecnologia", room: roomFor("Mercadão Central"), mc: "MC a definir", color: "var(--mentoring)", icon: "rocket",
-    description: "Trajetórias, mentoria e como crescer na área, com quem já passou pelos mesmos desafios." },
   { id: "cloudsec", label: "Cyber Segurança (Security) / Cloud", shortLabel: "Cyber Segurança/Cloud", room: roomFor("Torre do Castelo"), mc: "MC a definir", color: "var(--cloudsec)", icon: "shield",
     description: "Segurança, criptografia e arquitetura em nuvem: como proteger e escalar sistemas de verdade." },
+  { id: "mentoring", label: "Carreira em Tecnologia", shortLabel: "Carreira em Tecnologia", room: roomFor("Mercadão Central"), mc: "MC a definir", color: "var(--mentoring)", icon: "rocket",
+    description: "Trajetórias, mentoria e como crescer na área, com quem já passou pelos mesmos desafios." },
 ];
 
 /**
