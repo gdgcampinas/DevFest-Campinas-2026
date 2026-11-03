@@ -135,6 +135,9 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .ms-sponsors-scene--compact .ms-tier-name{font-size:calc(var(--u) * 2.4);margin-bottom:calc(var(--u) * 1)}
 .ms-sponsors-scene--compact .ms-sponsor{padding:calc(var(--u) * 1.6)}
 .ms-sponsors-scene--compact .ms-sponsor img,.ms-sponsors-scene--compact .ms-tier[data-count="1"] .ms-sponsor img{height:calc(var(--u) * 9)}
+/* compacto de UMA cota só (Parceiros, Comunidades parceiras): a cota ocupa a largura toda e os cartões ficam lado a lado (até 4 numa linha), senão ela cai na 1ª de duas colunas e os logos empilham e passam do palco */
+.ms-sponsors-scene--compact .ms-tiers:has(>.ms-tier:only-child){grid-template-columns:minmax(0,1fr)}
+.ms-sponsors-scene--compact .ms-tiers>.ms-tier:only-child .ms-sponsors{grid-template-columns:repeat(auto-fit,minmax(calc(var(--u) * 24),calc(var(--u) * 34)))}
 
 /* ---------- QR ---------- */
 .ms-qr{flex-direction:row;align-items:center;gap:calc(var(--u) * 5)}
