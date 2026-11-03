@@ -84,9 +84,9 @@ function trackCardMarkup(track, data, {
  * Conteúdo do modal de detalhe — mesma trilha/dados do card, formato
  * maior com descrição completa. reveal segue a mesma regra do card.
  */
-/** "Cargo · Empresa" — só aparece se pelo menos um dos dois vier preenchido no speaker. */
+/** "Selo · Cargo · Empresa" — cada parte só aparece se vier preenchida no speaker (`badge` = selo da pessoa, ex.: "GDE"). */
 function speakerMetaLine(speaker) {
-  return [speaker.title, speaker.company].filter(Boolean).join(" · ");
+  return [speaker.badge, speaker.title, speaker.company].filter(Boolean).join(" · ");
 }
 
 function talkDetailMarkup(track, data, { reveal = true, timeRange = "", room = "", talkKey = "", favorite = false, calendarHtml = "" } = {}) {

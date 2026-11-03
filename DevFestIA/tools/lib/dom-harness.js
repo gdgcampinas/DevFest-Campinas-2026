@@ -40,7 +40,7 @@ const PAGE_HELPERS = `
 function loadSite({ scripts, html = "<!doctype html><html><body></body></html>", url = "http://localhost/?lineup=1", globals = {}, helpers = PAGE_HELPERS }) {
   const dom = new JSDOM(html, { url, runScripts: "outside-only", pretendToBeVisual: true });
   const context = dom.getInternalVMContext();
-  Object.assign(dom.window, globals);
+  Object.assign(dom.window, { DEVFEST_FORCE_MOCK_LINEUP: true }, globals); // os testes checam o formato do mock (Coding Jam etc.); `globals: { DEVFEST_FORCE_MOCK_LINEUP: false }` testa o line-up real
   const run = (code, filename = "test") => new vm.Script(code, { filename }).runInContext(context);
   run(helpers, "page-helpers");
   scripts.forEach(script => run(fs.readFileSync(path.join(SITE_JS, script), "utf8"), script));

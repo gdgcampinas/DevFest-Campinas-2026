@@ -64,7 +64,7 @@ function createSessionValue(key) {
   };
 }
 
-const devModeStore = createSessionValue("devfest-campinas-2026:dev-mode");
+const devModeStore = createSessionValue(DEV_MODE_STORAGE_KEY);
 const setDevModeStorage = value => devModeStore.set(value ? "1" : null);
 const isDevModeStored = () => devModeStore.get() === "1";
 
