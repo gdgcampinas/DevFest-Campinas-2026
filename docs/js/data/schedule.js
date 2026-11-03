@@ -105,7 +105,7 @@ const LINEUP_SPEAKER_ROWS = [
   ["alvaro-camillo-neto", "Alvaro Camillo Neto", "Staff Engineer, F1rst - Santander", "GDE", "", "https://www.linkedin.com/in/alvarocamillont/"],
   ["leandro-garcia", "Leandro Garcia", "i9 Flow | co-founder", "", "assets/img/lineup/leandro-garcia.webp", ""],
   ["dickson-s-guedes", "Dickson S Guedes", "Eng. Sustentabilidade de Dados", "", "", "https://linkedin.com/in/dicksonguedes"],
-  ["bianca-bordon-weiller", "Bianca Bordon Weiller", "Marketing e Criação", "", "", "https://www.linkedin.com/in/bianca-bordon?utm_source=share_via&utm_content=profile&utm_medium=member_android"],
+  ["bianca-bordon-weiller", "Bianca Bordon Weiller", "Marketing e Criação", "", "", "https://www.linkedin.com/in/bianca-bordon"],
   ["gabriel-rodrigues-de-souza", "Gabriel Rodrigues de Souza", "Ci&t", "", "", "https://www.linkedin.com/in/gabrielroodriz"],
   ["fernando-sedrez", "Fernando Sedrez", "Staff AI Platform Engineer, Globo", "GDE", "", "https://linkedin.com/in/fmsedrez"],
   ["victor-ulisses-pugliese", "Victor Ulisses Pugliese", "Researcher, Federal University of São Paulo", "GDE", "", "https://www.linkedin.com/in/victorpug-exe/"],
@@ -134,11 +134,11 @@ const LINEUP_SPEAKER_ROWS = [
   ["joao-otavio-de-goes", "João Otávio de Góes", "San Jose Institute of Technology, Coordenador", "", "assets/img/lineup/joao-otavio-de-goes.webp", "https://www.linkedin.com/in/j0hngoes/"],
   ["marcelo-pinheiro", "Marcelo Pinheiro", "Fellow AI Enginner - Levva", "", "", "https://www.linkedin.com/in/marcelo-c-pinheiro/"],
   ["igor-lamino-aragao", "Igor Lamino Aragão", "Timbira; Consultor PostgreSQL", "", "assets/img/lineup/igor-lamino-aragao.webp", "https://www.linkedin.com/in/igor-lamino-arag%C3%A3o-097255202/"],
-  ["irina-bezzan-miquelin", "Irina Bezzan Miquelin", "Diretora de RH - Jobstar", "", "", "https//:linkedin.com/in/irinabezzanmiquelin"],
+  ["irina-bezzan-miquelin", "Irina Bezzan Miquelin", "Diretora de RH - Jobstar", "", "", "https://www.linkedin.com/in/irinabezzanmiquelin"],
   ["larissa-azevedo", "Larissa Azevedo", "Microsoft MVP | Mentora de carreira | Software Engineer", "", "assets/img/lineup/larissa-azevedo.webp", "https://www.linkedin.com/in/larissasazevedo/"],
   ["helson-carlos-dos-santos", "Helson Carlos dos Santos", "Senior Software Engineer - BMW TechWorks Brasil", "", "assets/img/lineup/helson-carlos-dos-santos.webp", ""],
   ["thais-santos-souza", "Thaís Santos Souza", "Arquiteta de Soluções Sênior no Bradesco", "", "", "https://www.linkedin.com/in/thaís-santos-souza-b05845112"],
-  ["ana-paula-rodrigues", "Ana Paula Rodrigues", "CEO JOBSTAR", "", "assets/img/lineup/ana-paula-rodrigues.webp", "https://www.linkedin.com/in/anacomunic?utm_source=share_via&utm_content=profile&utm_medium=member_ios"],
+  ["ana-paula-rodrigues", "Ana Paula Rodrigues", "CEO JOBSTAR", "", "assets/img/lineup/ana-paula-rodrigues.webp", "https://www.linkedin.com/in/anacomunic"],
 ];
 
 const LINEUP_SPEAKERS = LINEUP_SPEAKER_ROWS.map(([id, name, title, badge, photo, linkedin]) => ({ id, name, title, company: "", ...(badge && { badge }), photo, linkedin }));
