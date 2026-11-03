@@ -41,13 +41,14 @@ function speakerTalkRefMarkup(ref) {
 }
 
 /** Reusa avatarMarkup (components/avatar.js), speakerMetaLine (track-card.js), socialIconMarkup (person-card.js) e speakerAnchorId (speaker-link.js) — nada reescrito aqui. */
-function speakerGalleryCardMarkup(speaker) {
-  const avatar = avatarMarkup(speaker.name, speaker.photo, "speaker-photo");
+function speakerGalleryCardMarkup(speaker, { anchor: withAnchor = true } = {}) {
+  const photo = avatarMarkup(speaker.name, speaker.photo, "speaker-photo");
+  const avatar = speaker.badge ? `<span class="speaker-photo-wrap">${photo}<span class="speaker-badge">${speaker.badge}</span></span>` : photo; // selo da pessoa (ex.: GDE) em cima da foto
   const meta = speakerMetaLine(speaker);
   const social = speaker.linkedin
     ? socialIconMarkup({ name: "linkedin", link: speaker.linkedin })
     : "";
-  const anchor = speaker.id ? ` id="${speakerAnchorId(speaker)}"` : "";
+  const anchor = withAnchor && speaker.id ? ` id="${speakerAnchorId(speaker)}"` : ""; // a seção de destaques repete o card sem o id (o id é único na página)
   const trackIds = [...new Set(speaker.talks.map(talk => talk.track.id))].join(" ");
   return `
     <div class="speaker-card"${anchor} data-tracks="${trackIds}" style="--track-color:${speaker.track.color}">
@@ -57,6 +58,17 @@ function speakerGalleryCardMarkup(speaker) {
       ${social}
       <div class="speaker-talks">${speaker.talks.map(speakerTalkRefMarkup).join("")}</div>
     </div>`;
+}
+
+/**
+ * Seção dos palestrantes com selo (hoje: os Google Developer Experts), na ordem alfabética de quem chega. Só aparece com o line-up revelado e se houver pelo menos uma pessoa com selo.
+ * Reusa o mesmo cartão da galeria (sem o id), então clicar numa palestra abre o mesmo modal.
+ */
+function renderBadgedSpeakersSection(speakers, sectionEl, gridEl, { reveal = true } = {}) {
+  const badged = speakers.filter(speaker => speaker.badge);
+  sectionEl.hidden = !reveal || badged.length === 0;
+  if (sectionEl.hidden) return;
+  gridEl.innerHTML = sortSpeakersByName(badged).map(speaker => speakerGalleryCardMarkup(speaker, { anchor: false })).join("");
 }
 
 /** Quantidade de palestrantes por trilha (e no total, em ALL_TRACKS) — alimenta os contadores das abas. */

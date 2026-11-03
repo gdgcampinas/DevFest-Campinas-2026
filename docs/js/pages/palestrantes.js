@@ -8,10 +8,11 @@ function initPalestrantes() {
   const reveal = initShell("palestrantes");
   const speakers = sortSpeakersByName(extractSpeakers(SCHEDULE, TRACKS, EVENT.timezone)); // alfabética: o mais fácil de achar alguém
   const tabsEl = document.querySelector(".tabs");
-  const gridEl = document.querySelector(".speakers-grid");
+  const gridEl = document.querySelector("#speakersSection .speakers-grid"); // a seção dos GDE tem outra grade com a mesma classe
 
   renderTabs(TRACKS, tabsEl, { counts: speakerCountsByTrack(speakers, TRACKS) });
   const filter = initSpeakerTrackFilter(tabsEl, gridEl);
+  renderBadgedSpeakersSection(speakers, document.getElementById("gdeSection"), document.querySelector(".gde-grid"), { reveal });
   renderSpeakersSection(speakers, document.getElementById("speakersSection"), gridEl, { reveal, showAll: () => filter.select(ALL_TRACKS) });
 
   initFavorites(document.body, favoritesRepository);

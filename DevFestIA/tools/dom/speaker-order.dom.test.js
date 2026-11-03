@@ -53,3 +53,20 @@ test("cartão do destaque: anel e rótulo na cor da trilha, nome e cargo; sem tr
   bare.innerHTML = g("featuredSpeakerCardMarkup")({ name: "Sem Trilha", title: "", photo: "" });
   assert.equal(bare.querySelector(".featured-track"), null);
 });
+
+test("seção dos Google Developer Experts: só quem tem selo, em ordem alfabética, sem repetir o id do cartão da galeria; some sem selo ou sem revelação", () => {
+  const doc = site.document;
+  const section = doc.createElement("section");
+  const grid = doc.createElement("div");
+  section.append(grid);
+  const withBadge = [{ ...person("Zé", 0), badge: "GDE" }, person("Ana", 1), { ...person("Beto", 2), badge: "GDE" }];
+  g("renderBadgedSpeakersSection")(withBadge, section, grid, { reveal: true });
+  assert.equal(section.hidden, false);
+  assert.deepEqual([...grid.querySelectorAll(".speaker-card-name")].map(el => textOf(el)), ["Beto", "Zé"]);
+  assert.equal(grid.querySelectorAll(".speaker-badge").length, 2);
+  assert.equal(grid.querySelectorAll("[id]").length, 0, "o id do perfil fica só na galeria");
+  g("renderBadgedSpeakersSection")(withBadge, section, grid, { reveal: false });
+  assert.equal(section.hidden, true);
+  g("renderBadgedSpeakersSection")([person("Ana", 1)], section, grid, { reveal: true });
+  assert.equal(section.hidden, true, "sem ninguém com selo a seção não aparece");
+});
