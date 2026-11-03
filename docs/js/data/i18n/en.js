@@ -470,7 +470,7 @@ I18N_DICTIONARIES.en = {
     "Parceiros": "Partners",
     "Comunidades parceiras": "Partner communities",
     "Educação em dados e IA: treinamentos, mentorias e consultoria para empresas.": "Data and AI education: training, mentoring and consulting for companies.",
-    "Inovação 3D": "3D Innovation",
+    "Inovação 3D: brindes personalizados, brinquedos e protótipos.": "3D innovation: custom gifts, toys and prototypes.",
     "Comunidade de tecnologia e dados de Campinas, realizada pela Datarock.": "Technology and data community in Campinas, run by Datarock.",
     "Comunidade que incentiva e apoia a participação de mulheres em hackathons.": "Community that encourages and supports women taking part in hackathons.",
     "Inteligência em PostgreSQL em prol da sustentabilidade do seu negócio.": "PostgreSQL intelligence for the sustainability of your business.",

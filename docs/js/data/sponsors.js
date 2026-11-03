@@ -36,8 +36,8 @@ const SPONSORS = [
     { public: true, name: "Hacker Rangers", link: "https://hackerrangers.com/pt/", imageUrl: "assets/brand/hacker-rangers.webp", description: "Cultura de segurança com treinamentos gamificados." },
     // REAL e LIBERADA em produção (2026-10-30, `public: true`). Logo oficial do site da empresa (versão escura horizontal), na caixa branca padrão. Realiza a NewHack Campinas.
     { public: true, name: "Datarock", link: "https://datarocktecnologia.com", imageUrl: "assets/brand/datarock.svg", description: "Educação em dados e IA: treinamentos, mentorias e consultoria para empresas." },
-    // REAL e LIBERADA em produção (2026-11-03, `public: true`). Logo dourado 3D enviado pelo Renato (recortado rente ao desenho, fundo claro do original), na caixa branca padrão. Slogan "Inovação 3D" na descrição; o link é o Instagram da empresa, sem os parâmetros de rastreio do QR.
-    { public: true, name: "B&B", link: "https://www.instagram.com/beb.inovacao3d", imageUrl: "assets/brand/bb-inovacao-3d.webp", description: "Inovação 3D" },
+    // REAL e LIBERADA em produção (2026-11-03, `public: true`). Logo dourado 3D enviado pelo Renato (versão com fundo branco, recortada rente ao desenho), na caixa branca padrão. Descrição: o que a empresa faz (brindes personalizados, brinquedos e protótipos em 3D); o link é o Instagram da empresa, sem os parâmetros de rastreio do QR.
+    { public: true, name: "B&B", link: "https://www.instagram.com/beb.inovacao3d", imageUrl: "assets/brand/bb-inovacao-3d.webp", description: "Inovação 3D: brindes personalizados, brinquedos e protótipos." },
   ] },
   { id: "comunidades", tier: "Comunidades parceiras", elements: [
     // REAL e LIBERADA em produção (2026-10-30, `public: true`). Logo enviado pelo Renato, com o fundo preto original (texto branco e verde-limão), na caixa branca padrão.
