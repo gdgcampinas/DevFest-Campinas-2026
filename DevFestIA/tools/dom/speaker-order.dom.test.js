@@ -54,19 +54,22 @@ test("cartão do destaque: anel e rótulo na cor da trilha, nome e cargo; sem tr
   assert.equal(bare.querySelector(".featured-track"), null);
 });
 
-test("seção dos Google Developer Experts: só quem tem selo, em ordem alfabética, sem repetir o id do cartão da galeria; some sem selo ou sem revelação", () => {
-  const doc = site.document;
-  const section = doc.createElement("section");
-  const grid = doc.createElement("div");
-  section.append(grid);
-  const withBadge = [{ ...person("Zé", 0), badge: "GDE" }, person("Ana", 1), { ...person("Beto", 2), badge: "GDE" }];
-  g("renderBadgedSpeakersSection")(withBadge, section, grid, { reveal: true });
+test("cabeçalho dos Google Developer Experts: aparece só com line-up revelado e alguém com selo; o cartão de quem tem selo vem destacado, com o selo na foto e sem repetir 'GDE' no cargo", () => {
+  const section = site.document.createElement("section");
+  const withBadge = [{ ...person("Zé", 0), badge: "GDE" }, person("Ana", 1)];
+  g("toggleBadgedHeader")(withBadge, section, { reveal: true });
   assert.equal(section.hidden, false);
-  assert.deepEqual([...grid.querySelectorAll(".speaker-card-name")].map(el => textOf(el)), ["Beto", "Zé"]);
-  assert.equal(grid.querySelectorAll(".speaker-badge").length, 2);
-  assert.equal(grid.querySelectorAll("[id]").length, 0, "o id do perfil fica só na galeria");
-  g("renderBadgedSpeakersSection")(withBadge, section, grid, { reveal: false });
+  g("toggleBadgedHeader")(withBadge, section, { reveal: false });
   assert.equal(section.hidden, true);
-  g("renderBadgedSpeakersSection")([person("Ana", 1)], section, grid, { reveal: true });
-  assert.equal(section.hidden, true, "sem ninguém com selo a seção não aparece");
+  g("toggleBadgedHeader")([person("Ana", 1)], section, { reveal: true });
+  assert.equal(section.hidden, true, "sem ninguém com selo o cabeçalho não aparece");
+
+  const card = site.document.createElement("div");
+  card.innerHTML = g("speakerGalleryCardMarkup")({ ...person("Zé", 0), badge: "GDE" });
+  assert.ok(card.querySelector(".speaker-card--badged"));
+  assert.equal(textOf(card.querySelector(".speaker-badge")), "GDE");
+  assert.equal(textOf(card.querySelector(".speaker-card-meta")), "Cargo", "o selo já está na foto");
+  card.innerHTML = g("speakerGalleryCardMarkup")(person("Ana", 1));
+  assert.equal(card.querySelector(".speaker-card--badged"), null);
+  assert.equal(card.querySelector(".speaker-badge"), null);
 });

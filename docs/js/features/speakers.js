@@ -40,18 +40,21 @@ function speakerTalkRefMarkup(ref) {
     </div>`;
 }
 
+/** Símbolo do programa (dois chevrons nas cores do Google), desenhado aqui para caber no selo; decorativo. */
+const BADGE_ICON = '<svg class="speaker-badge-icon" viewBox="0 0 24 16" width="18" height="12" aria-hidden="true" focusable="false"><path d="M8 2 2 8" stroke="#ea4335" stroke-width="3.2" stroke-linecap="round" fill="none"/><path d="M2 8l6 6" stroke="#4285f4" stroke-width="3.2" stroke-linecap="round" fill="none"/><path d="M16 2l6 6" stroke="#34a853" stroke-width="3.2" stroke-linecap="round" fill="none"/><path d="M22 8l-6 6" stroke="#fbbc04" stroke-width="3.2" stroke-linecap="round" fill="none"/></svg>';
+
 /** Reusa avatarMarkup (components/avatar.js), speakerMetaLine (track-card.js), socialIconMarkup (person-card.js) e speakerAnchorId (speaker-link.js) — nada reescrito aqui. */
-function speakerGalleryCardMarkup(speaker, { anchor: withAnchor = true } = {}) {
+function speakerGalleryCardMarkup(speaker) {
   const photo = avatarMarkup(speaker.name, speaker.photo, "speaker-photo");
-  const avatar = speaker.badge ? `<span class="speaker-photo-wrap">${photo}<span class="speaker-badge">${speaker.badge}</span></span>` : photo; // selo da pessoa (ex.: GDE) em cima da foto
-  const meta = speakerMetaLine(speaker);
+  const avatar = speaker.badge ? `<span class="speaker-photo-wrap">${photo}<span class="speaker-badge">${BADGE_ICON}${speaker.badge}</span></span>` : photo; // selo da pessoa (ex.: GDE) em cima da foto
+  const meta = speakerMetaLine({ ...speaker, badge: "" }); // o selo já está na foto
   const social = speaker.linkedin
     ? socialIconMarkup({ name: "linkedin", link: speaker.linkedin })
     : "";
-  const anchor = withAnchor && speaker.id ? ` id="${speakerAnchorId(speaker)}"` : ""; // a seção de destaques repete o card sem o id (o id é único na página)
+  const anchor = speaker.id ? ` id="${speakerAnchorId(speaker)}"` : "";
   const trackIds = [...new Set(speaker.talks.map(talk => talk.track.id))].join(" ");
   return `
-    <div class="speaker-card"${anchor} data-tracks="${trackIds}" style="--track-color:${speaker.track.color}">
+    <div class="speaker-card${speaker.badge ? " speaker-card--badged" : ""}"${anchor} data-tracks="${trackIds}" style="--track-color:${speaker.track.color}">
       ${avatar}
       <div class="speaker-card-name">${speaker.name}</div>
       ${meta ? `<div class="speaker-card-meta">${meta}</div>` : ""}
@@ -60,15 +63,9 @@ function speakerGalleryCardMarkup(speaker, { anchor: withAnchor = true } = {}) {
     </div>`;
 }
 
-/**
- * Seção dos palestrantes com selo (hoje: os Google Developer Experts), na ordem alfabética de quem chega. Só aparece com o line-up revelado e se houver pelo menos uma pessoa com selo.
- * Reusa o mesmo cartão da galeria (sem o id), então clicar numa palestra abre o mesmo modal.
- */
-function renderBadgedSpeakersSection(speakers, sectionEl, gridEl, { reveal = true } = {}) {
-  const badged = speakers.filter(speaker => speaker.badge);
-  sectionEl.hidden = !reveal || badged.length === 0;
-  if (sectionEl.hidden) return;
-  gridEl.innerHTML = sortSpeakersByName(badged).map(speaker => speakerGalleryCardMarkup(speaker, { anchor: false })).join("");
+/** Cabeçalho dos Google Developer Experts (logo, texto e link): aparece só com o line-up revelado e se alguém tiver selo; os GDEs ficam na própria lista, com o cartão destacado. */
+function toggleBadgedHeader(speakers, sectionEl, { reveal = true } = {}) {
+  sectionEl.hidden = !reveal || !speakers.some(speaker => speaker.badge);
 }
 
 /** Quantidade de palestrantes por trilha (e no total, em ALL_TRACKS) — alimenta os contadores das abas. */
