@@ -55,7 +55,7 @@ function renderLegend(tracks, mountEl) {
     .map(track => {
       const mc = track.mc ? `<span class="mc">${track.mc}</span>` : "";
       const room = track.room ? `<span class="room-tag">${track.room}</span>` : "";
-      const sub = [mc, room].filter(Boolean).join(" · ");
+      const sub = [mc, room].filter(Boolean).join(""); // uma linha para o MC e outra para a sala (o CSS empilha), sem o ponto entre os dois
       return `
         <div class="item" data-track="${track.id}" style="--track-color:${track.color}">
           <span class="name"><span class="dot" style="background:${track.color}"></span>${track.label}</span>

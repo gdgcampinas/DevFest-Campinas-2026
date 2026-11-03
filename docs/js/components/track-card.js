@@ -61,7 +61,7 @@ function trackCardMarkup(track, data, {
     <div class="talk${favorite ? " is-fav" : ""}${highlight ? " talk--highlight" : ""}" data-track="${track.id}" style="--track-color:${track.color}${highlight ? `;--highlight-color:${highlight.color}` : ""}" ${attrs}>
       ${highlight ? talkHighlightRibbonMarkup(highlight) : ""}
       <div class="talk-top">
-        <span class="track-label"><span class="dot" style="background:${track.color}"></span>${track.shortLabel ?? track.label}</span>
+        <span class="track-label"><span class="dot" style="background:${track.color}"></span>${(track.shortLabel ?? track.label).replace(/\//g, "/<wbr>")}</span>
         ${statusTag}
       </div>
       <div class="title${title ? "" : " title--pending"}">${title || hiddenTitleLabel()}</div>

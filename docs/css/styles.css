@@ -194,10 +194,11 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
   margin-bottom:16px;
 }
 @media(min-width:860px){.tracks-legend{display:grid}}
-.tracks-legend .item{display:flex;flex-direction:column;gap:2px;padding:0 4px}
-.tracks-legend .name{display:flex;align-items:center;gap:6px;font:700 13px var(--font-body);color:oklch(88% 0.01 260)}
-.tracks-legend .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
-.tracks-legend .sub{display:flex;flex-wrap:wrap;align-items:center;gap:5px;font:500 12px var(--font-body);color:var(--muted-dim);padding-left:15px}
+.tracks-legend{align-items:start;gap:12px 16px}
+.tracks-legend .item{display:flex;flex-direction:column;gap:6px;padding:0 4px;min-width:0}
+.tracks-legend .name{display:flex;align-items:flex-start;gap:6px;min-height:2.7em;font:700 13px/1.3 var(--font-body);color:oklch(88% 0.01 260)}
+.tracks-legend .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;margin-top:.35em}
+.tracks-legend .sub{display:flex;flex-direction:column;align-items:flex-start;gap:6px;font:500 12px var(--font-body);color:var(--muted-dim);padding-left:15px}
 .tracks-legend .mc{color:var(--text);font-weight:700}
 
 /* filtro / segmented control — cor por trilha via --track-color inline (JS), sem regra por id */
@@ -264,7 +265,7 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
 .track-label{display:flex;align-items:center;gap:6px;font:700 12px var(--font-body);text-transform:uppercase;letter-spacing:.6px;color:var(--track-color)}
 .track-label .dot{width:6px;height:6px;border-radius:50%;box-shadow:0 0 8px var(--track-color)}
 /* 5 trilhas: o nome da trilha quebra de linha em vez de empurrar o horário para fora do card */
-.talk-top .track-label{min-width:0;flex:1 1 auto;overflow-wrap:anywhere}
+.talk-top .track-label{min-width:0;flex:1 1 auto;overflow-wrap:break-word} /* a quebra acontece depois da barra (<wbr>), nunca no meio de uma palavra */
 .talk-top .track-label .dot{flex:none}
 .talk-top .time-chip,.talk-top .now-tag{flex:none;white-space:nowrap}
 .time-chip{
@@ -741,6 +742,18 @@ a.featured-speaker:focus-visible{outline:2px solid var(--text);outline-offset:4p
 .speaker-talk-track .dot{width:6px;height:6px;border-radius:50%}
 .speaker-talk-title{display:block;margin-top:3px;font:600 13px/1.35 var(--font-body);color:oklch(90% 0.01 260)}
 .speaker-card.is-filtered-out,.speaker-talk.is-filtered-out{display:none}
+.speaker-photo-wrap{position:relative;display:inline-block;margin-bottom:8px}
+.speaker-photo-wrap .speaker-photo{margin-bottom:0}
+.speaker-badge{position:absolute;right:-12px;bottom:-2px;padding:2px 8px;border-radius:999px;background:#fff;color:#1f1f1f;font:700 11px/1.3 var(--font-body);border:2px solid var(--card-b)}
+/* seção dos Google Developer Experts, no topo dos Palestrantes */
+.gde{margin-bottom:12px}
+.gde-head{display:flex;align-items:center;gap:18px;margin-bottom:16px;flex-wrap:wrap}
+.gde-logo{width:96px;height:96px;border-radius:14px;background:#fff;padding:6px;object-fit:contain;flex:none}
+.gde-head-text{flex:1 1 260px;display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.gde-head-text p{margin:0;color:var(--muted-dim);font:500 14px/1.4 var(--font-body)}
+.gde-link{font:700 13px var(--font-body);color:var(--google-blue);text-decoration:none;border-bottom:1px solid currentColor}
+.gde-link:hover{color:oklch(80% .12 258)}
+.gde-grid .speaker-card{border-color:color-mix(in oklch,var(--track-color) 45%,var(--card-border))}
 .speaker-card{scroll-margin-top:24px;transition:border-color .2s ease,box-shadow .2s ease}
 .speaker-card.is-target{border-color:var(--track-color);box-shadow:0 0 26px color-mix(in oklch, var(--track-color) 30%, transparent)}
 .speaker-card .social-icon{margin-top:10px}
