@@ -82,7 +82,7 @@ function trackCardMarkup(track, data, {
       ${reveal ? talkTagsMarkup(data, highlight) : ""}
       ${highlight ? talkHighlightBodyMarkup(highlight) : ""}
       <div class="talk-who">
-        ${talkAvatarsMarkup(speakers)}
+        ${talkAvatarsMarkup(speakers, { talk: title, color: track.color })}
         <div class="talk-who-text">
           <div class="talk-name">${speaker}</div>
           ${meta ? `<div class="talk-meta">${meta}</div>` : ""}
@@ -125,7 +125,7 @@ function talkDetailMarkup(track, data, { reveal = true, timeRange = "", room = "
           : `<div class="detail-speaker">${s.name}</div>`;
         const meta = speakerMetaLine(s);
         const block = `<div class="detail-speaker-block">${nameEl}${meta ? `<div class="detail-speaker-meta">${meta}</div>` : ""}</div>`;
-        return `<div class="detail-speaker-row">${avatarMarkup(s.name, s.photo, "detail-avatar")}${block}${talkLinksMarkup([s])}</div>`;
+        return `<div class="detail-speaker-row">${avatarMarkup(s.name, s.photo, "detail-avatar", { meta, talks: [title], color: track.color })}${block}${talkLinksMarkup([s])}</div>`;
       }).join("")}</div>`
     : `<div class="detail-speaker">${hiddenSpeakerLabel()}</div>`;
 

@@ -36,6 +36,7 @@ function initGrade() {
   });
 
   const modal = createTalkModal();
+  initSpeakerPhotoZoom();
   const wallInvite = defaultWallInvite();
   const { feedback, questions, contest } = initFeedbackFlow({ calendar, reveal, createModal, invite: wallInvite.linkMarkup });
   initTalkDetails(document.body, { schedule: SCHEDULE, tracks: TRACKS, timezone: EVENT.timezone, reveal, modal, favorites: favoritesRepository, calendar, feedback, questions, contest });

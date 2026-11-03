@@ -13,6 +13,7 @@ function initHome() {
   initHeroGalaxy({ mountEl: document.getElementById("heroStage"), config: heroGalaxyRepository.getAll() });
 
   const modal = createTalkModal();
+  initSpeakerPhotoZoom();
   const calendar = initCalendarActions(document.body, { schedule: SCHEDULE, tracks: TRACKS, event: EVENT, favorites: favoritesRepository });
   const { feedback, eventFeedback, questions, contest } = initFeedbackFlow({ calendar, reveal, createModal, invite: wallInvite.linkMarkup });
   initTalkDetails(document.body, { schedule: SCHEDULE, tracks: TRACKS, timezone: EVENT.timezone, reveal, modal, favorites: favoritesRepository, calendar, feedback, questions, contest });

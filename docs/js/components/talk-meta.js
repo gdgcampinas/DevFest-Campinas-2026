@@ -28,11 +28,11 @@ function talkWhoList(data) {
   return host ? [host] : [];
 }
 
-/** Sem palestrante revelado, mostra um avatar de interrogação (fallback de iniciais já resolve). */
-function talkAvatarsMarkup(speakers) {
+/** Sem palestrante revelado, mostra um avatar de interrogação (fallback de iniciais já resolve). `talk` e `color` (título e cor da trilha) vão pro zoom da foto. */
+function talkAvatarsMarkup(speakers, { talk = "", color = "" } = {}) {
   const list = speakers.length ? speakers.slice(0, MAX_AVATARS) : [{ name: "?" }];
   return `<div class="talk-avatars">${list
-    .map(speaker => `<span class="talk-avatar-ring">${avatarMarkup(speaker.name, speaker.photo, "talk-avatar")}</span>`)
+    .map(speaker => `<span class="talk-avatar-ring">${avatarMarkup(speaker.name, speaker.photo, "talk-avatar", { meta: speakerMetaLine(speaker), talks: [talk], color })}</span>`)
     .join("")}</div>`;
 }
 

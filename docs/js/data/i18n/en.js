@@ -232,6 +232,7 @@ I18N_DICTIONARIES.en = {
     "page.home.title": "DevFest Campinas 2026",
     "page.grade.title": "Schedule • DevFest Campinas 2026",
     "page.speakers.title": "Speakers • DevFest Campinas 2026",
+    "speaker.photo": "Speaker photo",
     "speakers.gdeTitle": "Google Developer Experts",
     "speakers.gdeSub": "Experts recognized by Google, on stage at DevFest Campinas.",
     "speakers.gdeLink": "Learn about the GDE program",

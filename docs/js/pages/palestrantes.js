@@ -17,6 +17,7 @@ function initPalestrantes() {
 
   initFavorites(document.body, favoritesRepository);
   const modal = createTalkModal();
+  initSpeakerPhotoZoom();
   const wallInvite = defaultWallInvite();
   const calendar = initCalendarActions(document.body, { schedule: SCHEDULE, tracks: TRACKS, event: EVENT, favorites: favoritesRepository });
   const { feedback, questions, contest } = initFeedbackFlow({ calendar, reveal, createModal, invite: wallInvite.linkMarkup });

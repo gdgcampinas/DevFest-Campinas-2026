@@ -9,8 +9,8 @@ const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 
 const site = loadSite({
   globals: { TextEncoder: require("node:util").TextEncoder },
-  scripts: [...SITE_BASE, "data/talk-formats.js", "data/favorites.js", "components/avatar.js", "components/speaker-link.js", "components/favorite-button.js", "components/person-card.js", "components/talk-highlight.js",
-    "components/talk-meta.js", "components/track-card.js", "features/speakers.js", "features/featured-speakers.js"],
+  scripts: [...SITE_BASE, "data/talk-formats.js", "data/favorites.js", "components/escape-html.js", "components/avatar.js", "components/speaker-link.js", "components/favorite-button.js", "components/person-card.js", "components/talk-highlight.js",
+    "components/talk-meta.js", "components/track-card.js", "features/speakers.js", "features/featured-speakers.js", "features/speaker-photo-zoom.js"],
 });
 test.after(() => site.window.close());
 const g = name => site.get(name);
@@ -95,4 +95,32 @@ test("palestra de quem tem selo: o card ganha a faixa do selo por extenso; sem s
   const detail = site.document.createElement("div");
   detail.innerHTML = g("talkDetailMarkup")(track, { title: "T", format: "workshop", speakers: [gde], description: "x" }, {});
   assert.equal(textOf(detail.querySelector(".detail-badge")), "Google Developer Expert");
+});
+
+test("Destaques: o card mostra o título da palestra e a foto fica pronta pro zoom; sem foto, nada de zoom", () => {
+  const withPhoto = { ...person("Ana", 1), photo: "assets/x.webp", talks: [{ title: "Agentes de IA", track: tracks[1], slotIndex: 0, startLabel: "10:00" }] };
+  const el = site.document.createElement("div");
+  el.innerHTML = g("featuredSpeakerCardMarkup")(withPhoto);
+  assert.equal(textOf(el.querySelector(".featured-talk")), "“Agentes de IA”");
+  const img = el.querySelector("img[data-zoom-photo]");
+  assert.equal(img.dataset.zoomName, "Ana");
+  assert.equal(img.dataset.zoomTalks, "Agentes de IA");
+  el.innerHTML = g("featuredSpeakerCardMarkup")(person("Beto", 2));
+  assert.equal(el.querySelector("[data-zoom-photo]"), null);
+  assert.equal(el.querySelector(".featured-talk"), null);
+});
+
+test("Zoom da foto: o clique na foto abre o modal com nome, cargo e palestras, sem seguir o link do card; logo em SVG não amplia", () => {
+  const opened = [];
+  const host = site.document.createElement("div");
+  host.innerHTML = `<a href="#perfil" class="card">${g("avatarMarkup")("Ana", "assets/x.webp", "foto", { meta: "GDE · Cargo", talks: ["Palestra A", "Palestra B"], color: "var(--ia)" })}</a>${g("avatarMarkup")("GDG", "assets/gdg.svg", "foto", { meta: "" })}`;
+  site.document.body.appendChild(host);
+  g("initSpeakerPhotoZoom")({ rootEl: site.document, makeModal: () => ({ openHTML: html => opened.push(html) }) });
+  assert.equal(host.querySelectorAll("img[data-zoom-photo]").length, 1, "o SVG não é ampliável");
+  let followed = false;
+  host.querySelector("a").addEventListener("click", () => { followed = true; });
+  host.querySelector("img").dispatchEvent(new site.window.MouseEvent("click", { bubbles: true, cancelable: true }));
+  assert.equal(opened.length, 1);
+  assert.ok(opened[0].includes("Ana") && opened[0].includes("GDE · Cargo") && opened[0].includes("Palestra B"));
+  assert.equal(followed, false, "o clique não chega no card");
 });

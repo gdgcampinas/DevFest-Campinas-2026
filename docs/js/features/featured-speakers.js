@@ -30,13 +30,15 @@ function featuredSpeakerCardMarkup(person) {
   const meta = speakerMetaLine(person);
   const profile = speakerProfileHref(person);
   const tag = profile ? "a" : "div";
+  const talkTitle = person.talks?.[0]?.title;
   const href = profile ? ` href="${profile}" data-track-event="speaker_profile" data-track-target="featured"` : "";
   return `
     <${tag} class="featured-speaker"${href}${person.track ? ` style="--track-color:${person.track.color}"` : ""}>
-      ${avatarMarkup(person.name, person.photo, "featured-avatar")}
+      ${avatarMarkup(person.name, person.photo, "featured-avatar", { meta, talks: (person.talks ?? []).map(talk => talk.title), color: person.track?.color })}
       ${person.track ? `<span class="featured-track">${person.track.shortLabel ?? person.track.label}</span>` : ""}
       <div class="featured-name">${person.name}</div>
       ${meta ? `<div class="featured-company">${meta}</div>` : ""}
+      ${talkTitle ? `<div class="featured-talk">“${talkTitle}”</div>` : ""}
     </${tag}>`;
 }
 

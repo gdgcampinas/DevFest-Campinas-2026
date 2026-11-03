@@ -42,7 +42,7 @@ function speakerTalkRefMarkup(ref) {
 
 /** Reusa avatarMarkup (components/avatar.js), speakerMetaLine (track-card.js), socialIconMarkup (person-card.js) e speakerAnchorId (speaker-link.js) — nada reescrito aqui. */
 function speakerGalleryCardMarkup(speaker) {
-  const photo = avatarMarkup(speaker.name, speaker.photo, "speaker-photo");
+  const photo = avatarMarkup(speaker.name, speaker.photo, "speaker-photo", { meta: speakerMetaLine(speaker), talks: speaker.talks.map(talk => talk.title), color: speaker.track.color });
   const avatar = speaker.badge ? `<span class="speaker-photo-wrap">${photo}<span class="speaker-badge">${BADGE_ICON}${speaker.badge}</span></span>` : photo; // selo da pessoa (ex.: GDE) em cima da foto
   const meta = speakerMetaLine({ ...speaker, badge: "" }); // o selo já está na foto
   const social = speaker.linkedin
