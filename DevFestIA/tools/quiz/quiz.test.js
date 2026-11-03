@@ -15,7 +15,7 @@ const { scoreQuiz, pickSpread } = require(path.join(docs, "js/features/quiz-scor
 
 const read = file => fs.readFileSync(path.join(docs, file), "utf8");
 const { questions } = vm.runInNewContext(`${read("js/data/repository.js")}\n${read("js/data/quiz.js")}\nquizRepository.getAll()`);
-const trackIds = [...read("js/data/schedule.js").match(/const TRACKS = \[([\s\S]*?)\n\];/)[1].matchAll(/\{ id: "(\w+)", label/g)].map(match => match[1]);
+const trackIds = [...read("js/data/schedule.js").match(/const PUBLIC_TRACKS = \[([\s\S]*?)\n\];/)[1].matchAll(/\{ id: "(\w+)", label/g)].map(match => match[1]);
 
 test("as trilhas do schedule.js foram encontradas", () => {
   assert.ok(trackIds.length >= 2, `trilhas: ${trackIds}`);
