@@ -26,6 +26,11 @@ function extractSpeakers(schedule, tracks, timezone) {
   return [...people.values()];
 }
 
+/** Ordem alfabética pelo nome (sem diferenciar acento nem maiúscula), para achar alguém rápido. Não mexe na lista de entrada: devolve uma cópia. */
+function sortSpeakersByName(speakers, locale = "pt-BR") {
+  return [...speakers].sort((a, b) => a.name.localeCompare(b.name, locale, { sensitivity: "base" }));
+}
+
 /** Palestra da pessoa: bloco clicável (abre o modal), com a cor da trilha dela. */
 function speakerTalkRefMarkup(ref) {
   return `

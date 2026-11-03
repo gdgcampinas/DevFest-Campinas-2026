@@ -461,21 +461,22 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
 }
 .featured-speakers-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:32px 20px;margin-bottom:30px}
 @media(min-width:640px){.featured-speakers-grid{grid-template-columns:repeat(4,1fr)}}
-.featured-speaker{display:flex;flex-direction:column;align-items:center;gap:8px}
+.featured-speaker{--track-color:rgba(255,255,255,.9);display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
 .featured-avatar{
   width:132px;height:132px;border-radius:50%;object-fit:cover;
-  border:4px solid rgba(255,255,255,.9);box-shadow:0 6px 20px rgba(0,0,0,.4);
+  border:4px solid var(--track-color);box-shadow:0 6px 20px rgba(0,0,0,.4),0 0 0 3px oklch(12% .02 260 / .55),0 0 22px color-mix(in oklch,var(--track-color) 45%,transparent);
 }
 .featured-avatar--fallback{
   width:132px;height:132px;border-radius:50%;background:var(--card-b);
-  border:4px solid rgba(255,255,255,.9);box-shadow:0 6px 20px rgba(0,0,0,.4);
+  border:4px solid var(--track-color);box-shadow:0 6px 20px rgba(0,0,0,.4),0 0 0 3px oklch(12% .02 260 / .55),0 0 22px color-mix(in oklch,var(--track-color) 45%,transparent);
   display:flex;align-items:center;justify-content:center;font:700 36px var(--font-display);color:var(--muted);
 }
 a.featured-speaker{text-decoration:none;color:inherit;transition:transform .12s ease}
 a.featured-speaker:hover{transform:translateY(-3px)}
 a.featured-speaker:focus-visible{outline:2px solid var(--text);outline-offset:4px;border-radius:12px}
 .featured-name{font:600 17px var(--font-body);color:oklch(98% 0.003 260)}
-.featured-company{font:600 13px var(--font-body);color:var(--ia)}
+.featured-company{font:600 13px var(--font-body);color:var(--muted-dim,oklch(82% .01 260));display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.featured-track{margin-top:-2px;padding:3px 10px;border-radius:999px;font:700 11px/1.3 var(--font-body);text-transform:uppercase;letter-spacing:.5px;color:var(--track-color);background:color-mix(in oklch,var(--track-color) 16%,oklch(14% .02 260 / .85));border:1px solid color-mix(in oklch,var(--track-color) 55%,transparent)}
 .featured-speakers-cta{
   display:inline-block;margin-top:4px;
   font:700 12px var(--font-body);letter-spacing:1.5px;text-transform:uppercase;

@@ -6,7 +6,7 @@
  */
 function initPalestrantes() {
   const reveal = initShell("palestrantes");
-  const speakers = extractSpeakers(SCHEDULE, TRACKS, EVENT.timezone);
+  const speakers = sortSpeakersByName(extractSpeakers(SCHEDULE, TRACKS, EVENT.timezone)); // alfabética: o mais fácil de achar alguém
   const tabsEl = document.querySelector(".tabs");
   const gridEl = document.querySelector(".speakers-grid");
 
