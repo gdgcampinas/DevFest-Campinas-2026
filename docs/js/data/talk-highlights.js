@@ -54,7 +54,7 @@ const TALK_HIGHLIGHTS = [
     icon: "wrench",
     color: "var(--google-green)",
     ribbon: "Mão na massa",
-    tagline: "Construa junto com a palestrante, passo a passo e sem disputa",
+    tagline: "Construa junto com a palestrante, passo a passo",
     note: "Traga seu notebook",
     noteIcon: "laptop",
     steps: [
@@ -64,7 +64,6 @@ const TALK_HIGHLIGHTS = [
     ],
     rules: [
       "Traga seu notebook.",
-      "Não há concurso nem votação: o foco é aprender fazendo.",
     ],
   },
 ];
