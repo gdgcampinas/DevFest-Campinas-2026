@@ -470,7 +470,7 @@ I18N_DICTIONARIES.en = {
     "Comunidades parceiras": "Partner communities",
     "Educação em dados e IA: treinamentos, mentorias e consultoria para empresas.": "Data and AI education: training, mentoring and consulting for companies.",
     "Comunidade de tecnologia e dados de Campinas, realizada pela Datarock.": "Technology and data community in Campinas, run by Datarock.",
-    "Comunidade parceira de tecnologia.": "Technology partner community.",
+    "Comunidade que incentiva e apoia a participação de mulheres em hackathons.": "Community that encourages and supports women taking part in hackathons.",
     "Inteligência em PostgreSQL em prol da sustentabilidade do seu negócio.": "PostgreSQL intelligence for the sustainability of your business.",
     "Cultura de segurança com treinamentos gamificados.": "Security culture through gamified training.",
     "Comunidade parceira de desenvolvedores do Google Developer Group de Americana.": "Partner developer community of the Google Developer Group in Americana.",
