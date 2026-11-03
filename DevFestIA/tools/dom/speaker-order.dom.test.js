@@ -7,7 +7,11 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 
-const site = loadSite({ scripts: [...SITE_BASE, "components/avatar.js", "components/track-card.js", "components/speaker-link.js", "features/speakers.js", "features/featured-speakers.js"] });
+const site = loadSite({
+  globals: { TextEncoder: require("node:util").TextEncoder },
+  scripts: [...SITE_BASE, "data/talk-formats.js", "data/favorites.js", "components/avatar.js", "components/speaker-link.js", "components/favorite-button.js", "components/person-card.js", "components/talk-highlight.js",
+    "components/talk-meta.js", "components/track-card.js", "features/speakers.js", "features/featured-speakers.js"],
+});
 test.after(() => site.window.close());
 const g = name => site.get(name);
 
@@ -72,4 +76,20 @@ test("cabeçalho dos Google Developer Experts: aparece só com line-up revelado 
   card.innerHTML = g("speakerGalleryCardMarkup")(person("Ana", 1));
   assert.equal(card.querySelector(".speaker-card--badged"), null);
   assert.equal(card.querySelector(".speaker-badge"), null);
+});
+
+test("palestra de quem tem selo: o card ganha a faixa do selo por extenso; sem selo, ou com destaque de sessão, não", () => {
+  const el = site.document.createElement("div");
+  const track = tracks[2];
+  const gde = { ...person("Ana", 2), badge: "GDE", badgeLabel: "Google Developer Expert" };
+  el.innerHTML = g("trackCardMarkup")(track, { title: "T", format: "palestra", speakers: [gde] }, {});
+  assert.ok(el.querySelector(".talk--badged"));
+  assert.equal(textOf(el.querySelector(".talk-ribbon--badge")), "Google Developer Expert");
+  el.innerHTML = g("trackCardMarkup")(track, { title: "T", format: "palestra", speakers: [person("Beto", 2)] }, {});
+  assert.equal(el.querySelector(".talk--badged"), null);
+  el.innerHTML = g("trackCardMarkup")(track, { title: "T", speakers: [gde], highlight: "codejam" }, {});
+  assert.equal(el.querySelector(".talk--badged"), null, "o destaque da sessão usa a faixa dele");
+  const detail = site.document.createElement("div");
+  detail.innerHTML = g("talkDetailMarkup")(track, { title: "T", format: "workshop", speakers: [gde], description: "x" }, {});
+  assert.equal(textOf(detail.querySelector(".detail-badge")), "Google Developer Expert");
 });

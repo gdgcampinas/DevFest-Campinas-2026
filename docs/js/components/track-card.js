@@ -29,6 +29,19 @@ function speakerList(data) {
   return [{ name: data.speaker, linkedin: data.linkedin }];
 }
 
+/** Símbolo do programa (dois chevrons nas cores do Google), desenhado aqui para caber no selo; decorativo. */
+const BADGE_ICON = '<svg class="speaker-badge-icon" viewBox="0 0 24 16" width="18" height="12" aria-hidden="true" focusable="false"><path d="M8 2 2 8" stroke="#ea4335" stroke-width="3.2" stroke-linecap="round" fill="none"/><path d="M2 8l6 6" stroke="#4285f4" stroke-width="3.2" stroke-linecap="round" fill="none"/><path d="M16 2l6 6" stroke="#34a853" stroke-width="3.2" stroke-linecap="round" fill="none"/><path d="M22 8l-6 6" stroke="#fbbc04" stroke-width="3.2" stroke-linecap="round" fill="none"/></svg>';
+
+/** Selo da pessoa que fala (ex.: GDE): o primeiro palestrante da palestra que tiver `badge`, ou undefined. */
+function talkBadgedSpeaker(speakers) {
+  return speakers.find(speaker => speaker.badge);
+}
+
+/** Faixa no topo do card de uma palestra de quem tem selo (hoje: Google Developer Expert); `badgeLabel` é o nome por extenso. */
+function talkBadgeRibbonMarkup(speaker) {
+  return `<div class="talk-ribbon talk-ribbon--badge">${BADGE_ICON}${speaker.badgeLabel ?? speaker.badge}</div>`;
+}
+
 function trackCardMarkup(track, data, {
   reveal = true, live = false, slotIndex = null,
   startLabel = "", duration = "", talkKey = "", favorite = false, progress = 0,
@@ -39,6 +52,7 @@ function trackCardMarkup(track, data, {
   const title = reveal && data.title ? data.title : "";
   const room = reveal ? track.room : "";
   const meta = reveal && speakers.length === 1 ? speakerMetaLine(speakers[0]) : "";
+  const badged = !highlight ? talkBadgedSpeaker(speakers) : undefined; // o destaque de sessão (Coding Jam) tem a faixa dele; o selo da pessoa ocupa a faixa quando não há
 
   // AGORA substitui o chip de horário; fora do ao-vivo o chip guarda o
   // rótulo original em data-label pra live-status trocar por "Em N min".
@@ -58,8 +72,8 @@ function trackCardMarkup(track, data, {
   ].filter(Boolean).join(" ");
 
   return `
-    <div class="talk${favorite ? " is-fav" : ""}${highlight ? " talk--highlight" : ""}" data-track="${track.id}" style="--track-color:${track.color}${highlight ? `;--highlight-color:${highlight.color}` : ""}" ${attrs}>
-      ${highlight ? talkHighlightRibbonMarkup(highlight) : ""}
+    <div class="talk${favorite ? " is-fav" : ""}${highlight ? " talk--highlight" : ""}${badged ? " talk--badged" : ""}" data-track="${track.id}" style="--track-color:${track.color}${highlight ? `;--highlight-color:${highlight.color}` : ""}" ${attrs}>
+      ${highlight ? talkHighlightRibbonMarkup(highlight) : ""}${badged ? talkBadgeRibbonMarkup(badged) : ""}
       <div class="talk-top">
         <span class="track-label"><span class="dot" style="background:${track.color}"></span>${(track.shortLabel ?? track.label).replace(/\//g, "/<wbr>")}</span>
         ${statusTag}
@@ -117,6 +131,7 @@ function talkDetailMarkup(track, data, { reveal = true, timeRange = "", room = "
 
   return `
     <div class="detail" data-track="${track.id}" style="--track-color:${track.color}${highlight ? `;--highlight-color:${highlight.color}` : ""}">
+      ${talkBadgedSpeaker(speakers) ? `<div class="detail-badge">${BADGE_ICON}${talkBadgedSpeaker(speakers).badgeLabel ?? talkBadgedSpeaker(speakers).badge}</div>` : ""}
       <div class="detail-top">
         <span class="track-label"><span class="dot" style="background:${track.color}"></span>${track.label}</span>
         ${talkKey ? favoriteButtonMarkup({ key: talkKey, active: favorite }) : ""}

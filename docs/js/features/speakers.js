@@ -40,9 +40,6 @@ function speakerTalkRefMarkup(ref) {
     </div>`;
 }
 
-/** Símbolo do programa (dois chevrons nas cores do Google), desenhado aqui para caber no selo; decorativo. */
-const BADGE_ICON = '<svg class="speaker-badge-icon" viewBox="0 0 24 16" width="18" height="12" aria-hidden="true" focusable="false"><path d="M8 2 2 8" stroke="#ea4335" stroke-width="3.2" stroke-linecap="round" fill="none"/><path d="M2 8l6 6" stroke="#4285f4" stroke-width="3.2" stroke-linecap="round" fill="none"/><path d="M16 2l6 6" stroke="#34a853" stroke-width="3.2" stroke-linecap="round" fill="none"/><path d="M22 8l-6 6" stroke="#fbbc04" stroke-width="3.2" stroke-linecap="round" fill="none"/></svg>';
-
 /** Reusa avatarMarkup (components/avatar.js), speakerMetaLine (track-card.js), socialIconMarkup (person-card.js) e speakerAnchorId (speaker-link.js) — nada reescrito aqui. */
 function speakerGalleryCardMarkup(speaker) {
   const photo = avatarMarkup(speaker.name, speaker.photo, "speaker-photo");
