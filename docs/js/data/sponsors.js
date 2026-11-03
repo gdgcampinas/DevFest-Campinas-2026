@@ -42,6 +42,8 @@ const SPONSORS = [
     { public: true, name: "NewHack Campinas", link: "https://luma.com/NewHack", imageUrl: "assets/brand/newhack-campinas.webp", description: "Comunidade de tecnologia e dados de Campinas, realizada pela Datarock." },
     // REAL e LIBERADA em produção (2026-10-30, `public: true`). Logo horizontal enviado pelo Renato; o texto "Google Developer Group" veio em BRANCO (feito pra fundo escuro), então foi trocado pelo cinza escuro (#202124) pra aparecer na caixa branca padrão. Recortado rente ao desenho.
     { public: true, name: "GDG Americana", link: "https://gdgamericana.com.br", imageUrl: "assets/brand/gdg-americana.webp", description: "Comunidade parceira de desenvolvedores do Google Developer Group de Americana." },
+    // REAL e LIBERADA em produção (2026-11-03, `public: true`). Logo roxo enviado pelo Renato (fundo cinza-claro trocado por branco, pra casar com a caixa branca padrão). O link é o Linktree da comunidade (reúne LinkedIn e Instagram).
+    { public: true, name: "WoHackers", link: "https://linktr.ee/wohackers", imageUrl: "assets/brand/wohackers.webp", description: "Comunidade parceira de tecnologia." },
   ] },
 ];
 

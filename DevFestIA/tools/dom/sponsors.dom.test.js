@@ -72,7 +72,7 @@ test("em produção (antes da revelação) só as marcas `public` aparecem; cota
   assert.equal(JSON.stringify(publicTiers(tiers).map(tier => [tier.tier, tier.elements.map(e => e.name)])), JSON.stringify([["Master", ["Real"]], ["Apoio", ["Outra real"]]]));
   const real = site.get("sponsorsRepository").getAll();
   const shown = publicTiers(real).flatMap(tier => tier.elements.map(e => e.name));
-  assert.equal(JSON.stringify(shown), JSON.stringify(["Google Developer Groups", "FalaBoss", "FIAP", "PUC-Campinas", "Novatec Editora", "Timbira", "Hacker Rangers", "Datarock", "NewHack Campinas", "GDG Americana"]), "hoje o Master (GDG), a FalaBoss (Especialista), a FIAP (Pleno), a PUC-Campinas (Apoio), a Novatec, a Timbira, a Hacker Rangers e a Datarock (Parceiros), a NewHack e o GDG Americana (Comunidades parceiras) estão liberados em produção (a PUC foi liberada em 2026-10-30)");
+  assert.equal(JSON.stringify(shown), JSON.stringify(["Google Developer Groups", "FalaBoss", "FIAP", "PUC-Campinas", "Novatec Editora", "Timbira", "Hacker Rangers", "Datarock", "NewHack Campinas", "GDG Americana", "WoHackers"]), "hoje o Master (GDG), a FalaBoss (Especialista), a FIAP (Pleno), a PUC-Campinas (Apoio), a Novatec, a Timbira, a Hacker Rangers e a Datarock (Parceiros), a NewHack e o GDG Americana (Comunidades parceiras) estão liberados em produção (a PUC foi liberada em 2026-10-30)");
 });
 
 test("depois da revelação (DEV) a cota vazia também não aparece, nem como rótulo", () => {
