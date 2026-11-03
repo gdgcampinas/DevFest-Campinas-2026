@@ -78,7 +78,7 @@ test("cabeçalho dos Google Developer Experts: aparece só com line-up revelado 
   assert.equal(card.querySelector(".speaker-badge"), null);
 });
 
-test("palestra de quem tem selo: o card ganha a faixa do selo por extenso; sem selo, ou com destaque de sessão, não", () => {
+test("palestra de quem tem selo: o card ganha a faixa do selo por extenso; sem selo não; com destaque de sessão, as duas faixas", () => {
   const el = site.document.createElement("div");
   const track = tracks[2];
   const gde = { ...person("Ana", 2), badge: "GDE", badgeLabel: "Google Developer Expert" };
@@ -87,8 +87,11 @@ test("palestra de quem tem selo: o card ganha a faixa do selo por extenso; sem s
   assert.equal(textOf(el.querySelector(".talk-ribbon--badge")), "Google Developer Expert");
   el.innerHTML = g("trackCardMarkup")(track, { title: "T", format: "palestra", speakers: [person("Beto", 2)] }, {});
   assert.equal(el.querySelector(".talk--badged"), null);
-  el.innerHTML = g("trackCardMarkup")(track, { title: "T", speakers: [gde], highlight: "codejam" }, {});
-  assert.equal(el.querySelector(".talk--badged"), null, "o destaque da sessão usa a faixa dele");
+  el.innerHTML = g("trackCardMarkup")(track, { title: "T", speakers: [gde], highlight: "maonamassa" }, {});
+  assert.ok(el.querySelector(".talk-ribbon--badge"), "o selo fica no topo");
+  assert.equal(textOf(el.querySelector(".talk-ribbon--badge + .talk-ribbon")), "Mão na massa", "a faixa do destaque vem logo abaixo");
+  assert.ok(textOf(el.querySelector(".talk-highlight-note")).includes("notebook"));
+  assert.equal(el.querySelector(".talk-podium"), null, "sem concurso, sem pódio");
   const detail = site.document.createElement("div");
   detail.innerHTML = g("talkDetailMarkup")(track, { title: "T", format: "workshop", speakers: [gde], description: "x" }, {});
   assert.equal(textOf(detail.querySelector(".detail-badge")), "Google Developer Expert");

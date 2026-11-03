@@ -48,6 +48,25 @@ const TALK_HIGHLIGHTS = [
       "Cada check-in vale um voto.",
     ],
   },
+  {
+    id: "maonamassa",
+    label: "Workshop",
+    icon: "wrench",
+    color: "var(--google-green)",
+    ribbon: "Mão na massa",
+    tagline: "Construa junto com a palestrante, passo a passo e sem disputa",
+    note: "Traga seu notebook",
+    noteIcon: "laptop",
+    steps: [
+      { label: "Preparação", text: "Deixe o ambiente pronto no seu notebook para acompanhar." },
+      { label: "Construção", text: "Mão na massa: você constrói o app junto com a palestrante." },
+      { label: "Dúvidas", text: "Tire as dúvidas na hora, direto com quem está conduzindo." },
+    ],
+    rules: [
+      "Traga seu notebook.",
+      "Não há concurso nem votação: o foco é aprender fazendo.",
+    ],
+  },
 ];
 
 const talkHighlightsRepository = createRepository(TALK_HIGHLIGHTS, {

@@ -52,7 +52,7 @@ function trackCardMarkup(track, data, {
   const title = reveal && data.title ? data.title : "";
   const room = reveal ? track.room : "";
   const meta = reveal && speakers.length === 1 ? speakerMetaLine(speakers[0]) : "";
-  const badged = !highlight ? talkBadgedSpeaker(speakers) : undefined; // o destaque de sessão (Coding Jam) tem a faixa dele; o selo da pessoa ocupa a faixa quando não há
+  const badged = talkBadgedSpeaker(speakers); // o selo da pessoa fica no topo; se a sessão também tem destaque, a faixa dele vem logo abaixo
 
   // AGORA substitui o chip de horário; fora do ao-vivo o chip guarda o
   // rótulo original em data-label pra live-status trocar por "Em N min".
@@ -73,7 +73,7 @@ function trackCardMarkup(track, data, {
 
   return `
     <div class="talk${favorite ? " is-fav" : ""}${highlight ? " talk--highlight" : ""}${badged ? " talk--badged" : ""}" data-track="${track.id}" style="--track-color:${track.color}${highlight ? `;--highlight-color:${highlight.color}` : ""}" ${attrs}>
-      ${highlight ? talkHighlightRibbonMarkup(highlight) : ""}${badged ? talkBadgeRibbonMarkup(badged) : ""}
+      ${badged ? talkBadgeRibbonMarkup(badged) : ""}${highlight ? talkHighlightRibbonMarkup(highlight) : ""}
       <div class="talk-top">
         <span class="track-label"><span class="dot" style="background:${track.color}"></span>${(track.shortLabel ?? track.label).replace(/\//g, "/<wbr>")}</span>
         ${statusTag}
