@@ -91,7 +91,7 @@ const LINEUP_TRACKS = [
     description: "Apps nativos e multiplataforma, gerência de projetos e os métodos ágeis que fazem times entregarem rápido e com qualidade." },
   { id: "mentoring", label: "Carreira em Tecnologia", shortLabel: "Carreira em Tecnologia", room: roomFor("Mercadão Central"), mc: "MC a definir", color: "var(--mentoring)", icon: "rocket",
     description: "Trajetórias, mentoria e como crescer na área, com quem já passou pelos mesmos desafios." },
-  { id: "cloudsec", label: "Cyber Segurança (Security) / Cloud", shortLabel: "Cyber Segurança/Cloud", room: roomFor("a definir"), mc: "MC a definir", color: "var(--cloudsec)", icon: "shield",
+  { id: "cloudsec", label: "Cyber Segurança (Security) / Cloud", shortLabel: "Cyber Segurança/Cloud", room: roomFor("Torre do Castelo"), mc: "MC a definir", color: "var(--cloudsec)", icon: "shield",
     description: "Segurança, criptografia e arquitetura em nuvem: como proteger e escalar sistemas de verdade." },
 ];
 
