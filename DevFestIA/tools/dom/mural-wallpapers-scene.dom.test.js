@@ -14,7 +14,7 @@ const g = name => site.get(name);
 const MURAL_SKIP = g("MURAL_SKIP");
 const html = markup => { const el = document.createElement("div"); el.innerHTML = markup; return el; };
 const list = n => Array.from({ length: n }, (_, i) => ({ id: `w${i}`, title: `Fundo ${i}`, image: `img/w${i}.jpg` }));
-const params = { kicker: "Fundos de tela", heading: "A fênix agora mora no seu celular", hint: "Escaneie e escolha o seu fundo", path: "fundos.html?origem=telao" };
+const params = { kicker: "Fundos de tela", heading: "O Gumbleton agora mora no seu celular", hint: "Escaneie e escolha o seu fundo", path: "fundos.html?origem=telao" };
 const lock = { time: "9:41", date: "sábado, 28 de novembro" };
 const build = ({ wallpapers = list(6), target = { url: "https://site/fundos.html?origem=telao", label: "" }, qr = { available: () => true, draw: () => {} }, preloaded = [] } = {}) =>
   g("createWallpapersScene")({ repository: { getAll: () => wallpapers }, preload: async url => { preloaded.push(url); }, targets: { resolve: () => target }, qr, lock });
@@ -27,7 +27,7 @@ test("mostra três celulares com os fundos, o relógio da tela de bloqueio, o t�
   const rendered = scene.render(prepared, params);
   const view = html(rendered.markup);
   assert.equal(view.querySelectorAll(".ms-wp-phone").length, 3);
-  assert.match(textOf(view), /A fênix agora mora no seu celular/);
+  assert.match(textOf(view), /O Gumbleton agora mora no seu celular/);
   assert.match(textOf(view), /9:41/);
   assert.match(textOf(view), /Escaneie e escolha o seu fundo/);
   assert.deepEqual([...preloaded], ["img/w0.jpg", "img/w1.jpg", "img/w2.jpg"], "pré-carrega só os três que vai mostrar");
