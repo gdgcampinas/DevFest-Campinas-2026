@@ -44,6 +44,7 @@ const MURAL_SCENES = [
   { id: "rolando-1", label: "Rolando agora (sala 2)", type: "spotlight", seconds: 8, requires: { reveal: true, phases: ["live"] }, params: { slot: 1 } },
   { id: "rolando-2", label: "Rolando agora (sala 3)", type: "spotlight", seconds: 8, requires: { reveal: true, phases: ["live"] }, params: { slot: 2 } },
   { id: "rolando-3", label: "Rolando agora (sala 4)", type: "spotlight", seconds: 8, requires: { reveal: true, phases: ["live"] }, params: { slot: 3 } },
+  { id: "rolando-4", label: "Rolando agora (sala 5)", type: "spotlight", seconds: 8, requires: { reveal: true, phases: ["live"] }, params: { slot: 4 } },
   { id: "album-ao-vivo", label: "Fotos ao vivo", type: "album", seconds: 14, requires: { live: "albums" }, params: { album: "ao-vivo", model: "auto" } },
   { id: "foto-nova", label: "Foto nova da galera", type: "album", seconds: 10, transition: "zoom", requires: { live: "newPhoto" }, params: { album: "ao-vivo", latest: true, badge: "Nova foto da galera" } },
   { id: "album-2025-mosaico", label: "Mosaico DevFest 2025", type: "album", seconds: 14, transition: "zoom", requires: { live: "albums" }, params: { album: "devfest-2025", model: "mosaic" } },

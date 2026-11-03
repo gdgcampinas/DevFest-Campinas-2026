@@ -45,3 +45,9 @@ test("modo DEV do line-up: ?lineup=1 liga, ?lineup=0 desliga mesmo com a aba gra
   assert.equal(want({ search: "", storage: null }), false);
   assert.equal(want({ search: "", storage: { getItem: () => { throw new Error("bloqueado"); } } }), false, "armazenamento bloqueado não derruba a página");
 });
+
+test("vaga sem palestra definida vem marcada como `vacant` (o telão a ignora); palestra escalada não", () => {
+  const talks = build({ rotateSpeakers: false });
+  assert.equal(talks.b.vacant, true);
+  assert.equal(talks.a.vacant, undefined);
+});

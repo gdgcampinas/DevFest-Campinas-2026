@@ -1,7 +1,7 @@
 /**
  * Cena "Rolando agora": UMA sala por vez, com a foto de quem fala, nome, cargo, título, texto curto, horário e uma barra de progresso que anda (e "faltam N min").
  * `params.slot` é a posição da sala entre as que têm palestra no ar naquele instante (0 = a primeira); sem sala nessa posição a cena não aparece (MURAL_SKIP),
- * então o dado tem uma entrada por posição (rolando-0 a rolando-3) e o rodízio passa pelas salas que estiverem ocupadas, sem repetir nem deixar buraco.
+ * então o dado tem uma entrada por posição (rolando-0 a rolando-4, uma por sala do line-up de 5 trilhas) e o rodízio passa pelas salas que estiverem ocupadas, sem repetir nem deixar buraco.
  * Foto que não carrega (ou demora) cai nas iniciais com a cor da trilha, sem atrasar a cena. Sessão sem palestrante (Coding Jam) usa quem conduz (`hostOf`).
  * Tudo injetado: `schedule`, `tracks`, `timezone`, `phaseOf`, `preloadPhoto` (com tempo limite curto), `hostOf(idDoDestaque)`.
  */

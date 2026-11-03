@@ -27,7 +27,7 @@ function resolveNowAndNext({ schedule, tracks, now, phaseOf }) {
   const state = phaseOf(now, schedule);
   const active = state.activeSlot ?? null;
   const columns = tracks.map(track => {
-    const talkSlots = schedule.filter(slot => slot.talks?.[track.id]);
+    const talkSlots = schedule.filter(slot => slot.talks?.[track.id] && !slot.talks[track.id].vacant); // vaga em aberto não é palestra
     const live = talkSlots.find(slot => now >= slot.start && now < slot.end);
     const upcoming = talkSlots.find(slot => slot.start > now);
     return {
