@@ -139,6 +139,11 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .ms-sponsors-scene--compact .ms-tiers:has(>.ms-tier:only-child){grid-template-columns:minmax(0,1fr)}
 .ms-sponsors-scene--compact .ms-tiers>.ms-tier:only-child .ms-sponsors{grid-template-columns:repeat(auto-fit,minmax(calc(var(--u) * 24),calc(var(--u) * 34)))}
 
+/* Apoio (PUC-Campinas, a casa do evento): cota única com um logo horizontal, então o cartão vira um painel largo e o logo cresce */
+.ms-sponsors-scene--apoio .ms-tiers>.ms-tier:only-child .ms-sponsors,.ms-sponsors-scene--apoio .ms-tiers>.ms-tier:only-child[data-count="1"] .ms-sponsors{grid-template-columns:minmax(0,calc(var(--u) * 110))}
+.ms-sponsors-scene--apoio .ms-tiers>.ms-tier:only-child .ms-sponsor{background:#f7f7f7;padding:calc(var(--u) * 4) calc(var(--u) * 6)}
+.ms-sponsors-scene--apoio .ms-tiers>.ms-tier:only-child[data-count="1"] .ms-sponsor img{height:calc(var(--u) * 34)}
+
 /* ---------- QR ---------- */
 .ms-qr{flex-direction:row;align-items:center;gap:calc(var(--u) * 5)}
 .ms-qr-text{flex:1;display:flex;flex-direction:column;gap:calc(var(--u) * 2.4);min-width:0}
