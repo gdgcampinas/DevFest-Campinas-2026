@@ -25,7 +25,7 @@ const SPONSORS = [
   { id: "permuta", tier: "Cota Permuta", elements: [] },
   { id: "apoio", tier: "Apoio", elements: [
     // REAL, LIBERADA em produção em 2026-10-30 ("libera a PUC", pedido do Renato). Logo institucional da PUC-Campinas (brasão + nome), baixado do site oficial, na caixa branca padrão; não recolorir nem alterar. É a casa do evento (Campus I), cede o local sem custo: `featured` dá o destaque do Master só para ela.
-    { public: true, featured: true, name: "PUC-Campinas", link: "https://www.puc-campinas.edu.br/", imageUrl: "assets/brand/puc-campinas.webp" },
+    { public: true, featured: true, name: "PUC-Campinas", link: "https://www.puc-campinas.edu.br/", imageUrl: "assets/brand/puc-campinas-85.webp" },
   ] },
   { id: "parceiros", tier: "Parceiros", elements: [
     // REAL e LIBERADA em produção (2026-10-23, `public: true`). Logo vetorial oficial (versão positiva, texto preto e laranja) na caixa branca padrão.
