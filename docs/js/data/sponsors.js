@@ -15,7 +15,10 @@ const SPONSORS = [
     { public: true, name: "FalaBoss", link: "https://falaboss.com", imageUrl: "assets/brand/falaboss.svg", description: "Contrate pelo chat. Simples assim!" },
   ] },
   // cotas ainda sem marca confirmada (ficam prontas; vazias, não aparecem em lugar nenhum):
-  { id: "senior", tier: "Sênior", elements: [] },
+  { id: "senior", tier: "Sênior", elements: [
+    // REAL, patrocinadora OFICIAL (cota Sênior, fechada em 2026-11-05). SEM `public`: aparece só em DEV até o Renato liberar (aí `public: true`). Logo clássico (símbolo + nome) recortado do arquivo do Renato, na caixa branca padrão; não recolorir nem alterar.
+    { name: "Bosch", link: "https://www.bosch.com.br", imageUrl: "assets/brand/bosch.webp", description: "Fornecedora global de tecnologia e serviços." },
+  ] },
   { id: "pleno", tier: "Pleno", elements: [
     // REAL e LIBERADA em produção (`public: true`). Logo vetorial do arquivo oficial da FIAP, versão rosa na caixa branca.
     { public: true, name: "FIAP", link: "https://www.fiap.com.br/", imageUrl: "assets/brand/fiap.webp", description: "A FIAP é o centro de excelência em tecnologia mais respeitado do país." },
