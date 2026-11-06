@@ -21,6 +21,8 @@ const MURAL_VIDEO_CLIPS = [
   { id: "devfest-2025-final", file: "devfest-2025-final.mp4", label: "DevFest 2025: final", seconds: 13.4, fit: VIDEO_FIT },
   // Institucional da patrocinadora FIAP (1920 x 1080, 15 s, sem áudio): playlist própria, só entra na cena `video-fiap` (atrás da revelação).
   { id: "fiap-institucional", file: "fiap-institucional.mp4", label: "FIAP", seconds: 15.0, fit: VIDEO_FIT },
+  // Institucional da patrocinadora BOSCH (1920 x 1080, 30 s, SEM áudio: reencodado do original, que tinha som; o telão toca mudo). Playlist própria, cena `video-bosch`. Anexo na release `mural-video-2025` (2026-11-06).
+  { id: "bosch-institucional", file: "bosch-institucional.mp4", label: "Bosch", seconds: 30.0, fit: VIDEO_FIT },
 ];
 
 const MURAL_VIDEO_PLAYLISTS = {
@@ -29,6 +31,7 @@ const MURAL_VIDEO_PLAYLISTS = {
     // sem `sound`: o telão toca os vídeos SEMPRE MUDOS (decisão do Renato em 2026-10-08, o som não ficou bom). Pra voltar o som é só pôr aqui, ex.: sound: { moments: ["lunch"], phases: ["after"] }
   },
   fiap: { clips: ["fiap-institucional"] },
+  bosch: { clips: ["bosch-institucional"] },
 };
 
 const muralVideosRepository = createRepository({ clips: MURAL_VIDEO_CLIPS, playlists: MURAL_VIDEO_PLAYLISTS }, {

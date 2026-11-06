@@ -21,6 +21,13 @@ function publicSponsorTiers(tiers) {
     .filter(tier => tier.elements.length);
 }
 
+/** Telão de produção: as liberadas (`public`) MAIS as marcadas `telao: true` (aparecem lá antes de aparecerem no site). */
+function telaoSponsorTiers(tiers) {
+  return tiers
+    .map(tier => ({ ...tier, elements: tier.elements.filter(element => element.public || element.telao) }))
+    .filter(tier => tier.elements.length);
+}
+
 /** Cota sem nenhuma marca não aparece (nem na revelação): só se mostra o que existe. */
 const filledSponsorTiers = tiers => tiers.filter(tier => tier.elements.length);
 
@@ -31,4 +38,4 @@ function initSponsorsSection({ reveal, tiers, sectionEl, gridEl, soonMessage }) 
   renderOrConstruction(false, sectionEl, () => {}, soonMessage);
 }
 
-if (typeof module !== "undefined") module.exports = { publicSponsorTiers, filledSponsorTiers };
+if (typeof module !== "undefined") module.exports = { telaoSponsorTiers, publicSponsorTiers, filledSponsorTiers };

@@ -82,6 +82,7 @@ const MURAL_SCENES = [
   { id: "fundos-1", label: "Fundos de tela (QR)", type: "wallpapers", seconds: 16, transition: "zoom", enabled: WALLPAPERS_CONFIG.public, params: { kicker: "Fundos de tela", heading: "O Gumbleton agora mora no seu celular", hint: "Escaneie e escolha o seu fundo", path: "fundos.html?origem=telao" } },
   { id: "arte-gumbleton", label: "Arte do Gumbleton", type: "art", seconds: 8, transition: "zoom", params: { art: "gumbleton" } },
   { id: "video-fiap", label: "Vídeo FIAP (patrocinadora)", type: "video", transition: "zoom", params: { playlist: "fiap" } },
+  { id: "video-bosch", label: "Vídeo Bosch (patrocinadora)", type: "video", transition: "zoom", params: { playlist: "bosch" } },
   { id: "video-2025-2", label: "Vídeo DevFest 2025 (2ª vez)", type: "video", transition: "zoom", params: { playlist: "devfest-2025" } },
   { id: "album-bosch", label: "Fotos Bosch 2026", type: "album", seconds: 14, requires: { live: "albums" }, params: { album: "gdg-talks-bosch-2026", model: "auto" } },
   { id: "fundos-2", label: "Fundos de tela (QR, 2ª vez)", type: "wallpapers", seconds: 16, transition: "zoom", enabled: WALLPAPERS_CONFIG.public, params: { kicker: "Fundos de tela", heading: "O Gumbleton agora mora no seu celular", hint: "Escaneie e escolha o seu fundo", path: "fundos.html?origem=telao" } },

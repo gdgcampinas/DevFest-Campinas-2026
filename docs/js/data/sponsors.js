@@ -16,8 +16,8 @@ const SPONSORS = [
   ] },
   // cotas ainda sem marca confirmada (ficam prontas; vazias, não aparecem em lugar nenhum):
   { id: "senior", tier: "Sênior", elements: [
-    // REAL, patrocinadora OFICIAL (cota Sênior, fechada em 2026-11-05). SEM `public`: aparece só em DEV até o Renato liberar (aí `public: true`). Logo clássico (símbolo + nome) recortado do arquivo do Renato, na caixa branca padrão; não recolorir nem alterar.
-    { name: "Bosch", link: "https://www.bosch.com.br", imageUrl: "assets/brand/bosch.webp", description: "Fornecedora global de tecnologia e serviços." },
+    // REAL, patrocinadora OFICIAL (cota Sênior, fechada em 2026-11-05). SEM `public`: aparece só em DEV até o Renato liberar (aí `public: true`). `telao: true` = já aparece no TELÃO de produção (decisão do Renato, 2026-11-06), mesmo sem `public`. Logo atual (kit da marca, versão preta recolorida para o vermelho Bosch #ED0007 a pedido do Renato), na caixa branca padrão.
+    { telao: true, name: "Bosch", link: "https://www.bosch.com.br", imageUrl: "assets/brand/bosch-vermelho.webp", description: "Fornecedora global de tecnologia e serviços." },
   ] },
   { id: "pleno", tier: "Pleno", elements: [
     // REAL e LIBERADA em produção (`public: true`). Logo vetorial do arquivo oficial da FIAP, versão rosa na caixa branca.

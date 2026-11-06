@@ -122,3 +122,12 @@ test("comunidades parceiras (mock) somem em produção, sem aviso, e só aparece
   assert.equal(grid.querySelectorAll(".sponsor-item").length, 1);
   assert.equal(grid.querySelector(".sponsor-name"), null, "só o logo (o nome fica no alt)");
 });
+
+test("telão: marcas liberadas mais as marcadas `telao` (Bosch aparece no telão, mas não no site público)", () => {
+  const real = site.get("sponsorsRepository").getAll();
+  const telao = site.get("telaoSponsorTiers")(real).flatMap(tier => tier.elements.map(e => e.name));
+  const publico = site.get("publicSponsorTiers")(real).flatMap(tier => tier.elements.map(e => e.name));
+  assert.ok(telao.includes("Bosch"));
+  assert.ok(!publico.includes("Bosch"));
+  assert.ok(!telao.includes("Red Bridge Card Store"));
+});
