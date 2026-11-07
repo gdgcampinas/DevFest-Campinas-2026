@@ -21,7 +21,11 @@ html.kiosk,html.kiosk *{cursor:none !important}
     radial-gradient(ellipse at 92% 100%,oklch(24% .07 150 / .4),transparent 50%),
     var(--bg);
 }
-.mural-stage::before{content:"";position:absolute;inset:0;background:url("../assets/img/bg-circuit.webp") center/cover;opacity:.1;pointer-events:none}
+/* fundo do telão: formas do Google (círculos azuis, quadrado verde, triângulo amarelo/vermelho) em contorno fino nos CANTOS, sobre o preto-azulado com luz azul e verde; o miolo fica limpo pra leitura. Tamanho em --u (acompanha o telão). Escolhido pelo Renato em 2026-11-07 (a imagem de circuito antiga cortava errado em 16:9). */
+.mural-stage::before{content:"";position:absolute;inset:0;pointer-events:none;background:
+  url("../assets/img/telao-bg-tr.svg") right top / calc(var(--u) * 40) calc(var(--u) * 40) no-repeat,
+  url("../assets/img/telao-bg-bl.svg") left bottom / calc(var(--u) * 40) calc(var(--u) * 40) no-repeat,
+  url("../assets/img/telao-bg-br.svg") right bottom / calc(var(--u) * 40) calc(var(--u) * 40) no-repeat}
 .mural-stage[data-framed="true"]{outline:2px dashed oklch(70% .02 260 / .45);outline-offset:6px}
 
 .mural-content{position:absolute;left:var(--m);right:var(--m);top:var(--m);bottom:calc(var(--m) + var(--footer-h))}
