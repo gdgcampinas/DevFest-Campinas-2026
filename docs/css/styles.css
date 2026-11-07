@@ -691,7 +691,7 @@ a.featured-speaker:focus-visible{outline:2px solid var(--text);outline-offset:4p
 .menu-dots span.active{background:var(--amber)}
 
 .venue-addr{margin:0 0 14px;font:500 13.5px var(--font-body);color:var(--muted);line-height:1.55}
-.venue-actions{display:flex;flex-wrap:wrap;gap:8px}
+.venue-actions{display:flex;flex-wrap:wrap;gap:10px}
 .venue-actions .go{
   font:700 12px var(--font-body);color:oklch(15% 0.02 260);
   border-radius:100px;padding:7px 14px;text-decoration:none;

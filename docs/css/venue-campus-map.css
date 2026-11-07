@@ -2,7 +2,9 @@
 .venue-page{max-width:980px;margin:22px auto 0;padding:0 24px}
 .venue-page .venue-addr{margin:0 0 14px;font:600 15px/1.5 var(--font-body);color:oklch(90% 0.01 260)}
 .venue-page #venueInfo{padding:18px 20px;border-radius:18px;border:1px solid var(--card-border);background:oklch(17% 0.02 260 / .85);text-align:center}
-.venue-access{display:inline-flex;align-items:center;gap:8px;margin:0 0 14px;padding:8px 14px;border-radius:999px;background:color-mix(in oklch,var(--google-green) 16%,transparent);border:1px solid color-mix(in oklch,var(--google-green) 55%,transparent);color:oklch(95% 0.01 260);font:700 14px var(--font-body)}
+p.venue-access,.faq-item p.venue-access{display:inline-flex;align-items:center;gap:8px;margin:0 0 22px;padding:8px 14px;border-radius:999px;background:color-mix(in oklch,var(--google-green) 16%,transparent);border:1px solid color-mix(in oklch,var(--google-green) 55%,transparent);color:oklch(95% 0.01 260);font:700 14px var(--font-body)}
+/* o selo "Prédio · Entrada" tem respiro em cima (endereço) e embaixo (botões Como chegar / Mapa) */
+.venue-addr + p.venue-access,.faq-item .venue-addr + p.venue-access{margin-top:18px}
 .venue-access .icon{width:18px;height:18px;flex:none;fill:none;stroke:var(--google-green);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .venue-page .venue-actions{justify-content:center}
 .campus-map{max-width:980px;margin:18px auto 44px;padding:0 24px}
