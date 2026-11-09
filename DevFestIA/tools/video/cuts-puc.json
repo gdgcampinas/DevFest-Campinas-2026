@@ -1,0 +1,12 @@
+{
+  "source": "Institucional | PUC-Campinas (canal oficial da PUC-Campinas no YouTube, 3 min 50 s, 1920 x 1080)",
+  "prefix": "puc",
+  "defaults": { "width": 1920, "crf": 25, "audio": false },
+  "cuts": [
+    { "id": "resumo", "label": "PUC-Campinas", "segments": [[10, 14], [20, 24], [90, 95], [130, 134], [170, 174], [210, 219]] },
+    { "id": "campus", "label": "PUC-Campinas: o campus e a vida de estudante", "segments": [[50, 54], [100, 104], [120, 124], [160, 164], [90, 94]] },
+    { "id": "fechamento", "label": "PUC-Campinas", "segments": [[170, 174], [180, 184], [210, 222]] },
+    { "id": "fundo", "label": "", "segments": [[20, 26], [60, 66]], "fade": 0.8 },
+    { "id": "completo", "label": "PUC-Campinas", "segments": [[0, 229.6]], "width": 1280, "crf": 27 }
+  ]
+}
