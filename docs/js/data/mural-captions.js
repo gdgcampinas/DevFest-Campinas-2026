@@ -12,6 +12,11 @@ const MURAL_CAPTIONS = {
   ] },
   "devfest-2025-chegada": { burned: true, cues: [] },
   "fiap-institucional": { burned: true, cues: [] }, // institucional da FIAP: sem fala, o texto já está na própria imagem
+  "puc-resumo": { burned: true, cues: [] }, // institucional da PUC: sem fala, o texto já está na imagem
+  "puc-campus": { burned: true, cues: [] },
+  "puc-fechamento": { burned: true, cues: [] },
+  "puc-completo": { burned: true, cues: [] },
+  "puc-fundo": { burned: true, cues: [] }, // fundo animado: nunca leva legenda
   "bosch-institucional": { burned: true, cues: [] }, // institucional da Bosch: o texto já está queimado na própria imagem
   "devfest-2025-palco": { cues: [
     { from: 0.0, to: 6.4, text: "Eu estou aqui hoje no DevFest Campinas para apresentar um pouco sobre essa plataforma" },

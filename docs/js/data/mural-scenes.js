@@ -16,6 +16,8 @@
  * "Arte" (`type: "art"`): peça pronta de design em tela cheia, `params.art` = id em data/mural-arts.js (que decide como ela se adapta a qualquer proporção de telão).
  * "Vídeo" (`type: "video"`): o próximo clipe pronto de `params.playlist` (data/mural-videos.js); tempo de tela = a duração do clipe. Toca mudo e COM SOM só nos momentos/fases da playlist (almoço, encerramento, antes e depois);
  * as cenas `*-intervalo` entram só no almoço e no encerramento pra dar mais tempo de vídeo quando ninguém está em palestra. Sem o intermediário ligado ou sem clipe baixado a cena some.
+ * Fundo animado (`params.backdrop: { playlist }`, em qualquer cena que o aceite pelo `withBackdrop`, components/mural-scenes/mural-backdrop.js): um clipe da lista toca mudo, em laço e escurecido atrás do conteúdo; sem clipe pronto a cena aparece normal. `apoio-video` usa isso na cena do logo da PUC.
+ * Liberação dos vídeos da PUC: `PUC_VIDEO_CONFIG.public` (data/puc-videos.js) liga/desliga as cenas `video-puc-*` e `apoio-video` (e põe a `apoio` simples no lugar delas quando desligada).
  * "Linha do dia" (`type: "day-timeline"`): a grade inteira como uma faixa de blocos com o que já passou, o que está no ar e o que vem aí (usa a grade, então só com o line-up revelado).
  * "Daqui a pouco" (`type: "teaser"`): a atração grande (data/mural-teasers.js: Coding Jam, encerramento...) que começa dentro da janela de aviso dela, com contagem; fora da janela a cena some.
  * "Recados" (`type: "wall"`): os recados que a plateia mandou pelo QR (recado.html) e o moderador aprovou (admin > Recados), como notinhas coloridas; uma cena por pergunta (`params.prompt`, data/wall-config.js), uma página de 6 recados por passada,
@@ -74,7 +76,8 @@ const MURAL_SCENES = [
   { id: "album-2025", label: "Fotos DevFest 2025", type: "album", seconds: 14, requires: { live: "albums" }, params: { album: "devfest-2025", model: "auto" } },
   { id: "patrocinio-demais", label: "Demais patrocinadores", type: "sponsors", seconds: 14, params: { tiers: ["Especialista", "Sênior", "Pleno"], title: "Quem faz o DevFest Campinas acontecer" } },
   { id: "patrocinio-apoio", label: "Patrocinadores de apoio", type: "sponsors", seconds: 12, params: { tiers: ["Júnior", "Intern", "Cota Permuta"], title: "Quem faz o DevFest Campinas acontecer", layout: "compact" } },
-  { id: "apoio", label: "Apoio institucional", type: "sponsors", seconds: 10, params: { tiers: ["Apoio"], kicker: "Nossa casa", title: "Quem faz o DevFest Campinas acontecer", layout: "apoio" } },
+  { id: "apoio", label: "Apoio institucional", type: "sponsors", seconds: 10, enabled: !PUC_VIDEO_CONFIG.public, params: { tiers: ["Apoio"], kicker: "Nossa casa", title: "Quem faz o DevFest Campinas acontecer", layout: "apoio" } },
+  { id: "apoio-video", label: "Apoio institucional com fundo animado (PUC)", type: "sponsors", seconds: 12, enabled: PUC_VIDEO_CONFIG.public, params: { tiers: ["Apoio"], kicker: "Nossa casa", title: "Quem faz o DevFest Campinas acontecer", layout: "apoio", backdrop: { playlist: "puc-fundo" } } },
   { id: "parceiros", label: "Parceiros", type: "sponsors", seconds: 10, params: { tiers: ["Parceiros"], kicker: "Quem caminha com a gente", title: "Quem faz o DevFest Campinas acontecer", layout: "compact" } },
   { id: "comunidades", label: "Comunidades parceiras", type: "sponsors", seconds: 10, params: { tiers: ["Comunidades parceiras"], kicker: "Quem caminha com a gente", title: "Comunidades parceiras que fazem o DevFest Campinas acontecer", layout: "compact" } },
   { id: "agradecimento-patrocinio", label: "Agradecimento aos patrocinadores", type: "sponsors", seconds: 20, transition: "zoom", requires: { moments: ["lunch", "closing"] }, params: { kicker: "Muito obrigado", title: "A quem faz o DevFest acontecer", layout: "thanks" } },
@@ -83,12 +86,16 @@ const MURAL_SCENES = [
   { id: "arte-gumbleton", label: "Arte do Gumbleton", type: "art", seconds: 8, transition: "zoom", params: { art: "gumbleton" } },
   { id: "video-fiap", label: "Vídeo FIAP (patrocinadora)", type: "video", transition: "zoom", params: { playlist: "fiap" } },
   { id: "video-bosch", label: "Vídeo Bosch (patrocinadora)", type: "video", transition: "zoom", params: { playlist: "bosch" } },
+  { id: "video-puc-resumo", label: "Vídeo PUC-Campinas (30 s)", type: "video", transition: "zoom", enabled: PUC_VIDEO_CONFIG.public, params: { playlist: "puc-resumo" } },
+  { id: "video-puc-campus", label: "Vídeo PUC-Campinas: o campus e a vida de estudante (20 s)", type: "video", transition: "zoom", enabled: PUC_VIDEO_CONFIG.public, params: { playlist: "puc-campus" } },
   { id: "video-2025-2", label: "Vídeo DevFest 2025 (2ª vez)", type: "video", transition: "zoom", params: { playlist: "devfest-2025" } },
   { id: "album-bosch", label: "Fotos Bosch 2026", type: "album", seconds: 14, requires: { live: "albums" }, params: { album: "gdg-talks-bosch-2026", model: "auto" } },
   { id: "fundos-2", label: "Fundos de tela (QR, 2ª vez)", type: "wallpapers", seconds: 16, transition: "zoom", enabled: WALLPAPERS_CONFIG.public, params: { kicker: "Fundos de tela", heading: "O Gumbleton agora mora no seu celular", hint: "Escaneie e escolha o seu fundo", path: "fundos.html?origem=telao" } },
   { id: "fenix", label: "Fênix", type: "phoenix", seconds: 10, transition: "zoom", params: {} },
   { id: "podio-jam", label: "Pódio do Coding Jam", type: "podium", seconds: 20, requires: { reveal: true, live: "podium" }, params: {} },
   { id: "video-2025-intervalo", label: "Vídeo DevFest 2025 (intervalo)", type: "video", transition: "zoom", requires: { moments: ["lunch", "closing"] }, params: { playlist: "devfest-2025" } },
+  { id: "video-puc-fechamento", label: "Vídeo PUC-Campinas: fechamento (20 s, almoço e encerramento)", type: "video", transition: "zoom", enabled: PUC_VIDEO_CONFIG.public, requires: { moments: ["lunch", "closing"] }, params: { playlist: "puc-fechamento" } },
+  { id: "video-puc-completo", label: "Vídeo PUC-Campinas completo (3 min 50 s, almoço e encerramento)", type: "video", transition: "zoom", enabled: PUC_VIDEO_CONFIG.public, requires: { moments: ["lunch", "closing"] }, params: { playlist: "puc-completo" } },
   { id: "video-2025-intervalo-2", label: "Vídeo DevFest 2025 (intervalo, 2ª vez)", type: "video", transition: "zoom", requires: { moments: ["lunch", "closing"] }, params: { playlist: "devfest-2025" } },
   { id: "contagem", label: "Contagem regressiva", type: "event-phase", seconds: 12, requires: { phases: ["before"] }, params: { kind: "countdown" } },
   { id: "qr-comunidade", label: "QR: continue fazendo parte (almoço e encerramento)", type: "qr", seconds: 16, transition: "slide", requires: { moments: ["lunch", "closing"] }, params: { kicker: "Continue fazendo parte", heading: "A comunidade é de todo mundo", hint: "Escaneie e conheça o GDG Campinas: próximos eventos, grupos e mais.", link: "linktree" } },

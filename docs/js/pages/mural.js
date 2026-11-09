@@ -74,7 +74,10 @@ function initMural() {
 
   // ---------- vídeos: baixados antes (um de cada vez) e guardados no navegador; sem intermediário não há o que baixar ----------
   const videoCache = createVideoCache({ cacheStorage: window.caches ?? null, fetchFn: url => fetch(url), urlApi: URL, cacheName: config.video.cacheName, nowMs, retryMs: config.video.retryMs });
-  if (mediaBase) videoCache.warm(muralVideosRepository.files().map(file => `${mediaBase}${file}`));
+  const scenes = filterScenesByIds(muralScenesRepository.getAll(), (params.get("cenas") ?? "").split(",").filter(Boolean));
+  const playlistsInUse = scenes.filter(scene => scene.enabled !== false).flatMap(scene => [scene.params?.playlist, scene.params?.backdrop?.playlist]).filter(Boolean); // cena desligada (vídeo ainda não liberado) não baixa nada
+  if (mediaBase) videoCache.warm(muralVideosRepository.filesFor(playlistsInUse).map(file => `${mediaBase}${file}`));
+  const clipPicker = createClipPicker({ videos: muralVideosRepository, cache: videoCache, baseUrl: mediaBase }); // um só: a cena de vídeo e os fundos animados dividem a vez de cada lista
 
   // ---------- cenas ----------
   const preload = url => preloadImage(url, { timeoutMs: config.imageTimeoutMs, schedule });
@@ -99,10 +102,10 @@ function initMural() {
     spotlight: createSpotlightScene({ ...grid, preloadPhoto: url => preloadImage(url, { timeoutMs: config.speakerPhotoTimeoutMs, schedule }), hostOf: id => talkHighlightsRepository.getById(id)?.host ?? null }),
     art: createArtScene({ repository: muralArtsRepository, preload }),
     selfie: createSelfieScene({ preload, arts: muralArtsRepository, mascotUrl: brandRepository.getAll().mascot, logoSrc, title, subtitle: eventDateLabel(SCHEDULE, EVENT.timezone) }),
-    sponsors: createSponsorsScene({ repository: sponsorsRepository, preload, publicTiers: telaoSponsorTiers }),
+    sponsors: withBackdrop(createSponsorsScene({ repository: sponsorsRepository, preload, publicTiers: telaoSponsorTiers }), { picker: clipPicker }),
     notice: createNoticeScene({ nowMs }),
     emergency: createEmergencyScene(),
-    video: createVideoScene({ videos: muralVideosRepository, cache: videoCache, baseUrl: mediaBase, slackSeconds: config.video.slackSeconds, captions: muralCaptionsRepository }),
+    video: createVideoScene({ picker: clipPicker, slackSeconds: config.video.slackSeconds, captions: muralCaptionsRepository }),
     wallpapers: createWallpapersScene({ repository: wallpapersRepository, preload, targets: qrTargets, qr: qrRenderer, lock: { time: wallpaperTextsRepository.getAll().lockTime, date: wallpaperTextsRepository.getAll().lockDate } }),
     venue: createVenueScene({ photos: venuePhotosRepository, place: venueRepository.getAll, preload }),
     qr: createQrScene({ targets: qrTargets, qr: qrRenderer }),
@@ -122,7 +125,7 @@ function initMural() {
   // ---------- motor ----------
   const mural = createMural({
     contentEl, registry, config, schedule, nowMs, ledger,
-    scenes: filterScenesByIds(muralScenesRepository.getAll(), (params.get("cenas") ?? "").split(",").filter(Boolean)),
+    scenes,
     reserveScene: muralScenesRepository.reserve(),
     emergencyScene: muralScenesRepository.emergency(),
     emergencyMarkup: `<section class="ms ms-reserve"><h2 class="ms-title">${escapeHtml(title)}</h2></section>`,

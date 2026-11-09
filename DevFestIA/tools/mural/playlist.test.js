@@ -86,3 +86,18 @@ test("?cenas= filtra e ordena; ids desconhecidos são ignorados; nenhum válido 
   assert.equal(filterScenesByIds(ids, ["zzz"]), ids);
   assert.equal(filterScenesByIds(ids, []), ids);
 });
+
+test("`?cenas=` mostra a cena mesmo DESLIGADA (ensaio do que ainda não foi liberado), mas janela de datas, momento, fase e dado ao vivo continuam valendo", () => {
+  const scenes = [
+    { id: "off", enabled: false, params: {} },
+    { id: "janela", from: "2030-01-01T00:00:00Z", params: {} },
+    { id: "almoco", requires: { moments: ["lunch"] }, params: {} },
+    { id: "normal", params: {} },
+  ];
+  const ctx = { now: new Date("2026-11-28T12:00:00Z"), reveal: true, phase: "live", moment: null, live: {} };
+  const forced = filterScenesByIds(scenes, ["off", "janela", "almoco"]);
+  assert.deepEqual(forced.map(scene => sceneAvailable(scene, ctx)), [true, false, false]);
+  assert.equal(sceneAvailable(forced[2], { ...ctx, moment: "lunch" }), true);
+  assert.equal(sceneAvailable(scenes[0], ctx), false, "sem o pedido, a desligada continua desligada");
+  assert.equal(filterScenesByIds(scenes, []).length, 4, "sem `?cenas=` nada muda");
+});

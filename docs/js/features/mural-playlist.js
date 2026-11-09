@@ -5,7 +5,7 @@
  *   pickNextScene       interrupção de maior prioridade primeiro; senão a próxima da fila que esteja disponível e fora do castigo
  *   pruneInterrupts     descarta as vencidas e a que acabou de ser usada
  *   withCooldown        põe uma cena de castigo depois de falhar (volta sozinha quando o tempo passa)
- *   filterScenesByIds   `?cenas=a,b` mostra só essas, na ordem pedida
+ *   filterScenesByIds   `?cenas=a,b` mostra só essas, na ordem pedida (mesmo desligadas: é como se ensaia o que ainda não foi liberado; momento, fase e dado ao vivo continuam valendo)
  * `ctx` = { now: Date do evento (pode ser simulado), reveal, phase, moment (o `moment` do bloco da grade que está no ar, ou null), live: { [fonte]: valor } }; `nowMs` = relógio real (castigos e vencimentos).
  */
 function sceneAvailable(scene, ctx) {
@@ -46,9 +46,15 @@ function withCooldown(cooldowns, sceneId, nowMs, ms) {
 }
 
 /** Só as cenas pedidas, na ordem pedida; ids desconhecidos são ignorados e, se nenhum valer, a lista inteira continua (link errado não deixa o telão vazio). */
+/** Pedir a cena pelo nome vale mesmo com ela DESLIGADA (`enabled: false`, a chave de liberação de cada recurso): é o jeito de ensaiar antes de liberar. As demais regras (janela de datas, momento, fase, dado ao vivo) continuam: são do que a cena mostra. */
+function forcedScene(scene) {
+  const { enabled, ...rest } = scene;
+  return rest;
+}
+
 function filterScenesByIds(scenes, ids) {
   if (!ids?.length) return scenes;
-  const picked = ids.map(id => scenes.find(scene => scene.id === id)).filter(Boolean);
+  const picked = ids.map(id => scenes.find(scene => scene.id === id)).filter(Boolean).map(forcedScene);
   return picked.length ? picked : scenes;
 }
 

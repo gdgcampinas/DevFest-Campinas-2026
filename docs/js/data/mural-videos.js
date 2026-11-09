@@ -23,6 +23,12 @@ const MURAL_VIDEO_CLIPS = [
   { id: "fiap-institucional", file: "fiap-institucional.mp4", label: "FIAP", seconds: 15.0, fit: VIDEO_FIT },
   // Institucional da patrocinadora BOSCH (1920 x 1080, 30 s, SEM áudio: reencodado do original, que tinha som; o telão toca mudo). Playlist própria, cena `video-bosch`. Anexo na release `mural-video-2025` (2026-11-06).
   { id: "bosch-institucional", file: "bosch-institucional.mp4", label: "Bosch", seconds: 30.0, fit: VIDEO_FIT },
+  // Institucional da PUC-Campinas (1920 x 1080, sem áudio, cortes de cuts-puc.json), todos na release `mural-video-2025` (2026-11-09). Cada corte é uma lista própria porque cada cena toca o seu (data/mural-scenes.js).
+  { id: "puc-resumo", file: "puc-resumo.mp4", label: "PUC-Campinas", seconds: 30.03, fit: VIDEO_FIT },
+  { id: "puc-campus", file: "puc-campus.mp4", label: "PUC-Campinas: o campus e a vida de estudante", seconds: 20.03, fit: VIDEO_FIT },
+  { id: "puc-fechamento", file: "puc-fechamento.mp4", label: "PUC-Campinas", seconds: 20.03, fit: VIDEO_FIT },
+  { id: "puc-completo", file: "puc-completo.mp4", label: "PUC-Campinas", seconds: 229.57, fit: VIDEO_FIT }, // 1280 x 720, o vídeo inteiro (almoço e encerramento)
+  { id: "puc-fundo", file: "puc-fundo.mp4", label: "", seconds: 12, fit: "cover" }, // fundo animado em laço (mural-backdrop.js), sem etiqueta
 ];
 
 const MURAL_VIDEO_PLAYLISTS = {
@@ -32,6 +38,11 @@ const MURAL_VIDEO_PLAYLISTS = {
   },
   fiap: { clips: ["fiap-institucional"] },
   bosch: { clips: ["bosch-institucional"] },
+  "puc-resumo": { clips: ["puc-resumo"] },
+  "puc-campus": { clips: ["puc-campus"] },
+  "puc-fechamento": { clips: ["puc-fechamento"] },
+  "puc-completo": { clips: ["puc-completo"] },
+  "puc-fundo": { clips: ["puc-fundo"] },
 };
 
 const muralVideosRepository = createRepository({ clips: MURAL_VIDEO_CLIPS, playlists: MURAL_VIDEO_PLAYLISTS }, {
@@ -42,4 +53,6 @@ const muralVideosRepository = createRepository({ clips: MURAL_VIDEO_CLIPS, playl
   },
   /** Os arquivos de todos os clipes (o mural baixa antes de precisar). */
   files: () => MURAL_VIDEO_CLIPS.map(clip => clip.file),
+  /** Só os arquivos das listas pedidas (o mural baixa só o que as cenas LIGADAS vão tocar: os vídeos ainda não liberados não gastam a rede do telão). */
+  filesFor: names => [...new Set(names.flatMap(name => (MURAL_VIDEO_PLAYLISTS[name]?.clips ?? []).map(id => MURAL_VIDEO_CLIPS.find(clip => clip.id === id)?.file)))].filter(Boolean),
 });

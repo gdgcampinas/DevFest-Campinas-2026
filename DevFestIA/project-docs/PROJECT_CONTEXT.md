@@ -1284,6 +1284,8 @@ que já devia estar limpa). `dev-loader.js` também busca a página real com
 - **Armadilha:** o GitHub pode não disparar Validar/Pages; conferir o site NO AR e, se preciso, `gh api -X POST repos/gdgcampinas/DevFest-Campinas-2026/pages/builds`.
 - Pendências e ideias: bloco "Pendente com o Renato (2026-10-23)" no `handoff/HANDOFF_CURRENT.md`.
 
+- **Vídeos do telão: peças compartilhadas (2026-11-09):** `components/mural-scenes/mural-clip-picker.js` (próximo clipe pronto de uma lista; usado pela cena `video` e pelos fundos), `mural-video-player.js` (`muralPlayVideo`: tocar, retentar quando o navegador pausa, cair para mudo se o som for bloqueado; `muralReleaseVideo`) e `mural-backdrop.js` (`withBackdrop(scene, { picker })`: `params.backdrop = { playlist }` põe um clipe mudo em laço e escurecido atrás de qualquer cena; sem clipe pronto a cena aparece normal). `mural.js` cria UM picker e injeta nos dois. Liberação por chave de dado (`PUC_VIDEO_CONFIG.public` em `data/puc-videos.js`, ligada às cenas por `enabled:`); `?cenas=` ignora só o `enabled` (`forcedScene` em `features/mural-playlist.js`); o telão baixa só os arquivos das listas de cenas ligadas (`muralVideosRepository.filesFor`). Codificação: `DevFestIA/tools/video/encode_clips.py` guiado por `cuts-*.json` (`defaults`, `segments`, `audio`). Testes: `tools/mural/puc-videos.test.js`, `tools/mural/playlist.test.js`, `tools/dom/mural-scenes.dom.test.js`.
+
 ## Documentation upkeep (standing directive)
 
 Documentation must stay in sync with the real state of the repo, not

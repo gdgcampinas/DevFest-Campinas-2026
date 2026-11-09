@@ -8,7 +8,7 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 const { createFakeClock } = require("../lib/fake-clock.js");
 
-const SCENES = ["mural-scene-kit", "mural-now-next-scene", "mural-sponsors-scene", "mural-qr-scene", "mural-registered-scene", "mural-tips-scene", "mural-phoenix-scene", "mural-podium-scene", "mural-event-phase-scene", "mural-reserve-scene", "mural-spotlight-scene", "mural-selfie-scene", "mural-art-scene", "mural-album-scene", "mural-notice-scene", "mural-video-scene", "mural-team-scene", "mural-message-scene", "mural-day-timeline-scene", "mural-teaser-scene", "mural-wall-scene"].map(name => `components/mural-scenes/${name}.js`);
+const SCENES = ["mural-scene-kit", "mural-clip-picker", "mural-video-player", "mural-backdrop", "mural-now-next-scene", "mural-sponsors-scene", "mural-qr-scene", "mural-registered-scene", "mural-tips-scene", "mural-phoenix-scene", "mural-podium-scene", "mural-event-phase-scene", "mural-reserve-scene", "mural-spotlight-scene", "mural-selfie-scene", "mural-art-scene", "mural-album-scene", "mural-notice-scene", "mural-video-scene", "mural-team-scene", "mural-message-scene", "mural-day-timeline-scene", "mural-teaser-scene", "mural-wall-scene"].map(name => `components/mural-scenes/${name}.js`);
 const site = loadSite({
   scripts: [...SITE_BASE, "features/scheduler.js", "features/agenda.js", "features/mural-now-next.js", "features/mural-photo-pool.js", "features/mural.js", "features/mural-playlist.js", "components/talk-highlight.js", "data/mural-tips.js", "data/mural-arts.js", "data/mural-albums.js", "data/mural-album-models.js", "features/album-photo-url.js", "features/album-models.js", "features/video-sound.js", "components/mural-scenes/album-models/album-model-collage.js", "components/mural-scenes/album-models/album-model-portrait-strip.js", "components/mural-scenes/album-models/album-model-polaroid.js", "components/mural-scenes/album-models/album-model-feature.js", "components/mural-scenes/album-models/album-model-mosaic.js", ...SCENES, "features/live-status.js", "features/count-up.js", "features/mural-rotation.js", "features/mural-captions.js", "features/mural-messages.js", "features/mural-day-timeline.js", "features/mural-teasers.js", "data/mural-messages.js", "components/avatar.js"],
 });
@@ -950,4 +950,63 @@ test("patrocinadores no telão de PRODUÇÃO (sem revelação): só as marcas `p
   assert.equal(await scene.prepare({ tiers: ["Apoio"] }, { reveal: false }), MURAL_SKIP, "cota só com mock some em produção");
   const all = await scene.prepare({}, { reveal: true });
   assert.equal(all.length, 3, "com revelação (ou DEV) aparece tudo");
+});
+
+// ---------- seletor de clipes e fundo animado (compartilhados pela cena de vídeo) ----------
+function pickerFor({ ready = new Set(["a.mp4", "b.mp4"]), baseUrl = "https://media.test/", clips = [clip("a"), clip("b")], sound = null } = {}) {
+  const cache = { request: url => (ready.has(url.split("/").pop()) ? `blob:${url.split("/").pop()}` : null) };
+  const videos = { playlist: name => (name === "lista" ? { sound, clips } : null) };
+  return g("createClipPicker")({ videos, cache, baseUrl });
+}
+
+test("seletor de clipes: sem endereço ou sem lista é SKIP, clipes ainda baixando é WAIT, e cada pedido devolve o próximo da lista dando a volta", () => {
+  assert.equal(pickerFor({ baseUrl: "" }).next("lista"), MURAL_SKIP);
+  assert.equal(pickerFor().next("nao-existe"), MURAL_SKIP);
+  assert.equal(pickerFor({ ready: new Set() }).next("lista"), MURAL_WAIT);
+  const picker = pickerFor();
+  assert.deepEqual([...[1, 2, 3].map(() => picker.next("lista").clip.id)], ["a", "b", "a"]);
+  assert.deepEqual(pickerFor({ sound: { moments: ["lunch"] } }).next("lista").soundRule, { moments: ["lunch"] });
+});
+
+function backdropScene({ inner = { prepare: () => ["dado"], render: data => ({ markup: `<section class="ms">${data.join()}</section>` }) }, picker = pickerFor() } = {}) {
+  return g("withBackdrop")(inner, { picker });
+}
+const withFundo = { backdrop: { playlist: "lista" } };
+
+test("fundo animado: sem `backdrop` no dado a cena é a de sempre; com ele, o clipe toca mudo, em laço e atrás do conteúdo", () => {
+  const scene = backdropScene();
+  assert.equal(scene.prepare({}, ctx()).length, 1, "sem pedido de fundo: o preparo da cena passa direto");
+  assert.equal(html(scene.render(scene.prepare({}, ctx()), {}).markup).querySelector(".ms-backdrop"), null);
+  const view = html(scene.render(scene.prepare(withFundo, ctx()), withFundo).markup);
+  const video = view.querySelector(".ms-backdrop .ms-backdrop-el");
+  assert.ok(video.hasAttribute("muted") && video.hasAttribute("loop"));
+  assert.equal(video.getAttribute("src"), "blob:a.mp4");
+  assert.match(video.getAttribute("style"), /--fit:cover;--fit-tall:contain/);
+  assert.match(textOf(view), /dado/, "o conteúdo da cena continua lá");
+  assert.ok(view.firstElementChild.classList.contains("ms-backdrop"), "o fundo vem ANTES do conteúdo");
+});
+
+test("fundo animado: clipe que ainda não baixou não segura a cena (aparece normal, sem fundo); SKIP e WAIT da cena de dentro passam direto; vale também pra cena assíncrona", async () => {
+  const waiting = backdropScene({ picker: pickerFor({ ready: new Set() }) });
+  assert.equal(html(waiting.render(waiting.prepare(withFundo, ctx()), withFundo).markup).querySelector(".ms-backdrop"), null);
+  assert.equal(backdropScene({ inner: { prepare: () => MURAL_SKIP, render: () => ({ markup: "" }) } }).prepare(withFundo, ctx()), MURAL_SKIP);
+  assert.equal(backdropScene({ inner: { prepare: () => MURAL_WAIT, render: () => ({ markup: "" }) } }).prepare(withFundo, ctx()), MURAL_WAIT);
+  const slow = backdropScene({ inner: { prepare: async () => ["tarde"], render: data => ({ markup: `<p>${data[0]}</p>` }) } });
+  assert.match(html(slow.render(await slow.prepare(withFundo, ctx()), withFundo).markup).textContent, /tarde/);
+});
+
+test("fundo animado (montagem): toca ao entrar, monta também a cena de dentro e, ao sair, desmonta as duas e solta o vídeo", () => {
+  const calls = [];
+  const scene = backdropScene({ inner: { prepare: () => ["x"], render: () => ({ markup: "<section class=\"ms\">x</section>", mount: () => () => calls.push("saiu a cena") }) } });
+  const view = scene.render(scene.prepare(withFundo, ctx()), withFundo);
+  const el = html(view.markup);
+  const video = el.querySelector("video");
+  video.play = () => { calls.push("play"); return Promise.resolve(); };
+  video.pause = () => calls.push("pause");
+  video.load = () => calls.push("load");
+  const dispose = view.mount(el, {});
+  assert.deepEqual(calls, ["play"]);
+  dispose();
+  assert.deepEqual(calls, ["play", "saiu a cena", "pause", "load"]);
+  assert.equal(video.getAttribute("src"), null);
 });
