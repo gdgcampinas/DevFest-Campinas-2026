@@ -53,3 +53,8 @@ test("o telão só baixa os arquivos das listas das cenas ligadas: desligados, o
   assert.deepEqual([...muralVideosRepository.filesFor(["puc-resumo", "puc-resumo", "puc-fundo", "nao-existe"])], ["puc-resumo.mp4", "puc-fundo.mp4"], "sem repetir e ignorando lista que não existe");
   assert.deepEqual([...muralVideosRepository.filesFor([])], []);
 });
+
+test("os vídeos da PUC aparecem inteiros em qualquer proporção (a marca d'água dela fica no canto e o `cover` a cortava); só o fundo animado usa `cover`", () => {
+  const { MURAL_VIDEO_CLIPS } = loadAll(true);
+  for (const clip of MURAL_VIDEO_CLIPS.filter(item => item.id.startsWith("puc-"))) assert.equal(clip.fit, clip.id === "puc-fundo" ? "cover" : "contain", clip.id);
+});

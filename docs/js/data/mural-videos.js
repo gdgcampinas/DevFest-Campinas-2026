@@ -9,6 +9,9 @@
 /** Os clipes são 2048 x 1080 (quase 1,9:1): preenchem 16:9 e 4:3 (cortam pouco dos lados) e aparecem inteiros no telão ultra largo e no vertical. */
 const VIDEO_FIT = { default: "cover", ultrawide: "contain", tall: "contain" };
 
+/** Os vídeos da PUC levam a marca d'água dela no canto de cima e frases na base: aparecem INTEIROS (`contain`) em qualquer proporção, nunca cortados pelo `cover` (a barra preta dos lados some no fundo do palco). */
+const PUC_FIT = "contain";
+
 const MURAL_VIDEO_CLIPS = [
   { id: "devfest-2025-abertura", file: "devfest-2025-abertura.mp4", label: "DevFest 2025: abertura", seconds: 10.6, fit: VIDEO_FIT },
   { id: "devfest-2025-chegada", file: "devfest-2025-chegada.mp4", label: "DevFest 2025: chegada", seconds: 9.7, fit: VIDEO_FIT },
@@ -24,10 +27,10 @@ const MURAL_VIDEO_CLIPS = [
   // Institucional da patrocinadora BOSCH (1920 x 1080, 30 s, SEM áudio: reencodado do original, que tinha som; o telão toca mudo). Playlist própria, cena `video-bosch`. Anexo na release `mural-video-2025` (2026-11-06).
   { id: "bosch-institucional", file: "bosch-institucional.mp4", label: "Bosch", seconds: 30.0, fit: VIDEO_FIT },
   // Institucional da PUC-Campinas (1920 x 1080, sem áudio, cortes de cuts-puc.json), todos na release `mural-video-2025` (2026-11-09). Cada corte é uma lista própria porque cada cena toca o seu (data/mural-scenes.js).
-  { id: "puc-resumo", file: "puc-resumo.mp4", label: "PUC-Campinas", seconds: 30.03, fit: VIDEO_FIT },
-  { id: "puc-campus", file: "puc-campus.mp4", label: "PUC-Campinas: o campus e a vida de estudante", seconds: 20.03, fit: VIDEO_FIT },
-  { id: "puc-fechamento", file: "puc-fechamento.mp4", label: "PUC-Campinas", seconds: 20.03, fit: VIDEO_FIT },
-  { id: "puc-completo", file: "puc-completo.mp4", label: "PUC-Campinas", seconds: 229.57, fit: VIDEO_FIT }, // 1280 x 720, o vídeo inteiro (almoço e encerramento)
+  { id: "puc-resumo", file: "puc-resumo.mp4", label: "PUC-Campinas", seconds: 30.03, fit: PUC_FIT },
+  { id: "puc-campus", file: "puc-campus.mp4", label: "PUC-Campinas: o campus e a vida de estudante", seconds: 20.03, fit: PUC_FIT },
+  { id: "puc-fechamento", file: "puc-fechamento.mp4", label: "PUC-Campinas", seconds: 20.03, fit: PUC_FIT },
+  { id: "puc-completo", file: "puc-completo.mp4", label: "PUC-Campinas", seconds: 229.57, fit: PUC_FIT }, // 1280 x 720, o vídeo inteiro (almoço e encerramento)
   { id: "puc-fundo", file: "puc-fundo.mp4", label: "", seconds: 12, fit: "cover" }, // fundo animado em laço (mural-backdrop.js), sem etiqueta
 ];
 
