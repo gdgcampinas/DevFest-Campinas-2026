@@ -140,7 +140,7 @@ const LINEUP_SPEAKER_ROWS = [
   ["maycon-silva", "Maycon Silva", "Product Manager & Software Architect, Bosch", "", "", ""],
   ["michael-douglas-barbosa-araujo", "Michael Douglas Barbosa Araujo", "Itaú - Especialista de arquitetura de IA/GenIA", "", "", ""],
   ["vinicius-pivetta", "Vinicius Pivetta", "", "", "", ""],
-  ["bruno-eleodoro-roza", "Bruno Eleodoro Roza", "", "", "", ""],
+  ["bruno-eleodoro-roza", "Bruno Roza", "Forward Deployed Engineer - Pods", "", "", ""],
   ["robot-framework-a-confirmar", "Palestrantes a confirmar", "Faber-Castell (engenheiro de dados) e Itera (desenvolvedor de software)", "", "", ""],
   ["arthur-dos-santos-almeida-tatay", "Arthur dos Santos Almeida Tatay", "Desenvolvedor Sênior na Globo", "", "", ""],
   ["alexandra-regina-cavalleiros", "Alexandra Regina Cavalleiros", "Otimizale Soluções em T.I. Ltda", "", "", ""],
