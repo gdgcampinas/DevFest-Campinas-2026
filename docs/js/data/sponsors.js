@@ -51,8 +51,8 @@ const SPONSORS = [
     { public: true, name: "GDG Americana", link: "https://gdgamericana.com.br", imageUrl: "assets/brand/gdg-americana.webp", description: "Comunidade parceira de desenvolvedores do Google Developer Group de Americana." },
     // REAL e LIBERADA em produção (2026-11-03, `public: true`). Logo roxo enviado pelo Renato (fundo cinza-claro trocado por branco, pra casar com a caixa branca padrão). O link é o Linktree da comunidade (reúne LinkedIn e Instagram).
     { public: true, name: "WoHackers", link: "https://linktr.ee/wohackers", imageUrl: "assets/brand/wohackers.webp", description: "Comunidade que incentiva e apoia a participação de mulheres em hackathons." },
-    // REAL, comunidade parceira nova (2026-11-10, "em DEV"). SEM `public`: só em DEV até o Renato liberar. Liga Acadêmica de TI da PUC-Campinas. Logo roxo enviado pelo Renato (150 px de origem, recortado rente ao desenho e ampliado: se a Liga tiver o arquivo grande, trocar). Link: o Linktree dela, sem os parâmetros de rastreio do Instagram.
-    { name: "Liga de TI PUC", link: "https://linktr.ee/ligadetipuccampinas", imageUrl: "assets/brand/liga-de-ti-puc.webp", description: "Liga Acadêmica de TI da PUC-Campinas, a primeira instituição acadêmica da PUC dedicada a fomentar tecnologia, inovação e empreendedorismo." },
+    // REAL e LIBERADA em produção e no telão (2026-11-10, `public: true`, pedido do Renato). Liga Acadêmica de TI da PUC-Campinas. Logo roxo enviado pelo Renato (150 px de origem, recortado rente ao desenho e ampliado: se a Liga tiver o arquivo grande, trocar). Link: o Linktree dela, sem os parâmetros de rastreio do Instagram.
+    { public: true, name: "Liga de TI PUC", link: "https://linktr.ee/ligadetipuccampinas", imageUrl: "assets/brand/liga-de-ti-puc.webp", description: "Liga Acadêmica de TI da PUC-Campinas, a primeira instituição acadêmica da PUC dedicada a fomentar tecnologia, inovação e empreendedorismo." },
   ] },
 ];
 
