@@ -140,6 +140,7 @@ const LINEUP_SPEAKER_ROWS = [
   ["maycon-silva", "Maycon Silva", "Product Manager & Software Architect, Bosch", "", "", ""],
   ["michael-douglas-barbosa-araujo", "Michael Douglas Barbosa Araujo", "Itaú - Especialista de arquitetura de IA/GenIA", "", "", ""],
   ["vinicius-pivetta", "Vinicius Pivetta", "", "", "", ""],
+  ["bruno-eleodoro-roza", "Bruno Eleodoro Roza", "", "", "", ""],
   ["robot-framework-a-confirmar", "Palestrantes a confirmar", "Faber-Castell (engenheiro de dados) e Itera (desenvolvedor de software)", "", "", ""],
   ["arthur-dos-santos-almeida-tatay", "Arthur dos Santos Almeida Tatay", "Desenvolvedor Sênior na Globo", "", "", ""],
   ["alexandra-regina-cavalleiros", "Alexandra Regina Cavalleiros", "Otimizale Soluções em T.I. Ltda", "", "", ""],
@@ -171,7 +172,7 @@ const LINEUP_TALKS_BY_TRACK = {
     ["Creating AI agents for task execution in Google Earth Engine", "julia-cansado", "Meu nome é Júlia. Nasci em São Paulo e vivi a maior parte da vida na região metropolitana. Cursei arquitetura e urbanismo e me interessei por dados espaciais, principalmente sobre temas e análises urbanas. Nos últimos anos da graduação, comecei a estudar linguagens de programação como R e JavaScript (principalmente para usar o Earth Engine) e sensoriamento remoto. Desde então trabalho como desenvolvedora e analista. Além das áreas urbanas, já explorei outros temas, como detecção de mineração e mapeamento de recifes de coral rasos. Algo que me apaixona é a representação: sempre gostei de desenhar desde pequena e, na universidade e em outras oportunidades, passei a explorar a produção e a visualização de dados."],
     ["Projetos de Dados: usando ferramentas de predição, BI e Engenharia", "beatriz-moraes-souza-rodrigues", "O verdadeiro impacto de uma área de dados acontece quando a infraestrutura encontra a inteligência de negócios. Nesta palestra, discutiremos como estruturar Projetos de Dados que unem o rigor da Engenharia, a clareza do Business Intelligence e a visão de futuro das ferramentas de Predição. Abordaremos os desafios comuns de integração entre equipes e tecnologias, e como criar um fluxo onde os dados não apenas explicam o que aconteceu ontem, mas prevêem o que vai acontecer amanhã. Um guia essencial para liderar e executar projetos que entregam resultados tangíveis."],
     ["Programação Funcional com Go. Possibilidade ou Forçação de barra?", "marco-ollivier", "Senior Staff Software Engineer no QuintoAndar, professor da FIAP e mantenedor Open Source, Marco Ollivier ajuda organizações de engenharia a entregar software com mais velocidade, qualidade e escalabilidade. Há mais de 17 anos na área, desenvolvendo plataformas distribuídas, liderando iniciativas de arquitetura e acelerando a produtividade de equipes em empresas como Nubank, OLX e Flash. Também atua como palestrante em alguns dos principais eventos de tecnologia do país."],
-    null,
+    ["Liberdade financeira global com blockchain", "bruno-eleodoro-roza", "Como o blockchain abre caminhos para a liberdade financeira global."],
     ["O Mercado de Cobol", "thais-santos-souza", "mercado de mainframe, atuação neste mercado e modernização deste ecossistema."],
   ].map(lineupTalk),
   mobile: [
