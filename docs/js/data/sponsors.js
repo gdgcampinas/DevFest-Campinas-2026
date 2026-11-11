@@ -43,6 +43,8 @@ const SPONSORS = [
     { public: true, name: "B&B", link: "https://www.instagram.com/beb.inovacao3d", imageUrl: "assets/brand/bb-inovacao-3d.webp", description: "Inovação 3D: brindes personalizados, brinquedos e protótipos." },
     // REAL, parceira nova (2026-11-06). SEM `public`: só em DEV até o Renato liberar. Logo quadrado fundo preto (arte do Renato), recortado e centralizado num banner preto largo (senão vira um quadrado minúsculo no cartão branco). Pedir a versão horizontal; não recolorir.
     { name: "Red Bridge Card Store", link: "https://www.instagram.com/redbridge_cardstore/", imageUrl: "assets/brand/red-bridge-banner.webp", description: "A maior loja de card games da região." },
+    // REAL, parceira nova (2026-11-11). SEM `public`: só em DEV até o Renato liberar. Logo azul-marinho do slide de abertura da proposta, recortado rente ao desenho, na caixa branca padrão. Agência de marketing e tecnologia (cobertura em Reels e Stories).
+    { name: "KRIVO", link: "https://www.krivomkt.com.br", imageUrl: "assets/brand/krivo.webp", description: "Ecossistema de marketing e tecnologia que une criatividade, estratégia e tecnologia." },
   ] },
   { id: "comunidades", tier: "Comunidades parceiras", elements: [
     // REAL e LIBERADA em produção (2026-10-30, `public: true`). Logo enviado pelo Renato, com o fundo preto original (texto branco e verde-limão), na caixa branca padrão.
