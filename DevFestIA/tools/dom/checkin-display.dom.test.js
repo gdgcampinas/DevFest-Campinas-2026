@@ -9,7 +9,7 @@ const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 
 const site = loadSite({
   globals: { QRCode: function QRCode() {} }, // o desenho do QR não importa aqui
-  scripts: [...SITE_BASE, "data/favorites.js", "features/agenda.js", "features/talk-index.js", "components/track-card.js", "components/room-panel.js", "components/room-board.js",
+  scripts: [...SITE_BASE, "data/schedule-builder.js", "data/favorites.js", "features/agenda.js", "features/talk-index.js", "components/track-card.js", "components/room-panel.js", "components/room-board.js",
     "features/room-board.js", "features/checkin-display.js"],
 });
 const { window, document } = site;

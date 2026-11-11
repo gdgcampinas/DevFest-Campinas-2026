@@ -14,9 +14,9 @@ function talkShareCode(slot, trackId, timezone) {
 function buildTalkIndex(schedule, tracks, timezone) {
   const entries = [];
   schedule.forEach((slot, slotIndex) => {
-    if (!slot.talks) return;
+    const talks = slotTalks(slot);
     tracks.forEach(track => {
-      const data = slot.talks[track.id];
+      const data = talks[track.id];
       if (!data) return;
       entries.push({ key: talkKey(slot, track.id), code: talkShareCode(slot, track.id, timezone), slot, slotIndex, track, data });
     });

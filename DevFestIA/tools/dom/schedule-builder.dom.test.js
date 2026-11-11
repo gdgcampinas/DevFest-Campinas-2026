@@ -55,15 +55,21 @@ test("vaga sem palestra definida vem marcada como `vacant` (o telão a ignora); 
 test("plenária (keynote): a faixa combinada ganha os palestrantes do pool e o card de destaque com foto, nome, cargo, título e LinkedIn; sem keynote a faixa continua simples", () => {
   const keynotePool = [{ id: "k1", name: "Fulano", title: "Developer Relations", photo: "assets/img/lineup/fulano.webp", linkedin: "https://www.linkedin.com/in/fulano/" }];
   const keynotePlan = [
-    { banner: "Plenária", moment: "plenary", room: "Sala Observatório", start: "13:30", end: "14:10", keynote: { title: "Fala de abertura", speakerIds: ["k1", "ninguem"], description: "Minibio." } },
+    { banner: "Plenária", moment: "plenary", room: "Sala Observatório", start: "13:30", end: "14:10", keynote: { title: "Fala de abertura", trackId: "a", speakerIds: ["k1", "ninguem"], description: "Minibio." } },
     { banner: "Almoço", moment: "lunch", start: "12:00", end: "13:20" },
   ];
   const [plenary, lunch] = g("buildSchedule")(keynotePlan, { eventTime: hhmm => new Date(`2026-11-28T${hhmm}:00-03:00`), tracks, speakerPool: keynotePool });
   assert.deepEqual(plenary.keynote.speakers.map(speaker => speaker.id), ["k1"], "id que não existe no pool é descartado");
   assert.equal(plenary.keynote.speakerIds, undefined, "os ids viram palestrantes resolvidos");
   assert.equal(lunch.keynote, undefined, "faixa sem keynote não ganha o campo");
-  const html = g("bannerMarkup")(plenary);
+  assert.equal(plenary.keynote.talk.highlight, "plenaria", "a fala da plenária usa o destaque sem perguntas ao vivo");
+  assert.deepEqual(Object.keys(g("slotTalks")(plenary)), ["a"], "a fala fica na trilha da sala da plenária");
+  assert.equal(g("slotTalks")(plenary).a.title, "Fala de abertura");
+  assert.deepEqual(Object.keys(g("slotTalks")(lunch)), [], "faixa comum não tem fala");
+  const html = g("bannerMarkup")(plenary, 7);
   assert.match(html, /class="banner banner--keynote"/);
+  assert.match(html, /data-slot-index="7" data-track="a"/, "o card abre o modal da fala (TALK_TRIGGER)");
+  assert.doesNotMatch(g("bannerMarkup")(plenary), /data-slot-index/, "sem o índice do slot o card não vira gatilho");
   ["Plenária", "Sala Observatório", "Fala de abertura", "Fulano", "Developer Relations", "Minibio.", "fulano.webp", "linkedin.com/in/fulano"].forEach(text => assert.ok(html.includes(text), `falta "${text}" no card`));
   assert.equal(g("bannerMarkup")(lunch), '<div class="banner"><div class="t">Almoço</div></div>');
 });

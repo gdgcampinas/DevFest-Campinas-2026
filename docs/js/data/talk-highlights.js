@@ -10,6 +10,7 @@
  *   tools     ferramentas recomendadas pra sessão: { label: "Recomendamos usar", items: ["Antigravity", ...] } (opcional; card e modal)
  *   host      quem conduz a sessão quando ela não tem palestrante (nome e foto opcional)
  *   questions false desliga as perguntas ao vivo dessa sessão (modal, quadro da sala e moderação)
+ *   checkin   false = a sessão não pede check-in na sala: a avaliação abre direto no fim (o check-in é gravado sozinho ao enviar, que é o que as regras do Firestore exigem)
  *   contest   true liga o concurso da sessão: cada pessoa com check-in cadastra o projeto, a turma vota (um voto por check-in) e o
  *             moderador publica o pódio (features/talk-contest.js, contest-moderation.js; regras contest-* do Firestore)
  *   podium    1º, 2º e 3º lugar; `prize` (opcional) aparece no card e no modal quando preenchido
@@ -49,6 +50,15 @@ const TALK_HIGHLIGHTS = [
     ],
   },
   {
+    id: "plenaria",
+    label: "Plenária",
+    icon: "users",
+    color: "var(--google-yellow)",
+    tagline: "Sessão para todo o evento: todo mundo junto, na mesma sala",
+    questions: false,
+    checkin: false,
+  },
+  {
     id: "maonamassa",
     label: "Workshop",
     icon: "wrench",
@@ -74,6 +84,8 @@ const talkHighlightsRepository = createRepository(TALK_HIGHLIGHTS, {
   forTalk: data => talkHighlightsRepository.getById(data?.highlight),
   /** Perguntas ao vivo valem, a menos que o destaque da palestra as desligue. */
   allowsQuestions: data => talkHighlightsRepository.forTalk(data)?.questions !== false,
+  /** A palestra pede check-in na sala pra liberar a avaliação? Sim, a menos que o destaque dela dispense (plenária). */
+  requiresCheckin: data => talkHighlightsRepository.forTalk(data)?.checkin !== false,
   /** A sessão tem concurso (projetos, votos e pódio)? */
   hasContest: data => Boolean(talkHighlightsRepository.forTalk(data)?.contest),
 });

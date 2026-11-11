@@ -76,20 +76,31 @@ function catalogTalks(tracks, speakerPool, talkCatalog, talkIndex, placeholderOp
   }));
 }
 
-/** Plenária (sessão combinada com palestrante): troca `speakerIds` pelos palestrantes do pool, como as palestras das trilhas. */
+/**
+ * Plenária (sessão combinada com palestrante): troca `speakerIds` pelos palestrantes do pool, como as palestras das trilhas, e monta a fala (`talk`)
+ * que a sala da plenária (`trackId`) mostra no modal, na galeria de palestrantes, no feedback e no calendário. A plenária não tem perguntas ao vivo
+ * (destaque "plenaria" em data/talk-highlights.js).
+ */
 function resolveKeynote({ speakerIds = [], ...keynote }, speakerPool) {
   const speakers = speakerIds.map(id => {
     const speaker = speakerPool.find(candidate => candidate.id === id);
     if (!speaker) console.warn(`[schedule] palestrante "${id}" não existe (plenária)`);
     return speaker;
   }).filter(Boolean);
-  return { ...keynote, speakers };
+  const talk = { title: keynote.title, format: "palestra", highlight: "plenaria", tags: [], speakers, description: keynote.description ?? "" };
+  return { ...keynote, speakers, talk };
+}
+
+/** A fala de cada trilha numa sessão: as palestras paralelas (`talks`) ou, na plenária, a única fala dela, na trilha da sala (`keynote.trackId`). Faixa comum: nenhuma. */
+function slotTalks(slot) {
+  if (slot.talks) return slot.talks;
+  return slot.keynote ? { [slot.keynote.trackId]: slot.keynote.talk } : {};
 }
 
 /**
  * Plano do dia → SCHEDULE. Cada item do plano é:
  *   { banner, moment?, room?, start, end }   → sessão combinada (credenciamento, almoço...); `moment` é o nome estável dela (o mural liga cenas por momento)
- *     `keynote` (opcional) = { title, speakerIds, description }: a sessão combinada tem um palestrante (plenária); ganha `speakers` resolvidos do pool
+ *     `keynote` (opcional) = { title, trackId, speakerIds, description }: a sessão combinada tem um palestrante (plenária); ganha `speakers` resolvidos do pool e a `talk`
  *   { talks: [{start, end}, ...] }  → uma sessão de palestras por janela
  * `talkCatalog` (opcional, ver data/mock-talks.js) traz título, formato, tags
  * e palestrantes por trilha/posição; sem ele, tudo vira placeholder. `placeholderOptions` ({ rotateSpeakers: false }) vai para os placeholders das vagas vazias.

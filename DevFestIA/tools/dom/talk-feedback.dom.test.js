@@ -265,3 +265,36 @@ test("já avaliou o evento: só o agradecimento", () => {
   assert.equal(world.ev.querySelector("form"), null);
   assert.match(textOf(world.ev), /Obrigado pela avaliação/);
 });
+
+// ---------- sessão sem check-in (plenária) ----------
+const plenary = world => { world.entry.data.highlight = "plenaria"; };
+
+test("plenária (sem check-in): não pede check-in; durante a sessão só avisa que a avaliação libera no fim", () => {
+  const world = setup();
+  plenary(world);
+  world.feedback.render(world.fb, world.entry);
+  assert.doesNotMatch(textOf(world.fb), /Check-in dessa palestra/);
+  assert.match(textOf(world.fb), /A avaliação libera quando a sessão terminar/);
+  assert.equal(world.fb.querySelector("[data-feedback-checkin]"), null);
+});
+
+test("plenária terminada, sem check-in: abre o formulário e, ao enviar, grava o check-in sozinho e depois a avaliação", async () => {
+  const world = setup({ now: new Date("2026-11-28T13:00:00Z") });
+  plenary(world);
+  world.feedback.render(world.fb, world.entry);
+  const form = world.fb.querySelector("[data-feedback-form]");
+  assert.ok(form, "o formulário abre sem check-in");
+  form.querySelector("[name=name]").value = "Renato";
+  world.submit(form);
+  await settle();
+  assert.deepEqual(world.calls.checkins.map(call => call.key), [KEY], "a regra do banco exige o check-in: ele é gravado no envio");
+  assert.equal(world.calls.ratings.length, 1);
+  assert.ok(world.myCheckins.has(KEY));
+  assert.ok(world.myRatings.has(KEY));
+});
+
+test("palestra comum terminada sem check-in continua pedindo check-in (a dispensa é só da plenária)", () => {
+  const world = setup({ now: new Date("2026-11-28T13:00:00Z") });
+  world.feedback.render(world.fb, world.entry);
+  assert.match(textOf(world.fb), /Check-in dessa palestra/);
+});

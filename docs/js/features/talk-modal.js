@@ -49,9 +49,10 @@ function initTalkDetails(rootEl, { schedule, tracks, timezone, reveal, modal, fa
 
   /** Abre o modal da palestra (slot x trilha) e preenche os blocos de feedback, de perguntas e do concurso dela. */
   function openTalk(slot, track, { feedbackMessage = "" } = {}) {
-    if (!slot || !track || !slot.talks) return;
+    const data = slot && track && slotTalks(slot)[track.id];
+    if (!data) return;
     const key = talkKey(slot, track.id);
-    modal.open(track, slot.talks[track.id], {
+    modal.open(track, data, {
       reveal,
       timeRange: timeRangeLabel(slot, timezone),
       room: track.room,

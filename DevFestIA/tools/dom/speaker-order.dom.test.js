@@ -9,8 +9,8 @@ const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 
 const site = loadSite({
   globals: { TextEncoder: require("node:util").TextEncoder },
-  scripts: [...SITE_BASE, "data/talk-formats.js", "data/favorites.js", "components/escape-html.js", "components/avatar.js", "components/speaker-link.js", "components/favorite-button.js", "components/person-card.js", "components/talk-highlight.js",
-    "components/talk-meta.js", "components/track-card.js", "features/speakers.js", "features/featured-speakers.js", "features/speaker-photo-zoom.js"],
+  scripts: [...SITE_BASE, "data/schedule-builder.js", "data/talk-formats.js", "data/favorites.js", "components/escape-html.js", "components/avatar.js", "components/speaker-link.js", "components/favorite-button.js", "components/person-card.js", "components/talk-highlight.js",
+    "components/talk-meta.js", "components/track-card.js", "features/agenda.js", "features/speakers.js", "features/featured-speakers.js", "features/speaker-photo-zoom.js"],
 });
 test.after(() => site.window.close());
 const g = name => site.get(name);
@@ -123,4 +123,29 @@ test("Zoom da foto: o clique na foto abre o modal com nome, cargo e palestras, s
   assert.equal(opened.length, 1);
   assert.ok(opened[0].includes("Ana") && opened[0].includes("GDE · Cargo") && opened[0].includes("Palestra B"));
   assert.equal(followed, false, "o clique não chega no card");
+});
+
+test("Plenária: quem fala nela (`keynote`) entra em todo sorteio dos Destaques, e as outras vagas seguem sorteadas sem repetir a pessoa", () => {
+  const keynote = { ...person("Rodrigo", 0), keynote: true };
+  const withKeynote = [...pool, keynote];
+  for (let i = 0; i < 100; i++) {
+    const picked = g("pickFeatured")(withKeynote, 4);
+    assert.equal(picked.length, 4);
+    assert.ok(picked.includes(keynote), "o palestrante da plenária sempre aparece");
+    assert.equal(new Set(picked).size, 4, "ninguém repete");
+  }
+  assert.equal(g("pickFeatured")(pool, 4).length, 4, "sem plenária, o sorteio é o de sempre");
+  assert.match(g("featuredSpeakerCardMarkup")(keynote), /Plenária/, "o rótulo do card é Plenária, não a trilha");
+});
+
+test("Galeria: a fala da plenária (banner com `keynote`) conta como fala do palestrante, na trilha da sala, e marca a pessoa como `keynote`", () => {
+  const speaker = { id: "k1", name: "Fulano", title: "DevRel", photo: "" };
+  const talk = { title: "Fala", format: "palestra", highlight: "plenaria", tags: [], speakers: [speaker], description: "" };
+  const schedule = [{ start: new Date("2026-11-28T16:30:00Z"), end: new Date("2026-11-28T17:10:00Z"), banner: "Plenária", keynote: { trackId: "ia", speakers: [speaker], talk } }];
+  const [person] = g("extractSpeakers")(schedule, tracks, "America/Sao_Paulo");
+  assert.equal(person.name, "Fulano");
+  assert.equal(person.keynote, true);
+  assert.equal(person.track.id, "ia");
+  assert.equal(person.talks[0].title, "Fala");
+  assert.deepEqual(Object.keys(g("slotTalks")({ banner: "Almoço" })), [], "faixa comum não tem fala");
 });

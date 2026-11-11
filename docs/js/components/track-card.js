@@ -151,18 +151,22 @@ function talkDetailMarkup(track, data, { reveal = true, timeRange = "", room = "
  * Sessão combinada (credenciamento, pausa, encerramento) — mesmo bloco
  * usado na agenda completa e no hero "ao vivo agora".
  */
-function bannerMarkup(slot) {
+function bannerMarkup(slot, slotIndex = -1) {
   const head = `<div class="t">${slot.banner}</div>${slot.room ? `<div class="r">${slot.room}</div>` : ""}`;
   if (!slot.keynote?.speakers?.length) return `<div class="banner">${head}</div>`;
-  return `<div class="banner banner--keynote">${head}${keynoteMarkup(slot.keynote)}</div>`;
+  return `<div class="banner banner--keynote">${head}${keynoteMarkup(slot.keynote, slotIndex)}</div>`;
 }
 
-/** Plenária: card de destaque dentro da faixa (foto, nome, cargo, título da fala, minibio e LinkedIn). Tudo vem de `slot.keynote` (data/schedule.js). */
-function keynoteMarkup({ title, speakers, description = "" }) {
+/**
+ * Plenária: card de destaque dentro da faixa (foto, nome, cargo, título da fala, minibio e LinkedIn). Tudo vem de `slot.keynote` (data/schedule.js).
+ * Clicável como um card de trilha (`data-slot-index` + `data-track`, ver TALK_TRIGGER em features/talk-modal.js): abre o modal da fala, com avaliação e sem perguntas.
+ */
+function keynoteMarkup({ title, trackId, speakers, description = "" }, slotIndex) {
   const [speaker] = speakers;
   const linkedin = speaker.linkedin ? socialIconMarkup({ name: "linkedin", link: speaker.linkedin }) : "";
+  const trigger = slotIndex >= 0 ? ` role="button" tabindex="0" data-slot-index="${slotIndex}" data-track="${trackId}" data-track-event="talk_open" data-track-target="${trackId}"` : "";
   return `
-    <div class="keynote">
+    <div class="keynote"${trigger}>
       ${avatarMarkup(speaker.name, speaker.photo, "keynote-photo")}
       <div class="keynote-body">
         <div class="keynote-title">${title}</div>

@@ -11,7 +11,7 @@ const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 
 const site = loadSite({
   globals: { TextEncoder }, // o .ics mede a dobra de linha em bytes
-  scripts: [...SITE_BASE, "data/talk-formats.js", "data/favorites.js", "components/avatar.js", "components/speaker-link.js", "components/favorite-button.js", "components/person-card.js",
+  scripts: [...SITE_BASE, "data/schedule-builder.js", "data/talk-formats.js", "data/favorites.js", "components/avatar.js", "components/speaker-link.js", "components/favorite-button.js", "components/person-card.js",
     "components/talk-highlight.js", "components/talk-meta.js", "components/track-card.js", "features/agenda.js", "features/calendar.js", "features/talk-index.js"],
 });
 const { window, document } = site;

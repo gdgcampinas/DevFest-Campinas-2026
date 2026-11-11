@@ -4,14 +4,14 @@
  * (features/talk-feedback.js decide o estado, isso aqui só desenha). Fases:
  *   "checkin"         → ainda não fez check-in nessa palestra
  *   "checkin-confirm" → confirmação inline antes de gravar (sem diálogo nativo do navegador)
- *   "waiting"         → check-in feito, palestra ainda não terminou
+ *   "waiting"         → check-in feito (ou sessão sem check-in, `checkedIn` falso), palestra ainda não terminou
  *   "rate"            → pode avaliar (check-in feito + palestra terminada)
  *   "done"            → já avaliou
  * `entryKey` vai em todo elemento interativo via data-attribute, pra o
  * handler delegado saber qual palestra. `message` é um aviso de erro opcional;
  * `name` pré-preenche o nome (obrigatório) com o da última avaliação.
  */
-function talkFeedbackMarkup({ phase, entryKey, title = "", message = "", name = "", invite = "" }) {
+function talkFeedbackMarkup({ phase, entryKey, title = "", message = "", name = "", invite = "", checkedIn = true }) {
   const note = message ? `<p class="form-error" role="alert">${message}</p>` : "";
 
   if (phase === "checkin") {
@@ -35,7 +35,8 @@ function talkFeedbackMarkup({ phase, entryKey, title = "", message = "", name = 
   }
 
   if (phase === "waiting") {
-    return `<div class="talk-feedback talk-feedback--waiting">${iconMarkup("check")}${t("checkin.done", "Check-in feito. A avaliação libera quando a palestra terminar.")}</div>`;
+    const text = checkedIn ? t("checkin.done", "Check-in feito. A avaliação libera quando a palestra terminar.") : t("rate.opensAtEnd", "A avaliação libera quando a sessão terminar.");
+    return `<div class="talk-feedback talk-feedback--waiting">${iconMarkup("check")}${text}</div>`;
   }
 
   if (phase === "rate") {

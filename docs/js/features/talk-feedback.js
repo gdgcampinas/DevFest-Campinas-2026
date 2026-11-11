@@ -54,8 +54,8 @@ function initTalkFeedback(rootEl, { index, reveal = true, now = () => new Date()
   }
 
   function stateFor(entry) {
-    if (!myCheckins.has(entry.key)) return { phase: "checkin", entryKey: entry.key };
-    if (entry.slot.end > now()) return { phase: "waiting", entryKey: entry.key };
+    if (!myCheckins.has(entry.key) && talkHighlightsRepository.requiresCheckin(entry.data)) return { phase: "checkin", entryKey: entry.key };
+    if (entry.slot.end > now()) return { phase: "waiting", entryKey: entry.key, checkedIn: myCheckins.has(entry.key) };
     return { phase: myRatings.has(entry.key) ? "done" : "rate", entryKey: entry.key };
   }
 
@@ -132,6 +132,7 @@ function initTalkFeedback(rootEl, { index, reveal = true, now = () => new Date()
     const optional = { highlight: text("highlight"), improve: text("improve") };
     try {
       const uid = await window.firebaseClient.ensureAnonymousUid();
+      if (!myCheckins.has(entry.key)) await doCheckin(entry); // sessão sem check-in na sala (plenária): grava a presença agora, que a regra da avaliação exige
       await window.feedbackRepository.add(uid, entry.key, {
         entryKey: entry.key,
         rating: Number(new FormData(form).get(`rating-${entry.key}`)),

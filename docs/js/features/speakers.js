@@ -11,14 +11,15 @@
 function extractSpeakers(schedule, tracks, timezone) {
   const people = new Map();
   schedule.forEach((slot, slotIndex) => {
-    if (!slot.talks) return;
+    const talks = slotTalks(slot);
     tracks.forEach(track => {
-      const data = slot.talks[track.id];
+      const data = talks[track.id];
       if (!data) return;
       const talkRef = { track, slotIndex, title: data.title, startLabel: formatEventTime(slot.start, timezone) };
       speakerList(data).forEach(speaker => {
         const key = speaker.id ?? speaker.name;
         if (!people.has(key)) people.set(key, { ...speaker, track, talks: [] });
+        if (slot.keynote) people.get(key).keynote = true; // fala na plenária: os Destaques da home sempre incluem
         people.get(key).talks.push(talkRef);
       });
     });

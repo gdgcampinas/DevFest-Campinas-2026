@@ -242,7 +242,8 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
   box-shadow:0 8px 28px rgba(0,0,0,.35);gap:6px;
 }
 .banner--keynote .t{font-size:15px;text-transform:uppercase;letter-spacing:.08em;color:var(--google-yellow)}
-.keynote{display:flex;gap:16px;align-items:flex-start;margin-top:8px}
+.keynote{display:flex;gap:16px;align-items:flex-start;margin-top:8px;cursor:pointer}
+.keynote:hover .keynote-title,.keynote:focus-visible .keynote-title{text-decoration:underline;text-decoration-color:var(--google-yellow);text-underline-offset:4px}
 .keynote-photo{flex:none;width:120px;height:120px;border-radius:16px;object-fit:cover;border:2px solid var(--google-yellow)}
 .keynote-photo--fallback{display:grid;place-items:center;background:var(--card-b);font:700 32px var(--font-display)}
 .keynote-body{display:flex;flex-direction:column;gap:4px;min-width:0}

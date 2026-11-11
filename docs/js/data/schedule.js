@@ -234,6 +234,7 @@ const LINEUP_PLENARY = {
   banner: "Plenária", moment: "plenary", room: roomFor("Observatório"),
   keynote: {
     title: "Isso não deveria ser um stand-up",
+    trackId: "ia", // a sala da plenária é a da trilha de IA (Observatório)
     speakerIds: ["rodrigo-pokemaobr"],
     description: "Streamer (Live \"Coder\") na Twitch. Apresentador do talk show The Velopers, desenvolvedor e streamer. Developer Relations, organizador e curador de eventos de TI. Bacharel em matemática aplicada e computacional com MBA em SOA. Evangelista PHPSP e criador do PokePHP e do eventosti.dev. O foco é ajudar a comunidade a disseminar conteúdos técnicos e piadas para devs.",
   },
