@@ -76,9 +76,20 @@ function catalogTalks(tracks, speakerPool, talkCatalog, talkIndex, placeholderOp
   }));
 }
 
+/** Plenária (sessão combinada com palestrante): troca `speakerIds` pelos palestrantes do pool, como as palestras das trilhas. */
+function resolveKeynote({ speakerIds = [], ...keynote }, speakerPool) {
+  const speakers = speakerIds.map(id => {
+    const speaker = speakerPool.find(candidate => candidate.id === id);
+    if (!speaker) console.warn(`[schedule] palestrante "${id}" não existe (plenária)`);
+    return speaker;
+  }).filter(Boolean);
+  return { ...keynote, speakers };
+}
+
 /**
  * Plano do dia → SCHEDULE. Cada item do plano é:
  *   { banner, moment?, room?, start, end }   → sessão combinada (credenciamento, almoço...); `moment` é o nome estável dela (o mural liga cenas por momento)
+ *     `keynote` (opcional) = { title, speakerIds, description }: a sessão combinada tem um palestrante (plenária); ganha `speakers` resolvidos do pool
  *   { talks: [{start, end}, ...] }  → uma sessão de palestras por janela
  * `talkCatalog` (opcional, ver data/mock-talks.js) traz título, formato, tags
  * e palestrantes por trilha/posição; sem ele, tudo vira placeholder. `placeholderOptions` ({ rotateSpeakers: false }) vai para os placeholders das vagas vazias.
@@ -93,7 +104,7 @@ function buildSchedule(plan, { eventTime, tracks, speakerPool, talkCatalog = nul
         talks: talkCatalog ? catalogTalks(tracks, speakerPool, talkCatalog, talkIndex++, placeholderOptions) : placeholderTalks(tracks, speakerPool, talkIndex++, placeholderOptions),
       }));
     }
-    const { start, end, ...banner } = item;
-    return [{ start: eventTime(start), end: eventTime(end), ...banner }];
+    const { start, end, keynote, ...banner } = item;
+    return [{ start: eventTime(start), end: eventTime(end), ...banner, ...(keynote && { keynote: resolveKeynote(keynote, speakerPool) }) }];
   });
 }

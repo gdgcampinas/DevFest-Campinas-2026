@@ -110,7 +110,7 @@ datasetThunks.forEach(thunk => {
     fail(`LOCALIZED_DATASETS: não consegui ler ${thunk} (${error.message})`);
   }
 });
-["SITE_PAGES.map(page => page.label)", "[TICKETS_NOTE, TICKET_PRICE_TBD]"].forEach(expression => collect(vm.runInContext(expression, dataContext)));
+["SITE_PAGES.map(page => page.label)", "[TICKETS_NOTE, TICKET_PRICE_TBD]", "LINEUP_DAY_PLAN.filter(item => item.banner).map(({ banner, room }) => ({ banner, room }))"].forEach(expression => collect(vm.runInContext(expression, dataContext)));
 const displayStrings = [...datasetStrings].filter(text => !KEEP_AS_IS.has(text) && !isTechnical(text));
 
 // ---------- confere cada idioma ----------

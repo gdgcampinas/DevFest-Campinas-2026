@@ -594,6 +594,7 @@ I18N_DICTIONARIES.en = {
     "Almoço": "Lunch",
     "Retorno para a sala": "Back to the rooms",
     "Encerramento": "Closing",
+    "Plenária": "Plenary session",
     "Acesso a todas as palestras e trilhas": "Access to all talks and tracks",
     "Credencial de participante": "Attendee badge",
     "Leve a lembrança do DevFest para casa.": "Take a DevFest keepsake home.",

@@ -235,6 +235,24 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
 .banner .t{font:700 14px var(--font-display);color:oklch(90% 0.01 260)}
 .banner .r{font:700 12.5px var(--font-body);color:var(--accent)}
 
+/* Plenária: a faixa ganha borda com as 4 cores do Google e um card com a foto do palestrante */
+.banner--keynote{
+  border:1px solid transparent;border-left-width:1px;
+  background:linear-gradient(135deg,var(--card-a),var(--card-b)) padding-box,linear-gradient(120deg,var(--google-blue),var(--google-red),var(--google-yellow),var(--google-green)) border-box;
+  box-shadow:0 8px 28px rgba(0,0,0,.35);gap:6px;
+}
+.banner--keynote .t{font-size:15px;text-transform:uppercase;letter-spacing:.08em;color:var(--google-yellow)}
+.keynote{display:flex;gap:16px;align-items:flex-start;margin-top:8px}
+.keynote-photo{flex:none;width:120px;height:120px;border-radius:16px;object-fit:cover;border:2px solid var(--google-yellow)}
+.keynote-photo--fallback{display:grid;place-items:center;background:var(--card-b);font:700 32px var(--font-display)}
+.keynote-body{display:flex;flex-direction:column;gap:4px;min-width:0}
+.keynote-title{font:800 clamp(19px,3vw,26px)/1.2 var(--font-display);color:var(--text)}
+.keynote-name{font:700 16px var(--font-display);color:var(--accent)}
+.keynote-meta{font:600 13px var(--font-body);color:var(--muted)}
+.keynote-desc{margin:6px 0 4px;font:400 13.5px/1.55 var(--font-body);color:var(--muted)}
+.keynote .social-icon{align-self:flex-start}
+@media(max-width:560px){.keynote{flex-direction:column}.keynote-photo{width:96px;height:96px}}
+
 /* grid de cards de trilha — largura dinâmica pelo número real de trilhas */
 .talks{display:grid;grid-template-columns:repeat(var(--track-count,3),1fr);gap:12px}
 .talks[data-view]:not([data-view="all"]) .talk{display:none}

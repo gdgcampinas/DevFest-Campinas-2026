@@ -152,5 +152,24 @@ function talkDetailMarkup(track, data, { reveal = true, timeRange = "", room = "
  * usado na agenda completa e no hero "ao vivo agora".
  */
 function bannerMarkup(slot) {
-  return `<div class="banner"><div class="t">${slot.banner}</div>${slot.room ? `<div class="r">${slot.room}</div>` : ""}</div>`;
+  const head = `<div class="t">${slot.banner}</div>${slot.room ? `<div class="r">${slot.room}</div>` : ""}`;
+  if (!slot.keynote?.speakers?.length) return `<div class="banner">${head}</div>`;
+  return `<div class="banner banner--keynote">${head}${keynoteMarkup(slot.keynote)}</div>`;
+}
+
+/** Plenária: card de destaque dentro da faixa (foto, nome, cargo, título da fala, minibio e LinkedIn). Tudo vem de `slot.keynote` (data/schedule.js). */
+function keynoteMarkup({ title, speakers, description = "" }) {
+  const [speaker] = speakers;
+  const linkedin = speaker.linkedin ? socialIconMarkup({ name: "linkedin", link: speaker.linkedin }) : "";
+  return `
+    <div class="keynote">
+      ${avatarMarkup(speaker.name, speaker.photo, "keynote-photo")}
+      <div class="keynote-body">
+        <div class="keynote-title">${title}</div>
+        <div class="keynote-name">${speaker.name}</div>
+        ${speakerMetaLine(speaker) ? `<div class="keynote-meta">${speakerMetaLine(speaker)}</div>` : ""}
+        ${description ? `<p class="keynote-desc">${description}</p>` : ""}
+        ${linkedin}
+      </div>
+    </div>`;
 }

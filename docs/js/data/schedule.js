@@ -145,6 +145,7 @@ const LINEUP_SPEAKER_ROWS = [
   ["robot-framework-a-confirmar", "Guilherme Martins", "Faber-Castell (engenheiro de dados) e Itera (desenvolvedor de software)", "", "", "https://www.linkedin.com/in/guilherme-martins-555671b3/"],
   ["arthur-dos-santos-almeida-tatay", "Arthur dos Santos Almeida Tatay", "Desenvolvedor Sênior na Globo", "", "", "https://www.linkedin.com/in/arthursantosalmeida/"],
   ["alexandra-regina-cavalleiros", "Alexandra Regina Cavalleiros", "Otimizale Soluções em T.I. Ltda", "", "", "https://www.linkedin.com/in/alexandrareginacavalleiros/"],
+  ["rodrigo-pokemaobr", "Rodrigo Wanderley (PokemaoBR)", "Developer Relations", "", "assets/img/lineup/rodrigo-pokemaobr.webp", "https://www.linkedin.com/in/pokemaobr/"],
 ];
 
 /** Nome por extenso de cada selo (o selo curto, "GDE", vai no cartão e na foto; o por extenso, na faixa da palestra). */
@@ -226,22 +227,41 @@ function eventTime(hhmm) {
 }
 
 /**
+ * Plenária do line-up real (só DEV até a revelação): uma faixa inteira (40 min + 5 de troca) depois do almoço, na sala da trilha de IA, com todos juntos.
+ * `keynote` = quem fala (ids de LINEUP_SPEAKER_ROWS), título e minibio; o card de destaque vem de components/track-card.js (bannerMarkup).
+ */
+const LINEUP_PLENARY = {
+  banner: "Plenária", moment: "plenary", room: roomFor("Observatório"),
+  keynote: {
+    title: "Isso não deveria ser um stand-up",
+    speakerIds: ["rodrigo-pokemaobr"],
+    description: "Streamer (Live \"Coder\") na Twitch. Apresentador do talk show The Velopers, desenvolvedor e streamer. Developer Relations, organizador e curador de eventos de TI. Bacharel em matemática aplicada e computacional com MBA em SOA. Evangelista PHPSP e criador do PokePHP e do eventosti.dev. O foco é ajudar a comunidade a disseminar conteúdos técnicos e piadas para devs.",
+  },
+};
+
+/**
  * Plano do dia — palestra = 40 min (com perguntas) + 5 min de troca,
  * via talkWindows() de schedule-builder.js. Almoço 12:00-13:20 mais
  * 10 min pra voltar pra sala. `moment` (opcional) é o nome estável do bloco combinado ("registration", "opening", "lunch", "back-to-room", "closing"; um coffee entra
  * aqui como "coffee"): o mural do telão liga cenas por momento (`requires.moments`), então mudar o horário do almoço é editar SÓ esta grade. Talks mock vêm do catálogo; sem ele rotacionam o pool
  * o catálogo mock (mock-talks.js + mock-speakers.js) até o line-up real ser fechado.
+ *
+ * `buildDayPlan`: `afternoonStart` = primeira palestra da tarde; `plenary` (opcional) = bloco entre o retorno e a tarde, com `start`/`end`; `closing` = { start, end }.
+ * O plano do mock (PROD) e o do line-up real (DEV) saem da mesma função; só o real tem a plenária e a tarde 45 min mais tarde.
  */
-const DAY_PLAN = [
+const buildDayPlan = ({ afternoonStart, closing, plenary = null }) => [
   { banner: "Credenciamento", moment: "registration", room: "Recepção", start: "08:00", end: "08:20" },
   { banner: "Abertura: GDG Campinas", moment: "opening", room: roomFor("Calçadão Central"), start: "08:20", end: "08:50" },
   { talks: talkWindows("09:00", 4) },
   { banner: "Almoço", moment: "lunch", start: "12:00", end: "13:20" },
   { banner: "Retorno para a sala", moment: "back-to-room", start: "13:20", end: "13:30" },
-  { talks: talkWindows("13:30", 5) },
-  { banner: "Encerramento", moment: "closing", room: roomFor("Calçadão Central"), start: "17:15", end: "18:00" },
+  ...(plenary ? [plenary] : []),
+  { talks: talkWindows(afternoonStart, 5) },
+  { banner: "Encerramento", moment: "closing", room: roomFor("Calçadão Central"), ...closing },
 ];
+const DAY_PLAN = buildDayPlan({ afternoonStart: "13:30", closing: { start: "17:15", end: "18:00" } });
+const LINEUP_DAY_PLAN = buildDayPlan({ afternoonStart: "14:15", closing: { start: "18:00", end: "18:30" }, plenary: { ...LINEUP_PLENARY, start: "13:30", end: "14:10" } });
 
 const SCHEDULE = showRealLineup
-  ? buildSchedule(DAY_PLAN, { eventTime, tracks: TRACKS, speakerPool: lineupSpeakersRepository.getAll(), talkCatalog: lineupTalksRepository, placeholderOptions: { rotateSpeakers: false } })
+  ? buildSchedule(LINEUP_DAY_PLAN, { eventTime, tracks: TRACKS, speakerPool: lineupSpeakersRepository.getAll(), talkCatalog: lineupTalksRepository, placeholderOptions: { rotateSpeakers: false } })
   : buildSchedule(DAY_PLAN, { eventTime, tracks: TRACKS, speakerPool: mockSpeakersRepository.getAll(), talkCatalog: mockTalksRepository });
