@@ -24,18 +24,10 @@ function scoreQuiz(questions, choices, trackIds) {
   return { scores, ranking, winnerId: ranking[0], runnerUpId: scores[ranking[1]] > 0 ? ranking[1] : null };
 }
 
-/**
- * Só as respostas que pontuam alguma trilha em jogo: a resposta de uma trilha que ainda não está
- * no ar (ex.: Cyber/Cloud antes da revelação) some, em vez de ficar sem efeito na tela.
- */
-function answersFor(questions, trackIds) {
-  return questions.map(question => ({ ...question, answers: question.answers.filter(answer => Object.keys(answer.weights).some(id => trackIds.includes(id))) }));
-}
-
 /** Até `count` itens espalhados de forma uniforme pela lista (manhã, meio, tarde), em vez dos primeiros. */
 function pickSpread(items, count) {
   if (items.length <= count) return [...items];
   return Array.from({ length: count }, (_, i) => items[Math.round((i * (items.length - 1)) / (count - 1 || 1))]);
 }
 
-if (typeof module !== "undefined") module.exports = { scoreQuiz, pickSpread, answersFor };
+if (typeof module !== "undefined") module.exports = { scoreQuiz, pickSpread };

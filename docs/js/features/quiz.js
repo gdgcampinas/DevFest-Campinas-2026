@@ -12,10 +12,9 @@
 const QUIZ_TRACK_PARAM = "trilha";
 const QUIZ_TALKS_COUNT = 3;
 
-function initQuiz({ mountEl, questions: allQuestions, copy, tracks, talkIndex, favorites, reveal, timezone, resultUrl, search = location.search }) {
+function initQuiz({ mountEl, questions, copy, tracks, talkIndex, favorites, reveal, timezone, resultUrl, search = location.search }) {
   const trackById = id => tracks.find(track => track.id === id);
   const trackIds = tracks.map(track => track.id);
-  const questions = answersFor(allQuestions, trackIds);
   const sharedTrack = trackById(new URLSearchParams(search).get(QUIZ_TRACK_PARAM));
   let state = sharedTrack ? { step: "result", trackId: sharedTrack.id, shared: true } : { step: "intro" };
   let choices = {};

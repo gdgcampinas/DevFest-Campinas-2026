@@ -18,7 +18,7 @@ const EVENT = {
   timezone: "America/Sao_Paulo",
   utcOffset: "-03:00",
   url: "https://gdgcampinas.github.io/DevFest-Campinas-2026/", // endereço público (canonical, compartilhamento, dados estruturados)
-  description: "Um dia de tecnologia em Campinas: 4 trilhas de palestras, comunidade e networking. 28 de novembro de 2026.",
+  description: "Um dia de tecnologia em Campinas: 5 trilhas de palestras, comunidade e networking. 28 de novembro de 2026.",
   image: "assets/img/og-image.png", // imagem de compartilhamento (relativa a url)
   venue: "Local a definir",
   venueConfirmed: false, // false = calendário/agenda usam só o endereço (cidade) em vez do nome do local
@@ -69,20 +69,8 @@ const EVENT = {
  */
 const roomFor = place => `Sala ${place}`;
 
-/** Trilhas ao público até a revelação (o line-up real tem uma a mais, ver LINEUP_TRACKS). */
-const PUBLIC_TRACKS = [
-  { id: "ia", label: "IA", shortLabel: "IA", room: roomFor("Observatório"), mc: "MC a definir", color: "var(--ia)", icon: "sparkles",
-    description: "Modelos, agentes e aplicações de inteligência artificial na prática, do fundamento ao que já roda em produção." },
-  { id: "webdata", label: "Front-end / Back-end / Data - Full Stack", shortLabel: "Front/Back/Data - Full Stack", room: roomFor("Estação"), mc: "MC a definir", color: "var(--webdata)", icon: "code",
-    description: "Arquitetura, engenharia de dados e desenvolvimento web: as bases que sustentam qualquer produto digital." },
-  { id: "mobile", label: "Mobile / Agile", shortLabel: "Mobile/Agile", room: roomFor("Lagoa do Taquaral"), mc: "MC a definir", color: "var(--mobile)", icon: "phone",
-    description: "Apps nativos e multiplataforma, e os métodos ágeis que fazem times entregarem rápido e com qualidade." },
-  { id: "mentoring", label: "Carreira em Tecnologia", shortLabel: "Carreira em Tecnologia", room: roomFor("Mercadão Central"), mc: "MC a definir", color: "var(--mentoring)", icon: "rocket",
-    description: "Trajetórias, mentoria e como crescer na área, com quem já passou pelos mesmos desafios." },
-];
-
-/** Trilhas da grade real (5): nomes e cores da grade do Renato. Só em modo DEV até a revelação. */
-const LINEUP_TRACKS = [
+/** As 5 trilhas do evento (2026-11-12): nomes da grade do Renato e frase de cada post. Valem em PROD e em DEV, só as palestras reais esperam a revelação. */
+const TRACKS = [
   { id: "ia", label: "IA/Vibe Coding", shortLabel: "IA/Vibe Coding", room: roomFor("Observatório"), mc: "MC a definir", color: "var(--ia)", icon: "sparkles",
     description: "Uma pergunta pode abrir um mundo de possibilidades." },
   { id: "webdata", label: "Front-end / Back-end / Data - Full Stack", shortLabel: "Front/Back/Data - Full Stack", room: roomFor("Estação"), mc: "MC a definir", color: "var(--webdata)", icon: "code",
@@ -217,10 +205,9 @@ const lineupTalksRepository = createRepository(LINEUP_TALKS_BY_TRACK, { getFor: 
 
 /**
  * Line-up REAL (trilhas, palestrantes e palestras de `LINEUP_*`) só aparece depois da revelação (`EVENT.lineupRevealed`) ou em modo DEV (`?lineup=1`, ver `devLineupRequested` em
- * schedule-builder.js). Antes disso o público vê as 4 trilhas e o mock, como sempre. Na revelação: `lineupRevealed: true` e apagar o ramo mock (mock-*.js).
+ * schedule-builder.js). Antes disso o público vê as 5 trilhas com o mock, como sempre. Na revelação: `lineupRevealed: true` e apagar o ramo mock (mock-*.js).
  */
 const showRealLineup = !globalThis.DEVFEST_FORCE_MOCK_LINEUP && (EVENT.lineupRevealed || devLineupRequested()); // DEVFEST_FORCE_MOCK_LINEUP: só os testes de tela (DevFestIA/tools/lib/dom-harness.js), que checam o formato do mock
-const TRACKS = showRealLineup ? LINEUP_TRACKS : PUBLIC_TRACKS;
 
 function eventTime(hhmm) {
   return new Date(`${EVENT.date}T${hhmm}:00${EVENT.utcOffset}`);

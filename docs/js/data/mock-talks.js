@@ -91,6 +91,26 @@ const MOCK_TALKS_BY_TRACK = {
     talk("Saúde mental na tecnologia: limites, burnout e recomeços", "painel", ["saúde-mental", "bem-estar"], ["aline-teixeira", "tatiane-gomes"],
       "Uma conversa cuidadosa sobre sinais de esgotamento, limites saudáveis e como pedir ajuda."),
   ],
+  cloudsec: [
+    talk("Segurança desde o primeiro commit: o básico que evita o pior", "palestra", ["segurança", "devsecops"], ["chen-wei"],
+      "Segredos no repositório, dependências vulneráveis e revisão de código: o mínimo que todo time deveria automatizar."),
+    talk("Nuvem sem susto: custo, acesso e permissões mínimas", "palestra", ["cloud", "iam"], ["ethan-wright"],
+      "Como organizar contas, papéis e orçamentos para escalar sem abrir portas que ninguém lembra de ter aberto."),
+    talk("Criptografia para quem não é de criptografia", "bate-papo", ["criptografia", "dados"], ["omar-haddad"],
+      "Hash, chave e certificado sem mistério: o que usar, o que nunca inventar e onde as falhas costumam estar."),
+    talk("Resposta a incidentes: o que fazer nas primeiras horas", "painel", ["incidentes", "resposta"], ["chen-wei", "daniel-reyes"],
+      "Duas experiências sobre conter, comunicar e aprender com um incidente de segurança de verdade."),
+    talk("Containers e Kubernetes: configurações que vazam", "workshop", ["containers", "kubernetes"], ["daniel-reyes"],
+      "Encontre e corrija permissões excessivas, imagens inseguras e segredos expostos em um cluster de exemplo."),
+    talk("Autenticação moderna: senhas, passkeys e tokens", "palestra", ["autenticação", "passkeys"], ["carlos-mendes"],
+      "O que muda com passkeys, como guardar sessão com segurança e erros comuns em tokens e cookies."),
+    talk("Observabilidade e logs que ajudam a achar o ataque", "palestra", ["observabilidade", "logs"], ["kwame-mensah"],
+      "Quais sinais registrar, como alertar sem ruído e como investigar depois que algo estranho aconteceu."),
+    talk("Segurança de APIs: do OWASP à prática", "workshop", ["api", "owasp"], ["isabella-moore"],
+      "Teste uma API de exemplo contra as falhas mais comuns e veja como cada uma é corrigida."),
+    talk("Cloud e segurança na carreira: por onde começar", "bate-papo", ["carreira", "cloud"], ["rafael-lima"],
+      "Certificações, laboratórios gratuitos e projetos pequenos que mostram que você entende de proteger sistemas."),
+  ],
 };
 
 const mockTalksRepository = createRepository(MOCK_TALKS_BY_TRACK, {

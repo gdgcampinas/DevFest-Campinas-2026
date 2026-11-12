@@ -11,14 +11,12 @@ const path = require("node:path");
 const vm = require("node:vm");
 
 const docs = path.join(__dirname, "..", "..", "..", "docs");
-const { scoreQuiz, pickSpread, answersFor } = require(path.join(docs, "js/features/quiz-scoring.js"));
+const { scoreQuiz, pickSpread } = require(path.join(docs, "js/features/quiz-scoring.js"));
 
 const read = file => fs.readFileSync(path.join(docs, file), "utf8");
 const { questions } = vm.runInNewContext(`${read("js/data/repository.js")}\n${read("js/data/quiz.js")}\nquizRepository.getAll()`);
 const idsOf = name => [...read("js/data/schedule.js").match(new RegExp(`const ${name} = \\[([\\s\\S]*?)\\n\\];`))[1].matchAll(/\{ id: "(\w+)", label/g)].map(match => match[1]);
-const publicTrackIds = idsOf("PUBLIC_TRACKS");
-const lineupTrackIds = idsOf("LINEUP_TRACKS");
-const trackIds = lineupTrackIds;
+const trackIds = idsOf("TRACKS");
 
 test("as trilhas do schedule.js foram encontradas", () => {
   assert.ok(trackIds.length >= 2, `trilhas: ${trackIds}`);
@@ -37,29 +35,17 @@ test("dado coerente: ids únicos, respostas suficientes e pesos só de trilhas e
   });
 });
 
-[["PROD", publicTrackIds], ["DEV", lineupTrackIds]].forEach(([label, ids]) => {
-  test(`toda trilha de ${label} pode vencer em alguma combinação de respostas`, () => {
-    const available = answersFor(questions, ids);
-    const winners = new Set();
-    const walk = (index, choices) => {
-      if (index === available.length) {
-        winners.add(scoreQuiz(available, choices, ids).winnerId);
-        return;
-      }
-      available[index].answers.forEach(answer => walk(index + 1, { ...choices, [available[index].id]: answer.id }));
-    };
-    walk(0, {});
-    ids.forEach(id => assert.ok(winners.has(id), `trilha "${id}" nunca vence`));
-  });
-});
-
-test("em PROD (sem a Cyber/Cloud) nenhuma resposta fica sem efeito; em DEV as respostas da trilha nova aparecem", () => {
-  const prod = answersFor(questions, publicTrackIds);
-  prod.forEach(question => question.answers.forEach(answer => assert.ok(Object.keys(answer.weights).some(id => publicTrackIds.includes(id)), `${question.id}/${answer.id}`)));
-  assert.ok(prod.every(question => question.answers.every(answer => !("cloudsec" in answer.weights) || Object.keys(answer.weights).some(id => id !== "cloudsec" && publicTrackIds.includes(id)))));
-  const dev = answersFor(questions, lineupTrackIds);
-  assert.ok(dev.flatMap(question => question.answers).some(answer => "cloudsec" in answer.weights));
-  assert.ok(prod.flatMap(question => question.answers).every(answer => !(Object.keys(answer.weights).length === 1 && "cloudsec" in answer.weights)), "resposta só da Cyber/Cloud não pode aparecer em PROD");
+test("toda trilha pode vencer em alguma combinação de respostas", () => {
+  const winners = new Set();
+  const walk = (index, choices) => {
+    if (index === questions.length) {
+      winners.add(scoreQuiz(questions, choices, trackIds).winnerId);
+      return;
+    }
+    questions[index].answers.forEach(answer => walk(index + 1, { ...choices, [questions[index].id]: answer.id }));
+  };
+  walk(0, {});
+  trackIds.forEach(id => assert.ok(winners.has(id), `trilha "${id}" nunca vence`));
 });
 
 test("soma os pesos e ordena o ranking", () => {

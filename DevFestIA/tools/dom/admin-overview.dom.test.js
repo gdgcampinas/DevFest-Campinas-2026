@@ -127,7 +127,7 @@ test("cartão de perguntas pendentes: conta por trilha só as 'pending' da pales
   assert.equal(asked.length, TRACKS.length);
   assert.ok(asked.every(filters => filters.status === "pending"));
   assert.deepEqual([...asked.map(filters => filters.talkKey)], [...TRACKS.map(track => g("talkKey")(talkSlots[0], track.id))]);
-  assert.equal(views[0].headline, "6 na fila", "3 da IA + 1 de cada uma das outras três");
+  assert.equal(views[0].headline, "7 na fila", "3 da IA + 1 de cada uma das outras quatro");
   assert.equal(views[0].tone, "warn");
   assert.equal(views[0].lines[0], `${TRACKS[0].shortLabel}: 3 pendente(s)`);
   await clock.tick(definitions.pending.intervalMs + 10);

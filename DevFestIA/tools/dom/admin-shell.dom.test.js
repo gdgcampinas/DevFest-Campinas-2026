@@ -307,7 +307,7 @@ test("a página admin.html: a visão geral abre por padrão com os 7 cartões do
   assert.deepEqual([...body.querySelectorAll("[data-card]")].map(card => card.dataset.card), ["control", "rooms", "pending", "photos", "wall", "waitlist", "registered"]);
   const card = id => textOf(body.querySelector(`[data-card="${id}"]`));
   assert.match(card("control"), /Telão normal/);
-  assert.match(card("rooms"), /4 de 4 com palestra no ar/);
+  assert.match(card("rooms"), /5 de 5 com palestra no ar/);
   assert.match(card("pending"), /4 na fila/);
   assert.match(card("photos"), /1 foto\(s\)/);
   assert.match(card("wall"), /2 esperando/);
@@ -336,7 +336,7 @@ test("a página admin.html: a seção Lista de espera mostra quem pediu pra ser 
 
 test("a página admin.html: a seção Palestras mostra uma caixa por trilha com os botões em aba nova", async () => {
   const { site, body } = bootAdminPage("#palestras");
-  await waitFor(() => body.querySelectorAll("[data-track]").length === 4);
+  await waitFor(() => body.querySelectorAll("[data-track]").length === 5);
   assert.equal(body.querySelector("[data-admin-title]").textContent, "Palestras");
   assert.ok(body.querySelector('[data-track="ia"] [data-link="codejam"]'));
   assert.equal(body.querySelectorAll('[data-track="webdata"] a').length, 2);
