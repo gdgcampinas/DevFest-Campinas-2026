@@ -82,25 +82,6 @@ function initTalkDetails(rootEl, { schedule, tracks, timezone, reveal, modal, fa
   return { openTalk };
 }
 
-/**
- * Liga um card genérico (ex.: info-card com clickable:true) ao modal
- * genérico, abrindo o HTML retornado por markupFn — reusado por
- * qualquer galeria (cardápio, mapa do estacionamento etc), não só
- * palestra. Não faz nada se o card não existir ou não for clicável
- * (ex.: sem imagens ainda cadastradas).
- */
-function initClickableCard(cardEl, modal, markupFn) {
-  if (!cardEl || !cardEl.classList.contains("clickable")) return;
-  const open = () => modal.openHTML(markupFn());
-  cardEl.addEventListener("click", open);
-  cardEl.addEventListener("keydown", event => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      open();
-    }
-  });
-}
-
 /** Setas do carrossel de galeria — delegado no modal pra funcionar mesmo com conteúdo recriado a cada abertura. */
 function initMenuCarousel(modalEl) {
   modalEl.addEventListener("click", event => {

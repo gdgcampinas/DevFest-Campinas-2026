@@ -231,22 +231,24 @@ function renderVenueMap(event, mountEl) {
     <div class="frame"><iframe src="${embed}" loading="lazy" title="${t("venue.mapTitle", "Mapa até {venue}", { venue: event.venue })}"></iframe></div>`;
 }
 
-/**
- * Imagens das galerias de "Antes de vir" — vazio até termos
- * confirmação de food truck(s)/estacionamento. Card correspondente
- * simplesmente não fica clicável enquanto a lista estiver vazia (ver
- * buildBeforeYouComeItems abaixo), sem precisar mexer em HTML/CSS.
- */
-const PARKING_IMAGES = [
-  // { file: "assets/img/parking-map.jpg", alt: "Mapa do estacionamento" },
-];
-const FOOD_IMAGES = [
-  // { file: "assets/img/menu-x.jpg", alt: "Cardápio X" },
-];
-
 const ICON_PARKING = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"></rect><path d="M3 11h18"></path><path d="M7 7V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"></path><path d="M9 15h3a1.5 1.5 0 0 0 0-3H9v6"></path></svg>`;
 const ICON_FOOD = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11a9 5 0 0 1 18 0z"></path><path d="M3 11h18v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><path d="M7 20h10"></path></svg>`;
 const ICON_VENUE = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>`;
+
+/**
+ * Texto do card "Antes de vir" vem dos pontos do mapa de "Como chegar" (uma fonte só, já traduzida):
+ * o card nunca fica desatualizado em relação ao mapa e leva pra ele. Com um ponto só, o nome do ponto é o título.
+ */
+function cardFromMapPoints(ids, href, { withNames = false } = {}) {
+  const points = ids.map(id => venueMapPointsRepository.getById(id));
+  const line = point => withNames ? `<strong>${escapeHtml(tt(point.name))}.</strong> ${escapeHtml(tt(point.text))}` : escapeHtml(tt(point.text));
+  return {
+    ...(withNames ? {} : { title: escapeHtml(tt(points[0].name)) }),
+    body: points.map(line).join("<br>"),
+    href,
+    linkText: t("before.seeMap", "Ver no mapa"),
+  };
+}
 
 /**
  * Monta os 3 cards de "Antes de vir" reaproveitando as N primeiras
@@ -261,19 +263,14 @@ function buildBeforeYouComeItems() {
       id: "parking",
       trackColor: "var(--google-blue)",
       icon: ICON_PARKING,
-      title: t("before.parking", "Estacionamento"),
-      body: t("before.parkingSoon", "Informações do estacionamento em breve."),
-      clickable: PARKING_IMAGES.length > 0,
-      linkText: PARKING_IMAGES.length > 0 ? t("before.seeParking", "Ver estacionamento") : "",
+      ...cardFromMapPoints(["parking"], "local.html"),
     },
     {
       id: "food",
       trackColor: "var(--google-yellow)",
       icon: ICON_FOOD,
       title: t("before.food", "Comida"),
-      body: t("before.foodSoon", "Opções de alimentação em breve."),
-      clickable: FOOD_IMAGES.length > 0,
-      linkText: FOOD_IMAGES.length > 0 ? t("before.seeMenu", "Ver cardápio") : "",
+      ...cardFromMapPoints(["foodtruck", "food"], "local.html", { withNames: true }),
     },
     {
       id: "venue",

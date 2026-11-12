@@ -30,10 +30,6 @@ function initHome() {
   renderVenueInfo(EVENT, document.getElementById("venueInfo"), SCHEDULE);
   renderVenueMap(EVENT, document.getElementById("venueMap"));
   initVenueMapCallout(document.getElementById("campusCallout"), { text: venueMapTextsRepository.getAll(), config: venueMapConfigRepository.getAll(), devMode: isDevModeStored(), access: venueAccessLine(EVENT) });
-  initClickableCard(document.querySelector('[data-item="parking"]'), modal, () =>
-    galleryMarkup(t("before.parking", "Estacionamento"), t("before.infoSoon", "Informações em breve."), PARKING_IMAGES));
-  initClickableCard(document.querySelector('[data-item="food"]'), modal, () =>
-    galleryMarkup(t("before.menu", "Cardápio"), t("before.infoSoon", "Informações em breve."), FOOD_IMAGES));
   renderTracksOverview(TRACKS, document.getElementById("tracksOverviewSection"), document.querySelector(".tracks-overview-grid"));
 
   renderRealizacao(EVENT.hosts, document.querySelector(".realizacao-grid"), { by: REALIZATION_BY });

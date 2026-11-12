@@ -10,21 +10,23 @@
  *   icon        → string SVG já pronta
  *   title, body → texto (body é opcional)
  *   mountId     → opcional: div vazia pra outro módulo montar conteúdo próprio
+ *   href        → opcional: o card inteiro vira um link (<a>) pra essa página
  *   clickable   → opcional: adiciona role/tabindex pra abrir modal/galeria
- *   linkText    → opcional: rótulo do "Ver X →" quando clickable
+ *   linkText    → opcional: rótulo do "Ver X →" quando clickable ou com href
  * }
  */
 function infoCardMarkup(item) {
-  const classes = ["faq-item", item.clickable && "clickable"].filter(Boolean).join(" ");
-  const clickableAttrs = item.clickable ? ` role="button" tabindex="0"` : "";
+  const classes = ["faq-item", (item.clickable || item.href) && "clickable"].filter(Boolean).join(" ");
+  const tag = item.href ? "a" : "div";
+  const attrs = item.href ? ` href="${item.href}"` : item.clickable ? ` role="button" tabindex="0"` : "";
   return `
-    <div class="${classes}" data-item="${item.id}" style="--track-color:${item.trackColor}"${clickableAttrs}>
+    <${tag} class="${classes}" data-item="${item.id}" style="--track-color:${item.trackColor}"${attrs}>
       <div class="faq-icon">${item.icon}</div>
       <h3>${item.title}</h3>
       ${item.body ? `<p>${item.body}</p>` : ""}
       ${item.mountId ? `<div id="${item.mountId}"></div>` : ""}
       ${item.linkText ? `<span class="faq-link">${item.linkText} →</span>` : ""}
-    </div>`;
+    </${tag}>`;
 }
 
 function renderInfoCards(items, mountEl) {
