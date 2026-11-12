@@ -84,15 +84,15 @@ const PUBLIC_TRACKS = [
 /** Trilhas da grade real (5): nomes e cores da grade do Renato. Só em modo DEV até a revelação. */
 const LINEUP_TRACKS = [
   { id: "ia", label: "IA/Vibe Coding", shortLabel: "IA/Vibe Coding", room: roomFor("Observatório"), mc: "MC a definir", color: "var(--ia)", icon: "sparkles",
-    description: "Modelos, agentes e aplicações de inteligência artificial na prática, do fundamento ao que já roda em produção." },
+    description: "Uma pergunta pode abrir um mundo de possibilidades." },
   { id: "webdata", label: "Front-end / Back-end / Data - Full Stack", shortLabel: "Front/Back/Data - Full Stack", room: roomFor("Estação"), mc: "MC a definir", color: "var(--webdata)", icon: "code",
-    description: "Arquitetura, engenharia de dados e desenvolvimento web: as bases que sustentam qualquer produto digital." },
+    description: "Da interface aos dados: conecte todas as partes." },
   { id: "mobile", label: "Mobile / Gerência de Projetos", shortLabel: "Mobile/Gerência de Projetos", room: roomFor("Lagoa do Taquaral"), mc: "MC a definir", color: "var(--mobile)", icon: "phone",
-    description: "Apps nativos e multiplataforma e a gerência de projetos que faz times entregarem rápido e com qualidade." },
+    description: "Do app ao plano de ação: ideias avançam em equipe." },
   { id: "cloudsec", label: "Cyber Segurança (Security) / Cloud", shortLabel: "Cyber Segurança/Cloud", room: roomFor("Torre do Castelo"), mc: "MC a definir", color: "var(--cloudsec)", icon: "shield",
-    description: "Segurança, criptografia e arquitetura em nuvem: como proteger e escalar sistemas de verdade." },
+    description: "Explore com confiança. Proteja o que importa." },
   { id: "mentoring", label: "Carreira em Tecnologia", shortLabel: "Carreira em Tecnologia", room: roomFor("Mercadão Central"), mc: "MC a definir", color: "var(--mentoring)", icon: "rocket",
-    description: "Trajetórias, mentoria e como crescer na área, com quem já passou pelos mesmos desafios." },
+    description: "Cada passo abre caminhos. O próximo também é seu." },
 ];
 
 /**

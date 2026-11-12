@@ -13,6 +13,7 @@ const QUIZ_QUESTIONS = [
       { id: "app", label: "Um app bonito e rápido no celular", weights: { mobile: 3 } },
       { id: "arch", label: "Como um sistema aguenta milhões de acessos", weights: { webdata: 3 } },
       { id: "career", label: "Como alguém chegou onde eu quero chegar", weights: { mentoring: 3 } },
+      { id: "sec", label: "Como proteger um sistema contra ataques", weights: { cloudsec: 3 } },
     ],
   },
   {
@@ -23,6 +24,7 @@ const QUIZ_QUESTIONS = [
       { id: "mid", label: "Já entrego, quero me aprofundar", weights: { webdata: 2, ia: 1 } },
       { id: "senior", label: "Sênior, quero ver o que vem por aí", weights: { ia: 2, webdata: 1 } },
       { id: "lead", label: "Lidero pessoas ou times", weights: { mentoring: 2, mobile: 1 } },
+      { id: "ops", label: "Cuido de infraestrutura, nuvem ou segurança", weights: { cloudsec: 3 } },
     ],
   },
   {
@@ -33,6 +35,7 @@ const QUIZ_QUESTIONS = [
       { id: "deep", label: "Mergulho técnico de arquitetura", weights: { webdata: 3 } },
       { id: "story", label: "História real, com erros e acertos", weights: { mentoring: 3 } },
       { id: "trend", label: "Panorama do que está mudando", weights: { ia: 2, webdata: 1 } },
+      { id: "incident", label: "Caso real de incidente, ataque e defesa", weights: { cloudsec: 3 } },
     ],
   },
   {
@@ -42,6 +45,7 @@ const QUIZ_QUESTIONS = [
       { id: "agents", label: "Agentes e APIs de IA", weights: { ia: 3 } },
       { id: "cross", label: "Flutter, Kotlin ou Swift", weights: { mobile: 3 } },
       { id: "cloud", label: "Banco de dados, nuvem e pipelines", weights: { webdata: 3 } },
+      { id: "shield", label: "Segurança, criptografia e proteção de dados", weights: { cloudsec: 3 } },
       { id: "agile", label: "Métodos ágeis e produto", weights: { mobile: 2, mentoring: 1 } },
     ],
   },
@@ -53,6 +57,7 @@ const QUIZ_QUESTIONS = [
       { id: "network", label: "Contatos e mentoria", weights: { mentoring: 3 } },
       { id: "future", label: "Ideias sobre o futuro da tecnologia", weights: { ia: 3 } },
       { id: "ship", label: "Como entregar melhor com o meu time", weights: { mobile: 2, mentoring: 1 } },
+      { id: "protect", label: "Saber proteger o que eu construo", weights: { cloudsec: 3 } },
     ],
   },
 ];
