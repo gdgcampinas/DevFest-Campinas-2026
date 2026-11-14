@@ -12,7 +12,7 @@ const vm = require("node:vm");
 const readData = file => fs.readFileSync(path.join(__dirname, "..", "..", "..", "docs", "js", "data", file), "utf8");
 function loadAll(publicFlag) {
   const context = vm.createContext({ createRepository: (data, extra = {}) => ({ getAll: () => data, ...extra }), WALLPAPERS_CONFIG: { public: true }, VENUE_PHOTOS_CONFIG: { public: true }, EVENT: { tickets: { showCounter: false, counterMin: 0 } }, WALL_CONFIG: { open: false, window: { from: null, until: null } } });
-  const source = ["puc-videos.js", "mural-videos.js", "mural-captions.js", "mural-scenes.js"].map(readData).join("\n;\n").replace(/^  public: (true|false),/m, `  public: ${publicFlag},`);
+  const source = ["puc-videos.js", "mural-videos.js", "mural-captions.js", "gcp-credits.js", "mural-scenes.js"].map(readData).join("\n;\n").replace(/^  public: (true|false),/m, `  public: ${publicFlag},`);
   vm.runInContext(`${source}\n;globalThis.__out = { PUC_VIDEO_CONFIG, MURAL_VIDEO_CLIPS, MURAL_VIDEO_PLAYLISTS, MURAL_CAPTIONS, MURAL_SCENES, muralVideosRepository };`, context);
   return context.__out;
 }
