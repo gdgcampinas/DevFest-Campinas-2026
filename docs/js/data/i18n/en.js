@@ -323,7 +323,6 @@ I18N_DICTIONARIES.en = {
     "Coding Jam: créditos do Google Cloud": "Coding Jam: Google Cloud credits",
     "Em paralelo às palestras": "Running alongside the talks",
     "Lab de IA": "AI Lab",
-    "Quem faz o lab": "Run by",
     "Créditos do Google Cloud e detalhes": "Google Cloud credits and details",
     "Laboratório com computadores": "Computer lab",
     "Só conta @gmail.com": "Only @gmail.com accounts",

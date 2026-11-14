@@ -1,10 +1,10 @@
 /* Página "Coding Jam e créditos do Google Cloud" (features/gcp-credits.js) e cartaz de impressão (cartaz-creditos.html). Só layout: cores e fontes vêm de tokens.css.
-   O bloco "quem faz o lab" (.parallel-host*) vem de parallel-session.css, que a página também carrega. */
+   O bloco "quem faz o lab" (.parallel-who) é o de quem fala (styles.css) e parallel-session.css, que a página também carrega. */
 .credits-page{max-width:1080px;margin:36px auto 0;padding:0 24px 24px;display:flex;flex-direction:column;gap:36px}
 
 /* topo: a sessão em destaque, listras em diagonal na cor dela (as mesmas do card da grade) */
 .credit-hero{
-  display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:28px;align-items:center;padding:30px 32px;border-radius:26px;
+  display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:28px;align-items:center;padding:30px 32px;border-radius:26px;
   border:1px solid color-mix(in oklch,var(--band-color) 55%,transparent);border-top:5px solid var(--band-color);
   background:
     repeating-linear-gradient(135deg,color-mix(in oklch,var(--band-color) 11%,transparent) 0 16px,transparent 16px 32px),
@@ -16,7 +16,7 @@
 .credit-session{list-style:none;margin:20px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:10px}
 .credit-session li{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:100px;background:rgb(255 255 255/.07);border:1px solid rgb(255 255 255/.12);font:700 14px var(--font-body);color:var(--text)}
 .credit-session .icon{width:18px;height:18px;color:var(--band-color)}
-.credit-hero .parallel-host{margin:0;padding-left:28px;border-left:1px solid rgb(255 255 255/.14)}
+.credit-hero .parallel-who{margin:0;padding-left:28px;border-left:1px solid rgb(255 255 255/.14);--track-color:var(--band-color)}
 
 /* o link: o bloco mais forte da página, borda nas 4 cores do Google */
 .credit-link{
@@ -69,7 +69,7 @@
 
 @media(max-width:899px){
   .credit-hero{grid-template-columns:1fr;padding:24px 20px}
-  .credit-hero .parallel-host{padding:18px 0 0;border-left:0;border-top:1px solid rgb(255 255 255/.14)}
+  .credit-hero .parallel-who{padding:18px 0 0;border-left:0;border-top:1px solid rgb(255 255 255/.14)}
 }
 @media(max-width:719px){
   .credits-page{padding:0 16px 24px;gap:28px}

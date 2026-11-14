@@ -4,21 +4,21 @@
  * Puro template: recebe a colocação (features/parallel-sessions.js) e as frases prontas. O grupo (`parallelGroupMarkup`) junta as sessões cobertas e o card; nada aqui leva
  * `.slot`: a grade e o "ao vivo agora" contam as sessões pela posição de `.slot`, e o card não é uma delas.
  */
-function parallelHostMarkup(host, texts) {
+/** Quem faz a sessão como se fosse quem fala: o mesmo bloco do card de palestra (avatar, nome e ícones), componentes de talk-meta.js e person-card.js. `talk`/`color` vão para o zoom da foto. */
+function parallelHostMarkup(host, { talk = "", color = "" } = {}) {
   if (!host) return "";
-  const links = [{ label: "Linktree", url: host.link }, { label: "Instagram", url: host.instagram }].filter(link => link.url);
   return `
-    <div class="parallel-host">
-      <span class="parallel-host-label">${texts.hostLabel}</span>
-      <div class="parallel-host-logo"><img src="${host.logo}" alt="${host.name}" loading="lazy" decoding="async"></div>
-      <div class="parallel-host-links">${links.map(link => `<a href="${link.url}" target="_blank" rel="noopener">${link.label}</a>`).join("")}</div>
+    <div class="talk-who parallel-who">
+      ${talkAvatarsMarkup([host], { talk, color })}
+      <div class="talk-who-text"><div class="talk-name">${host.name}</div></div>
+      <div class="talk-links">${host.social.map(socialIconMarkup).join("")}</div>
     </div>`;
 }
 
 function parallelSessionCardMarkup({ session, round, roundIndex, host, highlight }, texts) {
   const label = session.rounds.length > 1 ? `${session.name} · ${roundIndex + 1}` : session.name;
   return `
-    <aside class="parallel-card" style="--band-color:${session.color};--highlight-color:${session.color}" data-session="${session.id}">
+    <aside class="parallel-card" style="--band-color:${session.color};--highlight-color:${session.color};--track-color:${session.color}" data-session="${session.id}">
       ${highlight ? talkHighlightRibbonMarkup(highlight) : ""}
       <div class="parallel-card-body">
       <span class="parallel-kicker">${session.kicker}</span>
@@ -26,7 +26,7 @@ function parallelSessionCardMarkup({ session, round, roundIndex, host, highlight
       <h3 class="parallel-title">${label}</h3>
       <p class="parallel-meta">${iconMarkup("clock")}${round.start}–${round.end}</p>
       <p class="parallel-meta">${iconMarkup("pin")}${session.place}</p>
-      ${parallelHostMarkup(host, texts)}
+      ${parallelHostMarkup(host, { talk: session.name, color: session.color })}
       <a class="cta parallel-cta" href="${session.href}">${iconMarkup("gift")}${texts.details}</a>
       </div>
     </aside>`;

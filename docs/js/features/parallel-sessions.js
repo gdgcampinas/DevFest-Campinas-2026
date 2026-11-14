@@ -15,10 +15,12 @@ function parallelPlacements(sessions, schedule, toDate, { findHost = () => undef
   })).sort((a, b) => a.start - b.start);
 }
 
-/** A marca que faz a sessão: { name, logo, link, instagram } com o que `findHost` achar em data/sponsors.js; sem marca, `null`. */
+/** Quem faz a sessão, no formato de quem fala: { name, photo, social: [{ name, link }] } (o logo da marca vira a foto; Linktree e Instagram viram ícones); sem marca achada, `null`. */
 function resolveParallelHost(session, findHost) {
   const sponsor = session.host && findHost(session.host.sponsor);
-  return sponsor ? { name: sponsor.name, logo: sponsor.imageUrl, link: sponsor.link, instagram: session.host.instagram } : null;
+  if (!sponsor) return null;
+  const social = [{ name: "linktree", link: sponsor.link }, { name: "instagram", link: session.host.instagram }].filter(item => item.link);
+  return { name: session.host.name ?? sponsor.name, photo: sponsor.imageUrl, social };
 }
 
 /** "1ª rodada, das 10:00 às 12:00" por rodada: o `template` ({n}, {start}, {end}) vem do dicionário de quem mostra (já traduzido). */

@@ -8,8 +8,8 @@ function creditStateDate(state, { locale }) {
   return iso ? formatCreditMoment(iso, { locale }) : "";
 }
 
-/** `session`: a sessão paralela dos créditos (data/parallel-sessions.js, `config.sessionId`); `host`: quem faz o lab (features/parallel-sessions.js, `resolveParallelHost`) e `parallelTexts` as frases do bloco dele; tudo por parâmetro. */
-function renderGcpCredits(config, mountEl, { session, host = null, parallelTexts = null, now = new Date(), locale = "pt-BR" } = {}) {
+/** `session`: a sessão paralela dos créditos (data/parallel-sessions.js, `config.sessionId`); `host`: quem faz o lab (features/parallel-sessions.js, `resolveParallelHost`); tudo por parâmetro. */
+function renderGcpCredits(config, mountEl, { session, host = null, now = new Date(), locale = "pt-BR" } = {}) {
   const { texts } = config;
   const state = creditWindowState(config.windows, now);
   mountEl.innerHTML = `
@@ -24,7 +24,7 @@ function renderGcpCredits(config, mountEl, { session, host = null, parallelTexts
           ${parallelRoundLines(session, texts.roundLine).map(line => `<li>${iconMarkup("clock")}${line}</li>`).join("")}
         </ul>
       </div>
-      ${host ? parallelHostMarkup(host, parallelTexts) : ""}
+      ${host ? parallelHostMarkup(host, { talk: session.name, color: session.color }) : ""}
     </div>
     <section class="credit-link" aria-labelledby="creditLinkTitle" id="creditLink">
       <h2 id="creditLinkTitle">${texts.linkTitle}</h2>

@@ -11,7 +11,7 @@ const path = require("node:path");
 const { loadSite, SITE_BASE } = require("../lib/dom-harness.js");
 
 const DOCS = path.join(__dirname, "..", "..", "..", "docs");
-const site = loadSite({ scripts: [...SITE_BASE, "data/gcp-credits.js", "data/sponsors.js", "data/parallel-sessions.js", "components/parallel-session-card.js", "features/parallel-sessions.js", "features/agenda.js", "components/track-card.js", "components/info-card.js", "components/credit-steps.js", "components/credit-link-card.js", "components/talk-highlight.js", "features/gcp-credit-window.js", "components/modal.js", "features/image-zoom.js", "features/gcp-credits.js", "features/gcp-credit-poster.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "data/gcp-credits.js", "data/sponsors.js", "data/parallel-sessions.js", "components/avatar.js", "components/talk-meta.js", "components/person-card.js", "components/parallel-session-card.js", "features/parallel-sessions.js", "features/agenda.js", "components/track-card.js", "components/info-card.js", "components/credit-steps.js", "components/credit-link-card.js", "components/talk-highlight.js", "features/gcp-credit-window.js", "components/modal.js", "features/image-zoom.js", "features/gcp-credits.js", "features/gcp-credit-poster.js"] });
 test.after(() => site.window.close());
 const config = site.get("gcpCreditsRepository").getAll();
 const creditWindowState = site.get("creditWindowState");
@@ -147,12 +147,11 @@ test("mais de uma rodada: um card por rodada, ordenadas pelo horário; cada uma 
   assert.equal(site.get("parallelRoundLines")(two, "{n}ª, {start}-{end}").join("|"), "1ª, 11:00-12:00|2ª, 09:00-09:30");
 });
 
-test("a marca que faz o lab vem de data/sponsors.js (Liga de TI PUC), com logo e links", () => {
+test("quem faz o lab vem no formato de quem fala: nome da sessão, logo de data/sponsors.js como foto e Linktree e Instagram como ícones", () => {
   const [placement] = placementsOf([session]);
-  assert.equal(placement.host.name, "Liga de TI PUC");
-  assert.ok(placement.host.logo.endsWith("liga-de-ti-puc.webp"));
-  assert.equal(placement.host.link, "https://linktr.ee/ligadetipuccampinas");
-  assert.equal(placement.host.instagram, "https://www.instagram.com/ligadetipucc");
+  assert.equal(placement.host.name, "Liga de TI da PUC");
+  assert.ok(placement.host.photo.endsWith("liga-de-ti-puc.webp"));
+  assert.equal(placement.host.social.map(item => `${item.name}=${item.link}`).join(), "linktree=https://linktr.ee/ligadetipuccampinas,instagram=https://www.instagram.com/ligadetipucc");
   assert.equal(placementsOf([session], {})[0].host, null, "sem marca achada, o card sai sem o bloco de quem faz");
 });
 
@@ -164,11 +163,14 @@ test("a grade põe o card alto ao lado das sessões que ele cobre, sem mexer na 
   assert.equal(group.querySelectorAll(".parallel-span-slots .slot").length, 2);
   assert.equal([...el.querySelectorAll(".slot")].map(slotEl => slotEl.dataset.index).join(), "0,1,2,3,4", "mesma ordem e mesmo índice das sessões");
   const card = group.querySelector(".parallel-card");
-  assert.match(card.textContent, /Mão na massa.*Lab de IA.*Em paralelo às palestras.*Coding Jam.*10:00–12:00.*Laboratório com computadores.*Quem faz o lab/s);
+  assert.match(card.textContent, /Mão na massa.*Lab de IA.*Em paralelo às palestras.*Coding Jam.*10:00–12:00.*Laboratório com computadores.*Liga de TI da PUC/s);
+  assert.doesNotMatch(card.textContent, /Quem faz o lab/, "sem rótulo: a Liga aparece como quem fala");
   assert.match(card.getAttribute("style"), /--band-color:var\(--ia\)/, "a cor é a da trilha de IA/Vibe Coding");
   assert.equal(card.querySelector("a.parallel-cta").getAttribute("href"), "creditos.html");
-  assert.ok(card.querySelector(".parallel-host-logo img").getAttribute("src").endsWith("liga-de-ti-puc.webp"));
-  assert.deepEqual([...card.querySelectorAll(".parallel-host-links a")].map(a => a.getAttribute("href")), ["https://linktr.ee/ligadetipuccampinas", "https://www.instagram.com/ligadetipucc"]);
+  assert.equal(card.querySelectorAll(".talk-who .talk-avatar-ring").length, 1);
+  assert.ok(card.querySelector(".talk-who img.talk-avatar").getAttribute("src").endsWith("liga-de-ti-puc.webp"));
+  assert.equal(card.querySelector(".talk-who .talk-name").textContent, "Liga de TI da PUC");
+  assert.equal([...card.querySelectorAll(".talk-who .talk-links a")].map(a => a.getAttribute("href")).join(), "https://linktr.ee/ligadetipuccampinas,https://www.instagram.com/ligadetipucc");
 });
 
 test("sem sessões em paralelo (padrão) a grade fica como era; faixa vazia põe só o card antes da sessão seguinte", () => {
@@ -218,12 +220,13 @@ test("tocar na tela de um passo abre a imagem grande no modal; fechar esconde", 
 test("o topo mostra a Liga de TI como quem faz o lab quando a página recebe a marca; sem ela, só a sessão", () => {
   const host = site.get("resolveParallelHost")(session, findHost);
   const withHost = mount();
-  site.get("renderGcpCredits")(config, withHost, { session, host, parallelTexts: textsOf(), now: at("2026-11-28T10:00:00-03:00") });
-  assert.ok(withHost.querySelector(".credit-hero .parallel-host-logo img").getAttribute("src").endsWith("liga-de-ti-puc.webp"));
+  site.get("renderGcpCredits")(config, withHost, { session, host, now: at("2026-11-28T10:00:00-03:00") });
+  assert.ok(withHost.querySelector(".credit-hero .talk-who img.talk-avatar").getAttribute("src").endsWith("liga-de-ti-puc.webp"));
+  assert.match(withHost.querySelector(".credit-hero .talk-name").textContent, /Liga de TI da PUC/);
   assert.match(withHost.querySelector(".credit-hero").textContent, /Lab de IA.*Coding Jam/s);
   const without = mount();
   site.get("renderGcpCredits")(config, without, { session, now: at("2026-11-28T10:00:00-03:00") });
-  assert.equal(without.querySelectorAll(".parallel-host").length, 0);
+  assert.equal(without.querySelectorAll(".talk-who").length, 0);
 });
 
 test("link aberto mostra o selo 'liberado agora'; antes e depois da janela, não", () => {

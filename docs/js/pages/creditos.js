@@ -13,7 +13,6 @@ function initCreditosPage() {
       renderGcpCredits(config, sectionEl, {
         session,
         host: resolveParallelHost(session, name => sponsorsRepository.findByName(name)),
-        parallelTexts: parallelSessionsRepository.texts(),
         now: resolveNow()(),
         locale: i18n.lang === "en" ? "en-US" : "pt-BR",
       });

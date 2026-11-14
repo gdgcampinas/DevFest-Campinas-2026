@@ -17,13 +17,9 @@
 .parallel-title{margin:2px 0 4px;font:700 20px/1.2 var(--font-display);color:oklch(96% 0.006 260)}
 .parallel-meta{display:flex;align-items:center;gap:7px;margin:0;font:600 13px/1.4 var(--font-body);color:var(--text)}
 .parallel-meta .icon{width:15px;height:15px;flex:none;color:var(--band-color)}
-.parallel-host{margin-top:10px;display:flex;flex-direction:column;gap:8px}
-.parallel-host-label{font:700 11px var(--font-body);letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
-.parallel-host-logo{display:flex;align-items:center;justify-content:center;height:72px;padding:8px 12px;border-radius:12px;background:#fff;overflow:hidden}
-.parallel-host-logo img{display:block;max-width:100%;max-height:56px;width:auto;height:auto;object-fit:contain}
-.parallel-host-links{display:flex;flex-wrap:wrap;gap:6px 14px}
-.parallel-host-links a{font:700 12.5px var(--font-body);color:var(--band-color);text-decoration:none}
-.parallel-host-links a:hover{text-decoration:underline}
+/* quem faz o lab: o bloco de quem fala (.talk-who, styles.css); aqui só o espaço */
+.parallel-who{margin-top:12px}
+.parallel-who .talk-name{font-size:14px}
 .parallel-cta{margin-top:8px;background:var(--band-color);white-space:normal;text-align:center;padding:10px 14px;font-size:13px}
 @media(max-width:899px){
   .parallel-card{position:static;order:-1;width:auto}
