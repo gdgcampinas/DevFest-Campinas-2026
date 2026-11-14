@@ -10,7 +10,7 @@
 .credit-link-open{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
 .credit-qr{width:168px;height:168px;border-radius:14px;background:#fff;padding:6px;flex:none}
 .credit-link-body{display:flex;flex-direction:column;align-items:flex-start;gap:8px;min-width:220px}
-.credit-link-hint,.credit-link-until,.credit-note{margin:0;font:500 13px/1.5 var(--font-body);color:var(--muted)}
+.credit-link-hint,.credit-link-until{margin:0;font:500 13px/1.5 var(--font-body);color:var(--muted)}
 .credit-link-msg{display:flex;align-items:center;gap:10px;margin:0;font:600 15px/1.5 var(--font-body);color:var(--text)}
 .credit-link-msg .icon{width:22px;height:22px;color:var(--amber);flex:none}
 .credit-backup{margin-top:18px;font:500 13.5px/1.5 var(--font-body);color:var(--muted)}
@@ -18,13 +18,24 @@
 .credit-backup p{margin:6px 0 10px}
 .cta--ghost{background:transparent;color:var(--accent);border:1px solid color-mix(in oklch,var(--accent) 45%,transparent)}
 
-.credit-steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}
-.credit-step{position:relative;display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:18px;border:1px solid var(--card-border);background:linear-gradient(160deg,var(--card-a),var(--card-b))}
-.credit-step-num{position:absolute;top:10px;left:10px;z-index:1;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:oklch(14% 0.01 260);font:800 18px var(--font-display);box-shadow:0 2px 10px rgb(0 0 0/.4)}
-.credit-step-img{width:100%;aspect-ratio:9/19.5;object-fit:cover;object-position:top;border-radius:12px;background:#000}
-.credit-step h3{margin:0;font:700 16px/1.25 var(--font-display);color:oklch(96% 0.006 260)}
+/* passo a passo (8 passos = linhas cheias): celular = uma lista (tela à esquerda, texto à direita), tablet = 2 colunas, computador = 4; cada passo = número + título, a tela inteira (sem cortar) e a frase */
+.credit-steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media(min-width:900px){.credit-steps{grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}}
+.credit-step{display:flex;flex-direction:column;gap:12px;padding:14px;border-radius:18px;border:1px solid var(--card-border);background:linear-gradient(160deg,var(--card-a),var(--card-b))}
+.credit-step-head{display:flex;align-items:center;gap:10px;min-height:44px}
+.credit-step-num{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:oklch(14% 0.01 260);font:800 17px var(--font-display)}
+.credit-step h3{margin:0;font:700 15px/1.25 var(--font-display);color:oklch(96% 0.006 260)}
+.credit-step-screen{display:grid;place-items:center;aspect-ratio:9/17;padding:6px;border-radius:20px;background:#000;border:3px solid oklch(30% 0.02 260);overflow:hidden}
+.credit-step-screen img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;border-radius:12px}
 .credit-step p{margin:0;font:500 13.5px/1.5 var(--font-body);color:var(--muted)}
-.credit-note{margin-top:14px}
+@media(max-width:559px){
+  .credit-steps{grid-template-columns:1fr;gap:12px}
+  .credit-step{display:grid;grid-template-columns:112px 1fr;grid-template-areas:"head head" "screen text";align-items:start;column-gap:14px}
+  .credit-step-head{grid-area:head;min-height:0}
+  .credit-step-screen{grid-area:screen}
+  .credit-step p{grid-area:text;font-size:14px}
+}
+.credit-note{margin:14px 0 0;font:500 13px/1.5 var(--font-body);color:var(--muted)}
 .credit-official .social-links{justify-content:flex-start}
 
 /* cartaz A4: uma folha, QR grande, passos só com número, tela e título */
@@ -34,10 +45,12 @@
 .credit-poster-qr{display:flex;flex-direction:column;align-items:center;gap:2mm;font:700 15px var(--font-body);text-align:center}
 .credit-poster-qr img{width:56mm;height:56mm}
 .credit-poster-rules{margin:0;padding-left:5mm;font:600 14px/1.5 var(--font-body)}
-.credit-poster .credit-steps{grid-template-columns:repeat(4,1fr);gap:4mm}
+.credit-poster .credit-steps{grid-template-columns:repeat(4,minmax(0,1fr));gap:4mm}
 .credit-poster .credit-step{padding:2.5mm;background:#f4f5f7;border-color:#d8dbe0}
 .credit-poster .credit-step h3{color:#111;font-size:11px}
-.credit-poster .credit-step-img{aspect-ratio:9/12}
+.credit-poster .credit-step-screen{aspect-ratio:9/13;border-color:#cfd3da}
+.credit-poster .credit-step-head{min-height:0}
+.credit-poster .credit-step-num{width:7mm;height:7mm;font-size:12px}
 .credit-poster-foot{display:flex;justify-content:space-between;gap:6mm;font:600 12px/1.4 var(--font-body);color:#333}
 .credit-poster-print{margin:12px auto;display:block}
 @media print{
