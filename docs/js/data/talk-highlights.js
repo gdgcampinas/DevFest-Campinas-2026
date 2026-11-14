@@ -15,6 +15,7 @@
  *             moderador publica o pódio (features/talk-contest.js, contest-moderation.js; regras contest-* do Firestore)
  *   podium    1º, 2º e 3º lugar; `prize` (opcional) aparece no card e no modal quando preenchido
  *   steps     etapas da sessão  |  rules = regras curtas
+ *   action    botão extra no modal: { title, text, label, href, public } (hoje, os créditos do Google Cloud do Coding Jam); só aparece com `public: true` ou no modo DEV
  * `slots` (quantos slots da mesma trilha a sessão ocupa) fica pra quando o jam passar de 1 slot: a grade e o cálculo do fim
  * mudam, o card não.
  */
@@ -43,6 +44,7 @@ const TALK_HIGHLIGHTS = [
       { label: "Apresentação", text: "Mostre o seu projeto para a sala e envie antes de sair." },
       { label: "Votação e pódio", text: "Quem fez check-in vota, e os três projetos mais votados sobem ao pódio." },
     ],
+    action: { title: "Créditos do Google Cloud", text: "Resgate os créditos antes da sessão, com o passo a passo em telas.", label: "Ver como resgatar", href: "creditos.html", public: false },
     rules: [
       "Traga seu notebook.",
       "Faça check-in na sala para poder votar.",

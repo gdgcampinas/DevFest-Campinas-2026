@@ -55,6 +55,12 @@ function talkHighlightBodyMarkup(highlight) {
   </div>`;
 }
 
+/** Botão extra do destaque (`action`): só com `public: true` no dado ou no modo DEV (`isDevModeStored`, do app.js; ausente = fora do DEV); sem isso, nada. */
+function talkHighlightActionMarkup(action, { devMode = typeof isDevModeStored === "function" && isDevModeStored() } = {}) {
+  if (!action || !(action.public || devMode)) return "";
+  return `<p class="detail-action-text">${action.text}</p><a class="cta cta--ghost" href="${action.href}">${iconMarkup("gift")}${action.label}</a>`;
+}
+
 /** Seções do modal de detalhe; seção sem dado não aparece. */
 function talkHighlightDetailMarkup(highlight) {
   const section = (title, body) => (body ? `<section class="detail-highlight-section"><h4>${title}</h4>${body}</section>` : "");
@@ -66,5 +72,6 @@ function talkHighlightDetailMarkup(highlight) {
     ${section(t("highlight.steps", "Como funciona"), steps && `<ol class="detail-steps">${steps}</ol>`)}
     ${section(t("highlight.podium", "Pódio"), talkPodiumMarkup(highlight.podium))}
     ${section(t("highlight.rules", "Regras"), rules && `<ul class="detail-rules">${rules}</ul>`)}
+    ${section(highlight.action?.title, talkHighlightActionMarkup(highlight.action))}
   </div>`;
 }

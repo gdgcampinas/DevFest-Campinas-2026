@@ -279,7 +279,8 @@ function buildBeforeYouComeItems() {
       title: t("venue.label", "Local"),
       mountId: "venueInfo",
     },
-  ];
+    gcpCreditsInfoCard(gcpCreditsRepository.getAll(), { devMode: isDevModeStored() }), // só em DEV até `public` em data/gcp-credits.js
+  ].filter(Boolean);
 }
 
 /**
@@ -294,6 +295,7 @@ const LOCALIZED_DATASETS = [
   () => venueRepository.getAll(),
   () => venueMapPointsRepository.getAll(),
   () => venueMapTextsRepository.getAll(),
+  () => gcpCreditsRepository.getAll(),
   () => venuePhotosRepository.getAll(),
   () => venuePhotosTextsRepository.getAll(),
   () => tshirtsRepository.getAll(),

@@ -23,6 +23,7 @@ const SITE_PAGES = [
   { id: "fundos", label: "Fundos de tela", href: "fundos.html" },
   { id: "cod", label: "Código de Conduta", href: "codigo-de-conduta.html" },
   { id: "quiz", label: "Monte sua trilha", href: "quiz.html", nav: false },
+  { id: "creditos", label: "Créditos do Google Cloud", href: "creditos.html", nav: false }, // o menu não lista; a home e o Coding Jam linkam (só em DEV até `public` em data/gcp-credits.js)
 ];
 
 /**
