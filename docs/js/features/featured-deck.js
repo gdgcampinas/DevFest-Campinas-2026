@@ -1,8 +1,8 @@
 /**
  * Baralho dos Destaques da home (features/featured-speakers.js): puro, sem DOM nem relógio; `random` entra por parâmetro (testes).
  * Garante o que o evento pede: TODOS os palestrantes aparecem, ninguém repete antes de todos terem aparecido (nem na mesma tela, nem na troca seguinte)
- * e ninguém é fixo (quem fala na plenária entra como todo mundo; só `pinned`, o card do Coding Jam, fica em toda tela).
- *   - cada volta embaralha (Fisher-Yates, sem viés) e intercala as trilhas, para as pessoas de uma tela virem de trilhas diferentes quando há trilhas de sobra
+ * e NADA é fixo: quem fala na plenária e o card do Coding Jam entram no baralho como todo mundo.
+ *   - cada volta embaralha (Fisher-Yates, sem viés) e espalha as trilhas, para as pessoas de uma tela virem de trilhas diferentes quando há trilhas de sobra (`spreadByTrack`)
  *   - a tela seguinte pega as próximas da fila; a fila acabando, começa outra volta, com quem estava na última tela empurrado para o fim dela
  */
 function shuffled(list, random = Math.random) {
@@ -14,41 +14,61 @@ function shuffled(list, random = Math.random) {
   return items;
 }
 
-/** Uma volta inteira: cada trilha embaralhada e as trilhas intercaladas (1º de cada trilha, depois o 2º de cada...); quem não tem trilha conta como trilha própria. */
-function interleavedByTrack(people, random = Math.random) {
-  const byTrack = new Map();
+const trackKeyOf = person => person.track?.id ?? person.name; // quem não tem trilha conta como trilha própria
+
+/**
+ * Uma volta inteira, cada pessoa uma vez, espalhada por trilha: em qualquer janela de `window` pessoas seguidas as trilhas são diferentes enquanto isso for possível
+ * (escolhe sempre a trilha com mais gente sobrando, entre as que não saíram nas últimas `window - 1`; empate no sorteio). Telas de `window` pessoas saem com uma de cada trilha.
+ */
+function spreadByTrack(people, window, random = Math.random) {
+  const groups = new Map();
   shuffled(people, random).forEach(person => {
-    const key = person.track?.id ?? person.name;
-    byTrack.set(key, [...(byTrack.get(key) ?? []), person]);
+    const key = trackKeyOf(person);
+    groups.set(key, [...(groups.get(key) ?? []), person]);
   });
-  const columns = shuffled([...byTrack.values()], random);
-  const rounds = Math.max(0, ...columns.map(column => column.length));
-  return Array.from({ length: rounds }, (_, round) => columns.map(column => column[round]).filter(Boolean)).flat();
+  const order = [];
+  const recent = [];
+  while (order.length < people.length) {
+    const open = [...groups.entries()].filter(([, items]) => items.length);
+    const allowed = open.filter(([key]) => !recent.includes(key));
+    const pool = allowed.length ? allowed : open;
+    const most = Math.max(...pool.map(([, items]) => items.length));
+    const [key, items] = shuffled(pool.filter(([, left]) => left.length === most), random)[0];
+    order.push(items.pop());
+    recent.push(key);
+    if (recent.length > window - 1) recent.shift();
+  }
+  return order;
 }
 
 /**
- * `next()` devolve a próxima tela: os `pinned` (em toda tela) mais `slots` pessoas do baralho, no máximo, sem ninguém repetido na tela. `people` = quem entra no baralho
- * (todos os palestrantes). Sem ninguém, devolve só os fixos.
+ * `next()` devolve a próxima tela: `slots` itens do baralho, no máximo, sem ninguém repetido na tela e, havendo trilhas de sobra, UM DE CADA TRILHA. `people` = tudo o que entra
+ * no baralho (os palestrantes e o card do Coding Jam). Sem ninguém, devolve uma tela vazia. Cada volta passa por todos exatamente uma vez; a volta nova tenta (algumas ordens)
+ * não começar com quem estava na tela anterior, e uma tela que cruza o fim da volta completa com quem tem trilha diferente.
  */
-function createFeaturedDeck(people, { slots, pinned = [], random = Math.random } = {}) {
+function createFeaturedDeck(people, { slots, random = Math.random } = {}) {
   const size = Math.min(slots, people.length);
   let queue = [];
   let lastFrame = [];
   const refill = avoid => {
-    const order = interleavedByTrack(people, random);
-    queue = [...order.filter(person => !avoid.includes(person)), ...order.filter(person => avoid.includes(person))];
+    const clear = order => !order.slice(0, size * 2).some(person => avoid.includes(person));
+    let order = spreadByTrack(people, size, random);
+    for (let attempt = 0; attempt < 40 && !clear(order); attempt++) order = spreadByTrack(people, size, random);
+    queue = clear(order) ? order : [...order.filter(person => !avoid.includes(person)), ...order.filter(person => avoid.includes(person))];
   };
   return {
     next() {
       const frame = [];
       while (frame.length < size) {
         if (!queue.length) refill([...frame, ...lastFrame]);
-        const index = queue.findIndex(person => !frame.includes(person));
+        const usedTracks = new Set(frame.map(trackKeyOf));
+        let index = queue.findIndex(person => !frame.includes(person) && !usedTracks.has(trackKeyOf(person)));
+        if (index === -1) index = queue.findIndex(person => !frame.includes(person)); // menos trilhas que vagas: só não repete a pessoa
         if (index === -1) { queue = []; continue; }
         frame.push(...queue.splice(index, 1));
       }
       lastFrame = frame;
-      return [...pinned, ...frame];
+      return frame;
     },
   };
 }

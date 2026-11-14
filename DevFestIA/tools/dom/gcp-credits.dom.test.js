@@ -252,18 +252,17 @@ test("fim do passo a passo: convite com o botão do link (sem QR nem reserva rep
 });
 
 // ---- "Destaques" da home: a sessão em paralelo como card fixo ----
-test("Destaques: a sessão em paralelo vira um card fixo (Lab de IA, Coding Jam, Liga de TI da PUC) que leva à página dela", () => {
+test("Destaques: a sessão em paralelo vira um card (Lab de IA, Coding Jam, Liga de TI da PUC) que gira no baralho como todo mundo e leva à página dela", () => {
   const people = site.get("parallelFeaturedPeople")({ sessions: [session], findHost, texts: textsOf() });
   assert.equal(people.length, 1);
-  assert.equal(people[0].pinned, true);
+  assert.equal(people[0].pinned, undefined, "nada é fixo nos Destaques");
+  const pool = [...[0, 1, 2, 3, 4].flatMap(track => [0, 1, 2, 3, 4, 5, 6, 7].map(index => ({ name: `T${track}-${index}`, track: { id: `t${track}`, color: "blue", label: `T${track}` } }))), ...people];
+  const deck = site.get("createFeaturedDeck")(pool, { slots: 4, random: () => 0.37 });
+  const frames = Array.from({ length: Math.ceil(pool.length / 4) }, () => deck.next());
+  const withCard = frames.filter(frame => frame.includes(people[0]));
+  assert.equal(withCard.length, 1, "o card aparece uma vez por volta, não em toda tela");
   const grid = mount();
-  const pool = [{ name: "A", track: { id: "ia", color: "blue", label: "IA" } }, { name: "B", track: { id: "web", color: "yellow", label: "Web" } }, { name: "C", track: { id: "mob", color: "green", label: "Mobile" } }, { name: "D", track: { id: "car", color: "red", label: "Carreira" } }, ...people];
-  const deck = site.get("createFeaturedDeck")(pool.filter(person => !person.pinned), { slots: 3, pinned: people });
-  for (let round = 0; round < 8; round++) {
-    site.get("renderFeaturedFrame")(deck, grid);
-    assert.equal(grid.querySelectorAll(".featured-speaker").length, 4);
-    assert.equal(grid.querySelectorAll('a[href="creditos.html"]').length, 1, "o card do Coding Jam aparece em toda tela");
-  }
+  grid.innerHTML = withCard[0].map(site.get("featuredSpeakerCardMarkup")).join("");
   const card = grid.querySelector('a[href="creditos.html"]');
   assert.equal(card.querySelector(".featured-track").textContent, "Lab de IA");
   assert.equal(card.querySelector(".featured-name").textContent, "Coding Jam");
@@ -271,6 +270,7 @@ test("Destaques: a sessão em paralelo vira um card fixo (Lab de IA, Coding Jam,
   assert.match(card.querySelector(".featured-talk").textContent, /Em paralelo às palestras · 10:00–12:00/);
   assert.ok(card.querySelector("img.featured-avatar").getAttribute("src").endsWith("liga-de-ti-puc.webp"));
   assert.equal(card.querySelector("img.featured-avatar").hasAttribute("data-zoom-photo"), false, "a foto não abre zoom: o card inteiro é o link");
+  assert.equal(new Set(frames.flat()).size, pool.length, "todos, e o card, passam em uma volta");
 });
 
 test("Destaques: sem sessões visíveis nada muda no sorteio", () => {

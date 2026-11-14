@@ -29,7 +29,7 @@ function parallelRoundLines(session, template) {
 }
 
 /**
- * A sessão em paralelo no formato de quem aparece em "Destaques" da home (features/featured-speakers.js): sempre fixa (`pinned`), com a Liga (foto e nome de `host`)
+ * A sessão em paralelo no formato de quem aparece em "Destaques" da home (features/featured-speakers.js): gira no baralho como todo mundo, com a Liga (foto e nome de `host`)
  * no lugar de quem fala, a etiqueta da sessão ("Lab de IA") na cor dela e o horário da primeira rodada; leva à página da sessão (`href`). `texts` = data/parallel-sessions.js.
  */
 function parallelFeaturedPerson(session, host, texts) {
@@ -41,7 +41,6 @@ function parallelFeaturedPerson(session, host, texts) {
     track: { color: session.color, label: session.kicker },
     talks: [{ title: `${texts.tag} · ${round.start}–${round.end}` }],
     href: session.href,
-    pinned: true,
   };
 }
 

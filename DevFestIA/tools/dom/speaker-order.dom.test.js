@@ -53,14 +53,29 @@ test("Destaques (baralho): ninguém repete na mesma tela nem na tela seguinte, e
   }
 });
 
-test("Destaques (baralho): cada tela mistura trilhas quando há trilhas de sobra, e o card fixo entra em toda tela", () => {
-  const pinned = { name: "Coding Jam", pinned: true };
-  const deck = g("createFeaturedDeck")(manyPeople(45), { slots: 3, pinned: [pinned], random: seeded(3) });
+test("Destaques (baralho): cada tela mistura trilhas quando há trilhas de sobra", () => {
+  const deck = g("createFeaturedDeck")(manyPeople(45), { slots: 4, random: seeded(3) });
   for (let frame = 0; frame < 30; frame++) {
-    const current = deck.next();
-    assert.equal(current[0], pinned, "o fixo vem em toda tela");
-    const tracksInFrame = current.slice(1).map(speaker => speaker.track.id);
-    assert.equal(new Set(tracksInFrame).size, 3, `trilhas repetidas na tela ${frame}: ${tracksInFrame}`);
+    const tracksInFrame = deck.next().map(speaker => speaker.track.id);
+    assert.equal(new Set(tracksInFrame).size, 4, `trilhas repetidas na tela ${frame}: ${tracksInFrame}`);
+  }
+});
+
+test("Destaques (baralho): com o card do Coding Jam junto (46 itens, sem trilha), 200 telas seguidas têm uma de cada trilha e ninguém repete na tela nem na seguinte", () => {
+  for (const seed of [1, 2, 3, 4, 5]) {
+    const items = [...manyPeople(45), { name: "Coding Jam", track: { id: undefined, label: "Lab de IA" } }];
+    const deck = g("createFeaturedDeck")(items, { slots: 4, random: seeded(seed) });
+    let previous = [];
+    const covered = new Set();
+    for (let frame = 0; frame < 200; frame++) {
+      const current = deck.next();
+      const keys = current.map(item => item.track?.id ?? item.name);
+      assert.equal(new Set(keys).size, 4, `seed ${seed}, tela ${frame}: trilhas repetidas ${keys}`);
+      assert.equal(current.some(item => previous.includes(item)), false, `seed ${seed}, tela ${frame}: repetiu na troca`);
+      current.forEach(item => covered.add(item.name));
+      previous = current;
+    }
+    assert.equal(covered.size, 46, "todos passaram");
   }
 });
 
@@ -73,9 +88,9 @@ test("Destaques (baralho): ninguém é fixo; o da plenária entra como todo mund
   assert.match(g("featuredSpeakerCardMarkup")(keynote), /Plenária/, "o rótulo do card é Plenária, não a trilha");
 });
 
-test("Destaques (baralho): pool pequeno devolve todos; vazio devolve só os fixos; o embaralhamento é uniforme", () => {
+test("Destaques (baralho): pool pequeno devolve todos; vazio devolve tela vazia; o embaralhamento é uniforme", () => {
   assert.equal(g("createFeaturedDeck")([person("Só", 0)], { slots: 4 }).next().length, 1);
-  assert.equal(g("createFeaturedDeck")([], { slots: 4, pinned: [{ name: "X" }] }).next().length, 1);
+  assert.equal(g("createFeaturedDeck")([], { slots: 4 }).next().length, 0);
   const counts = new Map();
   const random = seeded(99);
   for (let run = 0; run < 6000; run++) counts.set(g("shuffled")(["a", "b", "c"], random).join(""), (counts.get(g("shuffled")(["a", "b", "c"], random).join("")) ?? 0) + 1);

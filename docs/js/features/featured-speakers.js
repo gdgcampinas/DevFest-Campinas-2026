@@ -28,8 +28,8 @@ function renderFeaturedFrame(deck, gridEl) {
 
 /**
  * Liga a seção: some se o line-up não estiver revelado ou o pool estiver vazio; renderiza na hora e troca sozinha a cada `intervalMs`, sempre com a próxima
- * tela do baralho (`pinned` = o card fixo do Coding Jam, features/parallel-sessions.js, fica em toda tela; todo o resto é palestrante e entra no baralho, inclusive quem fala
- * na plenária). Retorna o intervalId — chamador não precisa, mas fica disponível se algum dia quiser parar a rotação.
+ * tela do baralho (features/featured-deck.js). NADA é fixo: todo o pool, os palestrantes (inclusive quem fala na plenária) e o card do Coding Jam (features/parallel-sessions.js),
+ * gira junto e aparece uma vez por volta. Retorna o intervalId — chamador não precisa, mas fica disponível se algum dia quiser parar a rotação.
  */
 function initFeaturedSpeakers(pool, sectionEl, gridEl, { count = 4, intervalMs = 15000, reveal = true, random = Math.random } = {}) {
   if (!reveal || !pool.length) {
@@ -37,8 +37,7 @@ function initFeaturedSpeakers(pool, sectionEl, gridEl, { count = 4, intervalMs =
     return null;
   }
   sectionEl.hidden = false;
-  const pinned = pool.filter(person => person.pinned).slice(0, count);
-  const deck = createFeaturedDeck(pool.filter(person => !person.pinned), { slots: count - pinned.length, pinned, random });
+  const deck = createFeaturedDeck(pool, { slots: count, random });
   renderFeaturedFrame(deck, gridEl);
   return setInterval(() => renderFeaturedFrame(deck, gridEl), intervalMs);
 }
