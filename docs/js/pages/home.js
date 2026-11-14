@@ -21,7 +21,7 @@ function initHome() {
 
   renderStats(statsRepository.getAll(), document.getElementById("statsSection"), document.querySelector(".stats-grid"));
   renderVideo(videoRepository.getAll(), document.getElementById("videoSection"), document.querySelector(".video-embed"));
-  initFeaturedSpeakers(extractSpeakers(SCHEDULE, TRACKS, EVENT.timezone), document.getElementById("featuredSpeakersSection"), document.querySelector(".featured-speakers-grid"), { count: 4, intervalMs: 15000, reveal });
+  initFeaturedSpeakers([...extractSpeakers(SCHEDULE, TRACKS, EVENT.timezone), ...parallelFeaturedPeople({ sessions: parallelSessionsRepository.visible({ devMode: isDevModeStored() }), findHost: name => sponsorsRepository.findByName(name), texts: parallelSessionsRepository.texts() })], document.getElementById("featuredSpeakersSection"), document.querySelector(".featured-speakers-grid"), { count: 4, intervalMs: 15000, reveal });
   renderHighlights(highlightsRepository.getAll(), document.getElementById("highlightsSection"), document.querySelector(".highlights-grid"), modal);
   renderAbout(aboutRepository.getAll(), document.getElementById("aboutSection"));
   initMenuCarousel(modal.el);

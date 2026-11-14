@@ -28,13 +28,13 @@ function pickOnePerTrack(pool, count, random = Math.random) {
 
 function featuredSpeakerCardMarkup(person) {
   const meta = speakerMetaLine(person);
-  const profile = speakerProfileHref(person);
+  const profile = person.href ?? speakerProfileHref(person); // `href` = quem não é palestrante da galeria (ex.: o Coding Jam em paralelo) leva à própria página
   const tag = profile ? "a" : "div";
   const talkTitle = person.talks?.[0]?.title;
   const href = profile ? ` href="${profile}" data-track-event="speaker_profile" data-track-target="featured"` : "";
   return `
     <${tag} class="featured-speaker"${href}${person.track ? ` style="--track-color:${person.track.color}"` : ""}>
-      ${avatarMarkup(person.name, person.photo, "featured-avatar", { meta, talks: (person.talks ?? []).map(talk => talk.title), color: person.track?.color })}
+      ${avatarMarkup(person.name, person.photo, "featured-avatar", person.href ? null : { meta, talks: (person.talks ?? []).map(talk => talk.title), color: person.track?.color })}
       ${person.keynote ? `<span class="featured-track">${t("featured.keynote", "Plenária")}</span>` : person.track ? `<span class="featured-track">${person.track.shortLabel ?? person.track.label}</span>` : ""}
       <div class="featured-name">${person.name}</div>
       ${meta ? `<div class="featured-company">${meta}</div>` : ""}
@@ -42,9 +42,9 @@ function featuredSpeakerCardMarkup(person) {
     </${tag}>`;
 }
 
-/** Quem fala na plenária (`keynote`, ver extractSpeakers) aparece sempre; o resto dos lugares é sorteado um por trilha. */
+/** Quem fala na plenária (`keynote`, ver extractSpeakers) e o que vem `pinned` (a sessão em paralelo, features/parallel-sessions.js) aparecem sempre; o resto dos lugares é sorteado um por trilha. */
 function pickFeatured(pool, count, random = Math.random) {
-  const pinned = pool.filter(person => person.keynote).slice(0, count);
+  const pinned = pool.filter(person => person.keynote || person.pinned).slice(0, count);
   const drawn = pickOnePerTrack(pool.filter(person => !pinned.includes(person)), count - pinned.length, random);
   return shuffled([...pinned, ...drawn], random);
 }

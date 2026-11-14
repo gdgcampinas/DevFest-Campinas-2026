@@ -11,7 +11,7 @@ const path = require("node:path");
 const { loadSite, SITE_BASE } = require("../lib/dom-harness.js");
 
 const DOCS = path.join(__dirname, "..", "..", "..", "docs");
-const site = loadSite({ scripts: [...SITE_BASE, "data/gcp-credits.js", "data/sponsors.js", "data/parallel-sessions.js", "components/avatar.js", "components/talk-meta.js", "components/person-card.js", "components/parallel-session-card.js", "features/parallel-sessions.js", "features/agenda.js", "components/track-card.js", "components/info-card.js", "components/credit-steps.js", "components/credit-link-card.js", "components/talk-highlight.js", "features/gcp-credit-window.js", "components/modal.js", "features/image-zoom.js", "features/gcp-credits.js", "features/gcp-credit-poster.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "data/gcp-credits.js", "data/sponsors.js", "data/parallel-sessions.js", "components/avatar.js", "components/talk-meta.js", "components/person-card.js", "components/parallel-session-card.js", "features/parallel-sessions.js", "features/agenda.js", "components/track-card.js", "components/info-card.js", "components/credit-steps.js", "components/credit-link-card.js", "components/talk-highlight.js", "features/gcp-credit-window.js", "components/modal.js", "features/image-zoom.js", "components/speaker-link.js", "features/featured-speakers.js", "features/gcp-credits.js", "features/gcp-credit-poster.js"] });
 test.after(() => site.window.close());
 const config = site.get("gcpCreditsRepository").getAll();
 const creditWindowState = site.get("creditWindowState");
@@ -249,4 +249,29 @@ test("fim do passo a passo: convite com o botão do link (sem QR nem reserva rep
   site.get("renderGcpCredits")(config, before, { session, now: at("2026-11-20T10:00:00-03:00") });
   assert.equal(before.querySelectorAll(".credit-end a[data-credit]").length, 0);
   assert.match(before.querySelector(".credit-end .credit-link-msg").textContent, /28\/11 às 07:00/);
+});
+
+// ---- "Destaques" da home: a sessão em paralelo como card fixo ----
+test("Destaques: a sessão em paralelo vira um card fixo (Lab de IA, Coding Jam, Liga de TI da PUC) que leva à página dela", () => {
+  const people = site.get("parallelFeaturedPeople")({ sessions: [session], findHost, texts: textsOf() });
+  assert.equal(people.length, 1);
+  assert.equal(people[0].pinned, true);
+  const grid = mount();
+  const pool = [{ name: "A", track: { id: "ia", color: "blue", label: "IA" } }, { name: "B", track: { id: "web", color: "yellow", label: "Web" } }, { name: "C", track: { id: "mob", color: "green", label: "Mobile" } }, { name: "D", track: { id: "car", color: "red", label: "Carreira" } }, ...people];
+  for (let round = 0; round < 8; round++) {
+    site.get("renderFeaturedSpeakers")(pool, grid, 4);
+    assert.equal(grid.querySelectorAll(".featured-speaker").length, 4);
+    assert.equal(grid.querySelectorAll('a[href="creditos.html"]').length, 1, "o card do Coding Jam aparece em todo sorteio");
+  }
+  const card = grid.querySelector('a[href="creditos.html"]');
+  assert.equal(card.querySelector(".featured-track").textContent, "Lab de IA");
+  assert.equal(card.querySelector(".featured-name").textContent, "Coding Jam");
+  assert.match(card.querySelector(".featured-company").textContent, /Liga de TI da PUC/);
+  assert.match(card.querySelector(".featured-talk").textContent, /Em paralelo às palestras · 10:00–12:00/);
+  assert.ok(card.querySelector("img.featured-avatar").getAttribute("src").endsWith("liga-de-ti-puc.webp"));
+  assert.equal(card.querySelector("img.featured-avatar").hasAttribute("data-zoom-photo"), false, "a foto não abre zoom: o card inteiro é o link");
+});
+
+test("Destaques: sem sessões visíveis nada muda no sorteio", () => {
+  assert.equal(site.get("parallelFeaturedPeople")({ sessions: [], findHost, texts: textsOf() }).length, 0);
 });

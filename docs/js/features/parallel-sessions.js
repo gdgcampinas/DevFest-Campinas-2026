@@ -27,3 +27,25 @@ function resolveParallelHost(session, findHost) {
 function parallelRoundLines(session, template) {
   return session.rounds.map((round, index) => interpolate(template, { n: index + 1, start: round.start, end: round.end }));
 }
+
+/**
+ * A sessão em paralelo no formato de quem aparece em "Destaques" da home (features/featured-speakers.js): sempre fixa (`pinned`), com a Liga (foto e nome de `host`)
+ * no lugar de quem fala, a etiqueta da sessão ("Lab de IA") na cor dela e o horário da primeira rodada; leva à página da sessão (`href`). `texts` = data/parallel-sessions.js.
+ */
+function parallelFeaturedPerson(session, host, texts) {
+  const [round] = session.rounds;
+  return {
+    name: session.name,
+    photo: host?.photo,
+    title: host?.name,
+    track: { color: session.color, label: session.kicker },
+    talks: [{ title: `${texts.tag} · ${round.start}–${round.end}` }],
+    href: session.href,
+    pinned: true,
+  };
+}
+
+/** Os cards fixos de "Destaques" das sessões visíveis (`sessions`, ver `parallelSessionsRepository.visible`), cada um com a marca que faz a sessão (`findHost`) e as frases (`texts`). */
+function parallelFeaturedPeople({ sessions, findHost, texts }) {
+  return sessions.map(session => parallelFeaturedPerson(session, resolveParallelHost(session, findHost), texts));
+}
