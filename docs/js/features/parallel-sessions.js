@@ -1,17 +1,17 @@
 /**
  * Onde cada rodada das sessões em paralelo (data/parallel-sessions.js) entra na grade. Puro: o horário vira Date por `toDate` (HH:MM → Date, o `eventTime` do schedule.js), nada de DOM.
  * O card cobre as sessões da grade que COMEÇAM dentro da rodada (`from`..`to`, posições em SCHEDULE, `to` inclusive). Se nenhuma começa dentro dela, `to = from - 1`
- * (faixa vazia) e o card entra sozinho antes da primeira sessão que começa depois (ou no fim). `findHost(nome)` (o `findByName` de data/sponsors.js) liga a marca que faz a sessão;
+ * (faixa vazia) e o card entra sozinho antes da primeira sessão que começa depois (ou no fim). `findHost(nome)` (o `findByName` de data/sponsors.js) liga a marca que faz a sessão e `findHighlight(id)` (o `getById` de data/talk-highlights.js) o destaque dela;
  * a lista sai ordenada pelo horário da rodada.
  */
-function parallelPlacements(sessions, schedule, toDate, { findHost = () => undefined } = {}) {
+function parallelPlacements(sessions, schedule, toDate, { findHost = () => undefined, findHighlight = () => undefined } = {}) {
   return sessions.flatMap(session => session.rounds.map((round, roundIndex) => {
     const start = toDate(round.start);
     const end = toDate(round.end);
     const inside = schedule.map((slot, index) => (slot.start >= start && slot.start < end ? index : -1)).filter(index => index !== -1);
     const after = schedule.findIndex(slot => slot.start >= start);
     const from = inside.length ? inside[0] : after === -1 ? schedule.length : after;
-    return { session, round, roundIndex, start, end, from, to: inside.length ? inside[inside.length - 1] : from - 1, host: resolveParallelHost(session, findHost) };
+    return { session, round, roundIndex, start, end, from, to: inside.length ? inside[inside.length - 1] : from - 1, host: resolveParallelHost(session, findHost), highlight: findHighlight(session.highlightId) };
   })).sort((a, b) => a.start - b.start);
 }
 

@@ -1,5 +1,6 @@
 /**
- * Card ALTO da sessão em paralelo na grade (data/parallel-sessions.js): fica ao lado das trilhas, cobrindo as palestras do horário dela, como uma coluna a mais.
+ * Card ALTO da sessão em paralelo na grade (data/parallel-sessions.js): fica AO LADO da grade (à direita, fora das trilhas, que mantêm a largura de sempre), na altura das palestras do horário dela. No topo,
+ * a faixa do destaque da sessão ("Mão na massa", components/talk-highlight.js) na cor da trilha de IA.
  * Puro template: recebe a colocação (features/parallel-sessions.js) e as frases prontas. O grupo (`parallelGroupMarkup`) junta as sessões cobertas e o card; nada aqui leva
  * `.slot`: a grade e o "ao vivo agora" contam as sessões pela posição de `.slot`, e o card não é uma delas.
  */
@@ -14,10 +15,11 @@ function parallelHostMarkup(host, texts) {
     </div>`;
 }
 
-function parallelSessionCardMarkup({ session, round, roundIndex, host }, texts) {
+function parallelSessionCardMarkup({ session, round, roundIndex, host, highlight }, texts) {
   const label = session.rounds.length > 1 ? `${session.name} · ${roundIndex + 1}` : session.name;
   return `
-    <aside class="parallel-card" style="--band-color:${session.color}" data-session="${session.id}">
+    <aside class="parallel-card" style="--band-color:${session.color};--highlight-color:${session.color}" data-session="${session.id}">
+      ${highlight ? talkHighlightRibbonMarkup(highlight) : ""}
       <div class="parallel-card-body">
       <span class="parallel-kicker">${session.kicker}</span>
       <span class="parallel-tag">${texts.tag}</span>

@@ -6,7 +6,8 @@
  *   id        único (a página dos créditos pede por ele: `sessionId` em data/gcp-credits.js)  |  name = nome na tela  |  kicker = a etiqueta do card ("Lab de IA")  |  place = onde acontece
  *   rounds    rodadas { start, end } em HH:MM (MOCK até o horário real; mais de uma rodada = mais um card na grade; as rodadas de uma sessão não se sobrepõem)
  *   host      quem faz a sessão: `sponsor` = nome da marca em data/sponsors.js (logo e link vêm de lá, uma vez só) e `instagram` (o Linktree é o `link` da marca)
- *   href      página da sessão (o card e o menu levam para lá)  |  color = cor do card (token CSS)
+ *   highlightId  o destaque de sessão que ela é (data/talk-highlights.js: o "Mão na massa" do Coding Jam vira a faixa no topo do card)
+ *   href      página da sessão (o card e o menu levam para lá)  |  color = cor do card (token CSS; a da trilha de IA/Vibe Coding, onde o lab acontece)
  * `texts`: frases do card.
  */
 const PARALLEL_SESSIONS = [
@@ -19,7 +20,8 @@ const PARALLEL_SESSIONS = [
     rounds: [{ start: "10:00", end: "12:00" }],
     host: { sponsor: "Liga de TI PUC", instagram: "https://www.instagram.com/ligadetipucc" },
     href: "creditos.html",
-    color: "var(--google-yellow)",
+    highlightId: "codejam",
+    color: "var(--ia)",
   },
 ];
 

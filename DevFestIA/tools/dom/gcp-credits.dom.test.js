@@ -124,7 +124,8 @@ const slot = (hhmm, end, banner) => ({ start: new Date(`2026-11-28T${hhmm}:00-03
 const SCHEDULE_STUB = [slot("09:00", "09:40", "Palestras 1"), slot("09:45", "10:25", "Palestras 2"), slot("10:30", "11:10", "Palestras 3"), slot("11:15", "11:55", "Palestras 4"), slot("13:30", "14:10", "Palestras 5")];
 const toDate = hhmm => new Date(`2026-11-28T${hhmm}:00-03:00`);
 const findHost = name => site.get("sponsorsRepository").findByName(name);
-const placementsOf = (sessions, options = { findHost }) => site.get("parallelPlacements")(sessions, SCHEDULE_STUB, toDate, options);
+const findHighlight = id => site.get("talkHighlightsRepository").getById(id);
+const placementsOf = (sessions, options = { findHost, findHighlight }) => site.get("parallelPlacements")(sessions, SCHEDULE_STUB, toDate, options);
 const textsOf = () => site.get("parallelSessionsRepository").texts();
 
 test("a rodada cobre as sessões que começam dentro dela (10:00-12:00 cobre 10:30 e 11:15)", () => {
@@ -163,7 +164,8 @@ test("a grade põe o card alto ao lado das sessões que ele cobre, sem mexer na 
   assert.equal(group.querySelectorAll(".parallel-span-slots .slot").length, 2);
   assert.equal([...el.querySelectorAll(".slot")].map(slotEl => slotEl.dataset.index).join(), "0,1,2,3,4", "mesma ordem e mesmo índice das sessões");
   const card = group.querySelector(".parallel-card");
-  assert.match(card.textContent, /Lab de IA.*Em paralelo às palestras.*Coding Jam.*10:00–12:00.*Laboratório com computadores.*Quem faz o lab/s);
+  assert.match(card.textContent, /Mão na massa.*Lab de IA.*Em paralelo às palestras.*Coding Jam.*10:00–12:00.*Laboratório com computadores.*Quem faz o lab/s);
+  assert.match(card.getAttribute("style"), /--band-color:var\(--ia\)/, "a cor é a da trilha de IA/Vibe Coding");
   assert.equal(card.querySelector("a.parallel-cta").getAttribute("href"), "creditos.html");
   assert.ok(card.querySelector(".parallel-host-logo img").getAttribute("src").endsWith("liga-de-ti-puc.webp"));
   assert.deepEqual([...card.querySelectorAll(".parallel-host-links a")].map(a => a.getAttribute("href")), ["https://linktr.ee/ligadetipuccampinas", "https://www.instagram.com/ligadetipucc"]);
