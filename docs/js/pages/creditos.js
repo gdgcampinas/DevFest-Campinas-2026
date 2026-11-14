@@ -6,7 +6,7 @@ function initCreditosPage() {
   initShell("creditos");
   const config = gcpCreditsRepository.getAll();
   renderOrConstruction(config.public || isDevModeStored(), document.getElementById("creditSection"),
-    () => renderGcpCredits(config, document.getElementById("creditSection"), { now: resolveNow()(), locale: i18n.lang === "en" ? "en-US" : "pt-BR" }),
+    () => renderGcpCredits(config, document.getElementById("creditSection"), { session: parallelSessionsRepository.getById(config.sessionId), now: resolveNow()(), locale: i18n.lang === "en" ? "en-US" : "pt-BR" }),
     t("credits.soon", "Os créditos do Google Cloud serão liberados em breve."));
 }
 

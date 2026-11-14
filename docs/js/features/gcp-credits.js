@@ -3,17 +3,14 @@
  * AGORA (features/gcp-credit-window.js decide pelo horário; `now` e `locale` entram por parâmetro), os requisitos (reusa components/info-card.js),
  * o passo a passo com telas (components/credit-steps.js) e os materiais oficiais do Google.
  */
-function creditRoundLines(session, texts) {
-  return session.rounds.map((round, index) => interpolate(texts.roundLine, { n: index + 1, start: round.start, end: round.end }));
-}
-
 function creditStateDate(state, { locale }) {
   const iso = state.state === "before" ? state.window.start : state.window?.end;
   return iso ? formatCreditMoment(iso, { locale }) : "";
 }
 
-function renderGcpCredits(config, mountEl, { now = new Date(), locale = "pt-BR" } = {}) {
-  const { texts, session } = config;
+/** `session`: a sessão paralela dos créditos (data/parallel-sessions.js, `config.sessionId`), por parâmetro. */
+function renderGcpCredits(config, mountEl, { session, now = new Date(), locale = "pt-BR" } = {}) {
+  const { texts } = config;
   const state = creditWindowState(config.windows, now);
   mountEl.innerHTML = `
     <div class="team-intro-card credit-intro">
@@ -22,7 +19,7 @@ function renderGcpCredits(config, mountEl, { now = new Date(), locale = "pt-BR" 
       <ul class="credit-session">
         <li>${iconMarkup("trophy")}${session.name}</li>
         <li>${iconMarkup("pin")}${session.place}</li>
-        ${creditRoundLines(session, texts).map(line => `<li>${iconMarkup("clock")}${line}</li>`).join("")}
+        ${parallelRoundLines(session, texts.roundLine).map(line => `<li>${iconMarkup("clock")}${line}</li>`).join("")}
       </ul>
     </div>
     <section class="credit-link" aria-labelledby="creditLinkTitle">

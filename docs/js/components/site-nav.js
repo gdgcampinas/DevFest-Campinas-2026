@@ -23,7 +23,7 @@ const SITE_PAGES = [
   { id: "fundos", label: "Fundos de tela", href: "fundos.html" },
   { id: "cod", label: "Código de Conduta", href: "codigo-de-conduta.html" },
   { id: "quiz", label: "Monte sua trilha", href: "quiz.html", nav: false },
-  { id: "creditos", label: "Créditos do Google Cloud", href: "creditos.html", nav: false }, // o menu não lista; a home e o Coding Jam linkam (só em DEV até `public` em data/gcp-credits.js)
+  { id: "creditos", label: "Coding Jam", href: "creditos.html", devOnly: true }, // a área da sessão em paralelo e dos créditos do Google Cloud; só em DEV até `public` em data/parallel-sessions.js e data/gcp-credits.js
 ];
 
 /**
@@ -32,7 +32,7 @@ const SITE_PAGES = [
  */
 const SITE_NAV_ORDER = {
   public: true,
-  ids: ["principal", "grade", "palestrantes", "ingressos", "local", "sorteio", "recados", "fundos", "time", "patrocinio", "cod"],
+  ids: ["principal", "grade", "palestrantes", "creditos", "ingressos", "local", "sorteio", "recados", "fundos", "time", "patrocinio", "cod"],
 };
 
 /** Ordena `pages` pela lista `ids` (estável: o que não está na lista fica no fim, como veio). */

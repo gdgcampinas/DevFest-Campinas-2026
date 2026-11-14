@@ -296,6 +296,7 @@ const LOCALIZED_DATASETS = [
   () => venueMapPointsRepository.getAll(),
   () => venueMapTextsRepository.getAll(),
   () => gcpCreditsRepository.getAll(),
+  () => [parallelSessionsRepository.getAll(), parallelSessionsRepository.texts()],
   () => venuePhotosRepository.getAll(),
   () => venuePhotosTextsRepository.getAll(),
   () => tshirtsRepository.getAll(),

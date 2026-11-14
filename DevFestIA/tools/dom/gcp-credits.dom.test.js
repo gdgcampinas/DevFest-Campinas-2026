@@ -11,10 +11,11 @@ const path = require("node:path");
 const { loadSite, SITE_BASE } = require("../lib/dom-harness.js");
 
 const DOCS = path.join(__dirname, "..", "..", "..", "docs");
-const site = loadSite({ scripts: [...SITE_BASE, "data/gcp-credits.js", "components/info-card.js", "components/credit-steps.js", "components/credit-link-card.js", "components/talk-highlight.js", "features/gcp-credit-window.js", "features/gcp-credits.js", "features/gcp-credit-poster.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "data/gcp-credits.js", "data/parallel-sessions.js", "components/parallel-band.js", "features/parallel-sessions.js", "features/agenda.js", "components/track-card.js", "components/info-card.js", "components/credit-steps.js", "components/credit-link-card.js", "components/talk-highlight.js", "features/gcp-credit-window.js", "features/gcp-credits.js", "features/gcp-credit-poster.js"] });
 test.after(() => site.window.close());
 const config = site.get("gcpCreditsRepository").getAll();
 const creditWindowState = site.get("creditWindowState");
+const session = site.get("parallelSessionsRepository").getById(config.sessionId);
 const mount = () => site.document.body.appendChild(site.document.createElement("div"));
 const at = iso => new Date(iso);
 
@@ -36,14 +37,14 @@ test("horário mostrado no fuso de Campinas, em português e em inglês", () => 
 
 test("antes da janela: mensagem com a data e nenhum link", () => {
   const el = mount();
-  site.get("renderGcpCredits")(config, el, { now: at("2026-11-20T12:00:00-03:00") });
+  site.get("renderGcpCredits")(config, el, { session, now: at("2026-11-20T12:00:00-03:00") });
   assert.match(el.querySelector(".credit-link-msg").textContent, /28\/11 às 07:00/);
   assert.equal(el.querySelectorAll("a[data-credit]").length, 0);
 });
 
 test("dentro da janela: link principal e QR visíveis, reserva só dentro de <details>", () => {
   const el = mount();
-  site.get("renderGcpCredits")(config, el, { now: at("2026-11-28T10:00:00-03:00") });
+  site.get("renderGcpCredits")(config, el, { session, now: at("2026-11-28T10:00:00-03:00") });
   const main = el.querySelector(".credit-link-open a[data-credit]");
   assert.equal(main.getAttribute("href"), "https://g.dev/credits/gdg-campinas-4");
   assert.ok(el.querySelector(".credit-qr").getAttribute("src").endsWith("qr-gdg-campinas-4.webp"));
@@ -54,17 +55,17 @@ test("dentro da janela: link principal e QR visíveis, reserva só dentro de <de
 
 test("à noite vale o par -5 e depois de tudo aparece 'encerrado'", () => {
   const night = mount();
-  site.get("renderGcpCredits")(config, night, { now: at("2026-11-28T22:00:00-03:00") });
+  site.get("renderGcpCredits")(config, night, { session, now: at("2026-11-28T22:00:00-03:00") });
   assert.equal(night.querySelector(".credit-link-open a[data-credit]").getAttribute("href"), "https://g.dev/credits/gdg-campinas-5");
   const closed = mount();
-  site.get("renderGcpCredits")(config, closed, { now: at("2026-11-30T12:00:00-03:00") });
+  site.get("renderGcpCredits")(config, closed, { session, now: at("2026-11-30T12:00:00-03:00") });
   assert.equal(closed.querySelectorAll("a[data-credit]").length, 0);
   assert.match(closed.querySelector(".credit-link-msg").textContent, /encerraram/);
 });
 
 test("a página mostra a sessão, os requisitos, um passo por tela e os materiais oficiais", () => {
   const el = mount();
-  site.get("renderGcpCredits")(config, el, { now: at("2026-11-28T10:00:00-03:00") });
+  site.get("renderGcpCredits")(config, el, { session, now: at("2026-11-28T10:00:00-03:00") });
   assert.match(el.querySelector(".credit-session").textContent, /Coding Jam.*Laboratório.*1ª rodada, das 10:00 às 12:00/s);
   assert.equal(el.querySelectorAll("#creditRequirements .faq-item").length, config.requirements.length);
   assert.equal(el.querySelectorAll(".credit-step").length, config.steps.length);
@@ -74,20 +75,20 @@ test("a página mostra a sessão, os requisitos, um passo por tela e os materiai
 
 test("mais de uma rodada vira mais de uma linha", () => {
   const el = mount();
-  const two = { ...config, session: { ...config.session, rounds: [{ start: "10:00", end: "12:00" }, { start: "14:00", end: "16:00" }] } };
-  site.get("renderGcpCredits")(two, el, { now: at("2026-11-28T10:00:00-03:00") });
+  const two = { ...session, rounds: [{ start: "10:00", end: "12:00" }, { start: "14:00", end: "16:00" }] };
+  site.get("renderGcpCredits")(config, el, { session: two, now: at("2026-11-28T10:00:00-03:00") });
   assert.match(el.querySelector(".credit-session").textContent, /2ª rodada, das 14:00 às 16:00/);
 });
 
 test("cartaz: QR da janela escolhida, passos compactos (sem texto) e o endereço do site", () => {
   const el = mount();
-  site.get("renderGcpPoster")(config, el, { windowId: "night", siteUrl: "exemplo.com/creditos.html" });
+  site.get("renderGcpPoster")(config, el, { session, windowId: "night", siteUrl: "exemplo.com/creditos.html" });
   assert.ok(el.querySelector(".credit-poster-qr img").getAttribute("src").endsWith("qr-gdg-campinas-5.webp"));
   assert.equal(el.querySelectorAll(".credit-steps--compact .credit-step").length, config.steps.length);
   assert.equal(el.querySelectorAll(".credit-steps--compact p").length, 0);
   assert.match(el.querySelector(".credit-poster-foot").textContent, /exemplo\.com\/creditos\.html/);
   const fallback = mount();
-  site.get("renderGcpPoster")(config, fallback, {});
+  site.get("renderGcpPoster")(config, fallback, { session });
   assert.ok(fallback.querySelector(".credit-poster-qr img").getAttribute("src").endsWith("qr-gdg-campinas-4.webp"), "sem janela escolhida, a primeira");
 });
 
@@ -97,6 +98,7 @@ test("só DEV: o card de 'Antes de vir' e o botão do Coding Jam somem enquanto 
   assert.equal(card(config, { devMode: false }), null);
   assert.equal(card(config, { devMode: true }).href, "creditos.html");
   assert.equal(card({ ...config, public: true }, { devMode: false }).href, "creditos.html");
+  assert.equal(session.public, false);
   const action = site.get("talkHighlightsRepository").getAll().find(h => h.id === "codejam").action;
   const markup = site.get("talkHighlightActionMarkup");
   assert.equal(markup(action, { devMode: false }), "");
@@ -115,4 +117,54 @@ test("o dado é coerente: links do Google, QR e telas existem, cada janela tem p
     assert.equal(window.backup.code, `${window.primary.code}-bkp`);
   });
   config.steps.forEach(step => assert.ok(fs.existsSync(path.join(DOCS, step.image)), step.image));
+});
+
+// ---- sessão em paralelo na grade (data/parallel-sessions.js) ----
+const slot = (hhmm, end, banner) => ({ start: new Date(`2026-11-28T${hhmm}:00-03:00`), end: new Date(`2026-11-28T${end}:00-03:00`), banner });
+const SCHEDULE_STUB = [slot("09:00", "09:40", "Palestras 1"), slot("09:45", "10:25", "Palestras 2"), slot("10:30", "11:10", "Palestras 3"), slot("11:15", "11:55", "Palestras 4")];
+const toDate = hhmm => new Date(`2026-11-28T${hhmm}:00-03:00`);
+
+test("a rodada entra antes da primeira sessão que começa a partir do horário dela (ou no fim)", () => {
+  const placements = site.get("parallelPlacements")([session], SCHEDULE_STUB, toDate);
+  assert.equal(placements.length, 1);
+  assert.equal(placements[0].index, 2, "10:00 cai antes da sessão das 10:30");
+  const late = site.get("parallelPlacements")([{ ...session, rounds: [{ start: "12:00", end: "13:00" }] }], SCHEDULE_STUB, toDate);
+  assert.equal(late[0].index, SCHEDULE_STUB.length, "depois de todas, vai para o fim");
+});
+
+test("mais de uma rodada: uma faixa por rodada, ordenadas pelo horário", () => {
+  const two = { ...session, rounds: [{ start: "11:00", end: "12:00" }, { start: "09:00", end: "09:30" }] };
+  const placements = site.get("parallelPlacements")([two], SCHEDULE_STUB, toDate);
+  assert.equal(placements.map(p => p.round.start).join(), "09:00,11:00");
+  assert.equal(site.get("parallelRoundLines")(two, "{n}ª, {start}-{end}").join("|"), "1ª, 11:00-12:00|2ª, 09:00-09:30");
+});
+
+test("a grade mostra a faixa em paralelo no lugar certo sem mexer na numeração das sessões", () => {
+  const el = mount();
+  const placements = site.get("parallelPlacements")([session], SCHEDULE_STUB, toDate);
+  site.get("renderAgenda")(SCHEDULE_STUB, [], "America/Sao_Paulo", el, { parallel: placements, parallelTexts: site.get("parallelSessionsRepository").texts() });
+  const children = [...el.children].map(child => child.className.split(" ")[0]);
+  assert.equal(children.join(), "slot,slot,parallel-band,slot,slot");
+  assert.equal(el.querySelectorAll(".slot").length, SCHEDULE_STUB.length);
+  assert.equal([...el.querySelectorAll(".slot")].map(slotEl => slotEl.dataset.index).join(), "0,1,2,3", "a faixa não tem `.slot` nem desloca o índice");
+  const band = el.querySelector(".parallel-band");
+  assert.equal(band.querySelector("a").getAttribute("href"), "creditos.html");
+  assert.match(band.textContent, /Em paralelo às palestras.*Coding Jam.*10:00–12:00.*Laboratório com computadores/s);
+});
+
+test("sem faixas (padrão) a grade fica como era; no fim da grade a faixa vai depois da última sessão", () => {
+  const plain = mount();
+  site.get("renderAgenda")(SCHEDULE_STUB, [], "America/Sao_Paulo", plain);
+  assert.equal(plain.querySelectorAll(".parallel-band").length, 0);
+  const end = mount();
+  const late = site.get("parallelPlacements")([{ ...session, rounds: [{ start: "12:00", end: "13:00" }] }], SCHEDULE_STUB, toDate);
+  site.get("renderAgenda")(SCHEDULE_STUB, [], "America/Sao_Paulo", end, { parallel: late, parallelTexts: site.get("parallelSessionsRepository").texts() });
+  assert.equal(end.lastElementChild.className, "parallel-band");
+});
+
+test("só DEV: sessão paralela sem `public` some fora do modo DEV; o menu leva para a página", () => {
+  const repo = site.get("parallelSessionsRepository");
+  assert.equal(repo.visible({ devMode: false }).length, 0);
+  assert.equal(repo.visible({ devMode: true }).length, 1);
+  assert.equal(repo.visible().length, 0);
 });

@@ -3,7 +3,7 @@
  * o botão do modal do Coding Jam e o cartaz de impressão (cartaz-creditos.html) leem tudo daqui; trocar link, horário ou texto não toca em tela.
  * Só em DEV até `public: true`.
  *
- *   session       a sessão que usa os créditos: `name` e `rounds` ({ start, end } em HH:MM; MOCK até o horário real, pode haver mais de uma rodada) e `place`
+ *   sessionId     a sessão paralela que usa os créditos (data/parallel-sessions.js: nome, lugar e rodadas moram lá, uma vez só)
  *   windows       as janelas de 12 horas que o GDG LATAM liberou (e-mail de 2026-11-13). Cada uma tem o link principal e o reserva (`-bkp`, só para quem teve
  *                 problema ou já resgatou o principal): `start`/`end` em ISO com fuso, `code` (nome do crédito), `url` e `qr` (imagem do QR). Fora da janela o
  *                 link não funciona, então a página só o mostra dentro dela (features/gcp-credit-window.js)
@@ -14,11 +14,7 @@
  */
 const GCP_CREDITS = {
   public: false,
-  session: {
-    name: "Coding Jam",
-    place: "Laboratório com computadores",
-    rounds: [{ start: "10:00", end: "12:00" }],
-  },
+  sessionId: "codejam",
   windows: [
     {
       id: "day",
@@ -68,7 +64,7 @@ const GCP_CREDITS = {
   officialGuide: { label: "Guia oficial do Google (PDF)", url: "https://goo.gle/gcpcredits-en" },
   faq: { label: "Perguntas frequentes (FAQ)", url: "https://docs.google.com/document/d/1G9GX0DNNYW4g0GOHovgpaF0hhZIAisx-LMln2gNzqFE/view?usp=sharing&resourcekey=0-59bgWIiACe0SpJgF_4IKBg" },
   texts: {
-    title: "Créditos do Google Cloud",
+    title: "Coding Jam: créditos do Google Cloud",
     intro: "Ganhe créditos do Google Cloud para construir no Coding Jam. Siga os passos com as telas e resgate antes de a sessão começar.",
     roundLine: "{n}ª rodada, das {start} às {end}",
     linkTitle: "Seu link de crédito",

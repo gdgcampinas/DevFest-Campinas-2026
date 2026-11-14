@@ -65,14 +65,19 @@ function renderLegend(tracks, mountEl) {
     .join("");
 }
 
-function renderAgenda(schedule, tracks, timezone, mountEl, { reveal = true, favorites = null } = {}) {
+/**
+ * `parallel` (opcional): as faixas "Em paralelo" (features/parallel-sessions.js, `parallelPlacements`) com `texts` (data/parallel-sessions.js); cada uma entra antes
+ * da sessão da posição `index` (ou no fim). Ficam de fora da conta de `.slot`: a numeração das sessões não muda.
+ */
+function renderAgenda(schedule, tracks, timezone, mountEl, { reveal = true, favorites = null, parallel = [], parallelTexts = null } = {}) {
+  const bandsAt = position => parallel.filter(placement => placement.index === position).map(placement => parallelBandMarkup(placement, parallelTexts)).join("");
   mountEl.innerHTML = schedule
     .map((slot, index) => {
       const time = formatEventTime(slot.start, timezone);
       const body = slot.banner
         ? bannerMarkup(slot, index)
         : `<div class="talks" data-view="all">${tracks.map(track => trackCardMarkup(track, slot.talks[track.id], talkCardOptions(slot, index, track, timezone, { reveal, favorites }))).join("")}</div>`;
-      return `<div class="slot" data-index="${index}"><div class="slot-time">${time}</div>${body}</div>`;
+      return `${bandsAt(index)}<div class="slot" data-index="${index}"><div class="slot-time">${time}</div>${body}</div>`;
     })
-    .join("");
+    .join("") + bandsAt(schedule.length);
 }

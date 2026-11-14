@@ -3,10 +3,10 @@
  * (data/gcp-credits.js): QR da janela escolhida (`windowId`, padrão a primeira), as regras, o passo a passo compacto (components/credit-steps.js).
  * Diferente da página, o cartaz mostra o QR da janela mesmo fora do horário: a folha é impressa antes e só funciona dentro da janela.
  */
-function renderGcpPoster(config, mountEl, { windowId = null, siteUrl = "" } = {}) {
-  const { texts, session } = config;
+function renderGcpPoster(config, mountEl, { session, windowId = null, siteUrl = "" } = {}) {
+  const { texts } = config;
   const window = config.windows.find(candidate => candidate.id === windowId) ?? config.windows[0];
-  const rounds = session.rounds.map((round, index) => interpolate(texts.roundLine, { n: index + 1, start: round.start, end: round.end })).join(" · ");
+  const rounds = parallelRoundLines(session, texts.roundLine).join(" · ");
   mountEl.innerHTML = `
     <article class="credit-poster">
       <div class="credit-poster-head">
