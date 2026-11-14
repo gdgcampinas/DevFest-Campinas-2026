@@ -1,6 +1,6 @@
 /**
  * Testes da ordem dos palestrantes: a página Palestrantes em ordem alfabética (sortSpeakersByName, features/speakers.js) e os Destaques da home com UM de cada trilha
- * (pickOnePerTrack, features/featured-speakers.js), com o anel e o rótulo na cor da trilha.
+ * (baralho, features/featured-deck.js e featured-speakers.js: todos aparecem, ninguém repete antes de todos), com o anel e o rótulo na cor da trilha.
  *   node --test DevFestIA/tools/dom/speaker-order.dom.test.js
  */
 const test = require("node:test");
@@ -10,7 +10,7 @@ const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 const site = loadSite({
   globals: { TextEncoder: require("node:util").TextEncoder },
   scripts: [...SITE_BASE, "data/schedule-builder.js", "data/talk-formats.js", "data/favorites.js", "components/escape-html.js", "components/avatar.js", "components/speaker-link.js", "components/favorite-button.js", "components/person-card.js", "components/talk-highlight.js",
-    "components/talk-meta.js", "components/track-card.js", "features/agenda.js", "features/speakers.js", "features/featured-speakers.js", "features/speaker-photo-zoom.js"],
+    "components/talk-meta.js", "components/track-card.js", "features/agenda.js", "features/speakers.js", "features/featured-deck.js", "features/featured-speakers.js", "features/speaker-photo-zoom.js"],
 });
 test.after(() => site.window.close());
 const g = name => site.get(name);
@@ -25,26 +25,78 @@ test("Palestrantes em ordem alfabética: sem diferenciar acento nem maiúscula, 
   assert.equal(pool[0].name, "Zélia", "a lista de entrada continua como estava");
 });
 
-test("Destaques: 4 vagas, nunca duas pessoas da mesma trilha quando há trilhas de sobra, e todas as trilhas aparecem ao longo dos sorteios", () => {
-  const seen = new Set();
-  for (let i = 0; i < 200; i++) {
-    const picked = g("pickOnePerTrack")(pool, 4);
-    assert.equal(picked.length, 4);
-    const trackIds = picked.map(speaker => speaker.track.id);
-    assert.equal(new Set(trackIds).size, 4, `trilhas repetidas: ${trackIds}`);
-    trackIds.forEach(id => seen.add(id));
+const names = people => people.map(speaker => speaker.name);
+const manyPeople = (count, trackCount = 5) => Array.from({ length: count }, (_, index) => person(`P${index}`, index % trackCount));
+const seeded = seed => () => { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; };
+
+test("Destaques (baralho): em uma volta TODOS aparecem exatamente uma vez, sem repetir antes de todos", () => {
+  for (const total of [45, 44, 7, 5, 4]) {
+    const everyone = manyPeople(total);
+    const deck = g("createFeaturedDeck")(everyone, { slots: 4, random: seeded(total) });
+    const seen = [];
+    const frames = Math.ceil(total / 4);
+    for (let frame = 0; frame < frames; frame++) seen.push(...names(deck.next()));
+    const firstLap = seen.slice(0, total);
+    assert.equal(new Set(firstLap).size, total, `${total} pessoas: alguém repetiu antes de todos aparecerem`);
+    assert.equal(new Set(names(everyone)).size, new Set(firstLap).size);
   }
-  assert.equal(seen.size, 5, "com 5 trilhas e 4 vagas, cada trilha entra em algum sorteio");
 });
 
-test("Destaques: com menos trilhas que vagas completa com quem sobrou, sem repetir pessoa; pool pequeno devolve todos", () => {
-  const twoTracks = [person("A", 0), person("B", 0), person("C", 1), person("D", 1), person("E", 1)];
-  const picked = g("pickOnePerTrack")(twoTracks, 4);
-  assert.equal(picked.length, 4);
-  assert.equal(new Set(picked).size, 4);
-  assert.equal(g("pickOnePerTrack")([person("Só", 0)], 4).length, 1);
-  assert.deepEqual([...g("pickOnePerTrack")([], 4)], []);
+test("Destaques (baralho): ninguém repete na mesma tela nem na tela seguinte, em várias voltas", () => {
+  const deck = g("createFeaturedDeck")(manyPeople(45), { slots: 3, random: seeded(7) });
+  let previous = [];
+  for (let frame = 0; frame < 120; frame++) {
+    const current = names(deck.next());
+    assert.equal(new Set(current).size, current.length, `repetido na tela ${frame}: ${current}`);
+    assert.equal(current.some(name => previous.includes(name)), false, `repetiu na troca ${frame}`);
+    previous = current;
+  }
 });
+
+test("Destaques (baralho): cada tela mistura trilhas quando há trilhas de sobra, e o card fixo entra em toda tela", () => {
+  const pinned = { name: "Coding Jam", pinned: true };
+  const deck = g("createFeaturedDeck")(manyPeople(45), { slots: 3, pinned: [pinned], random: seeded(3) });
+  for (let frame = 0; frame < 30; frame++) {
+    const current = deck.next();
+    assert.equal(current[0], pinned, "o fixo vem em toda tela");
+    const tracksInFrame = current.slice(1).map(speaker => speaker.track.id);
+    assert.equal(new Set(tracksInFrame).size, 3, `trilhas repetidas na tela ${frame}: ${tracksInFrame}`);
+  }
+});
+
+test("Destaques (baralho): ninguém é fixo; o da plenária entra como todo mundo, com o rótulo Plenária no card", () => {
+  const keynote = { ...person("Rodrigo", 0), keynote: true };
+  const deck = g("createFeaturedDeck")([...manyPeople(44), keynote], { slots: 3, random: seeded(11) });
+  const frames = Array.from({ length: 15 }, () => names(deck.next()));
+  const appearances = frames.flat().filter(name => name === "Rodrigo").length;
+  assert.equal(appearances, 1, "uma vez por volta, não em todas as telas");
+  assert.match(g("featuredSpeakerCardMarkup")(keynote), /Plenária/, "o rótulo do card é Plenária, não a trilha");
+});
+
+test("Destaques (baralho): pool pequeno devolve todos; vazio devolve só os fixos; o embaralhamento é uniforme", () => {
+  assert.equal(g("createFeaturedDeck")([person("Só", 0)], { slots: 4 }).next().length, 1);
+  assert.equal(g("createFeaturedDeck")([], { slots: 4, pinned: [{ name: "X" }] }).next().length, 1);
+  const counts = new Map();
+  const random = seeded(99);
+  for (let run = 0; run < 6000; run++) counts.set(g("shuffled")(["a", "b", "c"], random).join(""), (counts.get(g("shuffled")(["a", "b", "c"], random).join("")) ?? 0) + 1);
+  assert.equal(counts.size, 6, "as 6 ordens possíveis aparecem");
+});
+
+test("Destaques: a seção troca de tela sozinha, mostra 4 cards e ninguém repete na tela (initFeaturedSpeakers)", () => {
+  const sectionEl = site.document.createElement("section");
+  const gridEl = site.document.createElement("div");
+  const everyone = manyPeople(20);
+  const id = g("initFeaturedSpeakers")(everyone, sectionEl, gridEl, { count: 4, intervalMs: 1000000, random: seeded(5) });
+  assert.equal(sectionEl.hidden, false);
+  assert.equal(gridEl.querySelectorAll(".featured-speaker").length, 4);
+  const shown = [...gridEl.querySelectorAll(".featured-name")].map(el => el.textContent);
+  assert.equal(new Set(shown).size, 4);
+  site.window.clearInterval(id);
+  const hidden = site.document.createElement("section");
+  assert.equal(g("initFeaturedSpeakers")(everyone, hidden, gridEl, { reveal: false }), null);
+  assert.equal(hidden.hidden, true);
+});
+
 
 test("cartão do destaque: anel e rótulo na cor da trilha, nome e cargo; sem trilha não quebra", () => {
   const html = g("featuredSpeakerCardMarkup")({ ...person("Ana Souza", 2), id: "ana" });
@@ -125,18 +177,6 @@ test("Zoom da foto: o clique na foto abre o modal com nome, cargo e palestras, s
   assert.equal(followed, false, "o clique não chega no card");
 });
 
-test("Plenária: quem fala nela (`keynote`) entra em todo sorteio dos Destaques, e as outras vagas seguem sorteadas sem repetir a pessoa", () => {
-  const keynote = { ...person("Rodrigo", 0), keynote: true };
-  const withKeynote = [...pool, keynote];
-  for (let i = 0; i < 100; i++) {
-    const picked = g("pickFeatured")(withKeynote, 4);
-    assert.equal(picked.length, 4);
-    assert.ok(picked.includes(keynote), "o palestrante da plenária sempre aparece");
-    assert.equal(new Set(picked).size, 4, "ninguém repete");
-  }
-  assert.equal(g("pickFeatured")(pool, 4).length, 4, "sem plenária, o sorteio é o de sempre");
-  assert.match(g("featuredSpeakerCardMarkup")(keynote), /Plenária/, "o rótulo do card é Plenária, não a trilha");
-});
 
 test("Galeria: a fala da plenária (banner com `keynote`) conta como fala do palestrante, na trilha da sala, e marca a pessoa como `keynote`", () => {
   const speaker = { id: "k1", name: "Fulano", title: "DevRel", photo: "" };

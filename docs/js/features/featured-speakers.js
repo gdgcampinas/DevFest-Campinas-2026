@@ -1,31 +1,8 @@
 /**
- * Feature: "Destaques" — N palestrantes do pool, UM DE CADA TRILHA (sorteia quais trilhas entram quando há mais trilhas que vagas e quem fala por
- * trilha), foto redonda (avatarMarkup, mesmo componente do resto do site) com o anel e o rótulo na cor da trilha. Sorteia
- * de novo a cada reload E a cada intervalo (setInterval) — mesma
- * função pros dois casos, só chamada em momentos diferentes. O pool é o
- * mesmo extractSpeakers() da galeria (features/speakers.js), então cada
- * destaque leva ao perfil da própria pessoa em Palestrantes.
+ * Feature: "Destaques" — a cada `intervalMs` mostra a próxima tela do baralho de palestrantes (features/featured-deck.js: todos aparecem, ninguém repete antes de todos,
+ * trilhas intercaladas), foto redonda (avatarMarkup, mesmo componente do resto do site) com o anel e o rótulo na cor da trilha. O pool é o mesmo extractSpeakers() da galeria
+ * (features/speakers.js), então cada destaque leva ao perfil da própria pessoa em Palestrantes.
  */
-function shuffled(list, random = Math.random) {
-  return [...list].sort(() => random() - 0.5);
-}
-
-/**
- * `count` pessoas, no máximo uma por trilha (a trilha é a `track` da pessoa): embaralha as trilhas, sorteia uma pessoa de cada e embaralha o resultado.
- * Se houver menos trilhas que `count`, completa com quem sobrou. `random` entra por parâmetro (testes).
- */
-function pickOnePerTrack(pool, count, random = Math.random) {
-  const byTrack = new Map();
-  shuffled(pool, random).forEach(person => {
-    const key = person.track?.id ?? person.name;
-    byTrack.set(key, [...(byTrack.get(key) ?? []), person]);
-  });
-  const firstOfEach = shuffled([...byTrack.values()], random).map(people => people[0]);
-  const chosen = firstOfEach.slice(0, count);
-  const rest = shuffled(pool.filter(person => !chosen.includes(person)), random);
-  return shuffled([...chosen, ...rest].slice(0, count), random);
-}
-
 function featuredSpeakerCardMarkup(person) {
   const meta = speakerMetaLine(person);
   const profile = person.href ?? speakerProfileHref(person); // `href` = quem não é palestrante da galeria (ex.: o Coding Jam em paralelo) leva à própria página
@@ -42,29 +19,26 @@ function featuredSpeakerCardMarkup(person) {
     </${tag}>`;
 }
 
-/** Quem fala na plenária (`keynote`, ver extractSpeakers) e o que vem `pinned` (a sessão em paralelo, features/parallel-sessions.js) aparecem sempre; o resto dos lugares é sorteado um por trilha. */
-function pickFeatured(pool, count, random = Math.random) {
-  const pinned = pool.filter(person => person.keynote || person.pinned).slice(0, count);
-  const drawn = pickOnePerTrack(pool.filter(person => !pinned.includes(person)), count - pinned.length, random);
-  return shuffled([...pinned, ...drawn], random);
-}
-
-function renderFeaturedSpeakers(pool, gridEl, count) {
-  gridEl.innerHTML = pickFeatured(pool, count).map(featuredSpeakerCardMarkup).join("");
+/**
+ * Mostra a próxima tela do baralho (features/featured-deck.js) no grid: todos os palestrantes passam, sem repetir antes de todos terem aparecido.
+ */
+function renderFeaturedFrame(deck, gridEl) {
+  gridEl.innerHTML = deck.next().map(featuredSpeakerCardMarkup).join("");
 }
 
 /**
- * Liga a seção: some se o line-up não estiver revelado ou o pool estiver vazio; renderiza na hora (novo
- * sorteio a cada carregamento de página) e troca sozinho a cada
- * `intervalMs`. Retorna o intervalId — chamador não precisa, mas fica
- * disponível se algum dia quiser parar a rotação.
+ * Liga a seção: some se o line-up não estiver revelado ou o pool estiver vazio; renderiza na hora e troca sozinha a cada `intervalMs`, sempre com a próxima
+ * tela do baralho (`pinned` = o card fixo do Coding Jam, features/parallel-sessions.js, fica em toda tela; todo o resto é palestrante e entra no baralho, inclusive quem fala
+ * na plenária). Retorna o intervalId — chamador não precisa, mas fica disponível se algum dia quiser parar a rotação.
  */
-function initFeaturedSpeakers(pool, sectionEl, gridEl, { count = 4, intervalMs = 15000, reveal = true } = {}) {
+function initFeaturedSpeakers(pool, sectionEl, gridEl, { count = 4, intervalMs = 15000, reveal = true, random = Math.random } = {}) {
   if (!reveal || !pool.length) {
     sectionEl.hidden = true;
     return null;
   }
   sectionEl.hidden = false;
-  renderFeaturedSpeakers(pool, gridEl, count);
-  return setInterval(() => renderFeaturedSpeakers(pool, gridEl, count), intervalMs);
+  const pinned = pool.filter(person => person.pinned).slice(0, count);
+  const deck = createFeaturedDeck(pool.filter(person => !person.pinned), { slots: count - pinned.length, pinned, random });
+  renderFeaturedFrame(deck, gridEl);
+  return setInterval(() => renderFeaturedFrame(deck, gridEl), intervalMs);
 }

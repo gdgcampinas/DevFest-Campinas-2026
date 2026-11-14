@@ -11,7 +11,7 @@ const path = require("node:path");
 const { loadSite, SITE_BASE } = require("../lib/dom-harness.js");
 
 const DOCS = path.join(__dirname, "..", "..", "..", "docs");
-const site = loadSite({ scripts: [...SITE_BASE, "data/gcp-credits.js", "data/sponsors.js", "data/parallel-sessions.js", "components/avatar.js", "components/talk-meta.js", "components/person-card.js", "components/parallel-session-card.js", "features/parallel-sessions.js", "features/agenda.js", "components/track-card.js", "components/info-card.js", "components/credit-steps.js", "components/credit-link-card.js", "components/talk-highlight.js", "features/gcp-credit-window.js", "components/modal.js", "features/image-zoom.js", "components/speaker-link.js", "features/featured-speakers.js", "features/gcp-credits.js", "features/gcp-credit-poster.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "data/gcp-credits.js", "data/sponsors.js", "data/parallel-sessions.js", "components/avatar.js", "components/talk-meta.js", "components/person-card.js", "components/parallel-session-card.js", "features/parallel-sessions.js", "features/agenda.js", "components/track-card.js", "components/info-card.js", "components/credit-steps.js", "components/credit-link-card.js", "components/talk-highlight.js", "features/gcp-credit-window.js", "components/modal.js", "features/image-zoom.js", "components/speaker-link.js", "features/featured-deck.js", "features/featured-speakers.js", "features/gcp-credits.js", "features/gcp-credit-poster.js"] });
 test.after(() => site.window.close());
 const config = site.get("gcpCreditsRepository").getAll();
 const creditWindowState = site.get("creditWindowState");
@@ -258,10 +258,11 @@ test("Destaques: a sessão em paralelo vira um card fixo (Lab de IA, Coding Jam,
   assert.equal(people[0].pinned, true);
   const grid = mount();
   const pool = [{ name: "A", track: { id: "ia", color: "blue", label: "IA" } }, { name: "B", track: { id: "web", color: "yellow", label: "Web" } }, { name: "C", track: { id: "mob", color: "green", label: "Mobile" } }, { name: "D", track: { id: "car", color: "red", label: "Carreira" } }, ...people];
+  const deck = site.get("createFeaturedDeck")(pool.filter(person => !person.pinned), { slots: 3, pinned: people });
   for (let round = 0; round < 8; round++) {
-    site.get("renderFeaturedSpeakers")(pool, grid, 4);
+    site.get("renderFeaturedFrame")(deck, grid);
     assert.equal(grid.querySelectorAll(".featured-speaker").length, 4);
-    assert.equal(grid.querySelectorAll('a[href="creditos.html"]').length, 1, "o card do Coding Jam aparece em todo sorteio");
+    assert.equal(grid.querySelectorAll('a[href="creditos.html"]').length, 1, "o card do Coding Jam aparece em toda tela");
   }
   const card = grid.querySelector('a[href="creditos.html"]');
   assert.equal(card.querySelector(".featured-track").textContent, "Lab de IA");
