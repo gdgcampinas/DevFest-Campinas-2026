@@ -11,7 +11,7 @@ const path = require("node:path");
 const { loadSite, SITE_BASE } = require("../lib/dom-harness.js");
 
 const DOCS = path.join(__dirname, "..", "..", "..", "docs");
-const site = loadSite({ scripts: [...SITE_BASE, "data/gcp-credits.js", "data/parallel-sessions.js", "components/parallel-band.js", "features/parallel-sessions.js", "features/agenda.js", "components/track-card.js", "components/info-card.js", "components/credit-steps.js", "components/credit-link-card.js", "components/talk-highlight.js", "features/gcp-credit-window.js", "features/gcp-credits.js", "features/gcp-credit-poster.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "data/gcp-credits.js", "data/sponsors.js", "data/parallel-sessions.js", "components/parallel-session-card.js", "features/parallel-sessions.js", "features/agenda.js", "components/track-card.js", "components/info-card.js", "components/credit-steps.js", "components/credit-link-card.js", "components/talk-highlight.js", "features/gcp-credit-window.js", "features/gcp-credits.js", "features/gcp-credit-poster.js"] });
 test.after(() => site.window.close());
 const config = site.get("gcpCreditsRepository").getAll();
 const creditWindowState = site.get("creditWindowState");
@@ -121,48 +121,67 @@ test("o dado é coerente: links do Google, QR e telas existem, cada janela tem p
 
 // ---- sessão em paralelo na grade (data/parallel-sessions.js) ----
 const slot = (hhmm, end, banner) => ({ start: new Date(`2026-11-28T${hhmm}:00-03:00`), end: new Date(`2026-11-28T${end}:00-03:00`), banner });
-const SCHEDULE_STUB = [slot("09:00", "09:40", "Palestras 1"), slot("09:45", "10:25", "Palestras 2"), slot("10:30", "11:10", "Palestras 3"), slot("11:15", "11:55", "Palestras 4")];
+const SCHEDULE_STUB = [slot("09:00", "09:40", "Palestras 1"), slot("09:45", "10:25", "Palestras 2"), slot("10:30", "11:10", "Palestras 3"), slot("11:15", "11:55", "Palestras 4"), slot("13:30", "14:10", "Palestras 5")];
 const toDate = hhmm => new Date(`2026-11-28T${hhmm}:00-03:00`);
+const findHost = name => site.get("sponsorsRepository").findByName(name);
+const placementsOf = (sessions, options = { findHost }) => site.get("parallelPlacements")(sessions, SCHEDULE_STUB, toDate, options);
+const textsOf = () => site.get("parallelSessionsRepository").texts();
 
-test("a rodada entra antes da primeira sessão que começa a partir do horário dela (ou no fim)", () => {
-  const placements = site.get("parallelPlacements")([session], SCHEDULE_STUB, toDate);
-  assert.equal(placements.length, 1);
-  assert.equal(placements[0].index, 2, "10:00 cai antes da sessão das 10:30");
-  const late = site.get("parallelPlacements")([{ ...session, rounds: [{ start: "12:00", end: "13:00" }] }], SCHEDULE_STUB, toDate);
-  assert.equal(late[0].index, SCHEDULE_STUB.length, "depois de todas, vai para o fim");
+test("a rodada cobre as sessões que começam dentro dela (10:00-12:00 cobre 10:30 e 11:15)", () => {
+  const [placement] = placementsOf([session]);
+  assert.deepEqual([placement.from, placement.to], [2, 3]);
 });
 
-test("mais de uma rodada: uma faixa por rodada, ordenadas pelo horário", () => {
+test("rodada sem sessão dentro: faixa vazia, o card entra antes da primeira que começa depois (ou no fim)", () => {
+  const [gap] = placementsOf([{ ...session, rounds: [{ start: "12:00", end: "13:00" }] }]);
+  assert.deepEqual([gap.from, gap.to], [4, 3], "antes da das 13:30, sem cobrir nenhuma");
+  const [late] = placementsOf([{ ...session, rounds: [{ start: "15:00", end: "16:00" }] }]);
+  assert.deepEqual([late.from, late.to], [SCHEDULE_STUB.length, SCHEDULE_STUB.length - 1]);
+});
+
+test("mais de uma rodada: um card por rodada, ordenadas pelo horário; cada uma com o seu rótulo", () => {
   const two = { ...session, rounds: [{ start: "11:00", end: "12:00" }, { start: "09:00", end: "09:30" }] };
-  const placements = site.get("parallelPlacements")([two], SCHEDULE_STUB, toDate);
+  const placements = placementsOf([two]);
   assert.equal(placements.map(p => p.round.start).join(), "09:00,11:00");
   assert.equal(site.get("parallelRoundLines")(two, "{n}ª, {start}-{end}").join("|"), "1ª, 11:00-12:00|2ª, 09:00-09:30");
 });
 
-test("a grade mostra a faixa em paralelo no lugar certo sem mexer na numeração das sessões", () => {
-  const el = mount();
-  const placements = site.get("parallelPlacements")([session], SCHEDULE_STUB, toDate);
-  site.get("renderAgenda")(SCHEDULE_STUB, [], "America/Sao_Paulo", el, { parallel: placements, parallelTexts: site.get("parallelSessionsRepository").texts() });
-  const children = [...el.children].map(child => child.className.split(" ")[0]);
-  assert.equal(children.join(), "slot,slot,parallel-band,slot,slot");
-  assert.equal(el.querySelectorAll(".slot").length, SCHEDULE_STUB.length);
-  assert.equal([...el.querySelectorAll(".slot")].map(slotEl => slotEl.dataset.index).join(), "0,1,2,3", "a faixa não tem `.slot` nem desloca o índice");
-  const band = el.querySelector(".parallel-band");
-  assert.equal(band.querySelector("a").getAttribute("href"), "creditos.html");
-  assert.match(band.textContent, /Em paralelo às palestras.*Coding Jam.*10:00–12:00.*Laboratório com computadores/s);
+test("a marca que faz o lab vem de data/sponsors.js (Liga de TI PUC), com logo e links", () => {
+  const [placement] = placementsOf([session]);
+  assert.equal(placement.host.name, "Liga de TI PUC");
+  assert.ok(placement.host.logo.endsWith("liga-de-ti-puc.webp"));
+  assert.equal(placement.host.link, "https://linktr.ee/ligadetipuccampinas");
+  assert.equal(placement.host.instagram, "https://www.instagram.com/ligadetipucc");
+  assert.equal(placementsOf([session], {})[0].host, null, "sem marca achada, o card sai sem o bloco de quem faz");
 });
 
-test("sem faixas (padrão) a grade fica como era; no fim da grade a faixa vai depois da última sessão", () => {
+test("a grade põe o card alto ao lado das sessões que ele cobre, sem mexer na ordem nem no índice", () => {
+  const el = mount();
+  site.get("renderAgenda")(SCHEDULE_STUB, [], "America/Sao_Paulo", el, { parallel: placementsOf([session]), parallelTexts: textsOf() });
+  assert.equal([...el.children].map(child => child.className.split(" ")[0]).join(), "slot,slot,parallel-span,slot");
+  const group = el.querySelector(".parallel-span");
+  assert.equal(group.querySelectorAll(".parallel-span-slots .slot").length, 2);
+  assert.equal([...el.querySelectorAll(".slot")].map(slotEl => slotEl.dataset.index).join(), "0,1,2,3,4", "mesma ordem e mesmo índice das sessões");
+  const card = group.querySelector(".parallel-card");
+  assert.match(card.textContent, /Lab de IA.*Em paralelo às palestras.*Coding Jam.*10:00–12:00.*Laboratório com computadores.*Quem faz o lab/s);
+  assert.equal(card.querySelector("a.parallel-cta").getAttribute("href"), "creditos.html");
+  assert.ok(card.querySelector(".parallel-host-logo img").getAttribute("src").endsWith("liga-de-ti-puc.webp"));
+  assert.deepEqual([...card.querySelectorAll(".parallel-host-links a")].map(a => a.getAttribute("href")), ["https://linktr.ee/ligadetipuccampinas", "https://www.instagram.com/ligadetipucc"]);
+});
+
+test("sem sessões em paralelo (padrão) a grade fica como era; faixa vazia põe só o card antes da sessão seguinte", () => {
   const plain = mount();
   site.get("renderAgenda")(SCHEDULE_STUB, [], "America/Sao_Paulo", plain);
-  assert.equal(plain.querySelectorAll(".parallel-band").length, 0);
-  const end = mount();
-  const late = site.get("parallelPlacements")([{ ...session, rounds: [{ start: "12:00", end: "13:00" }] }], SCHEDULE_STUB, toDate);
-  site.get("renderAgenda")(SCHEDULE_STUB, [], "America/Sao_Paulo", end, { parallel: late, parallelTexts: site.get("parallelSessionsRepository").texts() });
-  assert.equal(end.lastElementChild.className, "parallel-band");
+  assert.equal(plain.querySelectorAll(".parallel-span").length, 0);
+  assert.equal(plain.querySelectorAll(".slot").length, SCHEDULE_STUB.length);
+  const gap = mount();
+  site.get("renderAgenda")(SCHEDULE_STUB, [], "America/Sao_Paulo", gap, { parallel: placementsOf([{ ...session, rounds: [{ start: "12:00", end: "13:00" }] }]), parallelTexts: textsOf() });
+  assert.equal(gap.querySelectorAll(".slot").length, SCHEDULE_STUB.length);
+  assert.equal(gap.querySelector(".parallel-span-slots").children.length, 0);
+  assert.equal(gap.querySelector(".parallel-span").nextElementSibling.dataset.index, "4");
 });
 
-test("só DEV: sessão paralela sem `public` some fora do modo DEV; o menu leva para a página", () => {
+test("só DEV: sessão paralela sem `public` some fora do modo DEV", () => {
   const repo = site.get("parallelSessionsRepository");
   assert.equal(repo.visible({ devMode: false }).length, 0);
   assert.equal(repo.visible({ devMode: true }).length, 1);

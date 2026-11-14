@@ -18,7 +18,7 @@ function initGrade() {
   const agendaEl = document.getElementById("agenda");
   renderLegend(TRACKS, document.querySelector(".tracks-legend"));
   renderTabs(TRACKS, tabsEl);
-  const parallel = parallelPlacements(parallelSessionsRepository.visible({ devMode: isDevModeStored() }), SCHEDULE, eventTime); // só DEV até `public` em data/parallel-sessions.js
+  const parallel = parallelPlacements(parallelSessionsRepository.visible({ devMode: isDevModeStored() }), SCHEDULE, eventTime, { findHost: name => sponsorsRepository.findByName(name) }); // só DEV até `public` em data/parallel-sessions.js
   renderAgenda(SCHEDULE, TRACKS, EVENT.timezone, agendaEl, { reveal, favorites: favoritesRepository, parallel, parallelTexts: parallelSessionsRepository.texts() });
   initTrackFilter(tabsEl, agendaEl);
 

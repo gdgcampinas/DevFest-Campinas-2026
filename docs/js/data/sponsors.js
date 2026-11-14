@@ -64,4 +64,6 @@ const SPONSORS = [
 
 const sponsorsRepository = createRepository(SPONSORS, {
   getByTier: tier => SPONSORS.find(t => t.tier === tier),
+  /** A marca pelo nome (em qualquer cota), ou `undefined`: quem mostra uma marca fora da seção de patrocínio (ex.: a Liga de TI no Coding Jam) reusa logo e link daqui. */
+  findByName: name => SPONSORS.flatMap(tier => tier.elements).find(element => element.name === name),
 });

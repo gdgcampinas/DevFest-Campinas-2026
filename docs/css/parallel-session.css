@@ -1,0 +1,31 @@
+/* Sessão em paralelo na grade (components/parallel-session-card.js): um card ALTO ao lado das trilhas, na altura das palestras que ele cobre, com listras em diagonal na cor da sessão.
+   Celular: o card vem em cima do grupo, em largura total. Não é `.slot`. */
+.parallel-span{display:grid;grid-template-columns:minmax(0,5fr) minmax(190px,1.05fr);gap:14px;align-items:stretch}
+.parallel-span-slots{display:flex;flex-direction:column;gap:12px;min-width:0}
+.parallel-card{
+  order:2;padding:16px 15px;border-radius:var(--radius);
+  border:1px solid color-mix(in oklch,var(--band-color) 55%,transparent);border-top:4px solid var(--band-color);
+  background:
+    repeating-linear-gradient(135deg,color-mix(in oklch,var(--band-color) 13%,transparent) 0 14px,transparent 14px 28px),
+    linear-gradient(160deg,var(--card-a),var(--card-b));
+}
+/* o conteúdo acompanha a rolagem dentro da faixa alta, para o botão estar sempre à vista */
+.parallel-card-body{position:sticky;top:76px;display:flex;flex-direction:column;gap:6px}
+.parallel-kicker{align-self:flex-start;padding:3px 10px;border-radius:100px;background:var(--band-color);color:oklch(14% 0.01 260);font:800 12px var(--font-body);letter-spacing:.4px;text-transform:uppercase}
+.parallel-tag{font:700 11px var(--font-body);letter-spacing:.6px;text-transform:uppercase;color:var(--band-color)}
+.parallel-title{margin:2px 0 4px;font:700 20px/1.2 var(--font-display);color:oklch(96% 0.006 260)}
+.parallel-meta{display:flex;align-items:center;gap:7px;margin:0;font:600 13px/1.4 var(--font-body);color:var(--text)}
+.parallel-meta .icon{width:15px;height:15px;flex:none;color:var(--band-color)}
+.parallel-host{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+.parallel-host-label{font:700 11px var(--font-body);letter-spacing:.5px;text-transform:uppercase;color:var(--muted)}
+.parallel-host-logo{display:flex;align-items:center;justify-content:center;height:72px;padding:8px 12px;border-radius:12px;background:#fff;overflow:hidden}
+.parallel-host-logo img{display:block;max-width:100%;max-height:56px;width:auto;height:auto;object-fit:contain}
+.parallel-host-links{display:flex;flex-wrap:wrap;gap:6px 14px}
+.parallel-host-links a{font:700 12.5px var(--font-body);color:var(--band-color);text-decoration:none}
+.parallel-host-links a:hover{text-decoration:underline}
+.parallel-cta{margin-top:8px;background:var(--band-color);white-space:normal;text-align:center;padding:10px 14px;font-size:13px}
+@media(max-width:899px){
+  .parallel-span{grid-template-columns:1fr}
+  .parallel-card{order:-1}
+  .parallel-card-body{position:static}
+}

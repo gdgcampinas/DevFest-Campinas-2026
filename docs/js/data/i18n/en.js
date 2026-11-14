@@ -316,7 +316,9 @@ I18N_DICTIONARIES.en = {
   texts: {
     "Coding Jam: créditos do Google Cloud": "Coding Jam: Google Cloud credits",
     "Em paralelo às palestras": "Running alongside the talks",
-    "Ver detalhes e créditos do Google Cloud": "See details and Google Cloud credits",
+    "Lab de IA": "AI Lab",
+    "Quem faz o lab": "Run by",
+    "Créditos do Google Cloud e detalhes": "Google Cloud credits and details",
     "Laboratório com computadores": "Computer lab",
     "Só conta @gmail.com": "Only @gmail.com accounts",
     "Conta de trabalho, da faculdade ou do Google Workspace não funciona. Cada conta resgata uma vez só.": "Work, school or Google Workspace accounts don't work. Each account can claim only once.",
