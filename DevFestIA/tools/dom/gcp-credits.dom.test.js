@@ -234,3 +234,16 @@ test("link aberto mostra o selo 'liberado agora'; antes e depois da janela, não
   site.get("renderGcpCredits")(config, before, { session, now: at("2026-11-20T10:00:00-03:00") });
   assert.equal(before.querySelectorAll(".credit-live").length, 0);
 });
+
+test("fim do passo a passo: convite com o botão do link (sem QR nem reserva repetidos); fora da janela, a mesma mensagem", () => {
+  const open = mount();
+  site.get("renderGcpCredits")(config, open, { session, now: at("2026-11-28T10:00:00-03:00") });
+  const end = open.querySelector(".credit-end");
+  assert.equal(end.querySelector("a[data-credit]").getAttribute("href"), "https://g.dev/credits/gdg-campinas-4");
+  assert.equal(end.querySelectorAll(".credit-qr, details").length, 0);
+  assert.equal(open.querySelectorAll("a[href='#creditLink']").length, 0, "sem botão que só rola a página");
+  const before = mount();
+  site.get("renderGcpCredits")(config, before, { session, now: at("2026-11-20T10:00:00-03:00") });
+  assert.equal(before.querySelectorAll(".credit-end a[data-credit]").length, 0);
+  assert.match(before.querySelector(".credit-end .credit-link-msg").textContent, /28\/11 às 07:00/);
+});

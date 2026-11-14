@@ -32,7 +32,7 @@ const SITE_PAGES = [
  */
 const SITE_NAV_ORDER = {
   public: true,
-  ids: ["principal", "grade", "palestrantes", "creditos", "ingressos", "local", "sorteio", "recados", "fundos", "time", "patrocinio", "cod"],
+  ids: ["principal", "grade", "palestrantes", "ingressos", "local", "creditos", "sorteio", "recados", "fundos", "time", "patrocinio", "cod"],
 };
 
 /** Ordena `pages` pela lista `ids` (estável: o que não está na lista fica no fim, como veio). */

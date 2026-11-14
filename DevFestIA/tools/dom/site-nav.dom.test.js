@@ -22,7 +22,7 @@ const NEW = "Principal|Grade|Palestrantes|Ingressos|Como chegar|Recados no telã
 test("com a ordem ainda não pública, o público vê a ordem antiga e o modo DEV vê a nova (com o Sorteio depois de Como chegar)", () => {
   const order = { public: false, ids: g("SITE_NAV_ORDER").ids };
   assert.equal(labels({ reveal: false }, order), OLD);
-  assert.equal(labels({ reveal: true }, order), NEW.replace("Como chegar|", "Como chegar|Sorteio|").replace("Palestrantes|", "Palestrantes|Coding Jam|"), "em DEV entram o Sorteio e o Coding Jam");
+  assert.equal(labels({ reveal: true }, order), NEW.replace("Como chegar|", "Como chegar|Coding Jam|Sorteio|"), "em DEV entram o Sorteio e o Coding Jam");
 });
 
 test("com a ordem pública, todo mundo vê a nova", () => {

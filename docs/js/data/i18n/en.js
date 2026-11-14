@@ -316,7 +316,7 @@ I18N_DICTIONARIES.en = {
   texts: {
     "Toque para ampliar": "Tap to enlarge",
     "Tela do passo ampliada": "Enlarged step screen",
-    "Voltar ao link do crédito": "Back to the credit link",
+    "Leu os passos? Agora é só resgatar:": "Read the steps? Now just claim it:",
     "Link liberado agora": "Link available now",
     "O passo principal": "The key step",
     "Pronto!": "Done!",

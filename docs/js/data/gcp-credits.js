@@ -81,7 +81,7 @@ const GCP_CREDITS = {
     liveNow: "Link liberado agora",
     zoomHint: "Toque para ampliar",
     zoomLabel: "Tela do passo ampliada",
-    toLink: "Voltar ao link do crédito",
+    stepsEnd: "Leu os passos? Agora é só resgatar:",
     stepsNote: "As telas são do guia do Google e mostram um evento de exemplo. O nome do evento na sua tela pode ser outro.",
     officialTitle: "Quer ver o guia do Google?",
     posterTitle: "Resgate seu crédito do Google Cloud",

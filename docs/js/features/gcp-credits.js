@@ -38,7 +38,10 @@ function renderGcpCredits(config, mountEl, { session, host = null, parallelTexts
       <h2 id="creditStepsTitle">${texts.stepsTitle}</h2>
       ${creditStepsMarkup(config.steps, { zoomHint: texts.zoomHint })}
       <p class="credit-note">${texts.stepsNote}</p>
-      <a class="cta cta--ghost credit-back" href="#creditLink">${texts.toLink}</a>
+      <div class="credit-end">
+        <h3>${texts.stepsEnd}</h3>
+        ${creditLinkMarkup({ state, texts, dateText: creditStateDate(state, { locale }), compact: true })}
+      </div>
     </section>
     <section class="credit-block credit-official" aria-labelledby="creditOfficialTitle">
       <h2 id="creditOfficialTitle">${texts.officialTitle}</h2>
