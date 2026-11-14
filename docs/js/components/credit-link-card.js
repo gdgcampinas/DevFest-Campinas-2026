@@ -8,6 +8,7 @@ function creditLinkMarkup({ state, texts, dateText }) {
   if (state.state === "closed") return `<p class="credit-link-msg">${iconMarkup("lock")}<span>${texts.closed}</span></p>`;
   const { primary, backup } = state.window;
   return `
+    <p class="credit-live"><span class="credit-live-dot" aria-hidden="true"></span>${texts.liveNow}</p>
     <div class="credit-link-open">
       <img class="credit-qr" src="${primary.qr}" alt="QR ${primary.code}" width="168" height="168" decoding="async">
       <div class="credit-link-body">

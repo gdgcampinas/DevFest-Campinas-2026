@@ -11,7 +11,7 @@ const path = require("node:path");
 const { loadSite, SITE_BASE } = require("../lib/dom-harness.js");
 
 const DOCS = path.join(__dirname, "..", "..", "..", "docs");
-const site = loadSite({ scripts: [...SITE_BASE, "data/gcp-credits.js", "data/sponsors.js", "data/parallel-sessions.js", "components/parallel-session-card.js", "features/parallel-sessions.js", "features/agenda.js", "components/track-card.js", "components/info-card.js", "components/credit-steps.js", "components/credit-link-card.js", "components/talk-highlight.js", "features/gcp-credit-window.js", "features/gcp-credits.js", "features/gcp-credit-poster.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "data/gcp-credits.js", "data/sponsors.js", "data/parallel-sessions.js", "components/parallel-session-card.js", "features/parallel-sessions.js", "features/agenda.js", "components/track-card.js", "components/info-card.js", "components/credit-steps.js", "components/credit-link-card.js", "components/talk-highlight.js", "features/gcp-credit-window.js", "components/modal.js", "features/image-zoom.js", "features/gcp-credits.js", "features/gcp-credit-poster.js"] });
 test.after(() => site.window.close());
 const config = site.get("gcpCreditsRepository").getAll();
 const creditWindowState = site.get("creditWindowState");
@@ -186,4 +186,49 @@ test("só DEV: sessão paralela sem `public` some fora do modo DEV", () => {
   assert.equal(repo.visible({ devMode: false }).length, 0);
   assert.equal(repo.visible({ devMode: true }).length, 1);
   assert.equal(repo.visible().length, 0);
+});
+
+// ---- passo a passo legível: tela ampliável, selo de destaque, bloco de quem faz o lab ----
+test("cada passo tem a tela como botão que amplia; os passos principais levam selo", () => {
+  const el = mount();
+  site.get("renderGcpCredits")(config, el, { session, now: at("2026-11-28T10:00:00-03:00") });
+  const screens = [...el.querySelectorAll(".credit-step-screen[data-zoom-src]")];
+  assert.equal(screens.length, config.steps.length);
+  assert.equal(screens.map(button => button.dataset.zoomSrc).join(), config.steps.map(step => step.image).join());
+  assert.match(el.querySelector(".credit-step-zoom").textContent, /Toque para ampliar/);
+  const key = [...el.querySelectorAll(".credit-step--key")];
+  assert.equal(key.length, config.steps.filter(step => step.badge).length);
+  assert.ok(key.every(item => item.querySelector(".credit-step-badge")));
+});
+
+test("tocar na tela de um passo abre a imagem grande no modal; fechar esconde", () => {
+  const el = mount();
+  site.get("renderGcpCredits")(config, el, { session, now: at("2026-11-28T10:00:00-03:00") });
+  site.get("initImageZoom")({ rootEl: el, label: "Tela" });
+  el.querySelectorAll(".credit-step-screen")[1].click();
+  const modal = site.document.getElementById("imageZoomModal");
+  assert.equal(modal.hidden, false);
+  assert.ok(modal.querySelector(".image-zoom-img").getAttribute("src").endsWith("02-claim.webp"));
+  modal.querySelector(".modal-close").click();
+  assert.equal(modal.hidden, true);
+});
+
+test("o topo mostra a Liga de TI como quem faz o lab quando a página recebe a marca; sem ela, só a sessão", () => {
+  const host = site.get("resolveParallelHost")(session, findHost);
+  const withHost = mount();
+  site.get("renderGcpCredits")(config, withHost, { session, host, parallelTexts: textsOf(), now: at("2026-11-28T10:00:00-03:00") });
+  assert.ok(withHost.querySelector(".credit-hero .parallel-host-logo img").getAttribute("src").endsWith("liga-de-ti-puc.webp"));
+  assert.match(withHost.querySelector(".credit-hero").textContent, /Lab de IA.*Coding Jam/s);
+  const without = mount();
+  site.get("renderGcpCredits")(config, without, { session, now: at("2026-11-28T10:00:00-03:00") });
+  assert.equal(without.querySelectorAll(".parallel-host").length, 0);
+});
+
+test("link aberto mostra o selo 'liberado agora'; antes e depois da janela, não", () => {
+  const open = mount();
+  site.get("renderGcpCredits")(config, open, { session, now: at("2026-11-28T10:00:00-03:00") });
+  assert.match(open.querySelector(".credit-live").textContent, /Link liberado agora/);
+  const before = mount();
+  site.get("renderGcpCredits")(config, before, { session, now: at("2026-11-20T10:00:00-03:00") });
+  assert.equal(before.querySelectorAll(".credit-live").length, 0);
 });

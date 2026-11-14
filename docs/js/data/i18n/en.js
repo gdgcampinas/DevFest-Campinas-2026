@@ -314,6 +314,12 @@ I18N_DICTIONARIES.en = {
     "credits.soon": "The Google Cloud credits will be available soon.",
   },
   texts: {
+    "Toque para ampliar": "Tap to enlarge",
+    "Tela do passo ampliada": "Enlarged step screen",
+    "Voltar ao link do crédito": "Back to the credit link",
+    "Link liberado agora": "Link available now",
+    "O passo principal": "The key step",
+    "Pronto!": "Done!",
     "Coding Jam: créditos do Google Cloud": "Coding Jam: Google Cloud credits",
     "Em paralelo às palestras": "Running alongside the talks",
     "Lab de IA": "AI Lab",

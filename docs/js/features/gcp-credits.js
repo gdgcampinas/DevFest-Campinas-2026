@@ -8,21 +8,25 @@ function creditStateDate(state, { locale }) {
   return iso ? formatCreditMoment(iso, { locale }) : "";
 }
 
-/** `session`: a sessão paralela dos créditos (data/parallel-sessions.js, `config.sessionId`), por parâmetro. */
-function renderGcpCredits(config, mountEl, { session, now = new Date(), locale = "pt-BR" } = {}) {
+/** `session`: a sessão paralela dos créditos (data/parallel-sessions.js, `config.sessionId`); `host`: quem faz o lab (features/parallel-sessions.js, `resolveParallelHost`) e `parallelTexts` as frases do bloco dele; tudo por parâmetro. */
+function renderGcpCredits(config, mountEl, { session, host = null, parallelTexts = null, now = new Date(), locale = "pt-BR" } = {}) {
   const { texts } = config;
   const state = creditWindowState(config.windows, now);
   mountEl.innerHTML = `
-    <div class="team-intro-card credit-intro">
-      <h2>${texts.title}</h2>
-      <p>${texts.intro}</p>
-      <ul class="credit-session">
-        <li>${iconMarkup("trophy")}${session.name}</li>
-        <li>${iconMarkup("pin")}${session.place}</li>
-        ${parallelRoundLines(session, texts.roundLine).map(line => `<li>${iconMarkup("clock")}${line}</li>`).join("")}
-      </ul>
+    <div class="credit-hero" style="--band-color:${session.color}">
+      <div class="credit-hero-main">
+        <span class="credit-kicker">${session.kicker}</span>
+        <h2>${texts.title}</h2>
+        <p>${texts.intro}</p>
+        <ul class="credit-session">
+          <li>${iconMarkup("trophy")}${session.name}</li>
+          <li>${iconMarkup("pin")}${session.place}</li>
+          ${parallelRoundLines(session, texts.roundLine).map(line => `<li>${iconMarkup("clock")}${line}</li>`).join("")}
+        </ul>
+      </div>
+      ${host ? parallelHostMarkup(host, parallelTexts) : ""}
     </div>
-    <section class="credit-link" aria-labelledby="creditLinkTitle">
+    <section class="credit-link" aria-labelledby="creditLinkTitle" id="creditLink">
       <h2 id="creditLinkTitle">${texts.linkTitle}</h2>
       ${creditLinkMarkup({ state, texts, dateText: creditStateDate(state, { locale }) })}
     </section>
@@ -32,8 +36,9 @@ function renderGcpCredits(config, mountEl, { session, now = new Date(), locale =
     </section>
     <section class="credit-block" aria-labelledby="creditStepsTitle">
       <h2 id="creditStepsTitle">${texts.stepsTitle}</h2>
-      ${creditStepsMarkup(config.steps)}
+      ${creditStepsMarkup(config.steps, { zoomHint: texts.zoomHint })}
       <p class="credit-note">${texts.stepsNote}</p>
+      <a class="cta cta--ghost credit-back" href="#creditLink">${texts.toLink}</a>
     </section>
     <section class="credit-block credit-official" aria-labelledby="creditOfficialTitle">
       <h2 id="creditOfficialTitle">${texts.officialTitle}</h2>

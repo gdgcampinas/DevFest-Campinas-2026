@@ -7,7 +7,7 @@
  *   windows       as janelas de 12 horas que o GDG LATAM liberou (e-mail de 2026-11-13). Cada uma tem o link principal e o reserva (`-bkp`, só para quem teve
  *                 problema ou já resgatou o principal): `start`/`end` em ISO com fuso, `code` (nome do crédito), `url` e `qr` (imagem do QR). Fora da janela o
  *                 link não funciona, então a página só o mostra dentro dela (features/gcp-credit-window.js)
- *   requirements  cards "antes de começar" (components/info-card.js); steps = o passo a passo com a tela de cada um (components/credit-steps.js)
+ *   requirements  cards "antes de começar" (components/info-card.js); steps = o passo a passo com a tela de cada um (`badge` opcional = selo de destaque do passo) (components/credit-steps.js)
  *   officialGuide / faq   materiais do Google, só linkados (não copiamos)
  *   texts         todas as frases da tela; `{date}`, `{n}`, `{start}` e `{end}` são trocados por quem renderiza
  * As telas dos passos vêm do guia oficial do Google (celular, tema escuro, evento de exemplo "DevFest ABCD 2026"): servem para a pessoa reconhecer cada tela.
@@ -53,12 +53,12 @@ const GCP_CREDITS = {
   ],
   steps: [
     { image: "assets/img/gcp-credits/01-login.webp", title: "Entre com seu Gmail", text: "Abra o link e entre com a sua conta @gmail.com. Se o Google pedir, confirme que é você." },
-    { image: "assets/img/gcp-credits/02-claim.webp", title: "Toque em Claim Credit", text: "Aparece a tela Claim Your Benefit. Toque ou clique no botão Claim Credit (resgatar crédito)." },
+    { image: "assets/img/gcp-credits/02-claim.webp", badge: "O passo principal", title: "Toque em Claim Credit", text: "Aparece a tela Claim Your Benefit. Toque ou clique no botão Claim Credit (resgatar crédito)." },
     { image: "assets/img/gcp-credits/03-create-profile.webp", title: "Crie seu perfil", text: "Se pedir, escolha Create profile. É o perfil gratuito do Google Developer Program." },
     { image: "assets/img/gcp-credits/04-fill.webp", title: "Preencha seus dados", text: "Nome, cidade, profissão e empresa. Pode ser simples, o que importa é concluir." },
     { image: "assets/img/gcp-credits/05-submit.webp", title: "Envie o formulário", text: "Marque o que quiser e toque ou clique em Criar perfil." },
     { image: "assets/img/gcp-credits/06-verify.webp", title: "Confirme que é você", text: "Se aparecer a verificação de segurança (reCAPTCHA), toque em Clique para confirmar e depois em Continuar. Não aparece para todo mundo." },
-    { image: "assets/img/gcp-credits/07-claimed.webp", title: "Crédito resgatado!", text: "Quando aparecer Successfully claimed your credit, está feito. A conta de faturamento pode levar até 5 minutos para aparecer." },
+    { image: "assets/img/gcp-credits/07-claimed.webp", badge: "Pronto!", title: "Crédito resgatado!", text: "Quando aparecer Successfully claimed your credit, está feito. A conta de faturamento pode levar até 5 minutos para aparecer." },
     { image: "assets/img/gcp-credits/08-billing.webp", title: "Use a conta de faturamento", text: "No Google Cloud, a conta com o crédito fica em Suas contas de faturamento. É ela que você liga ao seu projeto." },
   ],
   officialGuide: { label: "Guia oficial do Google (PDF)", url: "https://goo.gle/gcpcredits-en" },
@@ -78,6 +78,10 @@ const GCP_CREDITS = {
     backupButton: "Abrir o link reserva",
     requirementsTitle: "Antes de começar",
     stepsTitle: "Passo a passo",
+    liveNow: "Link liberado agora",
+    zoomHint: "Toque para ampliar",
+    zoomLabel: "Tela do passo ampliada",
+    toLink: "Voltar ao link do crédito",
     stepsNote: "As telas são do guia do Google e mostram um evento de exemplo. O nome do evento na sua tela pode ser outro.",
     officialTitle: "Quer ver o guia do Google?",
     posterTitle: "Resgate seu crédito do Google Cloud",
