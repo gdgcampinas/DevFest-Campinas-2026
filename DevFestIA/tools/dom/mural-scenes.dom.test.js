@@ -8,9 +8,9 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 const { createFakeClock } = require("../lib/fake-clock.js");
 
-const SCENES = ["mural-scene-kit", "mural-clip-picker", "mural-video-player", "mural-backdrop", "mural-now-next-scene", "mural-sponsors-scene", "mural-qr-scene", "mural-registered-scene", "mural-tips-scene", "mural-phoenix-scene", "mural-podium-scene", "mural-event-phase-scene", "mural-reserve-scene", "mural-spotlight-scene", "mural-selfie-scene", "mural-art-scene", "mural-album-scene", "mural-notice-scene", "mural-video-scene", "mural-team-scene", "mural-message-scene", "mural-day-timeline-scene", "mural-teaser-scene", "mural-wall-scene"].map(name => `components/mural-scenes/${name}.js`);
+const SCENES = ["mural-scene-kit", "mural-clip-picker", "mural-video-player", "mural-backdrop", "mural-now-next-scene", "mural-sponsors-scene", "mural-qr-scene", "mural-registered-scene", "mural-tips-scene", "mural-phoenix-scene", "mural-podium-scene", "mural-event-phase-scene", "mural-reserve-scene", "mural-spotlight-scene", "mural-speakers-scene", "mural-selfie-scene", "mural-art-scene", "mural-album-scene", "mural-notice-scene", "mural-video-scene", "mural-team-scene", "mural-message-scene", "mural-day-timeline-scene", "mural-teaser-scene", "mural-wall-scene"].map(name => `components/mural-scenes/${name}.js`);
 const site = loadSite({
-  scripts: [...SITE_BASE, "features/scheduler.js", "features/agenda.js", "features/mural-now-next.js", "features/mural-photo-pool.js", "features/mural.js", "features/mural-playlist.js", "components/talk-highlight.js", "data/mural-tips.js", "data/mural-arts.js", "data/mural-albums.js", "data/mural-album-models.js", "features/album-photo-url.js", "features/album-models.js", "features/video-sound.js", "components/mural-scenes/album-models/album-model-collage.js", "components/mural-scenes/album-models/album-model-portrait-strip.js", "components/mural-scenes/album-models/album-model-polaroid.js", "components/mural-scenes/album-models/album-model-feature.js", "components/mural-scenes/album-models/album-model-mosaic.js", ...SCENES, "features/live-status.js", "features/count-up.js", "features/mural-rotation.js", "features/mural-captions.js", "features/mural-messages.js", "features/mural-day-timeline.js", "features/mural-teasers.js", "data/mural-messages.js", "components/avatar.js"],
+  scripts: [...SITE_BASE, "features/scheduler.js", "features/featured-deck.js", "features/agenda.js", "features/mural-now-next.js", "features/mural-photo-pool.js", "features/mural.js", "features/mural-playlist.js", "components/talk-highlight.js", "data/mural-tips.js", "data/mural-arts.js", "data/mural-albums.js", "data/mural-album-models.js", "features/album-photo-url.js", "features/album-models.js", "features/video-sound.js", "components/mural-scenes/album-models/album-model-collage.js", "components/mural-scenes/album-models/album-model-portrait-strip.js", "components/mural-scenes/album-models/album-model-polaroid.js", "components/mural-scenes/album-models/album-model-feature.js", "components/mural-scenes/album-models/album-model-mosaic.js", ...SCENES, "features/live-status.js", "features/count-up.js", "features/mural-rotation.js", "features/mural-captions.js", "features/mural-messages.js", "features/mural-day-timeline.js", "features/mural-teasers.js", "data/mural-messages.js", "components/avatar.js"],
 });
 const { window, document } = site;
 test.after(() => window.close());
@@ -616,6 +616,48 @@ test("vídeo (montagem): toca na entrada; se o navegador bloqueia o som toca mud
   const loadError = await mountWith({ playBehavior: async () => {}, context: { moment: null } });
   loadError.video.dispatchEvent(new window.Event("error"));
   assert.match(loadError.errors[0], /não carregou/);
+});
+
+// ---------- cena dos palestrantes (um de cada trilha) ----------
+const speakerOf = (name, trackIndex) => ({ id: name, name, title: "Cargo", company: "Empresa", photo: "", keynote: name === "P0", track: { id: `t${trackIndex}`, label: `Trilha ${trackIndex}`, shortLabel: `T${trackIndex}`, color: `var(--t${trackIndex})` }, talks: [{ title: `Palestra de ${name}` }] });
+const speakersPool = Array.from({ length: 45 }, (_, index) => speakerOf(`P${index}`, index % 5));
+
+test("palestrantes: um de cada trilha por passada, e em 9 passadas TODOS os 45 passam, uma vez cada", async () => {
+  const scene = g("createSpeakersScene")({ pool: speakersPool, slots: 5, preload: async () => {}, metaOf: person => `${person.title} · ${person.company}` });
+  const seen = [];
+  for (let pass = 0; pass < 9; pass++) {
+    const prepared = await scene.prepare({ kicker: "Quem vem aí", title: "Palestrantes" });
+    const view = html(scene.render(prepared, { kicker: "Quem vem aí", title: "Palestrantes" }).markup);
+    const cards = [...view.querySelectorAll(".ms-speaker")];
+    assert.equal(cards.length, 5);
+    assert.equal(new Set(cards.map(card => card.getAttribute("style").match(/--track-color:([^;"]+)/)[1])).size, 5, `passada ${pass}: trilhas repetidas`);
+    seen.push(...[...view.querySelectorAll("figcaption b")].map(el => textOf(el)));
+  }
+  assert.equal(new Set(seen).size, 45, "todos passaram");
+  assert.equal(seen.length, 45, "ninguém repetiu antes de todos");
+});
+
+test("palestrantes: título e kicker, cartão da plenária, cargo e palestra; foto que não carrega vira iniciais; duas entradas dividem o baralho", async () => {
+  const scene = g("createSpeakersScene")({ pool: speakersPool, slots: 5, preload: async url => { if (url.includes("x.webp")) throw new Error("404"); }, metaOf: person => `${person.title} · ${person.company}` });
+  const withPhoto = [{ ...speakersPool[0], photo: "assets/x.webp" }, ...speakersPool.slice(1)];
+  const photoScene = g("createSpeakersScene")({ pool: withPhoto, slots: 5, preload: async url => { if (url.includes("x.webp")) throw new Error("404"); }, metaOf: person => person.title });
+  const prepared = await photoScene.prepare({ kicker: "Quem vem aí", title: "Palestrantes do DevFest" });
+  const view = html(photoScene.render(prepared, { kicker: "Quem vem aí", title: "Palestrantes do DevFest" }).markup);
+  assert.match(textOf(view.querySelector(".ms-kicker")), /Quem vem aí/);
+  assert.match(textOf(view.querySelector(".ms-title")), /Palestrantes do DevFest/);
+  assert.match(textOf(view.querySelector("figcaption em")), /^“Palestra de /);
+  const first = await scene.prepare({ deck: "antes" });
+  const second = await scene.prepare({ deck: "antes" });
+  const firstNames = first.people.map(person => person.name);
+  assert.equal(second.people.some(person => firstNames.includes(person.name)), false, "a próxima passada não repete");
+  assert.equal(first.people.every(person => person.photo === null || person.photo === undefined || person.photo === ""), true);
+});
+
+test("palestrantes: sem palestrante a cena não aparece; `count` muda quantos por passada", async () => {
+  const empty = g("createSpeakersScene")({ pool: [], slots: 5, preload: async () => {} });
+  assert.equal(await empty.prepare({}), MURAL_SKIP);
+  const three = g("createSpeakersScene")({ pool: speakersPool, slots: 5, preload: async () => {} });
+  assert.equal((await three.prepare({ count: 3 })).people.length, 3);
 });
 
 // ---------- cena do time ----------

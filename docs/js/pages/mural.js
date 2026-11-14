@@ -115,6 +115,7 @@ function initMural() {
     "day-timeline": createDayTimelineScene({ schedule: SCHEDULE, timezone: EVENT.timezone, formatTime: (date, zone) => formatEventTime(date, zone, CODE_LOCALE), highlightLabelOf: data => talkHighlightsRepository.forTalk(data)?.label ?? null }),
     teaser: createTeaserScene({ repository: muralTeasersRepository, schedule: SCHEDULE }),
     wall: createWallScene({ promptLabelOf: id => wallConfigRepository.prompt(id)?.label ?? id, rotation }),
+    speakers: createSpeakersScene({ pool: extractSpeakers(SCHEDULE, TRACKS, EVENT.timezone), slots: TRACKS.length, preload: url => preloadImage(url, { timeoutMs: config.speakerPhotoTimeoutMs, schedule }), metaOf: speakerMetaLine }),
     team: createTeamScene({ repository: teamRepository, preload: url => preloadImage(url, { timeoutMs: config.speakerPhotoTimeoutMs, schedule }), rotation }),
     phoenix: createPhoenixScene({ preload, imageUrl: brandRepository.getAll().mascot, title, subtitle: eventDateLabel(SCHEDULE, EVENT.timezone) }),
     podium: createPodiumScene({ talkIndex, highlightOf: talkHighlightsRepository.forTalk }),

@@ -358,6 +358,19 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .mural-stage[data-shape="tall"] .ms-album--mosaic .ms-album-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 
 /* cena "time": foto grande à esquerda, nome, grupo e mini-bio à direita; em telão vertical empilha */
+/* cena Palestrantes: um de cada trilha por passada (components/mural-scenes/mural-speakers-scene.js) */
+.ms-speakers{gap:calc(var(--u) * 3)}
+.ms-speakers-row{flex:1;min-height:0;display:grid;grid-template-columns:repeat(var(--n,5),minmax(0,1fr));gap:calc(var(--u) * 2.4);align-items:center}
+.ms-speaker{margin:0;display:flex;flex-direction:column;align-items:center;gap:calc(var(--u) * 1.4);text-align:center;min-width:0}
+.ms-speaker .ms-avatar{width:calc(var(--u) * 24);height:calc(var(--u) * 24)}
+.ms-speaker .ms-avatar--fallback{font-size:calc(var(--u) * 6)}
+.ms-speaker-track{padding:calc(var(--u) * .4) calc(var(--u) * 1.6);border-radius:99px;background:var(--track-color);color:#05060a;font:800 calc(var(--u) * 1.8) var(--font-body);letter-spacing:.06em;text-transform:uppercase}
+.ms-speaker figcaption b{display:block;font:800 calc(var(--u) * 3.2) var(--font-display);color:oklch(97% .005 260)}
+.ms-speaker figcaption span{display:block;margin-top:calc(var(--u) * .4);font:600 calc(var(--u) * 2.1) var(--font-body);color:var(--muted)}
+.ms-speaker figcaption em{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;overflow:hidden;margin-top:calc(var(--u) * 1);font:500 calc(var(--u) * 2.2) var(--font-body);font-style:italic;color:var(--accent)}
+.mural-stage[data-shape="tall"] .ms-speakers-row{grid-template-columns:1fr;gap:calc(var(--u) * 3)}
+.mural-stage[data-shape="tall"] .ms-speaker{flex-direction:row;text-align:left;gap:calc(var(--u) * 3)}
+.mural-stage[data-shape="tall"] .ms-speaker .ms-avatar{flex:none;width:calc(var(--u) * 16);height:calc(var(--u) * 16)}
 .ms-team{flex-direction:row;align-items:center;gap:calc(var(--u) * 6)}
 .ms-team-photo{flex:none;display:flex;align-items:center;justify-content:center}
 .ms-team-photo .ms-avatar{width:calc(var(--u) * 46);height:calc(var(--u) * 46)}
