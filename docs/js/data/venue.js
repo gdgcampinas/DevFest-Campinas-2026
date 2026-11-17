@@ -8,8 +8,8 @@ const VENUE = {
   venue: "PUC-Campinas, Campus I",
   building: "Prédio H-02", // o prédio do evento
   entrance: "Entrada pelo portão 2", // por onde entrar (aparece junto do endereço e no mapa)
-  address: "Av. Reitor Benedito José Barreto Fonseca, Parque dos Jacarandás, Campinas, SP, 13086-900", // o que aparece escrito no site
-  mapQuery: "PUC Campinas - Campus I, Av. Reitor Benedito José Barreto Fonseca, Parque dos Jacarandás, Campinas, SP, 13086-900", // o que o Google Maps procura (nome + rua: o pino cai no campus)
+  address: "Av. Dom Humberto Mozzoni, 120-160, Parque dos Jacarandás, Campinas, SP", // o que aparece escrito no site
+  mapQuery: "PUC Campinas - Campus I, Av. Dom Humberto Mozzoni, 120-160, Parque dos Jacarandás, Campinas, SP", // o que o Google Maps procura (nome + rua: o pino cai no campus)
   mapZoom: 16,
   links: [
     { id: "map", label: "Mapa do campus (PDF)", url: "https://www.puc-campinas.edu.br/wp-content/uploads/2026/07/Mapa-PUC-Campus-I-26-2.pdf" },

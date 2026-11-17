@@ -25,7 +25,7 @@ const VENUE_MAP_TYPES = {
 
 const VENUE_MAP_POINTS = [
   { id: "gate1", kind: "gate", mark: "1", x: 70.4, y: 35.7, group: "arrival", name: "Portão 1", text: "Não é a entrada do evento. Use o portão 2.", minor: true },
-  { id: "gate2", kind: "entrance", mark: "2", x: 91.6, y: 73.5, group: "arrival", name: "Portão 2", text: "A entrada do DevFest: use o portão 2, pela Av. Reitor Benedito José Barreto Fonseca." },
+  { id: "gate2", kind: "entrance", mark: "2", x: 91.6, y: 73.5, group: "arrival", name: "Portão 2", text: "A entrada do DevFest: use o portão 2, pela Av. Dom Humberto Mozzoni." },
   { id: "gate3", kind: "gate", mark: "3", x: 46.6, y: 90.3, group: "arrival", name: "Portão 3", text: "Não é a entrada do evento. Use o portão 2.", minor: true },
   { id: "parking", kind: "parking", mark: "C", x: 35.7, y: 58.4, group: "arrival", name: "Estacionamento C", text: "A poucos passos do H-02, pela Av. Dom Humberto Mozzoni." },
   { id: "bus", kind: "transit", mark: "B", x: 46.7, y: 60.8, group: "arrival", name: "Ponto de ônibus", text: "Na Av. Dom Humberto Mozzoni, ao lado do H-Zero." },

@@ -30,7 +30,7 @@ test("mostra a foto do H-02 em tela cheia, o rótulo, o prédio, o campus com a 
   assert.match(textOf(view.querySelector(".ms-kicker")), /Onde estamos/);
   assert.match(textOf(view.querySelector(".ms-venue-title")), /Prédio H-02/);
   assert.match(textOf(view.querySelector(".ms-venue-line")), /PUC-Campinas, Campus I · Entrada pelo portão 2/);
-  assert.match(textOf(view.querySelector(".ms-venue-address")), /Av\. Reitor Benedito José Barreto Fonseca/);
+  assert.match(textOf(view.querySelector(".ms-venue-address")), /Av\. Dom Humberto Mozzoni, 120-160/);
 });
 
 test("a foto pode ser escolhida por id e o ponto que não corta vem do dado", async () => {
