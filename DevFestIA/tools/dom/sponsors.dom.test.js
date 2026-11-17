@@ -72,7 +72,7 @@ test("em produção (antes da revelação) só as marcas `public` aparecem; cota
   assert.equal(JSON.stringify(publicTiers(tiers).map(tier => [tier.tier, tier.elements.map(e => e.name)])), JSON.stringify([["Master", ["Real"]], ["Apoio", ["Outra real"]]]));
   const real = site.get("sponsorsRepository").getAll();
   const shown = publicTiers(real).flatMap(tier => tier.elements.map(e => e.name));
-  assert.equal(JSON.stringify(shown), JSON.stringify(["Google Developer Groups", "FalaBoss", "FIAP", "PUC-Campinas", "Novatec Editora", "Timbira", "Hacker Rangers", "Datarock", "B&B", "KRIVO", "Agibank", "Jobstar", "NewHack Campinas", "GDG Americana", "WoHackers", "Liga de TI PUC"]), "hoje o Master (GDG), a FalaBoss (Especialista), a FIAP (Pleno), a PUC-Campinas (Apoio), a Novatec, a Timbira, a Hacker Rangers, a Datarock, a B&B, a KRIVO, o Agibank e a Jobstar (Parceiros), a NewHack e o GDG Americana (Comunidades parceiras) estão liberados em produção (a PUC foi liberada em 2026-10-30)");
+  assert.equal(JSON.stringify(shown), JSON.stringify(["Google Developer Groups", "FalaBoss", "Bosch", "FIAP", "PUC-Campinas", "Novatec Editora", "Timbira", "Hacker Rangers", "Datarock", "B&B", "KRIVO", "Agibank", "Jobstar", "NewHack Campinas", "GDG Americana", "WoHackers", "Liga de TI PUC"]), "hoje o Master (GDG), a FalaBoss (Especialista), a Bosch (Sênior), a FIAP (Pleno), a PUC-Campinas (Apoio), a Novatec, a Timbira, a Hacker Rangers, a Datarock, a B&B, a KRIVO, o Agibank e a Jobstar (Parceiros), a NewHack e o GDG Americana (Comunidades parceiras) estão liberados em produção (a PUC foi liberada em 2026-10-30)");
 });
 
 test("depois da revelação (DEV) a cota vazia também não aparece, nem como rótulo", () => {
@@ -123,11 +123,17 @@ test("comunidades parceiras (mock) somem em produção, sem aviso, e só aparece
   assert.equal(grid.querySelector(".sponsor-name"), null, "só o logo (o nome fica no alt)");
 });
 
-test("telão: marcas liberadas mais as marcadas `telao` (Bosch aparece no telão, mas não no site público)", () => {
+test("telão: marcas liberadas mais as marcadas `telao` (a marca `telao` aparece lá antes de aparecer no site público)", () => {
+  const tiers = [
+    { tier: "Senior", elements: [{ name: "So no telao", telao: true }, { name: "Liberada", public: true }, { name: "Mock" }] },
+  ];
+  const telao = site.get("telaoSponsorTiers")(tiers).flatMap(tier => tier.elements.map(e => e.name));
+  const publico = site.get("publicSponsorTiers")(tiers).flatMap(tier => tier.elements.map(e => e.name));
+  assert.deepEqual([...telao], ["So no telao", "Liberada"]);
+  assert.deepEqual([...publico], ["Liberada"]);
   const real = site.get("sponsorsRepository").getAll();
-  const telao = site.get("telaoSponsorTiers")(real).flatMap(tier => tier.elements.map(e => e.name));
-  const publico = site.get("publicSponsorTiers")(real).flatMap(tier => tier.elements.map(e => e.name));
-  assert.ok(telao.includes("Bosch"));
-  assert.ok(!publico.includes("Bosch"));
-  assert.ok(!telao.includes("Red Bridge Card Store"));
+  const realPublic = site.get("publicSponsorTiers")(real).flatMap(tier => tier.elements.map(e => e.name));
+  const realTelao = site.get("telaoSponsorTiers")(real).flatMap(tier => tier.elements.map(e => e.name));
+  assert.ok(realPublic.includes("Bosch") && realTelao.includes("Bosch"), "a Bosch está liberada no site e no telão");
+  assert.ok(!realTelao.includes("Red Bridge Card Store"));
 });
