@@ -46,7 +46,7 @@ const SPONSORS = [
     // REAL e LIBERADA em produção e no telão (2026-11-11, `public: true`, pedido do Renato). Logo azul-marinho do slide de abertura da proposta, recortado rente ao desenho (700 px de origem: se a KRIVO mandar o arquivo grande, trocar), na caixa branca padrão. Agência de marketing e tecnologia.
     { public: true, name: "KRIVO", link: "https://www.krivomkt.com.br", imageUrl: "assets/brand/krivo.webp", description: "Ecossistema de marketing e tecnologia que une criatividade, estratégia e tecnologia." },
     // REAL, parceiro novo (2026-11-11). SEM `public`: só em DEV até o Renato liberar. Logo positivo (azul e verde) tirado do PDF CMYK oficial enviado pelo Renato, recortado rente ao desenho, na caixa branca padrão.
-    { name: "Agibank", link: "https://agibank.com.br", imageUrl: "assets/brand/agibank.webp", description: "Banco digital brasileiro." },
+    { name: "Agibank", link: "https://agibank.com.br", imageUrl: "assets/brand/agibank.webp", description: "Um banco orgulhosamente brasileiro e popular, digital sempre e presencial quando o cliente quiser." },
     // REAL e LIBERADA em produção e em DEV (2026-11-11, `public: true`, pedido do Renato). Logo recortado rente ao desenho do arquivo enviado (fundo branco), na caixa branca padrão. Instagram: https://www.instagram.com/jobstar_ai/
     { public: true, name: "Jobstar", link: "https://jobstar.ai", imageUrl: "assets/brand/jobstar.webp", description: "Jobstar Carreiras: seu próximo passo profissional começa aqui." },
   ] },
