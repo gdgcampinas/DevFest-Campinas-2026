@@ -22,7 +22,7 @@
  * antes. NÃO controla `?lineup=1` (modo DEV pela URL do site normal, que a equipe usa pra conferir o line-up): isso é outra porta e fica de fora.
  * Pedido do Renato: "tira o DEV do ar" = `false`; "volta o DEV" = `true` (ver HANDOFF_CURRENT.md).
  */
-var DEV_ROUTES_ENABLED = false;
+var DEV_ROUTES_ENABLED = true;
 
 (function () {
   var target = document.currentScript.dataset.target;

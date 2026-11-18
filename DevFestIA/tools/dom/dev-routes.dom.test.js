@@ -28,10 +28,10 @@ function runLoader({ enabled, target = "grade.html", search = "", hash = "" }) {
   return calls;
 }
 
-test("a chave existe como true/false e vem DESLIGADA (DEV fora do ar)", () => {
+test("a chave existe como true/false e vem LIGADA (DEV no ar)", () => {
   const match = loaderSource.match(/var DEV_ROUTES_ENABLED = (true|false);/);
   assert.ok(match, "falta `var DEV_ROUTES_ENABLED = true|false;` no dev-loader.js");
-  assert.equal(match[1], "false");
+  assert.equal(match[1], "true");
 });
 
 test("toda página de /DEV/ usa o loader e aponta para uma página real do site", () => {
