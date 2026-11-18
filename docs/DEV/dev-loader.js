@@ -16,20 +16,9 @@
  * link pra `<algo>.html` (rota do site), então navegar por dentro do
  * DEV continua em DEV — um MutationObserver cobre link novo inserido
  * depois (modal, banners), não só o que já existe na carga da página.
- *
- * CHAVE DE FORA DO AR: `DEV_ROUTES_ENABLED` (uma linha, logo abaixo). `false` = as rotas /DEV/ não carregam o modo DEV: mandam para a MESMA
- * página do site normal (mantendo ?query e #âncora), então um link /DEV/ compartilhado cai na página pública em vez de dar 404. `true` = como
- * antes. NÃO controla `?lineup=1` (modo DEV pela URL do site normal, que a equipe usa pra conferir o line-up): isso é outra porta e fica de fora.
- * Pedido do Renato: "tira o DEV do ar" = `false`; "volta o DEV" = `true` (ver HANDOFF_CURRENT.md).
  */
-var DEV_ROUTES_ENABLED = true;
-
 (function () {
   var target = document.currentScript.dataset.target;
-  if (!DEV_ROUTES_ENABLED) {
-    location.replace("../" + target + location.search + location.hash);
-    return;
-  }
   try {
     sessionStorage.setItem("devfest-campinas-2026:dev-mode", "1");
   } catch {

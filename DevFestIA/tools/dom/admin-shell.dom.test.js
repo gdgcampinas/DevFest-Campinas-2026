@@ -241,7 +241,7 @@ test("a página admin.html inteira: abre logado na seção Atalhos com os links 
   const body = site.document.getElementById("adminBody");
   await waitFor(() => body.querySelector("[data-shortcut]"));
   const hrefs = [...body.querySelectorAll("[data-shortcut] a")].map(link => link.getAttribute("href"));
-  assert.deepEqual(hrefs, ["telao.html", "sorteio.html?lineup=1&telao=1"]);
+  assert.deepEqual(hrefs, ["telao.html", "DEV/sorteio.html?telao=1"]);
   assert.ok([...body.querySelectorAll("[data-shortcut] a")].every(link => link.target === "_blank" && link.rel === "noopener"));
   assert.deepEqual([...site.document.querySelectorAll("#adminNav a")].map(link => link.getAttribute("href")), ["#visao-geral", "#telao", "#fotos", "#palestras", "#recados", "#lista-de-espera", "#moderadores", "#antes-do-evento", "#atalhos"]);
   site.window.close();
