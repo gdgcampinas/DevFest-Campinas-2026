@@ -59,6 +59,8 @@ const SPONSORS = [
     { public: true, name: "WoHackers", link: "https://linktr.ee/wohackers", imageUrl: "assets/brand/wohackers.webp", description: "Comunidade que incentiva e apoia a participação de mulheres em hackathons." },
     // REAL e LIBERADA em produção e no telão (2026-11-10, `public: true`, pedido do Renato). Liga Acadêmica de TI da PUC-Campinas. Logo roxo enviado pelo Renato (150 px de origem, recortado rente ao desenho e ampliado: se a Liga tiver o arquivo grande, trocar). Link: o Linktree dela, sem os parâmetros de rastreio do Instagram.
     { public: true, name: "Liga de TI PUC", link: "https://linktr.ee/ligadetipuccampinas", imageUrl: "assets/brand/liga-de-ti-puc.webp", description: "Liga Acadêmica de TI da PUC-Campinas, a primeira instituição acadêmica da PUC dedicada a fomentar tecnologia, inovação e empreendedorismo." },
+    // REAL e LIBERADA em produção, em DEV e no telão (2026-11-19, `public: true`, pedido do Renato). Logo preto sobre fundo branco enviado pelo Renato, recortado rente ao desenho (700 px de largura), na caixa branca padrão. Site: https://devpira.com.br/
+    { public: true, name: "Devpira", link: "https://devpira.com.br/", imageUrl: "assets/brand/devpira.webp", description: "Comunidade que conecta pessoas e tecnologia." },
   ] },
 ];
 

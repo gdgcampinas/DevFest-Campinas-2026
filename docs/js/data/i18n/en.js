@@ -539,6 +539,7 @@ I18N_DICTIONARIES.en = {
     "Inteligência em PostgreSQL em prol da sustentabilidade do seu negócio.": "PostgreSQL intelligence for the sustainability of your business.",
     "Cultura de segurança com treinamentos gamificados.": "Security culture through gamified training.",
     "Comunidade parceira de desenvolvedores do Google Developer Group de Americana.": "Partner developer community of the Google Developer Group in Americana.",
+    "Comunidade que conecta pessoas e tecnologia.": "A community that connects people and technology.",
     "Publicando livros de qualidade nas áreas de tecnologia, negócios e educação desde 1988.": "Publishing quality books in technology, business and education since 1988.",
     "Entrada pelo portão 2": "Entrance through gate 2",
     "Entrada": "Entrance",
