@@ -6,7 +6,8 @@
  * A cor vem sempre de --track-color, herdada do card.
  */
 const MAX_TOPICS = 2;
-const MAX_AVATARS = 3;
+const MAX_AVATARS = 4; // palestra em grupo (painel): até 4 fotos no card; o modal mostra todo mundo
+const GROUP_MIN_SPEAKERS = 3; // a partir de quantas pessoas a palestra é "em grupo": o card põe as fotos numa linha e os nomes embaixo (ver track-card.js)
 
 function talkTagsMarkup(data, highlight = talkHighlightsRepository.forTalk(data)) {
   const format = talkFormatsRepository.getById(data.format);

@@ -243,6 +243,18 @@ test("rolando agora: a posição escolhe a sala entre as que têm palestra no ar
   assert.equal(await scene.prepare({ slot: 0 }, ctx({ now: at("12:00") })), MURAL_SKIP, "ninguém no ar fora do horário");
 });
 
+test("rolando agora: palestra em grupo (4 pessoas) mostra as 4 fotos e nomes e ganha o layout de grupo; com 1 ou 2 pessoas o layout é o de sempre", async () => {
+  const four = ["Ana", "Bia", "Cris", "Dani"].map(name => ({ name, title: `Cargo ${name}`, photo: `${name}.jpg` }));
+  const groupSchedule = [{ talks: { ia: talkOf("Painel em grupo", four, { blurb: "Quatro vozes." }), web: talkOf("Dupla", four.slice(0, 2)) }, start: at("09:00"), end: at("09:40") }];
+  const scene = g("createSpotlightScene")({ schedule: groupSchedule, tracks: spotTracks, timezone: "America/Sao_Paulo", phaseOf: g("resolveEventState"), preloadPhoto: async () => {}, hostOf: () => null });
+  const render = async slot => html(scene.render(await scene.prepare({ slot }, ctx({ now: at("09:10") })), {}, ctx({ now: at("09:10") })).markup);
+  const group = await render(0);
+  assert.equal(group.querySelectorAll("img.ms-avatar").length, 4);
+  assert.deepEqual([...group.querySelectorAll(".ms-spot-person b")].map(textOf), ["Ana", "Bia", "Cris", "Dani"]);
+  assert.ok(group.querySelector(".ms-spot-body").classList.contains("ms-spot-body--group"));
+  assert.ok(!(await render(1)).querySelector(".ms-spot-body").classList.contains("ms-spot-body--group"), "dupla segue o layout normal");
+});
+
 test("rolando agora: foto, nome, cargo, título, texto curto (blurb vence a descrição), tags limitadas, horário, progresso e pontinhos", async () => {
   const scene = spotlight();
   const prepared = await scene.prepare({ slot: 0 }, ctx({ now: at("09:10") }));

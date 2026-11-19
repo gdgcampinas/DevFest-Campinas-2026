@@ -48,7 +48,8 @@ function trackCardMarkup(track, data, {
 } = {}) {
   const highlight = reveal ? talkHighlightsRepository.forTalk(data) : null;
   const speakers = reveal ? talkWhoList(data) : [];
-  const speaker = reveal ? speakers.map((s) => s.name).join(" & ") || hiddenSpeakerLabel() : hiddenSpeakerLabel();
+  const group = speakers.length >= GROUP_MIN_SPEAKERS; // palestra em grupo: fotos numa linha, nomes embaixo, LinkedIn de cada pessoa só no modal
+  const speaker = reveal ? speakers.map((s) => s.name).join(group ? ", " : " & ") || hiddenSpeakerLabel() : hiddenSpeakerLabel();
   const title = reveal && data.title ? data.title : "";
   const room = reveal ? track.room : "";
   const meta = reveal && speakers.length === 1 ? speakerMetaLine(speakers[0]) : "";
@@ -81,13 +82,13 @@ function trackCardMarkup(track, data, {
       <div class="title${title ? "" : " title--pending"}">${title || hiddenTitleLabel()}</div>
       ${reveal ? talkTagsMarkup(data, highlight) : ""}
       ${highlight ? talkHighlightBodyMarkup(highlight) : ""}
-      <div class="talk-who">
+      <div class="talk-who${group ? " talk-who--group" : ""}">
         ${talkAvatarsMarkup(speakers, { talk: title, color: track.color })}
         <div class="talk-who-text">
           <div class="talk-name">${speaker}</div>
           ${meta ? `<div class="talk-meta">${meta}</div>` : ""}
         </div>
-        ${reveal ? talkLinksMarkup(speakers) : ""}
+        ${reveal && !group ? talkLinksMarkup(speakers) : ""}
       </div>
       ${foot ? `<div class="talk-foot">${foot}</div>` : ""}
       ${live ? `<div class="talk-progress"><b style="width:${Math.round(progress * 100)}%"></b></div>` : ""}

@@ -344,6 +344,17 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .mural-stage[data-shape="tall"] .ms-avatar{width:calc(var(--u) * 44);height:calc(var(--u) * 44)}
 .mural-stage[data-shape="tall"] .ms-spot-people[data-count="2"] .ms-avatar{width:calc(var(--u) * 28);height:calc(var(--u) * 28)}
 .mural-stage[data-shape="tall"] .ms-spot-people{flex-direction:row;justify-content:center}
+/* palestra em grupo (3 ou mais pessoas): fotos numa fileira, texto embaixo; vale em todos os formatos de tela */
+.mural-stage .ms-spot-body.ms-spot-body--group{grid-template-columns:minmax(0,1fr);align-content:center;gap:calc(var(--u) * 3)}
+.ms-spot-body--group .ms-spot-people{flex-direction:row;justify-content:center;align-items:flex-start;gap:calc(var(--u) * 3)}
+.ms-spot-body--group .ms-spot-person{flex:1 1 0;max-width:calc(var(--u) * 34)}
+.ms-spot-body--group .ms-avatar{width:calc(var(--u) * 20);height:calc(var(--u) * 20)}
+.ms-spot-body--group .ms-avatar--fallback{font-size:calc(var(--u) * 5)}
+.ms-spot-body--group .ms-spot-person figcaption b{font-size:calc(var(--u) * 2.8)}
+.ms-spot-body--group .ms-spot-person figcaption span{font-size:calc(var(--u) * 1.9)}
+.ms-spot-body--group .ms-spot-text{align-items:center;text-align:center}
+.ms-spot-body--group .ms-spot-text .ms-title{font-size:calc(var(--u) * 5.4)}
+.ms-spot-body--group .ms-spot-blurb{-webkit-line-clamp:3;line-clamp:3}
 .mural-stage[data-shape="tall"] .ms-selfie{flex-direction:column;align-items:center;text-align:center}
 .mural-stage[data-shape="tall"] .ms-selfie-brand{max-width:100%;align-items:center}
 .mural-stage[data-shape="tall"] .ms-selfie-logo{align-self:center}

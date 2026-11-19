@@ -5,6 +5,8 @@
  * Foto que não carrega (ou demora) cai nas iniciais com a cor da trilha, sem atrasar a cena. Sessão sem palestrante (Coding Jam) usa quem conduz (`hostOf`).
  * Tudo injetado: `schedule`, `tracks`, `timezone`, `phaseOf`, `preloadPhoto` (com tempo limite curto), `hostOf(idDoDestaque)`.
  */
+const GROUP_MIN_PEOPLE = 3; // palestra em grupo (painel): as fotos vão numa fileira no alto e o texto desce, em vez da coluna ao lado
+
 function spotlightPeople(talk, hostOf) {
   if (talk.people.length) return talk.people;
   const host = talk.highlight ? hostOf(talk.highlight) : null;
@@ -32,7 +34,7 @@ function createSpotlightScene({ schedule, tracks, timezone, phaseOf, preloadPhot
       return {
         markup: `<section class="ms ms-spotlight" style="--track-color:${track.color}">
           <header class="ms-spot-head"><span class="ms-spot-live">Rolando agora</span><span class="ms-spot-room">${escapeHtml(track.room ?? "")} · ${escapeHtml(track.label)}</span><span class="ms-spot-time">${muralTimeRange(talk.start, talk.end, timezone)}</span></header>
-          <div class="ms-spot-body">
+          <div class="ms-spot-body${people.length >= GROUP_MIN_PEOPLE ? " ms-spot-body--group" : ""}">
             <div class="ms-spot-people" data-count="${people.length}">${figures}</div>
             <div class="ms-spot-text"><h2 class="ms-title">${escapeHtml(talk.title)}</h2>${talk.blurb ? `<p class="ms-hint ms-spot-blurb">${escapeHtml(talk.blurb)}</p>` : ""}${tags ? `<ul class="ms-spot-tags">${tags}</ul>` : ""}</div>
           </div>

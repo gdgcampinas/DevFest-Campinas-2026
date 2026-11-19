@@ -375,6 +375,9 @@ main{max-width:1180px;margin:36px auto 0;padding:0 24px}
 .talk-avatar{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;border:2px solid var(--card-b);background:linear-gradient(135deg,oklch(30% 0.03 260),oklch(20% 0.02 260))}
 .talk-avatar--fallback{display:flex;align-items:center;justify-content:center;font:800 13px var(--font-display);color:oklch(92% 0.01 260)}
 .talk-name{font:700 13.5px/1.2 var(--font-display);color:oklch(94% 0.008 260)}
+.talk-who--group{flex-wrap:wrap;align-items:flex-start;row-gap:8px}
+.talk-who--group .talk-who-text{flex:1 1 100%}
+.talk-who--group .talk-name{font-size:13px;line-height:1.3}
 .talk-meta{font:500 12px/1.3 var(--font-body);color:var(--muted)}
 .talk-links{display:flex;gap:6px;flex:0 0 auto}
 .talk-links .social-icon{background:rgba(255,255,255,.05);border:1px solid var(--card-border);color:var(--muted);backdrop-filter:none;border-radius:8px}
