@@ -27,7 +27,7 @@ function loadSiteContext({ siteDir = SITE_DIR } = {}) {
 
 /** Map chave-da-palestra -> { title, track, time, speakers }, na ordem da grade, o formulário de feedback do evento e o início do evento. */
 function readSiteSchedule(options) {
-  const site = vm.runInContext("({ SCHEDULE, TRACKS, EVENT, EVENT_FEEDBACK_FORM, talkKey, formatEventTime, speakerList })", loadSiteContext(options));
+  const site = vm.runInContext("({ SCHEDULE, TRACKS, EVENT, EVENT_FEEDBACK_FORM, CODE_LOCALE, talkKey, formatEventTime, speakerList })", loadSiteContext(options));
   const talks = new Map();
   site.SCHEDULE.forEach(slot => {
     if (!slot.talks) return;
@@ -37,7 +37,7 @@ function readSiteSchedule(options) {
       talks.set(site.talkKey(slot, track.id), {
         title: data.title,
         track: track.label,
-        time: site.formatEventTime(slot.start, site.EVENT.timezone),
+        time: site.formatEventTime(slot.start, site.EVENT.timezone, site.CODE_LOCALE),
         speakers: site.speakerList(data).map(speaker => speaker.name),
       });
     });
