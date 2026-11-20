@@ -8,7 +8,7 @@ const after = new Date("2026-11-28T12:00:00Z");
 const startsAt = new Date("2026-11-28T11:00:00Z");
 
 test("lista fixa: só as coleções de teste (feedback, perguntas, sorteio e concurso da sessão), nunca as do Sympla", () => {
-  assert.deepEqual(PURGEABLE_COLLECTIONS, ["checkins", "talk-feedback", "event-feedback", "talk-questions", "talk-question-votes", "raffle-checkins", "raffle-entries", "raffle-draws", "raffle-session", "raffle-state", "contest-projects", "contest-votes", "contest-results"]);
+  assert.deepEqual(PURGEABLE_COLLECTIONS, ["checkins", "talk-feedback", "event-feedback", "talk-questions", "talk-question-votes", "raffle-checkins", "raffle-entries", "raffle-draws", "raffle-session", "raffle-state", "contest-projects", "contest-votes", "contest-results", "mural-wall"]);
   ["registrations", "event-stats", "sync-state", "waitlist"].forEach(name => assert.equal(PURGEABLE_COLLECTIONS.includes(name), false)); // waitlist = gente de verdade que pediu pra ser avisada: nunca entra na limpeza
 });
 
@@ -44,6 +44,7 @@ const docs = {
   "raffle-draws": [{ id: "u1_raffle_draw", edition: "2026" }],
   "contest-projects": [{ id: "u1_k", edition: "2026" }, { id: "u0_k", edition: "2025" }],
   "contest-votes": [{ id: "u2_k", edition: "2026" }],
+  "mural-wall": [{ id: "w1", edition: "2026" }, { id: "w0", edition: "2025" }], // recados do telão: os de teste saem, os de outra edição ficam
   registrations: [{ id: "real1", edition: "2026" }],
   "event-stats": [{ id: "2026", edition: "2026" }],
 };
@@ -51,7 +52,7 @@ const docs = {
 test("caso de uso: simulação só conta e não grava nada", async () => {
   const database = fakeDatabase(docs);
   const report = await runPurge({ database, edition: "2026", deleting: false });
-  assert.deepEqual(report, { checkins: { found: 2, deleted: 0 }, "talk-feedback": { found: 1, deleted: 0 }, "event-feedback": { found: 0, deleted: 0 }, "talk-questions": { found: 1, deleted: 0 }, "talk-question-votes": { found: 0, deleted: 0 }, "raffle-checkins": { found: 0, deleted: 0 }, "raffle-entries": { found: 1, deleted: 0 }, "raffle-draws": { found: 1, deleted: 0 }, "raffle-session": { found: 0, deleted: 0 }, "raffle-state": { found: 0, deleted: 0 }, "contest-projects": { found: 1, deleted: 0 }, "contest-votes": { found: 1, deleted: 0 }, "contest-results": { found: 0, deleted: 0 } });
+  assert.deepEqual(report, { checkins: { found: 2, deleted: 0 }, "talk-feedback": { found: 1, deleted: 0 }, "event-feedback": { found: 0, deleted: 0 }, "talk-questions": { found: 1, deleted: 0 }, "talk-question-votes": { found: 0, deleted: 0 }, "raffle-checkins": { found: 0, deleted: 0 }, "raffle-entries": { found: 1, deleted: 0 }, "raffle-draws": { found: 1, deleted: 0 }, "raffle-session": { found: 0, deleted: 0 }, "raffle-state": { found: 0, deleted: 0 }, "contest-projects": { found: 1, deleted: 0 }, "contest-votes": { found: 1, deleted: 0 }, "contest-results": { found: 0, deleted: 0 }, "mural-wall": { found: 1, deleted: 0 } });
   assert.equal(database.commits.length, 0);
 });
 
@@ -60,7 +61,7 @@ test("caso de uso: apaga só a edição atual, só nas coleções da lista, nunc
   const report = await runPurge({ database, edition: "2026", deleting: true });
   assert.equal(report.checkins.deleted, 2);
   const removed = database.commits.flat().map(write => write.remove.join("/")).sort();
-  assert.deepEqual(removed, ["checkins/a", "checkins/b", "contest-projects/u1_k", "contest-votes/u2_k", "raffle-draws/u1_raffle_draw", "raffle-entries/u1_raffle", "talk-feedback/c", "talk-questions/q1"]);
+  assert.deepEqual(removed, ["checkins/a", "checkins/b", "contest-projects/u1_k", "contest-votes/u2_k", "mural-wall/w1", "raffle-draws/u1_raffle_draw", "raffle-entries/u1_raffle", "talk-feedback/c", "talk-questions/q1"]);
   assert.ok(!removed.some(path => path.startsWith("registrations") || path.startsWith("event-stats") || path.includes("old")));
 });
 

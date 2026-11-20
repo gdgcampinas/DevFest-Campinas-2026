@@ -1,14 +1,14 @@
 /**
  * Regras (puras) da limpeza dos dados de teste. Apagar dado de verdade é
  * irreversível, então TODAS as travas ficam aqui, num lugar só e testável:
- *   1) só coleções da lista fixa PURGEABLE_COLLECTIONS (nunca Sympla: registrations, nem a lista de espera dos ingressos: waitlist,
+ *   1) só coleções da lista fixa PURGEABLE_COLLECTIONS (`mural-wall` = os recados de teste do telão; nunca Sympla: registrations, nem a lista de espera dos ingressos: waitlist,
  *      event-stats, sync-state), sem parâmetro que permita outra;
  *   2) recusa a partir do início do evento (depois disso os dados são reais);
  *   3) simulação por padrão: só apaga com dryRun falso E confirmação exata.
  *   4) a edição do DEV ("2026-dev", ver data/firebase-config.js) é só ensaio e pode ser limpa a qualquer hora, inclusive depois do início do evento;
  *      a de produção ("2026") nunca.
  */
-const PURGEABLE_COLLECTIONS = ["checkins", "talk-feedback", "event-feedback", "talk-questions", "talk-question-votes", "raffle-checkins", "raffle-entries", "raffle-draws", "raffle-session", "raffle-state", "contest-projects", "contest-votes", "contest-results"];
+const PURGEABLE_COLLECTIONS = ["checkins", "talk-feedback", "event-feedback", "talk-questions", "talk-question-votes", "raffle-checkins", "raffle-entries", "raffle-draws", "raffle-session", "raffle-state", "contest-projects", "contest-votes", "contest-results", "mural-wall"];
 const CONFIRMATION_WORD = "APAGAR";
 
 function planPurge({ dryRun = true, confirm = "", now, startsAt, devEdition = false }) {

@@ -34,6 +34,7 @@ function sortSpeakersByName(speakers, locale = "pt-BR") {
 
 /** Palestra da pessoa: bloco clicável (abre o modal), com a cor da trilha dela. */
 function speakerTalkRefMarkup(ref) {
+  if (ref.href) return speakerLinkRefMarkup(ref);
   return `
     <div class="speaker-talk" role="button" tabindex="0" data-slot-index="${ref.slotIndex}" data-track="${ref.track.id}" data-track-event="talk_open" data-track-target="${ref.track.id}" style="--track-color:${ref.track.color}">
       <span class="speaker-talk-track"><span class="dot" style="background:${ref.track.color}"></span>${ref.track.shortLabel} · ${ref.startLabel}</span>
@@ -41,14 +42,27 @@ function speakerTalkRefMarkup(ref) {
     </div>`;
 }
 
+/** Sessão sem slot na grade (o Coding Jam da Liga): o mesmo bloco da palestra, mas é um link para a página da sessão (sem `data-slot-index`, então o modal da grade não pega o clique). */
+function speakerLinkRefMarkup(ref) {
+  return `
+    <a class="speaker-talk" href="${ref.href}" data-track="${ref.track.id}" data-track-event="parallel_open" data-track-target="${ref.track.id}" style="--track-color:${ref.track.color}">
+      <span class="speaker-talk-track"><span class="dot" style="background:${ref.track.color}"></span>${ref.track.shortLabel} · ${ref.startLabel}</span>
+      <span class="speaker-talk-title">${ref.title}</span>
+    </a>`;
+}
+
+/** Ícones de quem aparece no card: a lista `social` (nome e link, como a Liga) ou, sem ela, o LinkedIn da pessoa. */
+function speakerSocialMarkup(speaker) {
+  const social = speaker.social ?? (speaker.linkedin ? [{ name: "linkedin", link: speaker.linkedin }] : []);
+  return social.length ? `<div class="speaker-social">${social.map(socialIconMarkup).join("")}</div>` : "";
+}
+
 /** Reusa avatarMarkup (components/avatar.js), speakerMetaLine (track-card.js), socialIconMarkup (person-card.js) e speakerAnchorId (speaker-link.js) — nada reescrito aqui. */
 function speakerGalleryCardMarkup(speaker) {
   const photo = avatarMarkup(speaker.name, speaker.photo, "speaker-photo", { meta: speakerMetaLine(speaker), talks: speaker.talks.map(talk => talk.title), color: speaker.track.color });
   const avatar = speaker.badge ? `<span class="speaker-photo-wrap">${photo}<span class="speaker-badge">${BADGE_ICON}${speaker.badge}</span></span>` : photo; // selo da pessoa (ex.: GDE) em cima da foto
   const meta = speakerMetaLine({ ...speaker, badge: "" }); // o selo já está na foto
-  const social = speaker.linkedin
-    ? socialIconMarkup({ name: "linkedin", link: speaker.linkedin })
-    : "";
+  const social = speakerSocialMarkup(speaker);
   const anchor = speaker.id ? ` id="${speakerAnchorId(speaker)}"` : "";
   const trackIds = [...new Set(speaker.talks.map(talk => talk.track.id))].join(" ");
   return `

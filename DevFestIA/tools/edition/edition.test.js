@@ -28,8 +28,12 @@ test("página só de produção (o telão e os controles dele) ignora o modo DEV
   assert.equal(resolveEdition({ collectionName: "checkins", devMode: true, productionOnly: true }), "2026");
 });
 
-test("toda coleção que a limpeza apaga é de atividade (separada no DEV), e as de atividade são exatamente essas mais os quadros de perguntas", () => {
-  PURGEABLE_COLLECTIONS.forEach(collection => assert.ok(ACTIVITY_COLLECTIONS.includes(collection), `${collection} é apagada na limpeza mas não é separada no DEV`));
+// Os recados do telão (`mural-wall`) são dado de referência da produção (o telão só lê produção), mas a limpeza os apaga: recado de teste não pode ir pro ar no dia.
+const PURGED_BUT_NOT_SEPARATED = ["mural-wall"];
+
+test("toda coleção que a limpeza apaga é de atividade (separada no DEV), salvo os recados do telão, e as de atividade são exatamente essas mais os quadros de perguntas", () => {
+  PURGEABLE_COLLECTIONS.filter(collection => !PURGED_BUT_NOT_SEPARATED.includes(collection)).forEach(collection => assert.ok(ACTIVITY_COLLECTIONS.includes(collection), `${collection} é apagada na limpeza mas não é separada no DEV`));
+  PURGED_BUT_NOT_SEPARATED.forEach(collection => assert.ok(!ACTIVITY_COLLECTIONS.includes(collection), `${collection} ficou separada no DEV, mas o telão só lê produção`));
   const extra = ACTIVITY_COLLECTIONS.filter(collection => !PURGEABLE_COLLECTIONS.includes(collection));
   assert.deepEqual(extra, ["talk-boards"]);
 });

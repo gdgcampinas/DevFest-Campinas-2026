@@ -20,7 +20,22 @@ function resolveParallelHost(session, findHost) {
   const sponsor = session.host && findHost(session.host.sponsor);
   if (!sponsor) return null;
   const social = [{ name: "linktree", link: sponsor.link }, { name: "instagram", link: session.host.instagram }].filter(item => item.link);
-  return { name: session.host.name ?? sponsor.name, photo: sponsor.imageUrl, social };
+  return { name: session.host.name ?? sponsor.name, title: session.host.title ?? "", photo: sponsor.imageUrl, social };
+}
+
+/**
+ * Quem faz cada sessão em paralelo, no formato de quem aparece na página Palestrantes (features/speakers.js): o card da Liga, com o logo como foto, o cargo (`host.title`), os ícones
+ * (`social`) e UMA palestra, a própria sessão, que leva à página dela (`href`) em vez de abrir o modal da grade (ela não é um slot). Entra na trilha `session.trackId`; sessão sem marca achada ou
+ * sem trilha conhecida fica de fora. Puro: `findHost` e `tracks` vêm de quem chama.
+ */
+function parallelSpeakers({ sessions, tracks, findHost }) {
+  return sessions.flatMap(session => {
+    const host = resolveParallelHost(session, findHost);
+    const track = tracks.find(item => item.id === session.trackId);
+    if (!host || !track) return [];
+    const [round] = session.rounds;
+    return [{ id: `parallel-${session.id}`, name: host.name, title: host.title, company: "", photo: host.photo, social: host.social, track, talks: [{ track, title: session.name, startLabel: round.start, href: session.href }] }];
+  });
 }
 
 /** "1ª rodada, das 10:00 às 12:00" por rodada: o `template` ({n}, {start}, {end}) vem do dicionário de quem mostra (já traduzido). */

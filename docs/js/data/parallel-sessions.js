@@ -18,7 +18,8 @@ const PARALLEL_SESSIONS = [
     kicker: "Lab de IA",
     place: "Laboratório com computadores",
     rounds: [{ start: "10:00", end: "12:00" }],
-    host: { name: "Liga de TI da PUC", sponsor: "Liga de TI PUC", instagram: "https://www.instagram.com/ligadetipucc" },
+    host: { name: "Liga de TI da PUC", title: "Liga Acadêmica de TI da PUC-Campinas", sponsor: "Liga de TI PUC", instagram: "https://www.instagram.com/ligadetipucc" },
+    trackId: "ia", // a trilha do filtro de Palestrantes em que o card da Liga entra (a mesma cor do card da grade)
     href: "creditos.html",
     highlightId: "codejam",
     color: "var(--ia)",

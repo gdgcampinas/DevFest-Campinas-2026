@@ -6,7 +6,8 @@
  */
 function initPalestrantes() {
   const reveal = initShell("palestrantes");
-  const speakers = sortSpeakersByName(extractSpeakers(SCHEDULE, TRACKS, EVENT.timezone)); // alfabética: o mais fácil de achar alguém
+  const parallel = parallelSpeakers({ sessions: parallelSessionsRepository.visible({ devMode: isDevModeStored() }), tracks: TRACKS, findHost: name => sponsorsRepository.findByName(name) }); // a Liga (Coding Jam), que não está na grade
+  const speakers = sortSpeakersByName([...extractSpeakers(SCHEDULE, TRACKS, EVENT.timezone), ...parallel]); // alfabética: o mais fácil de achar alguém
   const tabsEl = document.querySelector(".tabs");
   const gridEl = document.querySelector(".speakers-grid");
 
