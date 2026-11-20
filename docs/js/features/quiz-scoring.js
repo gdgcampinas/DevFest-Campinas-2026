@@ -30,17 +30,22 @@ function scoreQuiz(questions, choices, ids) {
   return rankScores(scores, ids);
 }
 
-/** Pontos de uma palestra: soma da pontuação de cada assunto dela. */
-const talkScore = (topics, topicScores) => topics.reduce((sum, topic) => sum + (topicScores[topic] ?? 0), 0);
+/**
+ * Pontos de uma palestra: soma da pontuação de cada assunto dela, e a posição conta: o 1º assunto é o principal.
+ * `positionWeights[i]` é o peso do assunto na posição i (a última vale pras seguintes); sem lista, todos valem 1.
+ */
+function talkScore(topics, topicScores, positionWeights = [1]) {
+  return topics.reduce((sum, topic, position) => sum + (topicScores[topic] ?? 0) * positionWeights[Math.min(position, positionWeights.length - 1)], 0);
+}
 
 /**
  * Palestras que pontuam (> 0), da maior pra menor. Empate: horário mais cedo, depois a ordem do índice.
  * `entries` são as linhas de buildTalkIndex() (`slotIndex`, `track`, `data`); `topicsOf(data)` devolve os assuntos da palestra.
- * Vaga sem palestrante não tem assunto, então nunca pontua.
+ * Vaga sem palestrante não tem assunto, então nunca pontua. `positionWeights`: ver talkScore.
  */
-function scoreTalks(entries, topicScores, topicsOf) {
+function scoreTalks(entries, topicScores, topicsOf, positionWeights) {
   return entries
-    .map((entry, order) => ({ entry, order, score: talkScore(topicsOf(entry.data), topicScores) }))
+    .map((entry, order) => ({ entry, order, score: talkScore(topicsOf(entry.data), topicScores, positionWeights) }))
     .filter(item => item.score > 0)
     .sort((a, b) => b.score - a.score || a.entry.slotIndex - b.entry.slotIndex || a.order - b.order);
 }

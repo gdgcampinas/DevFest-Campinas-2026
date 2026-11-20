@@ -14,7 +14,7 @@ const docs = path.join(__dirname, "..", "..", "..", "docs");
 const { scoreQuiz, pickSpread, talkScore, scoreTalks, rankTracks, pickAgenda } = require(path.join(docs, "js/features/quiz-scoring.js"));
 
 const read = file => fs.readFileSync(path.join(docs, file), "utf8");
-const { questions } = vm.runInNewContext(`${read("js/data/repository.js")}\n${read("js/data/quiz.js")}\nquizRepository.getAll()`);
+const { questions, scoring } = vm.runInNewContext(`${read("js/data/repository.js")}\n${read("js/data/quiz.js")}\nquizRepository.getAll()`);
 const { topicIds, topicsBySpeaker } = vm.runInNewContext(`${read("js/data/repository.js")}\n${read("js/data/talk-topics.js")}\n({ topicIds: talkTopicsRepository.topicIds(), topicsBySpeaker: talkTopicsRepository.getAll() })`);
 const idsOf = name => [...read("js/data/schedule.js").match(new RegExp(`const ${name} = \\[([\\s\\S]*?)\\n\\];`))[1].matchAll(/\{ id: "(\w+)", label/g)].map(match => match[1]);
 const trackIds = idsOf("TRACKS");
@@ -123,4 +123,20 @@ test("a agenda tem no máximo uma palestra por horário, as melhores, em ordem d
   const agenda = pickAgenda(scored, 3);
   assert.deepStrictEqual(agenda.map(item => [item.slotIndex, item.track.id]), [[0, "b"], [1, "a"], [2, "a"]]);
   assert.deepStrictEqual(pickAgenda([], 3), []);
+});
+
+test("a posição do assunto conta: o 1º vale cheio, os demais valem o peso da lista (e a última vale pras seguintes)", () => {
+  const scores = { ia: 10, mobile: 10, dados: 10 };
+  assert.strictEqual(talkScore(["mobile", "ia"], scores, [1, 0.5]), 15);
+  assert.strictEqual(talkScore(["ia", "mobile"], scores, [1, 0.5]), 15);
+  assert.strictEqual(talkScore(["ia", "mobile", "dados"], scores, [1, 0.5]), 20);
+  assert.strictEqual(talkScore(["ia", "mobile"], scores), 20);
+});
+
+test("quem responde tudo de IA fica com a trilha de IA, mesmo com muitas palestras de Mobile tendo IA como 2º assunto", () => {
+  const talks = [entry(0, "ia", ["ia"]), entry(1, "ia", ["ia", "arquitetura"]), entry(2, "ia", ["ia", "dados"]), entry(0, "mobile", ["mobile", "ia"]), entry(1, "mobile", ["mobile", "ia"]), entry(2, "mobile", ["mobile", "ia"])];
+  const flat = rankTracks(scoreTalks(talks, { ia: 13 }, topicsOf), ["mobile", "ia"], 3);
+  assert.strictEqual(flat.winnerId, "mobile", "sem peso por posição, a trilha de Mobile levava");
+  const weighted = rankTracks(scoreTalks(talks, { ia: 13 }, topicsOf, scoring.topicPositionWeights), ["mobile", "ia"], 3);
+  assert.strictEqual(weighted.winnerId, "ia");
 });

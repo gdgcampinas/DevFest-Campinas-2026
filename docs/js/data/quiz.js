@@ -86,4 +86,7 @@ const QUIZ_COPY = {
   sharedBanner: track => t("quiz.sharedBanner", "Alguém te mostrou a trilha {track}. Descubra a sua:", { track }),
 };
 
-const quizRepository = createRepository({ questions: QUIZ_QUESTIONS, copy: QUIZ_COPY });
+/** Peso do assunto de uma palestra pela posição dele na lista (data/talk-topics.js): o 1º é o principal e vale cheio, os demais valem metade. */
+const QUIZ_SCORING = { topicPositionWeights: [1, 0.5] };
+
+const quizRepository = createRepository({ questions: QUIZ_QUESTIONS, copy: QUIZ_COPY, scoring: QUIZ_SCORING });

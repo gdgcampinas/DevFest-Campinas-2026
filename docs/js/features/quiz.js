@@ -5,7 +5,7 @@
  * índice de palestras, assuntos das palestras e favoritos (nada global além das funções puras).
  *
  * As respostas pontuam ASSUNTOS (data/talk-topics.js). Cada palestra pontua pelos assuntos
- * dela; a trilha do resultado é a que reúne as melhores palestras pra pessoa, e a agenda sugerida
+ * dela (o 1º assunto vale mais, ver `scoring` em data/quiz.js); a trilha do resultado é a que reúne as melhores palestras pra pessoa, e a agenda sugerida
  * é uma palestra por horário, de qualquer trilha, sem choque. Com `reveal` o resultado lista essas
  * palestras e adiciona à "Minha agenda"; sem `reveal` (palestras ainda mock) mostra só a trilha.
  * `?trilha=<id>` abre direto o resultado de outra pessoa (3 palestras espalhadas da trilha).
@@ -14,7 +14,7 @@ const QUIZ_TRACK_PARAM = "trilha";
 const QUIZ_TALKS_COUNT = 4;
 const QUIZ_TRACK_TOP_TALKS = 3;
 
-function initQuiz({ mountEl, questions, copy, tracks, talkIndex, topicIds, topicsOf, favorites, reveal, timezone, resultUrl, search = location.search }) {
+function initQuiz({ mountEl, questions, copy, scoring, tracks, talkIndex, topicIds, topicsOf, favorites, reveal, timezone, resultUrl, search = location.search }) {
   const trackById = id => tracks.find(track => track.id === id);
   const trackIds = tracks.map(track => track.id);
   const sharedTrack = trackById(new URLSearchParams(search).get(QUIZ_TRACK_PARAM));
@@ -31,7 +31,7 @@ function initQuiz({ mountEl, questions, copy, tracks, talkIndex, topicIds, topic
   /** Resultado de quem respondeu: trilha, vice e agenda saem das palestras que mais pontuam (sem pontuação nenhuma = primeira trilha, sem palestras). */
   function personalResult() {
     const topicScores = scoreQuiz(questions, choices, topicIds).scores;
-    const scored = scoreTalks(talkIndex.getAll(), topicScores, topicsOf);
+    const scored = scoreTalks(talkIndex.getAll(), topicScores, topicsOf, scoring.topicPositionWeights);
     const { winnerId, runnerUpId } = rankTracks(scored, trackIds, QUIZ_TRACK_TOP_TALKS);
     return { winnerId, runnerUpId, entries: reveal ? pickAgenda(scored, QUIZ_TALKS_COUNT) : [] };
   }
