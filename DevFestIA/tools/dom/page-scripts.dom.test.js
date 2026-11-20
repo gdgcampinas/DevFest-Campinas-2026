@@ -9,6 +9,8 @@ const path = require("node:path");
 
 const docs = path.join(__dirname, "../../../docs");
 const REQUIRED_BEFORE_APP = ["js/components/escape-html.js", "js/components/track-attrs.js"];
+// O selo de aniversário do cabeçalho (app.js, showAnniversaryBadge) roda em toda página que tem a linha `#headerMeta`.
+const REQUIRED_WITH_HEADER = ["js/data/anniversary.js", "js/components/number-template.js", "js/components/anniversary-badge.js", "js/features/anniversary.js", "js/features/release-gate.js"];
 const pages = fs.readdirSync(docs).filter(name => name.endsWith(".html"));
 
 for (const page of pages) {
@@ -16,7 +18,7 @@ for (const page of pages) {
   if (!/src="js\/app\.js/.test(html)) continue;
   test(`${page}: carrega o que o app.js usa, antes dele`, () => {
     const appAt = html.search(/src="js\/app\.js/);
-    for (const file of REQUIRED_BEFORE_APP) {
+    for (const file of [...REQUIRED_BEFORE_APP, ...(html.includes('id="headerMeta"') ? REQUIRED_WITH_HEADER : [])]) {
       const at = html.indexOf(`src="${file}`);
       assert.ok(at !== -1, `${page} não carrega ${file}`);
       assert.ok(at < appAt, `${page}: ${file} precisa vir antes do app.js`);

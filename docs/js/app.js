@@ -379,6 +379,7 @@ function initShell(activePageId) {
   renderBrand(EVENT.hosts, document.getElementById("brand"));
   renderWordmark(EVENT, document.getElementById("wordmark"));
   renderHeaderMeta(EVENT, SCHEDULE, document.getElementById("headerMeta"));
+  showAnniversaryBadge({ after: document.getElementById("headerMeta"), config: anniversaryConfigRepository.getAll(), text: anniversaryTextsRepository.getAll(), eventYear: Number(EVENT.date.slice(0, 4)), href: "historia.html", devMode: isDevModeStored() }); // em toda página, em PROD e em DEV (liga e desliga em data/anniversary.js)
   renderSiteNav(activePageId, document.getElementById("siteNav"), { reveal });
   renderFooterColumns(FOOTER_COLUMNS, document.querySelector(".footer-columns"));
   const tickerEl = document.getElementById("ticker");

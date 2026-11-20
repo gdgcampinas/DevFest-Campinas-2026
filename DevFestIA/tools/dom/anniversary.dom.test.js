@@ -39,6 +39,9 @@ test("o selo diz os dois números e o texto escapado, sem sobra de {community} o
   const el = mount();
   g("initAnniversaryBadge")(el, { config: { ...config, public: true }, text, eventYear: 2026 });
   assert.equal(textOf(el.querySelector(".anniversary-badge")), "13 anos de GDG Campinas · 10 anos de DevFest");
+  const link = el.querySelector("a.anniversary-badge");
+  assert.ok(link, "o selo é um link");
+  assert.equal(link.getAttribute("href"), "historia.html", "leva à página de história");
   assert.deepEqual(Array.from(el.querySelectorAll(".anniversary-badge b"), number => number.textContent), ["13", "10"], "os números vêm em destaque");
   assert.ok(!el.innerHTML.includes("{") && !el.innerHTML.includes("undefined"));
   assert.ok(el.querySelector(".anniversary-badge svg, .anniversary-badge .icon"), "ícone");
@@ -55,4 +58,13 @@ test("o texto do selo é escapado e só os números viram HTML", () => {
   assert.ok(!markup.includes("<img"));
   assert.match(markup, /&lt;img/);
   assert.match(markup, /<b>13<\/b>/);
+});
+
+test("o selo vai em toda página: showAnniversaryBadge cria o espaço depois da linha de data e local e o preenche", () => {
+  document.body.innerHTML = '<div class="meta-line" id="headerMeta"></div><nav id="siteNav"></nav>';
+  const shown = g("showAnniversaryBadge")({ after: document.getElementById("headerMeta"), config: { ...config, public: true }, text, eventYear: 2026, href: "historia.html" });
+  assert.equal(shown, true);
+  assert.equal(document.getElementById("headerMeta").nextElementSibling.id, "anniversaryBadge");
+  assert.equal(document.querySelectorAll("#anniversaryBadge a.anniversary-badge").length, 1);
+  assert.equal(g("showAnniversaryBadge")({ after: null, config, text, eventYear: 2026 }), false, "sem cabeçalho não faz nada");
 });
