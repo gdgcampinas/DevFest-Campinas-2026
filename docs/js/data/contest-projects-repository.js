@@ -4,7 +4,6 @@
 const contestProjectsRepository = window.createFirestoreRepository({
   db: window.firebaseClient.db,
   collectionName: "contest-projects",
-  edition: CURRENT_EDITION,
 });
 
 window.contestProjectsRepository = contestProjectsRepository;

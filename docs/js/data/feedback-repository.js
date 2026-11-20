@@ -6,7 +6,6 @@
 const feedbackRepository = window.createFirestoreRepository({
   db: window.firebaseClient.db,
   collectionName: "talk-feedback",
-  edition: CURRENT_EDITION,
 });
 
 window.feedbackRepository = feedbackRepository;

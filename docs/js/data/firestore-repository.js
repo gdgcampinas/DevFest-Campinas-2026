@@ -15,7 +15,7 @@
  */
 import { collection, doc, setDoc, getDoc, getDocs, getCountFromServer, onSnapshot, updateDoc, deleteDoc, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
-function createFirestoreRepository({ db, collectionName, edition }) {
+function createFirestoreRepository({ db, collectionName, edition = editionFor(collectionName) }) {
   const col = () => collection(db, collectionName);
   const docId = (uid, entryKey) => `${uid}_${entryKey}`;
   /** Consulta desta edição por igualdade ({campo: valor}); um valor em array vira "in" (até 30 itens). */

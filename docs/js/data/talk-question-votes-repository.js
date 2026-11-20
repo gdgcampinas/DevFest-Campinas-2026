@@ -5,7 +5,6 @@
 const talkQuestionVotesRepository = window.createFirestoreRepository({
   db: window.firebaseClient.db,
   collectionName: "talk-question-votes",
-  edition: CURRENT_EDITION,
 });
 
 window.talkQuestionVotesRepository = talkQuestionVotesRepository;

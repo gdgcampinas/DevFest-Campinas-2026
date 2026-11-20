@@ -121,6 +121,18 @@ test("check-in: com a trava desligada (teste em DEV) vale a qualquer hora", { sk
   allowed(await checkin(person(), talkKeyStarted(60 * 24 * 3)));
 });
 
+// ---------- edição do DEV ----------
+test("edição: o modo DEV grava na edição 2026-dev (check-in e pergunta), e edição desconhecida é recusada", { skip }, async () => {
+  const talk = LIVE();
+  const dev = { edition: "2026-dev" };
+  const who = person();
+  allowed(await createDoc(who, "checkins", `${who.uid}_${talk}`, { ...dev, entryKey: talk }));
+  allowed(await ask(who, talk, 1, dev));
+  const stranger = person();
+  denied(await createDoc(stranger, "checkins", `${stranger.uid}_${talk}`, { edition: "2025", entryKey: talk }));
+  denied(await createDoc(stranger, "checkins", `${stranger.uid}_${talk}`, { edition: "2026-dev-x", entryKey: talk }));
+});
+
 // ---------- ler ----------
 test("leitura: a plateia NÃO lista as perguntas dos outros (aprovadas, pendentes ou sem filtro); o moderador lista tudo", { skip }, async () => {
   const talk = LIVE();

@@ -7,7 +7,6 @@
 const raffleCheckinsRepository = window.createFirestoreRepository({
   db: window.firebaseClient.db,
   collectionName: "raffle-checkins",
-  edition: CURRENT_EDITION,
 });
 
 window.raffleCheckinsRepository = raffleCheckinsRepository;

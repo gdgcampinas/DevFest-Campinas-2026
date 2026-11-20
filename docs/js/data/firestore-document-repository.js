@@ -7,7 +7,7 @@
  */
 import { collection, doc, setDoc, getDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
 
-function createFirestoreDocumentRepository({ db, collectionName, edition }) {
+function createFirestoreDocumentRepository({ db, collectionName, edition = editionFor(collectionName) }) {
   const ref = id => doc(collection(db, collectionName), id);
   const toItem = snapshot => (snapshot.exists() ? { id: snapshot.id, ...snapshot.data() } : null);
 

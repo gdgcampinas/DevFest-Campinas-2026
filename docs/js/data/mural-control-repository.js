@@ -5,5 +5,4 @@
 window.muralControlRepository = window.createFirestoreDocumentRepository({
   db: window.firebaseClient.db,
   collectionName: "mural-control",
-  edition: CURRENT_EDITION,
 });

@@ -5,7 +5,6 @@
 const wallRepository = window.createFirestoreRepository({
   db: window.firebaseClient.db,
   collectionName: WALL_CONFIG.collection,
-  edition: CURRENT_EDITION,
 });
 
 window.wallRepository = wallRepository;

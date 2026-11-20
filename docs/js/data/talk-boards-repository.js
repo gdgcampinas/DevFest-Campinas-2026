@@ -6,7 +6,6 @@
 const talkBoardsRepository = window.createFirestoreDocumentRepository({
   db: window.firebaseClient.db,
   collectionName: "talk-boards",
-  edition: CURRENT_EDITION,
 });
 
 window.talkBoardsRepository = talkBoardsRepository;

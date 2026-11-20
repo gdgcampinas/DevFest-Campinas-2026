@@ -6,7 +6,6 @@
 const eventFeedbackRepository = window.createFirestoreRepository({
   db: window.firebaseClient.db,
   collectionName: "event-feedback",
-  edition: CURRENT_EDITION,
 });
 
 window.eventFeedbackRepository = eventFeedbackRepository;

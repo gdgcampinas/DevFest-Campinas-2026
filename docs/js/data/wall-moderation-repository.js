@@ -5,7 +5,6 @@
 const moderationWallRepository = window.createFirestoreRepository({
   db: window.moderatorClient.db,
   collectionName: WALL_CONFIG.collection,
-  edition: CURRENT_EDITION,
 });
 
 window.moderationWallRepository = moderationWallRepository;

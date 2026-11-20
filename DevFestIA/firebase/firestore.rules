@@ -21,8 +21,10 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // "2026" = produção; "2026-dev" = o modo DEV (ensaio) grava os dados de atividade do evento numa edição própria, pra não misturar
+    // com o uso real e pra limpeza de teste do PROD não apagar o que é do DEV. ESPELHAR `KNOWN_EDITIONS` de docs/js/data/firebase-config.js (um teste confere).
     function isKnownEdition(edition) {
-      return edition in ["2026"];
+      return edition in ["2026", "2026-dev"];
     }
 
     function isOwnDoc(docId) {
@@ -345,7 +347,7 @@ service cloud.firestore {
       return raffleRequiresTicket()
         ? (request.auth != null
           && docId.matches('^[0-9]{4}_[0-9a-f]{64}$')
-          && docId[0:4] == request.resource.data.edition
+          && docId[0:4] == request.resource.data.edition[0:4] // a chave da inscrição é sempre da edição de produção; a do cadastro do DEV ("2026-dev") leva o mesmo prefixo
           && exists(/databases/$(database)/documents/registrations/$(docId)))
         : (isOwnDoc(docId) && idMatchesEntry(docId));
     }

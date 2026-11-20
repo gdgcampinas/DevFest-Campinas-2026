@@ -5,7 +5,6 @@
 const waitlistRepository = window.createFirestoreRepository({
   db: window.firebaseClient.db,
   collectionName: WAITLIST_CONFIG.collection,
-  edition: CURRENT_EDITION,
 });
 
 window.waitlistRepository = waitlistRepository;

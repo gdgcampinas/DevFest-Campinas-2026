@@ -6,7 +6,6 @@
 const raffleEntriesRepository = window.createFirestoreRepository({
   db: window.firebaseClient.db,
   collectionName: "raffle-entries",
-  edition: CURRENT_EDITION,
 });
 
 window.raffleEntriesRepository = raffleEntriesRepository;

@@ -1,6 +1,6 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { planPurge, PURGEABLE_COLLECTIONS } = require("./purge-plan.js");
+const { planPurge, targetEdition, PURGEABLE_COLLECTIONS } = require("./purge-plan.js");
 const { runPurge } = require("./purge-use-case.js");
 
 const before = new Date("2026-11-27T12:00:00Z");
@@ -62,4 +62,19 @@ test("caso de uso: apaga só a edição atual, só nas coleções da lista, nunc
   const removed = database.commits.flat().map(write => write.remove.join("/")).sort();
   assert.deepEqual(removed, ["checkins/a", "checkins/b", "contest-projects/u1_k", "contest-votes/u2_k", "raffle-draws/u1_raffle_draw", "raffle-entries/u1_raffle", "talk-feedback/c", "talk-questions/q1"]);
   assert.ok(!removed.some(path => path.startsWith("registrations") || path.startsWith("event-stats") || path.includes("old")));
+});
+
+test("a edição do DEV (2026-dev) pode ser limpa a qualquer hora, inclusive depois do início do evento; a de produção continua travada", () => {
+  const startsAt = new Date("2026-11-28T11:00:00Z");
+  const after = new Date("2026-11-28T12:00:00Z");
+  assert.equal(planPurge({ dryRun: false, confirm: "APAGAR", now: after, startsAt }).allowed, false);
+  const dev = planPurge({ dryRun: false, confirm: "APAGAR", now: after, startsAt, devEdition: true });
+  assert.equal(dev.allowed, true);
+  assert.equal(dev.deleting, true);
+  assert.equal(planPurge({ dryRun: false, confirm: "", now: after, startsAt, devEdition: true }).allowed, false, "a confirmação continua valendo no DEV");
+});
+
+test("a edição atacada é a de produção, ou `<edição>-dev` quando pedido", () => {
+  assert.equal(targetEdition({ production: "2026", suffix: "-dev" }), "2026");
+  assert.equal(targetEdition({ devEdition: true, production: "2026", suffix: "-dev" }), "2026-dev");
 });

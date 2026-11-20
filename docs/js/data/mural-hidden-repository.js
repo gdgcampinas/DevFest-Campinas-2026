@@ -5,5 +5,4 @@
 window.muralHiddenRepository = window.createFirestoreDocumentRepository({
   db: window.firebaseClient.db,
   collectionName: "mural-hidden",
-  edition: CURRENT_EDITION,
 });

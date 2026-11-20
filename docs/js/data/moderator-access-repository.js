@@ -6,7 +6,6 @@
 const moderatorAccessDocuments = window.createFirestoreDocumentRepository({
   db: window.moderatorClient.db,
   collectionName: "raffle-state",
-  edition: CURRENT_EDITION,
 });
 
 window.moderatorAccessRepository = { probe: () => moderatorAccessDocuments.get("current") };

@@ -5,7 +5,6 @@
 const moderationWaitlistRepository = window.createFirestoreRepository({
   db: window.moderatorClient.db,
   collectionName: WAITLIST_CONFIG.collection,
-  edition: CURRENT_EDITION,
 });
 
 window.moderationWaitlistRepository = moderationWaitlistRepository;

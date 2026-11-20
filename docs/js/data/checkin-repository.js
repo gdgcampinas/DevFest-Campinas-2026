@@ -11,7 +11,6 @@
 const checkinRepository = window.createFirestoreRepository({
   db: window.firebaseClient.db,
   collectionName: "checkins",
-  edition: CURRENT_EDITION,
 });
 
 window.checkinRepository = checkinRepository;
