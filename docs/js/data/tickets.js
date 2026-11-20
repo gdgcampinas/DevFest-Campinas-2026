@@ -37,8 +37,8 @@ const TICKET_PRICE_TBD = "Valor a definir";
 /** Textos do estado "vendas encerradas" de um tipo de ingresso (selo e botão). Traduzidos por igualdade (data/i18n/en.js). */
 const TICKET_SOLD_OUT_TEXTS = { badge: "Vendas encerradas", button: "Vendas encerradas" };
 
-/** Aviso mostrado abaixo dos cards. */
-const TICKETS_NOTE = "As inscrições acontecem pelo Sympla.";
+/** Chamada mostrada em destaque abaixo dos cards (callout: ação + motivo). */
+const TICKETS_NOTE = "Inscreva-se pelo Sympla e garanta seu lugar no DevFest Campinas 2026.";
 
 const ticketsRepository = createRepository(TICKET_TYPES, {
   getById: id => TICKET_TYPES.find(type => type.id === id),

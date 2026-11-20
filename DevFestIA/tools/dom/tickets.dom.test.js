@@ -30,7 +30,7 @@ test("o preço aparece com centavos só quando precisa (R$ 0 e R$ 45,10) e a tax
   assert.equal(JSON.stringify(prices), JSON.stringify(["R$ 0", "R$ 45,10"]));
   assert.doesNotMatch(textOf(box), /taxa|41,00|4,10/i);
   assert.ok(box.querySelectorAll('a.cta[href="https://sympla.test/evento"]').length === 2, "os dois levam ao Sympla");
-  assert.equal(g("TICKETS_NOTE"), "As inscrições acontecem pelo Sympla.");
+  assert.equal(g("TICKETS_NOTE"), "Inscreva-se pelo Sympla e garanta seu lugar no DevFest Campinas 2026.");
 });
 
 test("com a lista de espera ligada os cartões viram 'Avise-me quando abrir' (sem link de compra)", () => {

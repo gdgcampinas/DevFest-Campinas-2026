@@ -601,7 +601,8 @@ a.featured-speaker:focus-visible{outline:2px solid var(--text);outline-offset:4p
 .ticket-benefits li{display:flex;gap:8px;font:500 13.5px/1.4 var(--font-body);color:var(--text)}
 .ticket-benefits .icon{width:16px;height:16px;margin-top:2px;color:var(--ticket-color)}
 .ticket .cta{margin-top:auto;background:var(--ticket-color)}
-.tickets-note{margin:14px 0 0;font:500 12px var(--font-body);color:var(--muted)}
+/* chamada de inscrição: destaque (caixa com a cor do Google amarelo, texto grande) em vez do aviso miúdo */
+.tickets-note{width:fit-content;max-width:100%;margin:26px auto 24px;padding:14px 22px;border-radius:var(--radius);border:1px solid color-mix(in oklch, var(--google-yellow) 55%, transparent);background:color-mix(in oklch, var(--google-yellow) 10%, transparent);font:700 17px/1.4 var(--font-display);color:oklch(96% 0.005 260)}
 .tickets-note:empty{display:none}
 
 /* selo "modo DEV" (app.js, warnIfDevMode) — fica salvo entre páginas, não é por URL só */

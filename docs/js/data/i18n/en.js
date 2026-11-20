@@ -380,7 +380,7 @@ I18N_DICTIONARIES.en = {
     "Para viver o evento e aprender junto com a comunidade.": "To live the event and learn together with the community.",
     "Certificado de participação (para quem fizer check-in em ao menos uma palestra)": "Certificate of participation (for those who check in to at least one talk)",
     "Ingresso + Kit Camiseta": "Ticket + T-shirt kit",
-    "As inscrições acontecem pelo Sympla.": "Registration happens through Sympla.",
+    "Inscreva-se pelo Sympla e garanta seu lugar no DevFest Campinas 2026.": "Sign up on Sympla and secure your spot at DevFest Campinas 2026.",
     "Estamos preparando os ingressos": "We're getting the tickets ready",
     "Os tipos e os valores serão revelados em breve. Quem está na lista de espera sabe primeiro.": "Ticket types and prices will be revealed soon. People on the waitlist hear first.",
     "Em breve": "Soon",
