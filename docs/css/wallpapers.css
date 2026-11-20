@@ -33,3 +33,9 @@
   .wp-card{flex:0 0 66%;max-width:260px;scroll-snap-align:center}
   .wp-card:nth-child(3n+2){transform:none}
 }
+
+/* Faixa "Leve o DevFest no celular" da página principal (features/wallpaper-band.js): reaproveita o cabeçalho, a grade e o celular da página de fundos. */
+.wp-band{margin:44px auto 0;padding:0 0 8px}
+.wp-band .wp-head{padding-top:0}
+.wp-band .wp-section{margin:22px auto 14px}
+.wp-band-cta{margin:0 0 8px;text-align:center}

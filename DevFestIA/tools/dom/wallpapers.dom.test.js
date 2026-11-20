@@ -9,12 +9,13 @@ const path = require("node:path");
 const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 
 const DOCS = path.join(__dirname, "..", "..", "..", "docs");
-const site = loadSite({ scripts: [...SITE_BASE, "components/escape-html.js", "data/wallpapers.js", "components/wallpapers.js", "features/release-gate.js", "features/wallpapers.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "components/escape-html.js", "data/wallpapers.js", "components/wallpapers.js", "features/release-gate.js", "features/wallpapers.js", "features/wallpaper-band.js"] });
 const { document } = site;
 test.after(() => site.window.close());
 const g = name => site.get(name);
 const wallpapers = g("wallpapersRepository").getAll();
 const text = g("wallpaperTextsRepository").getAll();
+const bandConfig = g("wallpaperBandConfigRepository").getAll();
 
 test("os arquivos de cada fundo (imagem e miniatura) existem", () => {
   assert.ok(wallpapers.length >= 3);
@@ -53,4 +54,48 @@ test("o cabeçalho traz o selo, o título e a frase de apoio", () => {
   const head = document.createElement("section");
   head.innerHTML = g("wallpapersHeadMarkup")(text);
   assert.match(textOf(head), /GRÁTIS PARA BAIXAR[\s\S]*Fundos de tela[\s\S]*Leve o DevFest/);
+});
+
+test("os fundos mais novos vêm sempre primeiro; na mesma data vale a ordem da lista", () => {
+  const ids = Array.from(wallpapers, item => item.id); // Array.from: os dados vêm de outro contexto (vm), o deepEqual estrito compara o protótipo
+  assert.deepEqual(ids.slice(0, 3), ["fenix-e-o-caderno", "fenix-na-lagoa-do-taquaral", "torre-do-castelo-em-rosa"]);
+  assert.equal(ids[3], "guarda-chuvas");
+  const dates = Array.from(wallpapers, item => item.added);
+  assert.deepEqual(dates, [...dates].sort().reverse(), "datas em ordem decrescente");
+  assert.ok(wallpapers.every(item => /^\d{4}-\d{2}-\d{2}$/.test(item.added)), "todo fundo tem a data");
+});
+
+test("faixa da home: escondida em produção até liberar, e só o modo DEV a mostra", () => {
+  const band = g("initWallpaperBand");
+  const section = document.createElement("section");
+  assert.equal(bandConfig.public, false, "nasce só em DEV");
+  assert.equal(band(section, { config: bandConfig, wallpapers, text, devMode: false }), false);
+  assert.equal(section.hidden, true);
+  assert.equal(section.innerHTML, "");
+  assert.equal(band(section, { config: bandConfig, wallpapers, text, devMode: true }), true);
+  assert.equal(section.hidden, false);
+  assert.equal(band(section, { config: { ...bandConfig, public: true }, wallpapers, text, devMode: false }), true, "liberada vale pra todo mundo");
+  assert.equal(band(section, { config: { ...bandConfig, public: true }, wallpapers: [], text, devMode: false }), false, "sem fundos não aparece");
+});
+
+test("faixa da home: os celulares são os mais novos, levam à página de fundos e o botão diz quantos fundos existem", () => {
+  const section = document.createElement("section");
+  g("initWallpaperBand")(section, { config: { ...bandConfig, public: true }, wallpapers, text });
+  const titles = [...section.querySelectorAll(".wp-card strong")].map(el => el.textContent);
+  assert.deepEqual(titles, Array.from(wallpapers.slice(0, bandConfig.phones), item => item.title));
+  assert.ok([...section.querySelectorAll(".wp-phone")].every(link => link.getAttribute("href") === bandConfig.href && !link.hasAttribute("target")), "celular leva à página, na mesma aba");
+  assert.equal(section.querySelector(".wp-card .chip-btn"), null, "sem botão de baixar na faixa: quem baixa é a página");
+  const cta = section.querySelector(".wp-band-cta a");
+  assert.equal(cta.getAttribute("href"), "fundos.html?origem=home");
+  assert.match(cta.textContent, new RegExp(`Ver os ${wallpapers.length} fundos`));
+  assert.match(textOf(section), new RegExp(`${wallpapers.length} fundos de tela do evento`));
+  assert.ok(!section.innerHTML.includes("{n}") && !section.innerHTML.includes("undefined"));
+});
+
+test("a página de fundos continua com o botão de baixar em cada cartão depois de reaproveitar a moldura do celular", () => {
+  const section = document.createElement("section");
+  g("renderWallpapers")(section, { config: { public: true }, wallpapers, text });
+  assert.equal(section.querySelectorAll(".wp-card").length, wallpapers.length);
+  assert.equal(section.querySelectorAll(".wp-card a[download]").length, wallpapers.length);
+  assert.ok([...section.querySelectorAll(".wp-phone")].every(link => link.target === "_blank" && link.rel === "noopener"));
 });

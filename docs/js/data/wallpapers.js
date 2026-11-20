@@ -6,6 +6,9 @@ const WALLPAPERS_CONFIG = {
   public: true, // LIBERADA em produção em 2026-10-18
 };
 
+/** Data em que os primeiros fundos saíram; quem não traz `added` conta como dessa leva. Os mais NOVOS vêm sempre primeiro (na página, na faixa da home e no telão): é só pôr `added` no fundo novo. */
+const WALLPAPERS_FIRST_RELEASE = "2026-10-18";
+
 const WALLPAPERS = [
   { id: "guarda-chuvas", title: "Rua dos guarda-chuvas" },
   { id: "lagoa-do-taquaral", title: "Lagoa do Taquaral" },
@@ -16,15 +19,26 @@ const WALLPAPERS = [
   { id: "parque-entre-as-rochas-ao-por-do-sol", title: "Parque entre as rochas ao pôr do sol" },
   { id: "torre-do-castelo-a-noite", title: "Torre do Castelo à noite" },
   { id: "fenix-no-circuito", title: "Fênix no circuito" },
-  { id: "fenix-e-o-caderno", title: "Fênix e o caderno na Torre do Castelo" },
-  { id: "fenix-na-lagoa-do-taquaral", title: "Fênix na Lagoa do Taquaral" },
-  { id: "torre-do-castelo-em-rosa", title: "Torre do Castelo em rosa" },
-].map(item => ({
+  { id: "fenix-e-o-caderno", title: "Fênix e o caderno na Torre do Castelo", added: "2026-11-20" },
+  { id: "fenix-na-lagoa-do-taquaral", title: "Fênix na Lagoa do Taquaral", added: "2026-11-20" },
+  { id: "torre-do-castelo-em-rosa", title: "Torre do Castelo em rosa", added: "2026-11-20" },
+].map(({ added = WALLPAPERS_FIRST_RELEASE, ...item }) => ({
   ...item,
+  added,
   image: `assets/img/wallpapers/fundo-${item.id}.jpg`,
   thumb: `assets/img/wallpapers/fundo-${item.id}-thumb.webp`,
   filename: `devfest-campinas-2026-fundo-${item.id}.jpg`,
-}));
+})).sort((a, b) => b.added.localeCompare(a.added)); // os mais novos primeiro; na mesma data vale a ordem da lista (o sort é estável)
+
+/**
+ * A faixa "Leve o DevFest no celular" da página principal (features/wallpaper-band.js). `public: false` = só no modo DEV até liberar (features/release-gate.js).
+ * `phones` = quantos celulares mostra (os mais novos), `href` = pra onde o botão leva (o `origem` conta quem veio da home).
+ */
+const WALLPAPER_BAND_CONFIG = {
+  public: false,
+  phones: 3,
+  href: "fundos.html?origem=home",
+};
 
 const WALLPAPER_TEXTS = {
   guidesTitle: "Como usar",
@@ -36,6 +50,9 @@ const WALLPAPER_TEXTS = {
   download: "Baixar fundo",
   photoOf: "Fundo de tela",
   soon: "Os fundos de tela do evento chegam em breve.",
+  bandTitle: "Leve o DevFest no celular",
+  bandBody: "{n} fundos de tela do evento: a Fênix, a Torre do Castelo, a Lagoa.",
+  bandCta: "Ver os {n} fundos →",
   guides: [
     { id: "ios", title: "iPhone", steps: ["Toque na imagem para abri-la.", "Segure o dedo sobre ela e escolha Salvar na Fotos.", "Em Fotos, toque em Compartilhar e depois em Usar como fundo de tela."] },
     { id: "android", title: "Android", steps: ["Toque em Baixar fundo.", "Abra a imagem na Galeria.", "No menu, escolha Definir como papel de parede."] },
@@ -47,3 +64,4 @@ const wallpapersRepository = createRepository(WALLPAPERS, {
 });
 const wallpaperTextsRepository = createRepository(WALLPAPER_TEXTS);
 const wallpapersConfigRepository = createRepository(WALLPAPERS_CONFIG);
+const wallpaperBandConfigRepository = createRepository(WALLPAPER_BAND_CONFIG);

@@ -9,18 +9,43 @@ function wallpapersHeadMarkup(text) {
     <p>${escapeHtml(text.sub)}</p>`;
 }
 
-function wallpaperCardMarkup(wallpaper, text) {
+/** A moldura de celular com a miniatura e a tela de bloqueio por cima. `href` = pra onde o toque leva (padrão: o arquivo inteiro, em outra aba). */
+function wallpaperPhoneMarkup(wallpaper, text, { href = wallpaper.image, newTab = true } = {}) {
   return `
-    <figure class="wp-card">
-      <a class="wp-phone" href="${escapeHtml(wallpaper.image)}" target="_blank" rel="noopener" aria-label="${escapeHtml(wallpaper.title)}">
+      <a class="wp-phone" href="${escapeHtml(href)}"${newTab ? ' target="_blank" rel="noopener"' : ""} aria-label="${escapeHtml(wallpaper.title)}">
         <img src="${escapeHtml(wallpaper.thumb)}" alt="${escapeHtml(`${text.photoOf}: ${wallpaper.title}`)}" loading="lazy" decoding="async">
         <span class="wp-lock" aria-hidden="true"><b>${escapeHtml(text.lockTime)}</b><small>${escapeHtml(text.lockDate)}</small></span>
-      </a>
+      </a>`;
+}
+
+function wallpaperCardMarkup(wallpaper, text) {
+  return `
+    <figure class="wp-card">${wallpaperPhoneMarkup(wallpaper, text)}
       <figcaption>
         <strong>${escapeHtml(wallpaper.title)}</strong>
         <a class="chip-btn chip-btn--primary" href="${escapeHtml(wallpaper.image)}" download="${escapeHtml(wallpaper.filename)}" data-track-event="wallpaper_download" data-track-place="${escapeHtml(wallpaper.id)}">${escapeHtml(text.download)}</a>
       </figcaption>
     </figure>`;
+}
+
+/**
+ * A faixa da página principal: selo, título, frase e os `wallpapers` recebidos (já os mais novos) em celulares que levam à página de fundos, mais o botão "Ver os N fundos".
+ * `total` = quantos fundos existem; `{n}` nas frases vira esse número; `href` = destino do botão e dos celulares.
+ */
+function wallpaperBandMarkup({ wallpapers, text, total, href }) {
+  const withTotal = phrase => escapeHtml(phrase.replace("{n}", total));
+  const phones = wallpapers.map(item => `
+      <figure class="wp-card">${wallpaperPhoneMarkup(item, text, { href, newTab: false })}
+        <figcaption><strong>${escapeHtml(item.title)}</strong></figcaption>
+      </figure>`).join("");
+  return `
+    <div class="wp-head">
+      <span class="wp-badge">${escapeHtml(text.badge)}</span>
+      <h2>${escapeHtml(text.bandTitle)}</h2>
+      <p>${withTotal(text.bandBody)}</p>
+    </div>
+    <div class="wp-section"><div class="wp-grid">${phones}</div></div>
+    <p class="wp-band-cta"><a class="chip-btn chip-btn--primary" href="${escapeHtml(href)}" data-track-event="wallpapers_open" data-track-place="home">${withTotal(text.bandCta)}</a></p>`;
 }
 
 /** Um cartão "Como usar" por sistema: nome e passos numerados. */
