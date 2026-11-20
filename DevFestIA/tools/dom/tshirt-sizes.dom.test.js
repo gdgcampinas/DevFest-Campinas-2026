@@ -81,3 +81,13 @@ test("a regra de liberação é a mesma de todo o site", () => {
   assert.equal(isReleased({ public: false }, { devMode: true }), true);
   assert.equal(isReleased({ public: true }), true);
 });
+
+test("camiseta com vendas encerradas: o guia some (seção escondida e sem atalho), mesmo liberado; lote extra o traz de volta", () => {
+  const section = document.createElement("section");
+  assert.equal(g("initTshirtSizes")(section, { models, text, config: { public: true }, soldOut: true }), false);
+  assert.equal(section.hidden, true);
+  assert.equal(section.innerHTML, "", "nada desenhado");
+  const reopened = document.createElement("section");
+  assert.equal(g("initTshirtSizes")(reopened, { models, text, config: { public: true }, soldOut: false }), true);
+  assert.equal(g("tshirtSizesConfigRepository").getAll().ticketId, "camiseta", "o guia segue o tipo de ingresso da camiseta");
+});
