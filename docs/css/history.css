@@ -1,27 +1,42 @@
-/* Seção "Nossa história" da página principal (features/history.js): linha do tempo em cartões com foto + mosaico "A comunidade em ação" */
-.history{max-width:1180px;margin:48px auto 0;padding:0 24px}
-.history-head{text-align:center;max-width:720px;margin:0 auto 26px}
-.history-kicker{display:inline-block;margin-bottom:8px;font:700 12px var(--font-body);letter-spacing:.14em;text-transform:uppercase;color:var(--amber)}
-.history-head h2{margin:0 0 8px;font:800 clamp(1.6rem,4.6vw,2.3rem) var(--font-display);color:oklch(97% 0.005 260)}
+/* Seção "Nossa história" da página principal (features/history.js): "Desde 2013" em destaque, linha do tempo vertical (cartões que alternam de lado) e mosaico "A comunidade em ação" */
+.history{max-width:1080px;margin:56px auto 0;padding:0 24px}
+.history-head{text-align:center;max-width:920px;margin:0 auto 34px}
+.history-kicker{display:flex;align-items:center;justify-content:center;gap:18px;margin:0 0 12px;font:800 clamp(16px,3.6vw,24px) var(--font-display);letter-spacing:.34em;text-transform:uppercase;color:var(--amber);text-shadow:0 0 22px color-mix(in oklch,var(--amber) 55%,transparent)}
+.history-kicker::before,.history-kicker::after{content:"";flex:0 1 90px;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,var(--amber))}
+.history-kicker::after{transform:scaleX(-1)}
+.history-head h2{margin:0 0 10px;font:800 clamp(1.6rem,4.6vw,2.6rem)/1.1 var(--font-display);color:oklch(97% 0.005 260);text-wrap:balance}
 .history-head h2 b{color:var(--amber)}
-.history-head p{margin:0;font:500 15px/1.5 var(--font-body);color:var(--muted)}
-.history-timeline{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
-.history-milestone{position:relative;display:flex;flex-direction:column;gap:6px;padding:0 0 16px;border:1px solid var(--card-border);border-radius:16px;overflow:hidden;background:linear-gradient(180deg,var(--card-a),var(--card-b))}
-.history-milestone::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--milestone-color,var(--google-blue));z-index:1}
+.history-head p{margin:0;font:500 16px/1.5 var(--font-body);color:var(--muted)}
+.history-timeline{position:relative;list-style:none;margin:0;padding:0;display:grid;gap:44px}
+.history-timeline::before{content:"";position:absolute;left:50%;top:8px;bottom:8px;width:4px;transform:translateX(-50%);border-radius:4px;background:linear-gradient(180deg,var(--google-blue),var(--google-red) 33%,var(--google-yellow) 66%,var(--google-green))}
+.history-milestone{--milestone-color:var(--google-blue);position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:64px;align-items:center}
 .history-milestone:nth-child(4n+2){--milestone-color:var(--google-red)}
 .history-milestone:nth-child(4n+3){--milestone-color:var(--google-yellow)}
 .history-milestone:nth-child(4n+4){--milestone-color:var(--google-green)}
+.history-milestone::after{content:"";position:absolute;left:50%;top:50%;width:20px;height:20px;border-radius:50%;transform:translate(-50%,-50%);background:var(--milestone-color);box-shadow:0 0 0 6px var(--bg,#05060a),0 0 24px color-mix(in oklch,var(--milestone-color) 70%,transparent)}
+.history-milestone:nth-child(even) figure{order:2}
 .history-milestone figure,.history-mosaic figure{margin:0;position:relative}
-.history-milestone img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
-.history-year{margin:8px 16px 0;font:800 20px var(--font-display);color:var(--milestone-color,var(--google-blue))}
-.history-milestone h3{margin:0 16px;font:700 16px var(--font-display);color:oklch(96% 0.006 260)}
+.history-milestone figure{overflow:hidden;border-radius:18px;border:2px solid color-mix(in oklch,var(--milestone-color) 70%,transparent);aspect-ratio:16/10;background:#0b0d18;box-shadow:0 12px 40px rgb(0 0 0/.45)}
+.history-milestone img{display:block;width:100%;height:100%;object-fit:cover}
+.history-text{display:flex;flex-direction:column;gap:6px}
+.history-year{font:800 clamp(2rem,5vw,3.2rem)/1 var(--font-display);color:var(--milestone-color)}
+.history-milestone h3{margin:0;font:800 clamp(1.15rem,2.6vw,1.5rem)/1.2 var(--font-display);color:oklch(96% 0.006 260)}
 .history-milestone h3 b{color:var(--amber)}
-.history-milestone p{margin:0 16px;font:500 13.5px/1.5 var(--font-body);color:var(--muted)}
+.history-milestone p{margin:0;font:500 15px/1.55 var(--font-body);color:var(--muted)}
 .history-milestone p b{color:var(--text)}
-.history-credit{position:absolute;right:8px;bottom:8px;padding:2px 8px;border-radius:999px;background:rgb(0 0 0/.6);font:600 10px var(--font-body);color:#fff}
-.history-mosaic-title{margin:34px 0 14px;text-align:center;font:800 1.2rem var(--font-display);color:oklch(97% 0.005 260)}
+.history-credit{position:absolute;right:10px;bottom:10px;padding:3px 10px;border-radius:999px;background:rgb(0 0 0/.62);font:600 11px var(--font-body);color:#fff}
+.history-mosaic-title{margin:50px 0 16px;text-align:center;font:800 1.3rem var(--font-display);color:oklch(97% 0.005 260)}
 .history-mosaic{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .history-mosaic figure{overflow:hidden;border-radius:12px;aspect-ratio:4/3}
 .history-mosaic img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .3s ease}
 .history-mosaic figure:hover img{transform:scale(1.05)}
-@media(max-width:640px){.history-mosaic{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){
+  .history-kicker{gap:12px;letter-spacing:.2em;white-space:nowrap}
+  .history-kicker::before,.history-kicker::after{flex-basis:36px}
+  .history-timeline{gap:30px;padding-left:34px}
+  .history-timeline::before{left:10px;transform:none}
+  .history-milestone{grid-template-columns:1fr;gap:12px}
+  .history-milestone::after{left:-24px;top:26px;transform:none;width:16px;height:16px}
+  .history-milestone:nth-child(even) figure{order:0}
+  .history-mosaic{grid-template-columns:repeat(2,minmax(0,1fr))}
+}

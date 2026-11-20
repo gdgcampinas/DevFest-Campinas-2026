@@ -512,6 +512,8 @@ I18N_DICTIONARIES.en = {
     "Obrigado por fazer parte dessa história desde {founded}.": "Thank you for being part of this story since {founded}.",
     "Nasce o GDG Campinas": "GDG Campinas is born",
     "A comunidade de desenvolvedores de Campinas começa a se encontrar.": "The Campinas developer community starts to meet.",
+    "Os primeiros encontros": "The first meetups",
+    "Pequenos encontros reúnem quem desenvolve em Campinas para aprender junto.": "Small meetups bring together people who build software in Campinas to learn together.",
     "O primeiro DevFest": "The first DevFest",
     "O DevFest chega a Campinas e junta a comunidade num dia inteiro de tecnologia.": "DevFest arrives in Campinas and brings the community together for a whole day of technology.",
     "Desde então": "Since then",

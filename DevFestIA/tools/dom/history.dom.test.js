@@ -49,7 +49,7 @@ test("a linha do tempo mostra um cartão por marco com foto, ano e os números d
   init(el, { devMode: true });
   const cards = el.querySelectorAll(".history-milestone");
   assert.equal(cards.length, milestones.length);
-  assert.deepEqual(Array.from(cards, card => card.querySelector(".history-year").textContent).slice(0, 2), ["2013", "2016"]);
+  assert.deepEqual(Array.from(cards, card => card.querySelector(".history-year").textContent).slice(0, 3), ["2013", "2014", "2016"]);
   assert.match(textOf(el.querySelector(".history-head h2")), /Nossa história: 13 anos de comunidade/);
   assert.deepEqual(Array.from(el.querySelectorAll(".history-head h2 b"), b => b.textContent), ["13"]);
   assert.match(textOf(el.querySelector('[data-milestone="hoje"] h3')), /10 anos de DevFest/);
@@ -64,6 +64,7 @@ test("a foto com crédito mostra a legenda 'Foto: nome' e as sem crédito não m
   const credits = Array.from(el.querySelectorAll(".history-credit"), item => item.textContent);
   assert.ok(credits.length > 0 && credits.every(item => item === "Foto: eLelis Fotografia"));
   assert.equal(el.querySelector('[data-milestone="fundacao"] .history-credit'), null);
+  assert.equal(el.querySelector('[data-milestone="hoje"] .history-credit'), null);
 });
 
 test("cena do telão: mosaico com todas as fotos carregadas, título com os anos em destaque e o agradecimento com o ano da fundação", async () => {

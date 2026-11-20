@@ -13,9 +13,11 @@ function historyMilestoneMarkup({ milestone, photo }, { years, text }) {
         <img src="${escapeHtml(photo.file)}" alt="${escapeHtml(photo.alt)}" loading="lazy" decoding="async">
         ${historyCreditMarkup(photo, text)}
       </figure>
-      <span class="history-year">${escapeHtml(milestone.year)}</span>
-      <h3>${numberTemplateMarkup(milestone.title, years)}</h3>
-      <p>${numberTemplateMarkup(milestone.text, years)}</p>
+      <div class="history-text">
+        <span class="history-year">${escapeHtml(milestone.year)}</span>
+        <h3>${numberTemplateMarkup(milestone.title, years)}</h3>
+        <p>${numberTemplateMarkup(milestone.text, years)}</p>
+      </div>
     </li>`;
 }
 

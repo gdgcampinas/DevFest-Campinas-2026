@@ -12,7 +12,8 @@ const HISTORY_CONFIG = {
 };
 
 const HISTORY_PHOTOS = [
-  { id: "reuniao-inicial", file: "assets/img/historia/reuniao-inicial.webp", alt: "Pessoas da comunidade reunidas numa sala, nos primeiros encontros do GDG Campinas" },
+  { id: "gdg-2013-logo", file: "assets/img/historia/gdg-2013-logo.webp", alt: "O logo do GDG Campinas, publicado em 13 de janeiro de 2013" },
+  { id: "encontro-2014", file: "assets/img/historia/encontro-2014.webp", alt: "Grupo de pessoas da comunidade reunido numa sala, num encontro do GDG Campinas em 2014" },
   { id: "devfest-2016-palco", file: "assets/img/historia/devfest-2016-palco.webp", alt: "Palestrante no palco do GDG DevFest Campinas 2016", credit: "eLelis Fotografia" },
   { id: "devfest-2016-plateia", file: "assets/img/historia/devfest-2016-plateia.webp", alt: "Auditório cheio no GDG DevFest Campinas 2016", credit: "eLelis Fotografia" },
   { id: "comunidade-grupo-1", file: "assets/img/historia/comunidade-grupo-1.webp", alt: "Foto em grupo da comunidade GDG Campinas" },
@@ -20,14 +21,16 @@ const HISTORY_PHOTOS = [
   { id: "devfest-patrocinadores", file: "assets/img/historia/devfest-patrocinadores.webp", alt: "Participantes diante do painel de patrocinadores do GDG DevFest Campinas" },
   { id: "devfest-trilha-mentoring", file: "assets/img/historia/devfest-trilha-mentoring.webp", alt: "Palestra da trilha Mentoring e Growth no GDG DevFest Campinas" },
   { id: "devfest-cracha", file: "assets/img/historia/devfest-cracha.webp", alt: "Participantes com crachá no GDG DevFest Campinas" },
+  { id: "comunidade-2026", file: "assets/img/historia/comunidade-2026.webp", alt: "Centenas de pessoas posando juntas num encontro do GDG Campinas na Bosch, em agosto de 2026" },
   { id: "devfest-2025-grupo", file: "assets/img/historia/devfest-2025-grupo.webp", alt: "Grupo de participantes diante do painel de patrocinadores do DevFest Campinas 2025" },
 ];
 
 const HISTORY_MILESTONES = [
-  { id: "fundacao", year: "2013", title: "Nasce o GDG Campinas", text: "A comunidade de desenvolvedores de Campinas começa a se encontrar.", photo: "reuniao-inicial" },
+  { id: "fundacao", year: "2013", title: "Nasce o GDG Campinas", text: "A comunidade de desenvolvedores de Campinas começa a se encontrar.", photo: "gdg-2013-logo" },
+  { id: "encontros", year: "2014", title: "Os primeiros encontros", text: "Pequenos encontros reúnem quem desenvolve em Campinas para aprender junto.", photo: "encontro-2014" },
   { id: "primeiro-devfest", year: "2016", title: "O primeiro DevFest", text: "O DevFest chega a Campinas e junta a comunidade num dia inteiro de tecnologia.", photo: "devfest-2016-palco" },
   { id: "crescimento", year: "Desde então", title: "Cada edição, mais gente", text: "Trilhas, parceiros e muita gente que fez o DevFest crescer.", photo: "devfest-patrocinadores" },
-  { id: "hoje", year: "2026", title: "{devfest} anos de DevFest", text: "{community} anos de GDG Campinas e uma edição para comemorar juntos.", photo: "devfest-2025-grupo" },
+  { id: "hoje", year: "2026", title: "{devfest} anos de DevFest", text: "{community} anos de GDG Campinas e uma edição para comemorar juntos.", photo: "comunidade-2026" },
 ];
 
 const HISTORY_MOSAIC = ["comunidade-grupo-1", "devfest-2016-plateia", "comunidade-grupo-2", "devfest-patrocinadores", "devfest-2016-palco", "devfest-trilha-mentoring", "devfest-cracha", "devfest-2025-grupo"];
