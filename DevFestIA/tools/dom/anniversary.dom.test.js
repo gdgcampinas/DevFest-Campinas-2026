@@ -38,6 +38,7 @@ test("o selo diz os dois números e o texto escapado, sem sobra de {community} o
   const el = mount();
   g("initAnniversaryBadge")(el, { config: { ...config, public: true }, text, eventYear: 2026 });
   assert.equal(textOf(el.querySelector(".anniversary-badge")), "13 anos de GDG Campinas · 10 anos de DevFest");
+  assert.deepEqual(Array.from(el.querySelectorAll(".anniversary-badge b"), number => number.textContent), ["13", "10"], "os números vêm em destaque");
   assert.ok(!el.innerHTML.includes("{") && !el.innerHTML.includes("undefined"));
   assert.ok(el.querySelector(".anniversary-badge svg, .anniversary-badge .icon"), "ícone");
 });
@@ -46,4 +47,11 @@ test("marco no futuro (ano do evento antes do marco) não mostra selo com númer
   const el = mount();
   assert.equal(g("initAnniversaryBadge")(el, { config: { ...config, public: true }, text, eventYear: 2016 }), false, "em 2016 o primeiro DevFest tem 0 anos");
   assert.equal(el.hidden, true);
+});
+
+test("o texto do selo é escapado e só os números viram HTML", () => {
+  const markup = g("anniversaryBadgeMarkup")("<img src=x onerror=alert(1)> {community} anos", { community: 13 });
+  assert.ok(!markup.includes("<img"));
+  assert.match(markup, /&lt;img/);
+  assert.match(markup, /<b>13<\/b>/);
 });

@@ -11,7 +11,7 @@ function initAnniversaryBadge(mountEl, { config, text, eventYear, devMode = fals
   const years = anniversaryYears({ eventYear, ...config });
   const visible = isReleased(config, { devMode }) && years.community > 0 && years.devfest > 0;
   mountEl.hidden = !visible;
-  mountEl.innerHTML = visible ? anniversaryBadgeMarkup(text.badge.replace("{community}", years.community).replace("{devfest}", years.devfest)) : "";
+  mountEl.innerHTML = visible ? anniversaryBadgeMarkup(text.badge, years) : "";
   return visible;
 }
 
