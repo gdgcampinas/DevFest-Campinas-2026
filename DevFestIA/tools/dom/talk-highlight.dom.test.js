@@ -166,7 +166,7 @@ test("modal do Coding Jam: etapas, pódio e regras; avaliação sim, perguntas a
   const root = render(talkDetailMarkup(track, jam, { reveal: true, timeRange: "14:15 às 14:55", room: track.room, talkKey: "k1" }));
   assert.equal(root.querySelectorAll(".detail-steps li").length, 4);
   assert.deepEqual(texts(root, ".detail-steps li strong"), ["Intro e setup", "Construção", "Apresentação", "Votação e pódio"]);
-  assert.deepEqual(texts(root, ".detail-highlight-section h4"), ["Ferramentas recomendadas", "Como funciona", "Pódio", "Regras"]);
+  assert.deepEqual(texts(root, ".detail-highlight-section h4"), ["Ferramentas recomendadas", "Como funciona", "Pódio", "Regras", "Créditos do Google Cloud"]);
   assert.equal(root.querySelectorAll(".detail-rules li").length, 3);
   assert.deepEqual(texts(root, ".talk-podium-slot"), ["1º lugar", "2º lugar", "3º lugar"]);
   assert.deepEqual(texts(root, ".talk-format"), ["Workshop", "Coding Jam"]);
