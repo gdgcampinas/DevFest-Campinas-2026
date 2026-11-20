@@ -29,9 +29,14 @@ function buildTalkIndex(schedule, tracks, timezone) {
   });
 }
 
+/** Nomes de quem fala, na língua do site ("A e B", "A, B, C e D"); palestra sem palestrante devolve "". */
+function talkSpeakerNames(data) {
+  return new Intl.ListFormat(i18n.htmlLang, { type: "conjunction" }).format(speakerList(data).map(speaker => speaker.name));
+}
+
 /** Entrada de calendário de uma palestra. `siteUrl` aponta pra grade completa. */
 function talkToCalendarEntry(entry, event, siteUrl) {
-  const speakers = speakerList(entry.data).map(speaker => speaker.name).join(` ${t("common.and", "e")} `);
+  const speakers = talkSpeakerNames(entry.data);
   const highlight = talkHighlightsRepository.forTalk(entry.data);
   return {
     uid: `${entry.code}@devfestcampinas`,

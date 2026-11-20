@@ -8,6 +8,8 @@ function initQuizPage() {
     copy,
     tracks: TRACKS,
     talkIndex: buildTalkIndex(SCHEDULE, TRACKS, EVENT.timezone),
+    topicIds: talkTopicsRepository.topicIds(),
+    topicsOf: talk => talkTopicsRepository.forTalk(talk),
     favorites: favoritesRepository,
     reveal,
     timezone: EVENT.timezone,

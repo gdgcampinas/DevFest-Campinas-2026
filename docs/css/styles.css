@@ -1258,6 +1258,7 @@ body:has(.modal:not([hidden])) .feedback-nudge{display:none}
 .quiz-shared{margin:0 0 14px;font:700 14px var(--font-body);color:var(--accent)}
 .quiz-talks{margin:0 0 14px;padding:0;list-style:none;display:grid;gap:8px}
 .quiz-talks li{display:grid;grid-template-columns:auto 1fr;column-gap:12px;font:500 14px var(--font-body);color:oklch(92% 0.005 260)}
+.quiz-talks-hint{margin:-4px 0 10px;font:500 13px var(--font-body);color:var(--muted)}
 .quiz-talk-time{font-weight:700;color:var(--track-color)}
 .quiz-talk-speakers{grid-column:2;font-size:13px;color:var(--muted)}
 

@@ -32,18 +32,20 @@ function quizQuestionMarkup({ question, index, total, selectedId, isLast, copy }
     </div>`;
 }
 
-function quizTalkMarkup({ timeLabel, title, speakerNames }) {
-  return `<li><span class="quiz-talk-time">${timeLabel}</span><span class="quiz-talk-title">${title}</span>${speakerNames ? `<span class="quiz-talk-speakers">${speakerNames}</span>` : ""}</li>`;
+function quizTalkMarkup({ timeLabel, title, speakerNames, roomLabel }) {
+  const meta = [speakerNames, roomLabel].filter(Boolean).join(" · ");
+  return `<li><span class="quiz-talk-time">${timeLabel}</span><span class="quiz-talk-title">${title}</span>${meta ? `<span class="quiz-talk-speakers">${meta}</span>` : ""}</li>`;
 }
 
 /**
  * `sharedBanner`: aviso de quem abriu o resultado de outra pessoa (opcional).
- * `talks`: itens de quizTalkMarkup (vazio = sem lista); `talksNotice` aparece no lugar da lista
+ * `talks`: itens de quizTalkMarkup (vazio = sem lista); `talksHint` é a frase curta sob o título da lista (opcional); `talksNotice` aparece no lugar da lista
  * quando as palestras ainda não foram reveladas. `agendaAdded` troca o botão pelo aviso.
  */
-function quizResultMarkup({ track, runnerUp, talks, talksNotice, agendaAdded, whatsappUrl, sharedBanner, copy }) {
+function quizResultMarkup({ track, runnerUp, talks, talksHint, talksNotice, agendaAdded, whatsappUrl, sharedBanner, copy }) {
   const talksBlock = talks.length
     ? `<h3>${copy.suggestedTalks}</h3>
+       ${talksHint ? `<p class="quiz-talks-hint">${talksHint}</p>` : ""}
        <ul class="quiz-talks">${talks.map(quizTalkMarkup).join("")}</ul>
        ${agendaAdded
          ? `<p class="quiz-added">${copy.addedToAgenda}. <a href="grade.html">${copy.agendaLink}</a></p>`
