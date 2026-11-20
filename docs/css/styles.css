@@ -176,6 +176,9 @@ header{
 .hero-open-name{font:700 13px var(--font-body);color:oklch(95% 0.006 260)}
 .hero-open-price{font:800 20px var(--font-display);color:var(--ticket-color)}
 .hero-open-note{font:500 12px var(--font-body);color:var(--muted)}
+/* tipo de ingresso encerrado (ticketSoldOut): apagado e neutro, preço riscado; !important porque a cor do tipo vem inline */
+.hero-open-card--sold-out{--ticket-color:var(--muted)!important;opacity:.75}
+.hero-open-card--sold-out .hero-open-price{text-decoration:line-through;text-decoration-thickness:2px;opacity:.6}
 
 .hero-live-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
 .next-change{font:500 13px var(--font-body);color:var(--muted);font-variant-numeric:tabular-nums}

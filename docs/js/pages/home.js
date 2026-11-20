@@ -51,7 +51,7 @@ function initHome() {
     },
     now: resolveNow(),
     onEventEnd: containerEl => eventFeedback.render(containerEl),
-    ticketsHighlight: () => heroTicketsHighlight({ tickets: EVENT.tickets, types: ticketsRepository.getAll(), text: heroTicketsTextsRepository.getAll() }),
+    ticketsHighlight: () => heroTicketsHighlight({ tickets: EVENT.tickets, types: ticketsRepository.getAll(), text: heroTicketsTextsRepository.getAll(), devMode: isDevModeStored(), soldOutLabel: tt(TICKET_SOLD_OUT_TEXTS.badge) }),
   });
 
   liveStatus.tick();
