@@ -8,7 +8,7 @@ function initIngressos() {
   const sizesText = tshirtSizesTextsRepository.getAll();
   const sizesShown = initTshirtSizes(document.getElementById("tamanhos"), { models: tshirtSizesRepository.getAll(), text: sizesText, config: tshirtSizesConfigRepository.getAll(), devMode: isDevModeStored() });
   const sizesLinkHtml = sizesShown ? tshirtSizesLinkMarkup(sizesText) : ""; // o atalho só existe com o guia visível
-  const showcases = { tshirt: () => tshirtShowcaseMarkup(tshirtDeps) + sizesLinkHtml }; // vitrine extra por tipo de ingresso (`showcase` em data/tickets.js)
+  const showcases = { tshirt: ({ soldOut = false } = {}) => tshirtShowcaseMarkup({ ...tshirtDeps, withImages: !soldOut }) + sizesLinkHtml }; // vendas encerradas: sem as 3 fotos (a capa é o meme), só o link "Ver a camiseta" // vitrine extra por tipo de ingresso (`showcase` em data/tickets.js)
   initTshirtGallery(document.body, { createModal, ...tshirtDeps, sizesLinkHtml });
 
   document.getElementById("ticketsHero").innerHTML = ticketsHeroMarkup({ text: ticketsHeroTextsRepository.getAll(), open: EVENT.tickets.salesOpen });
@@ -20,7 +20,7 @@ function initIngressos() {
     document.querySelector(".share-card-cta").hidden = true;
   } else {
     renderOrConstruction(reveal || EVENT.tickets.salesOpen, ticketsSection,
-      () => renderTickets(EVENT.tickets, ticketsRepository.getAll(), ticketsSection, { note: tt(TICKETS_NOTE), showcase: type => showcases[type.showcase]?.() ?? "" }),
+      () => renderTickets(EVENT.tickets, ticketsRepository.getAll(), ticketsSection, { note: tt(TICKETS_NOTE), showcase: (type, state) => showcases[type.showcase]?.(state) ?? "", devMode: isDevModeStored() }),
       t("tickets.soon", "Os tipos e valores de ingresso serão revelados em breve."));
   }
 

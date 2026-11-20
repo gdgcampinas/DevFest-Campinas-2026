@@ -5,7 +5,7 @@
  *   2. Os {marcadores} do texto em português e da tradução são os mesmos.
  *   3. Chamada de t()/tn() com chave que não é texto literal é erro (não dá pra conferir).
  *   4. Dados traduzidos por igualdade de texto (tt, `texts` do dicionário): toda string de exibição dos
- *      dados listados em LOCALIZED_DATASETS (app.js), do menu e de TICKETS_NOTE/TICKET_PRICE_TBD tem
+ *      dados listados em LOCALIZED_DATASETS (app.js), do menu e de TICKETS_NOTE/TICKET_PRICE_TBD/TICKET_SOLD_OUT_TEXTS tem
  *      tradução, e a tradução não é de texto que não existe mais nos dados.
  * `KEEP_AS_IS` são textos que valem em qualquer idioma (marcas, e-mail, números).
  */
@@ -110,7 +110,7 @@ datasetThunks.forEach(thunk => {
     fail(`LOCALIZED_DATASETS: não consegui ler ${thunk} (${error.message})`);
   }
 });
-["SITE_PAGES.map(page => page.label)", "[TICKETS_NOTE, TICKET_PRICE_TBD]", "LINEUP_DAY_PLAN.filter(item => item.banner).map(({ banner, room }) => ({ banner, room }))"].forEach(expression => collect(vm.runInContext(expression, dataContext)));
+["SITE_PAGES.map(page => page.label)", "[TICKETS_NOTE, TICKET_PRICE_TBD, ...Object.values(TICKET_SOLD_OUT_TEXTS)]", "LINEUP_DAY_PLAN.filter(item => item.banner).map(({ banner, room }) => ({ banner, room }))"].forEach(expression => collect(vm.runInContext(expression, dataContext)));
 const displayStrings = [...datasetStrings].filter(text => !KEEP_AS_IS.has(text) && !isTechnical(text));
 
 // ---------- confere cada idioma ----------

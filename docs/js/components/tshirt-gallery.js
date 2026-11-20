@@ -5,11 +5,11 @@
 const tshirtAlt = (text, model, side) => `${text.photoOf}: ${model.label}, ${text.sides[side]}`;
 
 /** Botão do card do ingresso: as 3 camisetas (frente) lado a lado e o convite pra ver de perto. */
-function tshirtShowcaseMarkup({ models, text }) {
-  const images = models.map(model => `<img src="${escapeHtml(model.thumbs.frente)}" alt="${escapeHtml(tshirtAlt(text, model, "frente"))}" loading="lazy" decoding="async">`).join("");
+function tshirtShowcaseMarkup({ models, text, withImages = true }) {
+  const images = !withImages ? "" : models.map(model => `<img src="${escapeHtml(model.thumbs.frente)}" alt="${escapeHtml(tshirtAlt(text, model, "frente"))}" loading="lazy" decoding="async">`).join("");
   return `
     <button type="button" class="tshirt-showcase" data-tshirt-open aria-label="${escapeHtml(text.showcaseLabel)}"${trackAttrs("tshirt_open", { place: "tickets" })}>
-      <span class="tshirt-showcase-imgs">${images}</span>
+      ${images ? `<span class="tshirt-showcase-imgs">${images}</span>` : ""}
       <span class="tshirt-showcase-cta">${escapeHtml(text.showcaseButton)}</span>
     </button>`;
 }

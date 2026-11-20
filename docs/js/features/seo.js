@@ -8,18 +8,19 @@
 const SCHEMA_AVAILABILITY = {
   open: "https://schema.org/InStock",
   soon: "https://schema.org/PreOrder",
+  soldOut: "https://schema.org/SoldOut",
 };
 
-/** Um Offer por tipo de ingresso com preço definido; "PreOrder" enquanto EVENT.tickets.salesOpen for false. */
+/** Um Offer por tipo de ingresso com preço definido; "PreOrder" enquanto EVENT.tickets.salesOpen for false; "SoldOut" no tipo que encerrou em produção (ticketSoldOut, features/tickets.js). */
 function buildOffers(event, ticketTypes) {
-  const availability = event.tickets?.salesOpen ? SCHEMA_AVAILABILITY.open : SCHEMA_AVAILABILITY.soon;
+  const saleAvailability = event.tickets?.salesOpen ? SCHEMA_AVAILABILITY.open : SCHEMA_AVAILABILITY.soon;
   return ticketTypes.filter(type => type.price != null).map(type => ({
     "@type": "Offer",
     name: type.name,
     price: type.price,
     priceCurrency: "BRL",
     ...((type.url ?? event.tickets?.url) ? { url: type.url ?? event.tickets.url } : {}),
-    availability,
+    availability: ticketSoldOut(type) ? SCHEMA_AVAILABILITY.soldOut : saleAvailability,
   }));
 }
 

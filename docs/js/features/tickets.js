@@ -12,9 +12,22 @@
 const priceFormatter = price => new Intl.NumberFormat(i18n.locale, { style: "currency", currency: "BRL", minimumFractionDigits: Number.isInteger(price) ? 0 : 2, maximumFractionDigits: 2 });
 
 /** Preço ausente (ainda não definido) vira o texto de `tbdLabel`, em vez de um valor inventado. */
-function ticketPriceMarkup(price, { tbdLabel = "" } = {}) {
+function ticketPriceMarkup(price, { tbdLabel = "", struck = false } = {}) {
   if (price == null) return `<div class="ticket-price ticket-price--tbd">${tbdLabel}</div>`;
-  return `<div class="ticket-price">${priceFormatter(price).format(price)}</div>`;
+  return `<div class="ticket-price${struck ? " ticket-price--struck" : ""}">${priceFormatter(price).format(price)}</div>`;
+}
+
+/**
+ * As vendas desse tipo de ingresso encerraram? `type.soldOut` = `{ enabled, public, art, artAlt }` (data/tickets.js): `enabled` liga o estado, `public: false` o deixa só em modo DEV até liberar
+ * (a regra única de features/release-gate.js). Pura: serve ao card, aos dados estruturados (SEO) e aos testes.
+ */
+function ticketSoldOut(type, { devMode = false } = {}) {
+  return Boolean(type.soldOut?.enabled && isReleased(type.soldOut, { devMode }));
+}
+
+/** A capa do card encerrado: a imagem (o meme) vem do dado, com o texto alternativo. Vazio sem `art`. */
+function ticketSoldOutArtMarkup(soldOut) {
+  return soldOut.art ? `<img class="ticket-art" src="${escapeHtml(soldOut.art)}" alt="${escapeHtml(soldOut.artAlt ?? "")}" loading="lazy" decoding="async">` : "";
 }
 
 /**
@@ -62,15 +75,19 @@ function ticketButtonMarkup(state, { className = "cta", place = "" } = {}) {
   return `<a class="${className}" href="${state.href}"${target}${tracking}>${state.label}</a>`;
 }
 
-function ticketCardMarkup(type, tickets, { showcase = () => "" } = {}) {
-  const state = ticketCtaState(tickets, { label: t("tickets.buy", "Garantir ingresso"), url: type.url ?? tickets.url });
+function ticketCardMarkup(type, tickets, { showcase = () => "", devMode = false } = {}) {
+  const soldOut = ticketSoldOut(type, { devMode });
+  const state = soldOut
+    ? { kind: "sold-out", label: tt(TICKET_SOLD_OUT_TEXTS.button) } // sem href: o botão vira um aviso, sem link pro Sympla
+    : ticketCtaState(tickets, { label: t("tickets.buy", "Garantir ingresso"), url: type.url ?? tickets.url });
   const benefits = type.benefits.map(benefit => `<li>${iconMarkup("check")}<span>${benefit}</span></li>`).join("");
   return `
-    <div class="ticket${type.featured ? " ticket--featured" : ""}" style="--ticket-color:${type.color}">
-      ${type.badge ? `<span class="ticket-badge">${type.badge}</span>` : ""}
+    <div class="ticket${type.featured && !soldOut ? " ticket--featured" : ""}${soldOut ? " ticket--sold-out" : ""}" style="--ticket-color:${type.color}">
+      ${soldOut || type.badge ? `<span class="ticket-badge">${soldOut ? tt(TICKET_SOLD_OUT_TEXTS.badge) : type.badge}</span>` : ""}
       <h3 class="ticket-name">${type.name}</h3>
-      ${ticketPriceMarkup(type.price, { tbdLabel: tt(TICKET_PRICE_TBD) })}
-      ${showcase(type)}
+      ${ticketPriceMarkup(type.price, { tbdLabel: tt(TICKET_PRICE_TBD), struck: soldOut })}
+      ${soldOut ? ticketSoldOutArtMarkup(type.soldOut) : ""}
+      ${showcase(type, { soldOut })}
       <p class="ticket-desc">${type.description}</p>
       <ul class="ticket-benefits">${benefits}</ul>
       ${ticketButtonMarkup(state, { className: "cta cta--block", place: `ticket-${type.id}` })}
@@ -78,10 +95,10 @@ function ticketCardMarkup(type, tickets, { showcase = () => "" } = {}) {
 }
 
 /** Seção de ingressos: cards (um por tipo) + aviso. `showcase(type)` (opcional) devolve a vitrine extra do card (ex.: as fotos da camiseta). Some se não houver tipos. */
-function renderTickets(tickets, types, sectionEl, { note = "", showcase } = {}) {
+function renderTickets(tickets, types, sectionEl, { note = "", showcase, devMode = false } = {}) {
   sectionEl.hidden = types.length === 0;
   if (types.length === 0) return;
-  sectionEl.querySelector(".tickets-grid").innerHTML = types.map(type => ticketCardMarkup(type, tickets, { showcase })).join("");
+  sectionEl.querySelector(".tickets-grid").innerHTML = types.map(type => ticketCardMarkup(type, tickets, { showcase, devMode })).join("");
   sectionEl.querySelector(".tickets-note").textContent = note;
 }
 

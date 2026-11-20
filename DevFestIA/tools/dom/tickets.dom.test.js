@@ -7,7 +7,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 
-const site = loadSite({ scripts: [...SITE_BASE, "data/tickets.js", "features/tickets.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "features/release-gate.js", "data/tickets.js", "features/tickets.js"] });
 const { window, document } = site;
 test.after(() => window.close());
 const g = name => site.get(name);
@@ -52,4 +52,40 @@ test("em DEV as vendas aparecem abertas (sem lista de espera); em produção a l
   const prod = tickets();
   assert.equal(apply(prod, { devMode: false }), true);
   assert.equal(prod.salesOpen, false);
+});
+
+test("vendas encerradas: card apagado com selo, preço riscado, capa do meme e botão sem link; só no modo liberado (em DEV até `public: true`)", () => {
+  const camiseta = types().find(type => type.id === "camiseta");
+  const open = { ...tickets(), salesOpen: true, waitlist: { enabled: false } };
+  const render = (type, options) => { const box = document.createElement("div"); box.innerHTML = g("ticketCardMarkup")(type, open, options); return box; };
+  assert.equal(g("ticketSoldOut")(camiseta), false, "em produção só depois de `public: true`");
+  assert.equal(g("ticketSoldOut")(camiseta, { devMode: true }), true, "em DEV já aparece pra conferir");
+  assert.equal(g("ticketSoldOut")(types().find(type => type.id === "gratis"), { devMode: true }), false, "o Grátis não encerrou");
+
+  const closed = render(camiseta, { devMode: true });
+  assert.ok(closed.querySelector(".ticket").classList.contains("ticket--sold-out"));
+  assert.ok(!closed.querySelector(".ticket").classList.contains("ticket--featured"), "sem o destaque (glow) quando encerrado");
+  assert.equal(textOf(closed.querySelector(".ticket-badge")), "Vendas encerradas");
+  assert.ok(closed.querySelector(".ticket-price").classList.contains("ticket-price--struck"));
+  assert.equal(closed.querySelector(".ticket-art").getAttribute("src"), "assets/img/tickets/camiseta-vendas-encerradas.webp");
+  assert.match(closed.querySelector(".ticket-art").getAttribute("alt"), /fênix/);
+  assert.equal(closed.querySelector("a.cta"), null, "sem link de compra");
+  assert.equal(textOf(closed.querySelector("span.cta")), "Vendas encerradas");
+  assert.doesNotMatch(closed.innerHTML, /sympla/i);
+
+  const live = render(camiseta, { devMode: false });
+  assert.equal(textOf(live.querySelector(".ticket-badge")), "Vagas limitadas");
+  assert.equal(live.querySelector(".ticket-art"), null);
+  assert.equal(live.querySelectorAll('a.cta[href="https://sympla.test/evento"]').length, 1);
+
+  const reopened = render({ ...camiseta, soldOut: { ...camiseta.soldOut, enabled: false } }, { devMode: true });
+  assert.equal(textOf(reopened.querySelector(".ticket-badge")), "Vagas limitadas", "lote extra: `enabled: false` reabre");
+});
+
+test("vendas encerradas: o card entrega o estado à vitrine (ela esconde as 3 fotos e fica só o link da camiseta)", () => {
+  const camiseta = types().find(type => type.id === "camiseta");
+  const seen = [];
+  const box = document.createElement("div");
+  box.innerHTML = g("ticketCardMarkup")(camiseta, { ...tickets(), salesOpen: true, waitlist: { enabled: false } }, { devMode: true, showcase: (type, state) => { seen.push(state); return ""; } });
+  assert.equal(JSON.stringify(seen), JSON.stringify([{ soldOut: true }]));
 });

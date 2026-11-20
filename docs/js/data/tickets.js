@@ -23,6 +23,9 @@ const TICKET_TYPES = [
     featured: true,
     showcase: "tshirt", // vitrine das fotos da camiseta no card (pages/ingressos.js)
     badge: "Vagas limitadas",
+    // VENDAS ENCERRADAS (2026-11-20): `enabled` = acabou (selo, preço riscado, botão sem link, capa com o meme, card apagado); `public` = vale em produção (false = só em modo DEV, pra conferir antes).
+    // Abriu um lote extra? `enabled: false`. O meme da capa e o texto alternativo moram aqui, por tipo.
+    soldOut: { enabled: true, public: false, art: "assets/img/tickets/camiseta-vendas-encerradas.webp", artAlt: "Meme do DevFest: a fênix triste com um cabide na mão diz \"Eu: depois eu compro a camiseta...\". Camisetas do evento: vendas encerradas." },
     description: "Leve a lembrança do DevFest para casa.",
     benefits: ["Tudo do ingresso Grátis", "Camiseta oficial do DevFest Campinas 2026", "Certificado de participação (para quem fizer check-in em ao menos uma palestra)"],
   },
@@ -30,6 +33,9 @@ const TICKET_TYPES = [
 
 /** Texto no lugar do preço enquanto o valor não estiver definido. */
 const TICKET_PRICE_TBD = "Valor a definir";
+
+/** Textos do estado "vendas encerradas" de um tipo de ingresso (selo e botão). Traduzidos por igualdade (data/i18n/en.js). */
+const TICKET_SOLD_OUT_TEXTS = { badge: "Vendas encerradas", button: "Vendas encerradas" };
 
 /** Aviso mostrado abaixo dos cards. */
 const TICKETS_NOTE = "As inscrições acontecem pelo Sympla.";
