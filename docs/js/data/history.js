@@ -21,8 +21,8 @@ const HISTORY_PHOTOS = [
   { id: "devfest-patrocinadores", file: "assets/img/historia/devfest-patrocinadores.webp", alt: "Participantes diante do painel de patrocinadores do GDG DevFest Campinas" },
   { id: "devfest-trilha-mentoring", file: "assets/img/historia/devfest-trilha-mentoring.webp", alt: "Palestra da trilha Mentoring e Growth no GDG DevFest Campinas" },
   { id: "devfest-cracha", file: "assets/img/historia/devfest-cracha.webp", alt: "Participantes com crachá no GDG DevFest Campinas" },
+  { id: "comunidade-bosch-palestra", file: "assets/img/historia/comunidade-bosch-palestra.webp", alt: "Palestrante diante do banner do GDG Campinas e da plateia num encontro na Bosch, em 2026" },
   { id: "comunidade-2026", file: "assets/img/historia/comunidade-2026.webp", alt: "Centenas de pessoas posando juntas num encontro do GDG Campinas na Bosch, em agosto de 2026" },
-  { id: "devfest-2025-grupo", file: "assets/img/historia/devfest-2025-grupo.webp", alt: "Grupo de participantes diante do painel de patrocinadores do DevFest Campinas 2025" },
 ];
 
 const HISTORY_MILESTONES = [
@@ -33,7 +33,7 @@ const HISTORY_MILESTONES = [
   { id: "hoje", year: "2026", title: "{devfest} anos de DevFest", text: "{community} anos de GDG Campinas e uma edição para comemorar juntos.", photo: "comunidade-2026" },
 ];
 
-const HISTORY_MOSAIC = ["comunidade-grupo-1", "devfest-2016-plateia", "comunidade-grupo-2", "devfest-patrocinadores", "devfest-2016-palco", "devfest-trilha-mentoring", "devfest-cracha", "devfest-2025-grupo"];
+const HISTORY_MOSAIC = ["comunidade-grupo-1", "devfest-2016-plateia", "comunidade-grupo-2", "devfest-patrocinadores", "devfest-2016-palco", "devfest-trilha-mentoring", "devfest-cracha", "comunidade-bosch-palestra"];
 
 const HISTORY_TEXTS = {
   kicker: "Desde 2013",
