@@ -91,6 +91,8 @@ test("cena do telão: cada passada mostra uma página de fotos, pré-carrega só
   assert.equal(view.querySelectorAll(".ms-history-tile img").length, pageSize);
   assert.match(textOf(view.querySelector(".ms-title")), /10 anos de DevFest em Campinas/);
   assert.match(textOf(view.querySelector(".ms-history-thanks")), /desde 2013/);
+  const grid = view.querySelector(".ms-history-grid").getAttribute("style");
+  assert.match(grid, new RegExp(`--cols:4;--rows:${Math.ceil(pageSize / 4)};--rows-tall:${Math.ceil(pageSize / 2)}`), "colunas e linhas pro CSS centrar a última linha");
 });
 
 test("cena do telão: as passadas seguem pelas páginas e, ao longo delas, TODAS as fotos da galeria aparecem", async () => {

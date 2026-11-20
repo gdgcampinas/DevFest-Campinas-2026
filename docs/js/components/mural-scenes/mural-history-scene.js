@@ -18,11 +18,13 @@ function createHistoryScene({ photos, mosaic, text, years, founded, perPage = 8,
       return ready.length >= minPhotos ? ready : MURAL_SKIP;
     },
     render(ready) {
+      const columns = Math.min(4, ready.length); // linhas incompletas ficam centradas, nunca com buraco no canto (CSS: .ms-history-grid)
+      const rows = Math.ceil(ready.length / columns);
       const tiles = ready.map((photo, index) => `<figure class="ms-history-tile ms-stagger"${muralStagger(index)}><img src="${escapeHtml(photo.file)}" alt="${escapeHtml(photo.alt)}"></figure>`).join("");
       return {
         markup: `<section class="ms ms-history">
           <header class="ms-head"><span class="ms-kicker">${escapeHtml(text.kicker)}</span><h2 class="ms-title">${numberTemplateMarkup(text.sceneTitle, years)}</h2></header>
-          <div class="ms-history-grid" data-count="${ready.length}">${tiles}</div>
+          <div class="ms-history-grid" data-count="${ready.length}" style="--cols:${columns};--rows:${rows};--rows-tall:${Math.ceil(ready.length / 2)}">${tiles}</div>
           <p class="ms-hint ms-history-thanks">${numberTemplateMarkup(text.sceneThanks, { founded })}</p>
         </section>`,
       };
