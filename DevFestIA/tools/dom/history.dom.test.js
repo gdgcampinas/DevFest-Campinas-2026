@@ -22,6 +22,8 @@ const milestones = g("historyMilestonesRepository").getAll();
 const mosaic = g("historyMosaicRepository").getAll();
 const anniversary = g("anniversaryConfigRepository").getAll();
 const MURAL_SKIP = g("MURAL_SKIP");
+const createRotation = () => { const cursors = new Map(); return { next(key, count) { const index = (cursors.get(key) ?? 0) % count; cursors.set(key, (index + 1) % count); return index; } }; };
+const scene = (extra = {}) => g("createHistoryScene")({ photos, mosaic, text, years: { community: 13, devfest: 10 }, founded: 2013, perPage: 8, rotation: createRotation(), preload: async () => {}, ...extra });
 const mount = () => document.createElement("section");
 const init = (el, extra = {}) => g("initHistory")(el, { config, text, milestones, mosaic, photos, anniversary, eventYear: 2026, ...extra });
 
@@ -31,6 +33,9 @@ test("os dados apontam pra fotos que existem: arquivo no disco, marco e mosaico 
   mosaic.forEach(id => assert.ok(photos.getById(id), `mosaico: foto ${id} não existe`));
   assert.ok(mosaic.length >= 4, "o telão nunca mostra uma foto sozinha");
   assert.equal(new Set(milestones.map(item => item.id)).size, milestones.length, "ids de marco únicos");
+  assert.equal(new Set(mosaic).size, mosaic.length, "foto repetida na galeria");
+  const used = new Set([...mosaic, ...milestones.map(item => item.photo)]);
+  photos.getAll().forEach(photo => assert.ok(used.has(photo.id), `foto ${photo.id} não aparece em lugar nenhum`));
 });
 
 test("a seção nasce só em DEV: escondida em produção, visível no modo DEV, liberada vale pra todos e sem marcos não aparece", () => {
@@ -49,11 +54,16 @@ test("a linha do tempo mostra um cartão por marco com foto, ano e os números d
   init(el, { devMode: true });
   const cards = el.querySelectorAll(".history-milestone");
   assert.equal(cards.length, milestones.length);
-  assert.deepEqual(Array.from(cards, card => card.querySelector(".history-year").textContent).slice(0, 3), ["2013", "2014", "2016"]);
+  assert.deepEqual(Array.from(cards, card => card.querySelector(".history-year").textContent).slice(0, 5), ["2013", "2014", "2016", "2017", "2018"]);
   assert.match(textOf(el.querySelector(".history-head h2")), /Nossa história: 13 anos de comunidade/);
   assert.deepEqual(Array.from(el.querySelectorAll(".history-head h2 b"), b => b.textContent), ["13"]);
   assert.match(textOf(el.querySelector('[data-milestone="hoje"] h3')), /10 anos de DevFest/);
-  assert.equal(el.querySelectorAll(".history-mosaic img").length, mosaic.length);
+  assert.equal(el.querySelectorAll(".history-mosaic img").length, mosaic.length, "todas as fotos estão na página (as extras dentro de 'Ver todas')");
+  assert.equal(el.querySelectorAll(":scope > .history-mosaic figure").length, config.galleryVisible, "só as primeiras aparecem direto");
+  const more = el.querySelector(".history-more");
+  assert.ok(more, "o resto fica em 'Ver todas as fotos'");
+  assert.equal(more.querySelectorAll("figure").length, mosaic.length - config.galleryVisible);
+  assert.match(textOf(more.querySelector(".history-more-open")), new RegExp(`Ver todas as ${mosaic.length} fotos`));
   assert.ok(Array.from(el.querySelectorAll("img")).every(img => img.getAttribute("alt")), "toda foto tem texto alternativo");
   assert.ok(!el.innerHTML.includes("{") && !el.innerHTML.includes("undefined"));
 });
@@ -67,25 +77,44 @@ test("a foto com crédito mostra a legenda 'Foto: nome' e as sem crédito não m
   assert.equal(el.querySelector('[data-milestone="hoje"] .history-credit'), null);
 });
 
-test("cena do telão: mosaico com todas as fotos carregadas, título com os anos em destaque e o agradecimento com o ano da fundação", async () => {
+test("cena do telão: cada passada mostra uma página de fotos, pré-carrega só ela e o título e o agradecimento vêm com os números em destaque", async () => {
   const preloaded = [];
-  const scene = g("createHistoryScene")({ photos, mosaic, text, years: { community: 13, devfest: 10 }, founded: 2013, preload: async url => { preloaded.push(url); } });
-  const ready = await scene.prepare();
-  assert.equal(preloaded.length, mosaic.length, "pré-carrega cada foto do mosaico");
+  const history = scene({ preload: async url => { preloaded.push(url); } });
+  const ready = await history.prepare();
+  const pageSize = Math.ceil(mosaic.length / Math.ceil(mosaic.length / 8));
+  assert.equal(ready.length, pageSize);
+  assert.ok(pageSize <= 8 && pageSize >= 4);
+  assert.deepEqual(Array.from(preloaded), Array.from(mosaic.slice(0, pageSize), id => photos.getById(id).file), "pré-carrega só a página mostrada");
   const view = document.createElement("div");
-  view.innerHTML = scene.render(ready).markup;
-  assert.equal(view.querySelectorAll(".ms-history-tile img").length, mosaic.length);
+  view.innerHTML = history.render(ready).markup;
+  assert.equal(view.querySelectorAll(".ms-history-tile img").length, pageSize);
   assert.match(textOf(view.querySelector(".ms-title")), /10 anos de DevFest em Campinas/);
   assert.match(textOf(view.querySelector(".ms-history-thanks")), /desde 2013/);
 });
 
-test("cena do telão: com menos de 4 fotos carregadas ela some (nunca uma foto sozinha) e foto que não carrega fica de fora", async () => {
-  const failing = new Set(mosaic.slice(0, mosaic.length - 3).map(id => photos.getById(id).file));
-  const scene = g("createHistoryScene")({ photos, mosaic, text, years: { community: 13, devfest: 10 }, founded: 2013, preload: async url => { if (failing.has(url)) throw new Error("falhou"); } });
-  assert.equal(await scene.prepare(), MURAL_SKIP);
-  const partial = g("createHistoryScene")({ photos, mosaic, text, years: { community: 13, devfest: 10 }, founded: 2013, preload: async url => { if (url === photos.getById(mosaic[0]).file) throw new Error("falhou"); } });
-  const ready = await partial.prepare();
-  assert.equal(ready.length, mosaic.length - 1);
+test("cena do telão: as passadas seguem pelas páginas e, ao longo delas, TODAS as fotos da galeria aparecem", async () => {
+  const history = scene();
+  const seen = new Set();
+  const pages = Math.ceil(mosaic.length / 8);
+  for (let index = 0; index < pages; index++) {
+    const page = await history.prepare();
+    assert.notEqual(page, MURAL_SKIP, `a página ${index + 1} não pode sumir`);
+    assert.ok(page.length >= 4, "nunca uma foto sozinha");
+    page.forEach(photo => seen.add(photo.id));
+  }
+  assert.deepEqual([...seen].sort(), [...mosaic].sort());
+  const again = await history.prepare();
+  assert.equal(again[0].id, mosaic[0], "depois da última página volta pra primeira");
+});
+
+test("cena do telão: página com menos de 4 fotos carregadas some (nunca uma foto sozinha) e foto que não carrega fica de fora", async () => {
+  const pageSize = Math.ceil(mosaic.length / Math.ceil(mosaic.length / 8));
+  const firstPage = Array.from(mosaic.slice(0, pageSize), id => photos.getById(id).file);
+  const failingMost = scene({ preload: async url => { if (firstPage.indexOf(url) > 2) throw new Error("falhou"); } });
+  assert.equal(await failingMost.prepare(), MURAL_SKIP);
+  const failingOne = scene({ preload: async url => { if (url === firstPage[0]) throw new Error("falhou"); } });
+  assert.equal((await failingOne.prepare()).length, pageSize - 1);
+  assert.equal(await scene({ mosaic: [] }).prepare(), MURAL_SKIP);
 });
 
 test("a cena 'historia' do telão nasce desligada junto com a seção da home e o telão carrega tudo que ela usa", () => {

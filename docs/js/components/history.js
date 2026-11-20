@@ -21,13 +21,24 @@ function historyMilestoneMarkup({ milestone, photo }, { years, text }) {
     </li>`;
 }
 
-function historyMosaicMarkup(photos, text) {
-  return `<div class="history-mosaic" role="list">${photos.map(photo => `
-      <figure role="listitem"><img src="${escapeHtml(photo.file)}" alt="${escapeHtml(photo.alt)}" loading="lazy" decoding="async">${historyCreditMarkup(photo, text)}</figure>`).join("")}
-    </div>`;
+function historyTileMarkup(photo, text) {
+  return `<figure role="listitem"><img src="${escapeHtml(photo.file)}" alt="${escapeHtml(photo.alt)}" loading="lazy" decoding="async">${historyCreditMarkup(photo, text)}</figure>`;
 }
 
-function historySectionMarkup({ text, milestones, mosaic, years }) {
+/** A galeria: as primeiras `visible` fotos na grade e, se sobrar, o resto dentro de "Ver todas as N fotos" (um <details>, sem script). */
+function historyMosaicMarkup(photos, text, { visible = photos.length } = {}) {
+  const shown = photos.slice(0, visible);
+  const rest = photos.slice(visible);
+  const more = rest.length
+    ? `<details class="history-more">
+        <summary><span class="history-more-open">${numberTemplateMarkup(text.showAll, { n: photos.length })}</span><span class="history-more-close">${escapeHtml(text.showLess)}</span></summary>
+        <div class="history-mosaic" role="list">${rest.map(photo => historyTileMarkup(photo, text)).join("")}</div>
+      </details>`
+    : "";
+  return `<div class="history-mosaic" role="list">${shown.map(photo => historyTileMarkup(photo, text)).join("")}</div>${more}`;
+}
+
+function historySectionMarkup({ text, milestones, mosaic, years, galleryVisible }) {
   return `
     <div class="history-head">
       <span class="history-kicker">${escapeHtml(text.kicker)}</span>
@@ -36,5 +47,5 @@ function historySectionMarkup({ text, milestones, mosaic, years }) {
     </div>
     <ol class="history-timeline">${milestones.map(item => historyMilestoneMarkup(item, { years, text })).join("")}</ol>
     <h3 class="history-mosaic-title">${escapeHtml(text.mosaicTitle)}</h3>
-    ${historyMosaicMarkup(mosaic, text)}`;
+    ${historyMosaicMarkup(mosaic, text, { visible: galleryVisible })}`;
 }

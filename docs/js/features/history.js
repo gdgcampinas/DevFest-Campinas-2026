@@ -9,6 +9,6 @@ function initHistory(sectionEl, { config, text, milestones, mosaic, photos, anni
   const mosaicPhotos = mosaic.map(resolve).filter(Boolean);
   const visible = isReleased(config, { devMode }) && items.length > 0;
   sectionEl.hidden = !visible;
-  sectionEl.innerHTML = visible ? historySectionMarkup({ text, milestones: items, mosaic: mosaicPhotos, years: anniversaryYears({ eventYear, ...anniversary }) }) : "";
+  sectionEl.innerHTML = visible ? historySectionMarkup({ text, milestones: items, mosaic: mosaicPhotos, years: anniversaryYears({ eventYear, ...anniversary }), galleryVisible: config.galleryVisible }) : "";
   return visible;
 }

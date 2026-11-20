@@ -40,3 +40,10 @@
   .history-milestone:nth-child(even) figure{order:0}
   .history-mosaic{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+.history-more{margin-top:12px}
+.history-more>summary{display:flex;justify-content:center;list-style:none;cursor:pointer;margin:0 auto 12px;width:fit-content;padding:10px 22px;border:1.5px solid var(--amber);border-radius:999px;font:700 14px var(--font-body);color:var(--amber);transition:background .2s ease}
+.history-more>summary::-webkit-details-marker{display:none}
+.history-more>summary:hover{background:color-mix(in oklch,var(--amber) 14%,transparent)}
+.history-more>summary:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+.history-more-close,.history-more[open] .history-more-open{display:none}
+.history-more[open] .history-more-close{display:inline}
