@@ -25,7 +25,7 @@ test("dois tipos reais: Grátis (R$ 0) e Ingresso + Kit Camiseta (R$ 45,10), sel
 test("o preço aparece com centavos só quando precisa (R$ 0 e R$ 45,10) e a taxa do Sympla não é detalhada em lugar nenhum do cartão", () => {
   const open = { ...tickets(), salesOpen: true, waitlist: { enabled: false } };
   const box = document.createElement("div");
-  box.innerHTML = types().map(type => g("ticketCardMarkup")(type, open)).join("");
+  box.innerHTML = types().map(type => g("ticketCardMarkup")({ ...type, soldOut: undefined }, open)).join(""); // com as vendas abertas (a camiseta encerrada é testada à parte)
   const prices = [...box.querySelectorAll(".ticket-price")].map(el => textOf(el).replace(/ /g, " "));
   assert.equal(JSON.stringify(prices), JSON.stringify(["R$ 0", "R$ 45,10"]));
   assert.doesNotMatch(textOf(box), /taxa|41,00|4,10/i);
@@ -58,8 +58,9 @@ test("vendas encerradas: card apagado com selo, preço riscado, capa do meme e b
   const camiseta = types().find(type => type.id === "camiseta");
   const open = { ...tickets(), salesOpen: true, waitlist: { enabled: false } };
   const render = (type, options) => { const box = document.createElement("div"); box.innerHTML = g("ticketCardMarkup")(type, open, options); return box; };
-  assert.equal(g("ticketSoldOut")(camiseta), false, "em produção só depois de `public: true`");
-  assert.equal(g("ticketSoldOut")(camiseta, { devMode: true }), true, "em DEV já aparece pra conferir");
+  assert.equal(g("ticketSoldOut")(camiseta), true, "liberado em produção (`public: true`)");
+  assert.equal(g("ticketSoldOut")({ ...camiseta, soldOut: { ...camiseta.soldOut, public: false } }), false, "com `public: false` só aparece em DEV");
+  assert.equal(g("ticketSoldOut")({ ...camiseta, soldOut: { ...camiseta.soldOut, public: false } }, { devMode: true }), true, "em DEV já aparece pra conferir");
   assert.equal(g("ticketSoldOut")(types().find(type => type.id === "gratis"), { devMode: true }), false, "o Grátis não encerrou");
 
   const closed = render(camiseta, { devMode: true });
@@ -73,10 +74,11 @@ test("vendas encerradas: card apagado com selo, preço riscado, capa do meme e b
   assert.equal(textOf(closed.querySelector("span.cta")), "Vendas encerradas");
   assert.doesNotMatch(closed.innerHTML, /sympla/i);
 
-  const live = render(camiseta, { devMode: false });
-  assert.equal(textOf(live.querySelector(".ticket-badge")), "Vagas limitadas");
-  assert.equal(live.querySelector(".ticket-art"), null);
-  assert.equal(live.querySelectorAll('a.cta[href="https://sympla.test/evento"]').length, 1);
+  const unreleased = render({ ...camiseta, soldOut: { ...camiseta.soldOut, public: false } }, { devMode: false });
+  assert.equal(textOf(unreleased.querySelector(".ticket-badge")), "Vagas limitadas", "sem `public`, o público ainda vê a venda aberta");
+  assert.equal(unreleased.querySelector(".ticket-art"), null);
+  assert.equal(unreleased.querySelectorAll('a.cta[href="https://sympla.test/evento"]').length, 1);
+  assert.equal(render(camiseta, { devMode: false }).querySelector("a.cta"), null, "liberado: sem link de compra também em produção");
 
   const reopened = render({ ...camiseta, soldOut: { ...camiseta.soldOut, enabled: false } }, { devMode: true });
   assert.equal(textOf(reopened.querySelector(".ticket-badge")), "Vagas limitadas", "lote extra: `enabled: false` reabre");

@@ -23,9 +23,9 @@ const TICKET_TYPES = [
     featured: true,
     showcase: "tshirt", // vitrine das fotos da camiseta no card (pages/ingressos.js)
     badge: "Vagas limitadas",
-    // VENDAS ENCERRADAS (2026-11-20): `enabled` = acabou (selo, preço riscado, botão sem link, capa com o meme, card apagado); `public` = vale em produção (false = só em modo DEV, pra conferir antes).
+    // VENDAS ENCERRADAS (2026-11-20): `enabled` = acabou (selo, preço riscado, botão sem link, capa com o meme, card apagado); `public` = vale em produção (false = só em modo DEV, pra conferir antes). LIBERADO em produção em 2026-11-20.
     // Abriu um lote extra? `enabled: false`. O meme da capa e o texto alternativo moram aqui, por tipo.
-    soldOut: { enabled: true, public: false, art: "assets/img/tickets/camiseta-vendas-encerradas.webp", artAlt: "Meme do DevFest: a fênix triste com um cabide na mão diz \"Eu: depois eu compro a camiseta...\". Camisetas do evento: vendas encerradas." },
+    soldOut: { enabled: true, public: true, art: "assets/img/tickets/camiseta-vendas-encerradas.webp", artAlt: "Meme do DevFest: a fênix triste com um cabide na mão diz \"Eu: depois eu compro a camiseta...\". Camisetas do evento: vendas encerradas." },
     description: "Leve a lembrança do DevFest para casa.",
     benefits: ["Tudo do ingresso Grátis", "Camiseta oficial do DevFest Campinas 2026", "Certificado de participação (para quem fizer check-in em ao menos uma palestra)"],
   },
