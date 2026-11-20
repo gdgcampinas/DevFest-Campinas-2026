@@ -30,6 +30,7 @@ const TALK_TOPICS_BY_SPEAKER = {
   // Mobile / Gerência de Projetos
   "leandro-garcia": ["ia", "negocios"],
   "lucas-mateus-mazei-sobrinho": ["lideranca", "ia"],
+  "guilherme-de-oliveira-macedo": ["ia", "seguranca"],
   "isaque-dias-coelho": ["mobile", "ia"],
   "angelica-oliveira": ["mobile", "ia"],
   "fabio-baldin": ["lideranca", "ia"],
