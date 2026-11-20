@@ -29,6 +29,7 @@ const TALK_TOPICS_BY_SPEAKER = {
   "thais-santos-souza": ["arquitetura", "carreira"],
   // Mobile / Gerência de Projetos
   "leandro-garcia": ["ia", "negocios"],
+  "lucas-mateus-mazei-sobrinho": ["lideranca", "ia"],
   "isaque-dias-coelho": ["mobile", "ia"],
   "angelica-oliveira": ["mobile", "ia"],
   "fabio-baldin": ["lideranca", "ia"],
