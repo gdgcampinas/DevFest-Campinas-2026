@@ -338,3 +338,11 @@ test("trava ligada: o QR de check-in antes da janela não grava, mas abre a pale
   assert.deepEqual(world.calls.checkins, []);
   assert.deepEqual(opened, [KEY]);
 });
+
+test("trava ligada: um check-in guardado no aparelho de antes da janela é teste antigo e não vale (mostra que o check-in ainda não abriu)", () => {
+  const world = setup({ checkinWindow: WINDOW, now: new Date("2026-11-20T12:00:00Z") });
+  world.myCheckins.addAll([KEY]); // sobra de um teste: a limpeza do banco não apaga a memória local do aparelho
+  world.feedback.render(world.fb, world.entry);
+  assert.match(textOf(world.fb), /O check-in abre 10 minutos antes da palestra/);
+  assert.doesNotMatch(textOf(world.fb), /Check-in feito/);
+});

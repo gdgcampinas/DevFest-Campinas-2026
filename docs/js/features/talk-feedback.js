@@ -59,9 +59,11 @@ function initTalkFeedback(rootEl, { index, reveal = true, now = () => new Date()
   }
 
   function stateFor(entry) {
-    if (!myCheckins.has(entry.key) && talkHighlightsRepository.requiresCheckin(entry.data)) {
+    if (talkHighlightsRepository.requiresCheckin(entry.data)) {
       const window = checkinStateOf(entry);
-      return { phase: window === "open" ? "checkin" : `checkin-${window}`, entryKey: entry.key, leadMinutes: checkinWindow.leadMinutes };
+      // Antes da janela nenhum check-in pode existir: o que o aparelho guardou é teste antigo (a limpeza do banco não limpa a memória local), então não vale.
+      const staleMemory = window === "before";
+      if (staleMemory || !myCheckins.has(entry.key)) return { phase: window === "open" ? "checkin" : `checkin-${window}`, entryKey: entry.key, leadMinutes: checkinWindow.leadMinutes };
     }
     if (entry.slot.end > now()) return { phase: "waiting", entryKey: entry.key, checkedIn: myCheckins.has(entry.key) };
     return { phase: myRatings.has(entry.key) ? "done" : "rate", entryKey: entry.key };
