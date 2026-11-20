@@ -20,25 +20,29 @@ const OLD = "Principal|Grade|Palestrantes|Ingressos|Como chegar|Time|Patrocínio
 const NEW = "Principal|Grade|Palestrantes|Ingressos|Como chegar|Recados no telão|Fundos de tela|Time|Patrocínio|Código de Conduta";
 
 test("com a ordem ainda não pública, o público vê a ordem antiga e o modo DEV vê a nova (com o Sorteio depois de Como chegar)", () => {
+  g("HISTORY_CONFIG").public = false; // este teste é da ordem do menu: a página de história é testada à parte
   const order = { public: false, ids: g("SITE_NAV_ORDER").ids };
   assert.equal(labels({ reveal: false }, order), OLD);
   assert.equal(labels({ reveal: true }, order), NEW.replace("Como chegar|", "Como chegar|Coding Jam|Sorteio|"), "em DEV entram o Sorteio e o Coding Jam");
+  g("HISTORY_CONFIG").public = true;
 });
 
-test("a página 'Nossa história' só entra no menu no modo DEV até a chave `HISTORY_CONFIG.public`, logo depois de Principal", () => {
+test("a página 'Nossa história' fica logo depois de Principal; com a chave `HISTORY_CONFIG.public` falsa só o modo DEV a vê", () => {
   const order = { public: true, ids: g("SITE_NAV_ORDER").ids };
-  assert.ok(!labels({ reveal: true, devMode: false }, order).includes("Nossa história"), "público não vê");
-  assert.equal(labels({ reveal: false, devMode: true }, order), NEW.replace("Principal|", "Principal|Nossa história|"), "em DEV aparece depois de Principal");
-  g("HISTORY_CONFIG").public = true;
+  const withHistory = NEW.replace("Principal|", "Principal|Nossa história|");
+  assert.equal(g("HISTORY_CONFIG").public, true, "liberada em produção");
+  assert.equal(labels({ reveal: false, devMode: false }, order), withHistory, "liberada vale pra todo mundo");
+  g("HISTORY_CONFIG").public = false;
   try {
-    assert.equal(labels({ reveal: false, devMode: false }, order), NEW.replace("Principal|", "Principal|Nossa história|"), "liberada vale pra todo mundo");
+    assert.ok(!labels({ reveal: true, devMode: false }, order).includes("Nossa história"), "público não vê");
+    assert.equal(labels({ reveal: false, devMode: true }, order), withHistory, "em DEV aparece depois de Principal");
   } finally {
-    g("HISTORY_CONFIG").public = false;
+    g("HISTORY_CONFIG").public = true;
   }
 });
 
 test("com a ordem pública, todo mundo vê a nova", () => {
-  assert.equal(labels({ reveal: false }, { public: true, ids: g("SITE_NAV_ORDER").ids }), NEW);
+  assert.equal(labels({ reveal: false }, { public: true, ids: g("SITE_NAV_ORDER").ids }), NEW.replace("Principal|", "Principal|Nossa história|"));
 });
 
 test("página fora da lista vai para o fim, na ordem de origem", () => {

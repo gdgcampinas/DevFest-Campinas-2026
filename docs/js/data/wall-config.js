@@ -18,7 +18,7 @@ const WALL_CONFIG = {
     { id: "buscar", label: "O que você veio buscar?", placeholder: "Conhecer gente, aprender, trocar ideia..." },
     { id: "recado", label: "Um recado para quem você veio encontrar", placeholder: "Escreva com carinho, vai pro telão" },
     { id: "significou", label: "O que o DevFest significou para você?", placeholder: "Em uma frase" },
-    { id: "primeiro-devfest", label: "Qual foi o seu primeiro DevFest?", placeholder: "O ano, a cidade e um momento que marcou", public: false }, // 10 anos de DevFest (2026-11-20); só em DEV até liberar
+    { id: "primeiro-devfest", label: "Qual foi o seu primeiro DevFest?", placeholder: "O ano, a cidade e um momento que marcou" }, // 10 anos de DevFest (liberada em PROD em 2026-11-20; `public: false` volta a escondê-la)
   ],
   blocklist: ["puta", "putaria", "caralho", "porra", "merda", "buceta", "cuzao", "viado", "viadinho", "arrombado", "babaca", "idiota", "imbecil", "fdp", "pqp", "vsf", "vtnc", "otario", "desgraca"],
 };

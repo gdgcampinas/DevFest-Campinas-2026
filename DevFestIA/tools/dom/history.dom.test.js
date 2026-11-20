@@ -38,13 +38,14 @@ test("os dados apontam pra fotos que existem: arquivo no disco, marco e mosaico 
   photos.getAll().forEach(photo => assert.ok(used.has(photo.id), `foto ${photo.id} não aparece em lugar nenhum`));
 });
 
-test("a seção nasce só em DEV: escondida em produção, visível no modo DEV, liberada vale pra todos e sem marcos não aparece", () => {
+test("liberada em PROD nos dados entregues; a regra: com `public` falso só o modo DEV vê, liberada vale pra todos e sem marcos não aparece", () => {
   const el = mount();
-  assert.equal(config.public, false);
-  assert.equal(init(el, { devMode: false }), false);
+  const hidden = { ...config, public: false };
+  assert.equal(config.public, true, "liberada em produção");
+  assert.equal(init(el, { config: hidden, devMode: false }), false);
   assert.equal(el.hidden, true);
   assert.equal(el.innerHTML, "");
-  assert.equal(init(el, { devMode: true }), true);
+  assert.equal(init(el, { config: hidden, devMode: true }), true);
   assert.equal(init(el, { config: { ...config, public: true } }), true);
   assert.equal(init(el, { config: { ...config, public: true }, milestones: [] }), false);
 });
@@ -124,13 +125,13 @@ test("a cena 'historia' do telão nasce desligada junto com a seção da home e 
   ["data/history.js", "data/anniversary.js", "components/number-template.js", "features/anniversary.js", "components/mural-scenes/mural-history-scene.js"].forEach(file => assert.ok(telao.includes(`js/${file}`), file));
 });
 
-test("o cartão da home leva à página de história, com os anos em destaque, e nasce só em DEV", () => {
+test("o cartão da home leva à página de história, com os anos em destaque, e com `public` falso só o modo DEV o vê", () => {
   const el = mount();
   const teaser = (extra = {}) => g("initHistoryTeaser")(el, { config, text, anniversary, eventYear: 2026, href: "historia.html", ...extra });
-  assert.equal(teaser({ devMode: false }), false);
+  assert.equal(teaser({ config: { ...config, public: false }, devMode: false }), false);
   assert.equal(el.hidden, true);
   assert.equal(el.innerHTML, "");
-  assert.equal(teaser({ devMode: true }), true);
+  assert.equal(teaser({ config: { ...config, public: false }, devMode: true }), true);
   const link = el.querySelector("a.history-teaser-card");
   assert.equal(link.getAttribute("href"), "historia.html");
   assert.match(textOf(link), /Nossa história: 13 anos de comunidade/);

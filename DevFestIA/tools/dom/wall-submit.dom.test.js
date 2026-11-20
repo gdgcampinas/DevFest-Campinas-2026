@@ -192,7 +192,7 @@ test("a página recado.html inteira abre o formulário com as frases e as pergun
   await waitFor(() => page.document.querySelector("[data-wall-form]"));
   assert.equal(page.document.getElementById("wallTitle").textContent, "Seu recado no telão");
   assert.match(page.document.getElementById("wallIntro").textContent, /aprovar/);
-  assert.equal(page.document.querySelectorAll("[data-wall-prompt]").length, 3);
+  assert.equal(page.document.querySelectorAll("[data-wall-prompt]").length, config.prompts.filter(prompt => prompt.public !== false).length, "as perguntas liberadas do dado");
   assert.equal(page.document.querySelector("#wallMascot img").getAttribute("src"), "assets/img/gumbleton.png");
   assert.equal(page.document.querySelector("#wallLogo img").getAttribute("alt"), "GDG Campinas");
   page.window.close();

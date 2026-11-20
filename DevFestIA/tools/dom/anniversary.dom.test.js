@@ -22,14 +22,15 @@ test("os anos saem da data do evento: 2026 é 13 anos de GDG Campinas e 10 de De
   assert.equal(g("anniversaryYears")({ eventYear: 2027, ...config }).devfest, 11, "o selo acompanha a próxima edição sozinho");
 });
 
-test("nasce só em DEV: escondido em produção, visível no modo DEV, e liberado vale pra todo mundo", () => {
+test("liberado em PROD nos dados entregues; a regra: com `public` falso só o modo DEV vê, e liberado vale pra todo mundo", () => {
   const init = g("initAnniversaryBadge");
   const el = mount();
-  assert.equal(config.public, false);
-  assert.equal(init(el, { config, text, eventYear: 2026, devMode: false }), false);
+  const hidden = { ...config, public: false };
+  assert.equal(config.public, true, "liberado em produção");
+  assert.equal(init(el, { config: hidden, text, eventYear: 2026, devMode: false }), false);
   assert.equal(el.hidden, true);
   assert.equal(el.innerHTML, "");
-  assert.equal(init(el, { config, text, eventYear: 2026, devMode: true }), true);
+  assert.equal(init(el, { config: hidden, text, eventYear: 2026, devMode: true }), true);
   assert.equal(el.hidden, false);
   assert.equal(init(el, { config: { ...config, public: true }, text, eventYear: 2026, devMode: false }), true);
 });

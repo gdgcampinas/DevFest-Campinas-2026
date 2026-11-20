@@ -35,7 +35,7 @@ const WALLPAPERS = [
  * `phones` = quantos celulares mostra (os mais novos), `href` = pra onde o botão leva (o `origem` conta quem veio da home).
  */
 const WALLPAPER_BAND_CONFIG = {
-  public: false,
+  public: true, // liberada em PROD em 2026-11-20 (pedido do Renato); false volta a escondê-la (só no modo DEV)
   phones: 3,
   href: "fundos.html?origem=home",
 };

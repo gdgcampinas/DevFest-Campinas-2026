@@ -13,16 +13,27 @@ const data = file => fs.readFileSync(path.join(__dirname, "..", "..", "..", "doc
 const { repository, config } = vm.runInNewContext(`${data("repository.js")}\n${data("wall-config.js")}\n({ repository: wallConfigRepository, config: WALL_CONFIG })`);
 const ids = list => Array.from(list, prompt => prompt.id);
 
-test("a pergunta nova (primeiro DevFest) nasce só em DEV: a plateia não a vê, o modo DEV vê", () => {
-  assert.ok(config.prompts.some(prompt => prompt.id === "primeiro-devfest" && prompt.public === false));
-  assert.deepEqual(ids(repository.visiblePrompts()), ["buscar", "recado", "significou"]);
-  assert.deepEqual(ids(repository.visiblePrompts({ devMode: false })), ["buscar", "recado", "significou"]);
-  assert.deepEqual(ids(repository.visiblePrompts({ devMode: true })), ["buscar", "recado", "significou", "primeiro-devfest"]);
+test("a pergunta nova (primeiro DevFest) está liberada em PROD: a plateia a vê junto com as outras", () => {
+  assert.ok(config.prompts.some(prompt => prompt.id === "primeiro-devfest" && prompt.public !== false));
+  assert.deepEqual(ids(repository.visiblePrompts()), ["buscar", "recado", "significou", "primeiro-devfest"]);
+  assert.deepEqual(ids(repository.visiblePrompts({ devMode: false })), ["buscar", "recado", "significou", "primeiro-devfest"]);
+});
+
+test("a regra de liberação: pergunta com `public: false` só aparece no modo DEV", () => {
+  const prompt = config.prompts.find(item => item.id === "primeiro-devfest");
+  prompt.public = false;
+  try {
+    assert.deepEqual(ids(repository.visiblePrompts({ devMode: false })), ["buscar", "recado", "significou"]);
+    assert.deepEqual(ids(repository.visiblePrompts({ devMode: true })), ["buscar", "recado", "significou", "primeiro-devfest"]);
+    assert.equal(repository.promptPublic("primeiro-devfest"), false);
+  } finally {
+    delete prompt.public;
+  }
 });
 
 test("pergunta sem `public` conta como liberada; `public: false` e id que não existe, não", () => {
   assert.equal(repository.promptPublic("buscar"), true);
-  assert.equal(repository.promptPublic("primeiro-devfest"), false);
+  assert.equal(repository.promptPublic("primeiro-devfest"), true, "a nova está liberada");
   assert.equal(repository.promptPublic("nao-existe"), false);
 });
 

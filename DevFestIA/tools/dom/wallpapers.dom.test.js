@@ -65,14 +65,15 @@ test("os fundos mais novos vêm sempre primeiro; na mesma data vale a ordem da l
   assert.ok(wallpapers.every(item => /^\d{4}-\d{2}-\d{2}$/.test(item.added)), "todo fundo tem a data");
 });
 
-test("faixa da home: escondida em produção até liberar, e só o modo DEV a mostra", () => {
+test("faixa da home: liberada em PROD nos dados entregues; com `public` falso só o modo DEV a mostra", () => {
   const band = g("initWallpaperBand");
   const section = document.createElement("section");
-  assert.equal(bandConfig.public, false, "nasce só em DEV");
-  assert.equal(band(section, { config: bandConfig, wallpapers, text, devMode: false }), false);
+  const hidden = { ...bandConfig, public: false };
+  assert.equal(bandConfig.public, true, "liberada em produção");
+  assert.equal(band(section, { config: hidden, wallpapers, text, devMode: false }), false);
   assert.equal(section.hidden, true);
   assert.equal(section.innerHTML, "");
-  assert.equal(band(section, { config: bandConfig, wallpapers, text, devMode: true }), true);
+  assert.equal(band(section, { config: hidden, wallpapers, text, devMode: true }), true);
   assert.equal(section.hidden, false);
   assert.equal(band(section, { config: { ...bandConfig, public: true }, wallpapers, text, devMode: false }), true, "liberada vale pra todo mundo");
   assert.equal(band(section, { config: { ...bandConfig, public: true }, wallpapers: [], text, devMode: false }), false, "sem fundos não aparece");

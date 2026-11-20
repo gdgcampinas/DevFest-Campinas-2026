@@ -5,7 +5,7 @@
  *   galleryVisible quantas fotos da galeria aparecem direto na página, antes do "Ver todas as fotos"  |  scenePerPage  fotos por passada da cena do telão
  */
 const HISTORY_CONFIG = {
-  public: false,
+  public: true, // liberada em PROD em 2026-11-20 (pedido do Renato); false volta a esconder tudo (só no modo DEV)
   galleryVisible: 12,
   scenePerPage: 8,
 };

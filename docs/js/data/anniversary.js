@@ -5,7 +5,7 @@
  *   communityFounded  ano em que o GDG Campinas nasceu (13/01/2013)  |  firstDevFest  ano do primeiro DevFest em Campinas (2016)
  */
 const ANNIVERSARY_CONFIG = {
-  public: false,
+  public: true, // liberado em PROD em 2026-11-20 (pedido do Renato); false volta a escondê-lo (só no modo DEV)
   communityFounded: 2013,
   firstDevFest: 2016,
 };
