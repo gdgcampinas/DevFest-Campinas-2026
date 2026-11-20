@@ -47,3 +47,13 @@
 .history-more>summary:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
 .history-more-close,.history-more[open] .history-more-open{display:none}
 .history-more[open] .history-more-close{display:inline}
+.history--page{margin-top:28px;margin-bottom:56px}
+.history-soon{margin:40px auto;max-width:560px;text-align:center;font:500 15px/1.55 var(--font-body);color:var(--muted)}
+/* Cartão da página principal que leva à história (features/history.js, initHistoryTeaser) */
+.history-teaser{max-width:1180px;margin:36px auto 0;padding:0 24px}
+.history-teaser-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:22px 24px;border:1.5px solid color-mix(in oklch,var(--amber) 65%,transparent);border-radius:18px;background:linear-gradient(100deg,color-mix(in oklch,var(--amber) 16%,transparent),color-mix(in oklch,var(--amber) 4%,transparent));text-align:center;text-decoration:none;transition:transform .2s ease,border-color .2s ease}
+.history-teaser-card:hover{transform:translateY(-3px);border-color:var(--amber)}
+.history-teaser-kicker{font:800 13px var(--font-display);letter-spacing:.3em;text-transform:uppercase;color:var(--amber)}
+.history-teaser-card strong{font:800 clamp(1.25rem,3.6vw,1.8rem)/1.2 var(--font-display);color:oklch(97% 0.005 260)}
+.history-teaser-card strong b{color:var(--amber)}
+.history-teaser-cta{font:700 14px var(--font-body);color:var(--amber)}

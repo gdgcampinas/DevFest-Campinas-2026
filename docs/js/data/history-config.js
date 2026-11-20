@@ -1,0 +1,13 @@
+/**
+ * A CHAVE e os tamanhos da história da comunidade (só dado, sem DOM). Fica num arquivo próprio e pequeno porque o menu (components/site-nav.js) precisa dela em toda página;
+ * as fotos, os marcos e os textos moram em data/history.js (só na página de história, na home e no telão).
+ *   public         false = só no modo DEV até liberar (features/release-gate.js): some o link do menu, o cartão da home e a cena do telão; true libera tudo em produção
+ *   galleryVisible quantas fotos da galeria aparecem direto na página, antes do "Ver todas as fotos"  |  scenePerPage  fotos por passada da cena do telão
+ */
+const HISTORY_CONFIG = {
+  public: false,
+  galleryVisible: 12,
+  scenePerPage: 8,
+};
+
+const historyConfigRepository = createRepository(HISTORY_CONFIG);

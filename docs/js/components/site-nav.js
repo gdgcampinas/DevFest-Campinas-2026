@@ -18,6 +18,7 @@ const SITE_PAGES = [
   { id: "local", label: "Como chegar", href: "local.html" }, // sem `devOnly` enquanto o mapa for público (data/venue-map.js; testado em venue-campus-map.dom.test.js)
   { id: "time", label: "Time", href: "time.html" },
   { id: "patrocinio", label: "Patrocínio", href: "patrocinio.html" },
+  { id: "historia", label: "Nossa história", href: "historia.html", release: () => historyConfigRepository.getAll() }, // só no modo DEV até `HISTORY_CONFIG.public` (data/history-config.js)
   { id: "sorteio", label: "Sorteio", href: "sorteio.html", devOnly: true },
   { id: "recados", label: "Recados no telão", href: "recado.html" },
   { id: "fundos", label: "Fundos de tela", href: "fundos.html" },
@@ -32,7 +33,7 @@ const SITE_PAGES = [
  */
 const SITE_NAV_ORDER = {
   public: true,
-  ids: ["principal", "grade", "palestrantes", "ingressos", "local", "creditos", "sorteio", "recados", "fundos", "time", "patrocinio", "cod"],
+  ids: ["principal", "historia", "grade", "palestrantes", "ingressos", "local", "creditos", "sorteio", "recados", "fundos", "time", "patrocinio", "cod"],
 };
 
 /** Ordena `pages` pela lista `ids` (estável: o que não está na lista fica no fim, como veio). */
@@ -41,8 +42,8 @@ function sortPagesByOrder(pages, ids) {
   return pages.map((page, index) => ({ page, index })).sort((a, b) => rank(a.page) - rank(b.page) || a.index - b.index).map(({ page }) => page);
 }
 
-function renderSiteNav(activeId, mountEl, { reveal = false, order = SITE_NAV_ORDER } = {}) {
-  const visible = SITE_PAGES.filter(page => page.nav !== false && (!page.devOnly || reveal));
+function renderSiteNav(activeId, mountEl, { reveal = false, order = SITE_NAV_ORDER, devMode = typeof isDevModeStored === "function" && isDevModeStored() } = {}) {
+  const visible = SITE_PAGES.filter(page => page.nav !== false && (!page.devOnly || reveal) && (!page.release || isReleased(page.release(), { devMode })));
   const pages = order.public || reveal ? sortPagesByOrder(visible, order.ids) : visible;
   mountEl.innerHTML = pages
     .map(page => `<a href="${page.href}"${page.id === activeId ? ` class="current"` : ""}>${tt(page.label)}</a>`)

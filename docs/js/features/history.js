@@ -12,3 +12,11 @@ function initHistory(sectionEl, { config, text, milestones, mosaic, photos, anni
   sectionEl.innerHTML = visible ? historySectionMarkup({ text, milestones: items, mosaic: mosaicPhotos, years: anniversaryYears({ eventYear, ...anniversary }), galleryVisible: config.galleryVisible }) : "";
   return visible;
 }
+
+/** O cartão "Nossa história" da página principal (leva a historia.html). Só aparece quando liberado (`config.public`, ou no modo DEV). Devolve se apareceu. */
+function initHistoryTeaser(mountEl, { config, text, anniversary, eventYear, href, devMode = false }) {
+  const visible = isReleased(config, { devMode });
+  mountEl.hidden = !visible;
+  mountEl.innerHTML = visible ? historyTeaserMarkup({ text, years: anniversaryYears({ eventYear, ...anniversary }), href }) : "";
+  return visible;
+}

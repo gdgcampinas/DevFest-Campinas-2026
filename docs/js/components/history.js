@@ -49,3 +49,17 @@ function historySectionMarkup({ text, milestones, mosaic, years, galleryVisible 
     <h3 class="history-mosaic-title">${escapeHtml(text.mosaicTitle)}</h3>
     ${historyMosaicMarkup(mosaic, text, { visible: galleryVisible })}`;
 }
+
+function historySoonMarkup(text) {
+  return `<p class="history-soon">${escapeHtml(text.soon)}</p>`;
+}
+
+/** O cartão da página principal que leva à página de história: o selo "Desde ...", o título com os anos em destaque e o convite. */
+function historyTeaserMarkup({ text, years, href }) {
+  return `
+    <a class="history-teaser-card" href="${escapeHtml(href)}" data-track-event="history_open" data-track-place="home">
+      <span class="history-teaser-kicker">${escapeHtml(text.kicker)}</span>
+      <strong>${numberTemplateMarkup(text.linkTitle, years)}</strong>
+      <span class="history-teaser-cta">${escapeHtml(text.linkCta)}</span>
+    </a>`;
+}

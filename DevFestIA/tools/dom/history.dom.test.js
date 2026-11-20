@@ -11,7 +11,7 @@ const path = require("node:path");
 const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 
 const DOCS = path.join(__dirname, "..", "..", "..", "docs");
-const site = loadSite({ scripts: [...SITE_BASE, "components/escape-html.js", "features/mural.js", "data/anniversary.js", "data/history.js", "components/number-template.js", "components/history.js", "features/release-gate.js", "features/anniversary.js", "features/history.js", "components/mural-scenes/mural-scene-kit.js", "components/mural-scenes/mural-history-scene.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "components/escape-html.js", "features/mural.js", "data/anniversary.js", "data/history-config.js", "data/history.js", "components/number-template.js", "components/history.js", "features/release-gate.js", "features/anniversary.js", "features/history.js", "components/mural-scenes/mural-scene-kit.js", "components/mural-scenes/mural-history-scene.js"] });
 const { document } = site;
 test.after(() => site.window.close());
 const g = name => site.get(name);
@@ -122,4 +122,28 @@ test("a cena 'historia' do telão nasce desligada junto com a seção da home e 
   assert.match(scenes, /id: "historia"[^\n]*enabled: HISTORY_CONFIG\.public/);
   const telao = fs.readFileSync(path.join(DOCS, "telao.html"), "utf8");
   ["data/history.js", "data/anniversary.js", "components/number-template.js", "features/anniversary.js", "components/mural-scenes/mural-history-scene.js"].forEach(file => assert.ok(telao.includes(`js/${file}`), file));
+});
+
+test("o cartão da home leva à página de história, com os anos em destaque, e nasce só em DEV", () => {
+  const el = mount();
+  const teaser = (extra = {}) => g("initHistoryTeaser")(el, { config, text, anniversary, eventYear: 2026, href: "historia.html", ...extra });
+  assert.equal(teaser({ devMode: false }), false);
+  assert.equal(el.hidden, true);
+  assert.equal(el.innerHTML, "");
+  assert.equal(teaser({ devMode: true }), true);
+  const link = el.querySelector("a.history-teaser-card");
+  assert.equal(link.getAttribute("href"), "historia.html");
+  assert.match(textOf(link), /Nossa história: 13 anos de comunidade/);
+  assert.match(textOf(link), /Conheça a nossa história/);
+  assert.deepEqual(Array.from(link.querySelectorAll("b"), b => b.textContent), ["13"]);
+  assert.equal(teaser({ config: { ...config, public: true } }), true, "liberado vale pra todo mundo");
+});
+
+test("a página de história: antes de liberar mostra 'chega em breve'; o menu só traz o link quando liberado ou em DEV", () => {
+  assert.match(textOf(document.createRange().createContextualFragment(g("historySoonMarkup")(text))), /chega em breve/);
+  const nav = fs.readFileSync(path.join(DOCS, "js/components/site-nav.js"), "utf8");
+  assert.match(nav, /id: "historia"[^\n]*release: \(\) => historyConfigRepository\.getAll\(\)/);
+  const page = fs.readFileSync(path.join(DOCS, "historia.html"), "utf8");
+  ["data/history-config.js", "data/history.js", "components/history.js", "features/history.js", "pages/historia.js"].forEach(file => assert.ok(page.includes(`js/${file}`), file));
+  assert.ok(fs.existsSync(path.join(DOCS, "DEV", "historia.html")), "atalho /DEV/historia.html");
 });

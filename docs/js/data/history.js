@@ -1,18 +1,12 @@
 /**
  * A HISTÓRIA da comunidade (só dado, sem DOM): a seção "Nossa história" da página principal (features/history.js) e a cena "10 anos de DevFest" do telão
- * (components/mural-scenes/mural-history-scene.js). As fotos vêm do álbum "GDG CAMPINAS HISTORIA" (Google Fotos, escolhidas em 2026-11-20) e moram em assets/img/historia/.
- *   public      false = só no modo DEV até liberar (features/release-gate.js) e cena do telão desligada; true libera em produção e no telão
+
+ * (components/mural-scenes/mural-history-scene.js). A chave de liberação e os tamanhos moram em data/history-config.js (carrega em toda página, pro menu). As fotos vêm do álbum "GDG CAMPINAS HISTORIA" (Google Fotos, escolhidas em 2026-11-20) e moram em assets/img/historia/.
  *   photos      cada foto: `id`, `file`, `alt` e, se houver, `credit` (o crédito de quem fotografou, mostrado na legenda)
  *   milestones  os marcos da linha do tempo, em ordem: `year` (o rótulo do cartão), `title`, `text` e `photo` (id de `photos`). Os números do selo de aniversário entram por
  *               {community} e {devfest} (anos de GDG Campinas e de DevFest, de data/anniversary.js), então o texto acompanha a próxima edição sozinho
- *   mosaic      ids de `photos` da galeria "A comunidade em ação" (home e telão); `galleryVisible` = quantas aparecem na home antes do "Ver todas as fotos"; `scenePerPage` = fotos por passada no telão
+ *   mosaic      ids de `photos` da galeria "A comunidade em ação" (home e telão); `HISTORY_CONFIG.galleryVisible` = quantas aparecem na página antes do "Ver todas as fotos"; `HISTORY_CONFIG.scenePerPage` = fotos por passada no telão
  */
-const HISTORY_CONFIG = {
-  public: false,
-  galleryVisible: 12,
-  scenePerPage: 8,
-};
-
 const HISTORY_PHOTOS = [
   { id: "gdg-2013-logo", file: "assets/img/historia/gdg-2013-logo.webp", alt: "O logo do GDG Campinas, publicado em 13 de janeiro de 2013" },
   { id: "encontro-2014", file: "assets/img/historia/encontro-2014.webp", alt: "Grupo de pessoas da comunidade reunido numa sala, num encontro do GDG Campinas em 2014" },
@@ -67,6 +61,9 @@ const HISTORY_MOSAIC = [
 ];
 
 const HISTORY_TEXTS = {
+  linkTitle: "Nossa história: {community} anos de comunidade",
+  linkCta: "Conheça a nossa história →",
+  soon: "A nossa história chega em breve.",
   kicker: "Desde 2013",
   title: "Nossa história: {community} anos de comunidade",
   sub: "Do primeiro encontro ao DevFest de hoje.",
@@ -79,7 +76,6 @@ const HISTORY_TEXTS = {
 };
 
 const historyPhotosRepository = createRepository(HISTORY_PHOTOS, { getById: id => HISTORY_PHOTOS.find(photo => photo.id === id) });
-const historyConfigRepository = createRepository(HISTORY_CONFIG);
 const historyMilestonesRepository = createRepository(HISTORY_MILESTONES);
 const historyMosaicRepository = createRepository(HISTORY_MOSAIC);
 const historyTextsRepository = createRepository(HISTORY_TEXTS);

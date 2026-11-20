@@ -6,7 +6,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE } = require("../lib/dom-harness.js");
 
-const site = loadSite({ scripts: [...SITE_BASE, "components/site-nav.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "data/history-config.js", "features/release-gate.js", "components/site-nav.js"] });
 const { document, window } = site;
 test.after(() => window.close());
 const g = name => site.get(name);
@@ -23,6 +23,18 @@ test("com a ordem ainda não pública, o público vê a ordem antiga e o modo DE
   const order = { public: false, ids: g("SITE_NAV_ORDER").ids };
   assert.equal(labels({ reveal: false }, order), OLD);
   assert.equal(labels({ reveal: true }, order), NEW.replace("Como chegar|", "Como chegar|Coding Jam|Sorteio|"), "em DEV entram o Sorteio e o Coding Jam");
+});
+
+test("a página 'Nossa história' só entra no menu no modo DEV até a chave `HISTORY_CONFIG.public`, logo depois de Principal", () => {
+  const order = { public: true, ids: g("SITE_NAV_ORDER").ids };
+  assert.ok(!labels({ reveal: true, devMode: false }, order).includes("Nossa história"), "público não vê");
+  assert.equal(labels({ reveal: false, devMode: true }, order), NEW.replace("Principal|", "Principal|Nossa história|"), "em DEV aparece depois de Principal");
+  g("HISTORY_CONFIG").public = true;
+  try {
+    assert.equal(labels({ reveal: false, devMode: false }, order), NEW.replace("Principal|", "Principal|Nossa história|"), "liberada vale pra todo mundo");
+  } finally {
+    g("HISTORY_CONFIG").public = false;
+  }
 });
 
 test("com a ordem pública, todo mundo vê a nova", () => {

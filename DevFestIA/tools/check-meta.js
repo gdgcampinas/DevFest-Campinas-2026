@@ -14,6 +14,9 @@ const docs = path.join(__dirname, "..", "..", "docs");
 // só quem tem a URL direta acessa) ficam fora de sitemap/OG/PWA — não são
 // conteúdo do site, são utilitário pra organização durante o evento.
 const INTERNAL_PAGES = ["checkin-display.html", "reset-teste.html", "moderacao.html", "mural.html", "telao.html", "mural-fotos.html", "mural-controle.html", "equipe.html", "admin.html", "recado.html", "cartaz-creditos.html"];
+// A página de história nasce só em DEV (HISTORY_CONFIG.public false): enquanto não é liberada fica fora do sitemap como as internas; ao liberar, este script cobra metadados e sitemap.
+const historyReleased = /public: true/.test(fs.readFileSync(path.join(docs, "js/data/history-config.js"), "utf8"));
+if (!historyReleased) INTERNAL_PAGES.push("historia.html");
 const pages = fs.readdirSync(docs).filter(name => name.endsWith(".html") && !INTERNAL_PAGES.includes(name));
 const errors = [];
 const fail = message => errors.push(message);
