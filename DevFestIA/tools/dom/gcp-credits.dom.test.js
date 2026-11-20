@@ -92,14 +92,20 @@ test("cartaz: QR da janela escolhida, passos compactos (sem texto) e o endereço
   assert.ok(fallback.querySelector(".credit-poster-qr img").getAttribute("src").endsWith("qr-gdg-campinas-4.webp"), "sem janela escolhida, a primeira");
 });
 
-test("só DEV: o card de 'Antes de vir' e o botão do Coding Jam somem enquanto `public` é falso", () => {
+test("liberado em PROD: o card de 'Antes de vir', o botão do Coding Jam e a sessão paralela estão públicos nos dados entregues", () => {
+  assert.equal(config.public, true);
+  assert.equal(session.public, true);
+  assert.equal(site.get("talkHighlightsRepository").getAll().find(h => h.id === "codejam").action.public, true);
+  assert.equal(site.get("gcpCreditsInfoCard")(config, { devMode: false }).href, "creditos.html");
+});
+
+test("regra de liberação: com `public` falso o card e o botão do Coding Jam somem fora do DEV e voltam no modo DEV", () => {
   const card = site.get("gcpCreditsInfoCard");
-  assert.equal(config.public, false);
-  assert.equal(card(config, { devMode: false }), null);
-  assert.equal(card(config, { devMode: true }).href, "creditos.html");
-  assert.equal(card({ ...config, public: true }, { devMode: false }).href, "creditos.html");
-  assert.equal(session.public, false);
-  const action = site.get("talkHighlightsRepository").getAll().find(h => h.id === "codejam").action;
+  const hidden = { ...config, public: false };
+  assert.equal(card(hidden, { devMode: false }), null);
+  assert.equal(card(hidden, { devMode: true }).href, "creditos.html");
+  assert.equal(card({ ...hidden, public: true }, { devMode: false }).href, "creditos.html");
+  const action = { ...site.get("talkHighlightsRepository").getAll().find(h => h.id === "codejam").action, public: false };
   const markup = site.get("talkHighlightActionMarkup");
   assert.equal(markup(action, { devMode: false }), "");
   assert.match(markup(action, { devMode: true }), /href="creditos\.html"/);
@@ -185,11 +191,17 @@ test("sem sessões em paralelo (padrão) a grade fica como era; faixa vazia põe
   assert.equal(gap.querySelector(".parallel-span").nextElementSibling.dataset.index, "4");
 });
 
-test("só DEV: sessão paralela sem `public` some fora do modo DEV", () => {
+test("regra de liberação: sessão paralela sem `public` some fora do modo DEV; a entregue está liberada", () => {
   const repo = site.get("parallelSessionsRepository");
-  assert.equal(repo.visible({ devMode: false }).length, 0);
-  assert.equal(repo.visible({ devMode: true }).length, 1);
-  assert.equal(repo.visible().length, 0);
+  assert.equal(repo.visible({ devMode: false }).length, 1);
+  assert.equal(repo.visible().length, 1);
+  session.public = false;
+  try {
+    assert.equal(repo.visible({ devMode: false }).length, 0);
+    assert.equal(repo.visible({ devMode: true }).length, 1);
+  } finally {
+    session.public = true;
+  }
 });
 
 // ---- passo a passo legível: tela ampliável, selo de destaque, bloco de quem faz o lab ----

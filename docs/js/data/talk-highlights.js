@@ -44,7 +44,7 @@ const TALK_HIGHLIGHTS = [
       { label: "Apresentação", text: "Mostre o seu projeto para a sala e envie antes de sair." },
       { label: "Votação e pódio", text: "Quem fez check-in vota, e os três projetos mais votados sobem ao pódio." },
     ],
-    action: { title: "Créditos do Google Cloud", text: "Resgate os créditos antes da sessão, com o passo a passo em telas.", label: "Ver como resgatar", href: "creditos.html", public: false },
+    action: { title: "Créditos do Google Cloud", text: "Resgate os créditos antes da sessão, com o passo a passo em telas.", label: "Ver como resgatar", href: "creditos.html", public: true },
     rules: [
       "Traga seu notebook.",
       "Faça check-in na sala para poder votar.",

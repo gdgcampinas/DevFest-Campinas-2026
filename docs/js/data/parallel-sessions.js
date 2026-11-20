@@ -1,7 +1,7 @@
 /**
  * Sessões em PARALELO às palestras (hoje, o Coding Jam): rodam em outra sala, ao mesmo tempo que as trilhas, e não ocupam trilha nem entram em SCHEDULE
  * (a grade, o "agora" e o telão seguem as palestras). A grade mostra cada rodada como um card ALTO ao lado das trilhas, cobrindo as palestras do horário dela
- * (components/parallel-session-card.js, features/parallel-sessions.js). Só em DEV até `public: true`.
+ * (components/parallel-session-card.js, features/parallel-sessions.js). Liberado em PROD (`public: true`, 2026-11-20); `false` esconde de novo (só no modo DEV).
  *
  *   id        único (a página dos créditos pede por ele: `sessionId` em data/gcp-credits.js)  |  name = nome na tela  |  kicker = a etiqueta do card ("Lab de IA")  |  place = onde acontece
  *   rounds    rodadas { start, end } em HH:MM (MOCK até o horário real; mais de uma rodada = mais um card na grade; as rodadas de uma sessão não se sobrepõem)
@@ -13,7 +13,7 @@
 const PARALLEL_SESSIONS = [
   {
     id: "codejam",
-    public: false,
+    public: true, // liberado em PROD em 2026-11-20 (pedido do Renato); false volta a escondê-lo (fica só no modo DEV)
     name: "Coding Jam",
     kicker: "Lab de IA",
     place: "Laboratório com computadores",

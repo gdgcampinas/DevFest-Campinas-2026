@@ -1,7 +1,7 @@
 /**
  * Créditos do Google Cloud para a sessão prática (Coding Jam), em PORTUGUÊS e por dado: a página (creditos.html), o card de "Antes de vir",
  * o botão do modal do Coding Jam e o cartaz de impressão (cartaz-creditos.html) leem tudo daqui; trocar link, horário ou texto não toca em tela.
- * Só em DEV até `public: true`.
+ * Liberado em PROD (`public: true`, 2026-11-20); `false` esconde de novo (só no modo DEV).
  *
  *   sessionId     a sessão paralela que usa os créditos (data/parallel-sessions.js: nome, lugar e rodadas moram lá, uma vez só)
  *   windows       as janelas de 12 horas que o GDG LATAM liberou (e-mail de 2026-11-13). Cada uma tem o link principal e o reserva (`-bkp`, só para quem teve
@@ -13,7 +13,7 @@
  * As telas dos passos vêm do guia oficial do Google (celular, tema escuro, evento de exemplo "DevFest ABCD 2026"): servem para a pessoa reconhecer cada tela.
  */
 const GCP_CREDITS = {
-  public: false,
+  public: true, // liberado em PROD em 2026-11-20 (pedido do Renato); false volta a escondê-lo (só no modo DEV)
   sessionId: "codejam",
   windows: [
     {
