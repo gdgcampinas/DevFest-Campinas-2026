@@ -16,6 +16,9 @@ const WALLPAPERS = [
   { id: "parque-entre-as-rochas-ao-por-do-sol", title: "Parque entre as rochas ao pôr do sol" },
   { id: "torre-do-castelo-a-noite", title: "Torre do Castelo à noite" },
   { id: "fenix-no-circuito", title: "Fênix no circuito" },
+  { id: "fenix-e-o-caderno", title: "Fênix e o caderno na Torre do Castelo" },
+  { id: "fenix-na-lagoa-do-taquaral", title: "Fênix na Lagoa do Taquaral" },
+  { id: "torre-do-castelo-em-rosa", title: "Torre do Castelo em rosa" },
 ].map(item => ({
   ...item,
   image: `assets/img/wallpapers/fundo-${item.id}.jpg`,
