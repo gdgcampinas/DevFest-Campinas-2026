@@ -38,11 +38,15 @@ function showFormError(formEl, submitBtn, message) {
   submitBtn.insertAdjacentHTML("beforebegin", `<p class="form-error" role="alert">${message}</p>`);
 }
 
-function initTalkFeedback(rootEl, { index, reveal = true, now = () => new Date(), myCheckins, myRatings, myName, invite = () => "" }) {
+function initTalkFeedback(rootEl, { index, reveal = true, now = () => new Date(), checkinWindow = {}, myCheckins, myRatings, myName, invite = () => "" }) {
   const announceChange = () => rootEl.dispatchEvent(new CustomEvent(FEEDBACK_CHANGED_EVENT));
 
-  /** Grava o check-in. "permission-denied" = já existia (a regra recusa o segundo); outro erro sobe pra quem chamou avisar. */
+  /** "before", "open" ou "closed": o banco só aceita o check-in dentro da janela (`checkinWindow`, ver checkinWindowState). */
+  const checkinStateOf = entry => checkinWindowState(entry.slot, now(), checkinWindow);
+
+  /** Grava o check-in. "permission-denied" = já existia (a regra recusa o segundo); outro erro sobe pra quem chamou avisar. Fora da janela não grava nada e devolve false. */
   async function doCheckin(entry) {
+    if (checkinStateOf(entry) !== "open") return false;
     const uid = await window.firebaseClient.ensureAnonymousUid();
     try {
       await window.checkinRepository.add(uid, entry.key, { entryKey: entry.key });
@@ -51,10 +55,14 @@ function initTalkFeedback(rootEl, { index, reveal = true, now = () => new Date()
     }
     myCheckins.addAll([entry.key]);
     announceChange();
+    return true;
   }
 
   function stateFor(entry) {
-    if (!myCheckins.has(entry.key) && talkHighlightsRepository.requiresCheckin(entry.data)) return { phase: "checkin", entryKey: entry.key };
+    if (!myCheckins.has(entry.key) && talkHighlightsRepository.requiresCheckin(entry.data)) {
+      const window = checkinStateOf(entry);
+      return { phase: window === "open" ? "checkin" : `checkin-${window}`, entryKey: entry.key, leadMinutes: checkinWindow.leadMinutes };
+    }
     if (entry.slot.end > now()) return { phase: "waiting", entryKey: entry.key, checkedIn: myCheckins.has(entry.key) };
     return { phase: myRatings.has(entry.key) ? "done" : "rate", entryKey: entry.key };
   }

@@ -10,13 +10,13 @@ const { denied } = require("../lib/fake-question-world.js");
 
 const KEY = "2026-11-28T12:00:00.000Z|ia";
 const SCRIPTS = [...SITE_BASE, "data/event-feedback-form.js", "components/rating-inputs.js", "components/talk-feedback.js", "components/event-feedback.js",
-  "features/talk-feedback.js", "features/event-feedback.js"];
+  "features/question-window.js", "features/talk-feedback.js", "features/event-feedback.js"];
 
 const windows = [];
 test.after(() => windows.forEach(window => window.close())); // solta os timers das janelas de mentira (senão o processo não termina)
 
 /** Uma página nova por teste (o QR de check-in lê a URL ao iniciar), com o Firebase de mentira. */
-function setup({ url = "http://localhost/?lineup=1", now = new Date("2026-11-28T12:10:00Z") } = {}) {
+function setup({ url = "http://localhost/?lineup=1", now = new Date("2026-11-28T12:10:00Z"), checkinWindow = {} } = {}) {
   const calls = { checkins: [], ratings: [], events: [] };
   const fail = { checkin: null, rating: null, event: null };
   const respond = (kind, list) => async (uid, key, data) => { if (fail[kind]) throw fail[kind]; list.push({ uid, key, data }); };
@@ -41,7 +41,7 @@ function setup({ url = "http://localhost/?lineup=1", now = new Date("2026-11-28T
   document.body.innerHTML = `<div id="fb"></div><div id="ev"></div>`;
   const rootEl = document.body;
   const clock = { now };
-  const feedback = site.get("initTalkFeedback")(rootEl, { index, now: () => clock.now, myCheckins, myRatings, myName });
+  const feedback = site.get("initTalkFeedback")(rootEl, { index, now: () => clock.now, checkinWindow, myCheckins, myRatings, myName });
   const eventFeedback = site.get("initEventFeedback")(rootEl, { form: site.get("eventFeedbackFormRepository").getAll(), myRatings, myName, now: () => clock.now, endsAt: new Date("2026-11-28T18:00:00Z") });
   return { site, window, document, calls, fail, myCheckins, myRatings, myName, feedback, eventFeedback, clock, entry, fb: document.getElementById("fb"), ev: document.getElementById("ev"),
     submit: form => form.dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true })) };
@@ -297,4 +297,44 @@ test("palestra comum terminada sem check-in continua pedindo check-in (a dispens
   const world = setup({ now: new Date("2026-11-28T13:00:00Z") });
   world.feedback.render(world.fb, world.entry);
   assert.match(textOf(world.fb), /Check-in dessa palestra/);
+});
+
+// ---------- janela do check-in (trava de horário ligada) ----------
+const WINDOW = { enforce: true, leadMinutes: 10, tailMinutes: 600 };
+
+test("trava ligada: antes da janela o check-in não abre (aviso com a antecedência) e nada é gravado", async () => {
+  const world = setup({ checkinWindow: WINDOW, now: new Date("2026-11-28T11:30:00Z") }); // a palestra começa às 12:00, a janela abre às 11:50
+  world.feedback.render(world.fb, world.entry);
+  assert.match(textOf(world.fb), /O check-in abre 10 minutos antes da palestra/);
+  assert.equal(world.fb.querySelector("[data-feedback-checkin]"), null, "sem botão de check-in");
+  assert.equal(await world.feedback.checkin(world.entry), false);
+  assert.deepEqual(world.calls.checkins, []);
+  assert.equal(world.myCheckins.has(KEY), false, "não marca como feito o que o banco recusaria");
+});
+
+test("trava ligada: dentro da janela (10 min antes até o fim do dia) o botão aparece e o check-in grava", async () => {
+  const early = setup({ checkinWindow: WINDOW, now: new Date("2026-11-28T11:55:00Z") });
+  early.feedback.render(early.fb, early.entry);
+  assert.ok(early.fb.querySelector("[data-feedback-checkin]"), "botão de check-in 5 min antes");
+  assert.equal(await early.feedback.checkin(early.entry), true);
+  assert.deepEqual(early.calls.checkins.map(call => call.key), [KEY]);
+  const late = setup({ checkinWindow: WINDOW, now: new Date("2026-11-28T20:00:00Z") }); // 7h20 depois do fim: ainda dentro do resto do dia
+  late.feedback.render(late.fb, late.entry);
+  assert.ok(late.fb.querySelector("[data-feedback-checkin]"));
+});
+
+test("trava ligada: passada a janela o aviso diz que o check-in encerrou", () => {
+  const world = setup({ checkinWindow: WINDOW, now: new Date("2026-11-29T12:00:00Z") });
+  world.feedback.render(world.fb, world.entry);
+  assert.match(textOf(world.fb), /check-in dessa palestra já encerrou/i);
+  assert.equal(world.fb.querySelector("[data-feedback-checkin]"), null);
+});
+
+test("trava ligada: o QR de check-in antes da janela não grava, mas abre a palestra", async () => {
+  const world = setup({ checkinWindow: WINDOW, url: "http://localhost/?checkin=0900.ia", now: new Date("2026-11-27T12:00:00Z") });
+  const opened = [];
+  world.document.body.addEventListener(world.site.get("OPEN_TALK_EVENT"), event => opened.push(event.detail.key));
+  await world.feedback.handleCheckinParam();
+  assert.deepEqual(world.calls.checkins, []);
+  assert.deepEqual(opened, [KEY]);
 });

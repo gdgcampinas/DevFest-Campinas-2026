@@ -103,6 +103,24 @@ test("pergunta: chave de palestra fora do formato é recusada", { skip }, async 
   denied(await ask(who, forged));
 });
 
+// ---------- janela do check-in ----------
+test("check-in: com a trava ligada só abre de 10 min antes do início até o fim do dia (600 min depois do fim), e recusa antes disso e em outro dia", { skip: onlyWithWindow }, async () => {
+  const lead = Number(rules.match(/function checkinLeadMinutes\(\) \{\s*return (\d+);/)[1]);
+  const tail = Number(rules.match(/function checkinTailMinutes\(\) \{\s*return (\d+);/)[1]);
+  denied(await checkin(person(), talkKeyStarted(-(lead + 5)))); // começa daqui a mais que a antecedência
+  allowed(await checkin(person(), talkKeyStarted(-(lead - 5)))); // começa daqui a menos que a antecedência
+  allowed(await checkin(person(), LIVE()));
+  allowed(await checkin(person(), ENDED())); // quem escaneia o QR de "avaliar" depois da palestra
+  allowed(await checkin(person(), talkKeyStarted(40 + tail - 5))); // ainda dentro do fim da janela
+  denied(await checkin(person(), talkKeyStarted(40 + tail + 5))); // já passou da janela
+  denied(await checkin(person(), talkKeyStarted(-60 * 24 * 3))); // daqui a 3 dias: antes do evento
+});
+
+test("check-in: com a trava desligada (teste em DEV) vale a qualquer hora", { skip: onlyWithoutWindow }, async () => {
+  allowed(await checkin(person(), talkKeyStarted(-60 * 24 * 3)));
+  allowed(await checkin(person(), talkKeyStarted(60 * 24 * 3)));
+});
+
 // ---------- ler ----------
 test("leitura: a plateia NÃO lista as perguntas dos outros (aprovadas, pendentes ou sem filtro); o moderador lista tudo", { skip }, async () => {
   const talk = LIVE();

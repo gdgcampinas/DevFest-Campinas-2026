@@ -96,13 +96,13 @@ service cloud.firestore {
         && validRating(data.aspects.comunicacao);
     }
 
-    // Check-in numa palestra: sem campo próprio além da base. A chave é sempre a de uma palestra (formato validTalkKey) e o id
+    // Check-in numa palestra: sem campo próprio além da base. Só dentro da janela do check-in (`checkinOpen`, trava ligada). A chave é sempre a de uma palestra (formato validTalkKey) e o id
     // é exatamente "<uid>_<chave>": sem isso uma pessoa criaria check-ins e, com eles, avaliações à vontade com chaves inventadas.
     match /checkins/{docId} {
       allow get: if isOwnDoc(docId); // só a própria pessoa lê o próprio check-in
       allow list: if false; // ninguém lê a coleção inteira nem os registros de outra pessoa
       allow create: if isOwnDoc(docId) && idMatchesEntry(docId) && hasValidBaseFields()
-        && validTalkKey(request.resource.data.entryKey)
+        && checkinOpen(request.resource.data.entryKey)
         && request.resource.data.keys().hasOnly(['edition', 'entryKey', 'createdAt']);
       allow update, delete: if false;
     }
@@ -170,7 +170,26 @@ service cloud.firestore {
     // início ao fim da palestra. LIGAR (true) ANTES DO EVENTO, junto com `enforceWindow` de docs/js/data/talk-questions.js
     // (um teste confere que os dois estão iguais). A linha do return tem que ficar como está (os testes trocam o valor).
     function windowEnforced() {
-      return false; // TRAVA-DE-HORARIO
+      return true; // TRAVA-DE-HORARIO
+    }
+
+    // Janela do CHECK-IN (só com a trava ligada): abre `checkinLeadMinutes()` antes do início da palestra e fecha `checkinTailMinutes()`
+    // depois do fim. O fim da janela é folgado (600 min = o resto do dia) porque quem escaneia o QR de "avaliar" depois da palestra faz o
+    // check-in junto, e a plenária grava a presença na hora da avaliação. O que a janela impede é check-in antes do dia do evento e
+    // check-in inventado em qualquer data. ESPELHAR `checkinLeadMinutes` e `checkinTailMinutes` de docs/js/data/talk-questions.js (um teste confere).
+    function checkinLeadMinutes() {
+      return 10;
+    }
+
+    function checkinTailMinutes() {
+      return 600;
+    }
+
+    function checkinOpen(talkKey) {
+      return validTalkKey(talkKey)
+        && (!windowEnforced()
+          || (request.time >= talkStart(talkKey) - duration.value(checkinLeadMinutes(), 'm')
+            && request.time <= talkStart(talkKey) + duration.value(talkDurationMinutes() + checkinTailMinutes(), 'm')));
     }
 
     function talkIsLive(talkKey) {

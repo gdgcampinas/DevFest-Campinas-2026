@@ -2,8 +2,10 @@
  * Perguntas ao vivo por palestra: configuração. `enabled` é a chave geral
  * (só ligar depois que as regras do Firestore de "talk-questions" e "talk-question-votes"
  * estiverem publicadas, ver DevFestIA/firebase/firestore.rules).
- *   enforceWindow trava de horário: false = pergunta e voto a qualquer hora (teste em DEV); true = só durante a palestra.
- *                 LIGAR ANTES DO EVENTO, junto com `windowEnforced()` das regras do Firestore (um teste confere que são iguais).
+ *   enforceWindow trava de horário: false = pergunta, voto e check-in a qualquer hora (teste em DEV); true = só durante a palestra (check-in: janela abaixo).
+ *                 LIGADA em 2026-11-20 (o line-up real é público). LIGAR ANTES DO EVENTO, junto com `windowEnforced()` das regras do Firestore (um teste confere que são iguais).
+ *   checkinLeadMinutes / checkinTailMinutes  janela do check-in (só com a trava ligada): abre N minutos antes do início da palestra e fecha N minutos depois do fim
+ *                 (600 = o resto do dia). ESPELHAM `checkinLeadMinutes()` e `checkinTailMinutes()` das regras do Firestore (um teste confere).
  *   maxLength     tamanho máximo do texto (espelhar a regra do Firestore)
  *   maxPerPerson  perguntas por pessoa por palestra (espelhar as regras: entryKey "#1" a "#N")
  *   pollMs           de quanto em quanto tempo o modal confere se ainda está aberto e redesenha o que chegou (não lê nada do banco)
@@ -20,7 +22,9 @@ const QUESTION_STATUS = Object.freeze({ pending: "pending", approved: "approved"
 
 const TALK_QUESTIONS = {
   enabled: true,
-  enforceWindow: false,
+  enforceWindow: true,
+  checkinLeadMinutes: 10,
+  checkinTailMinutes: 600,
   maxLength: 280,
   maxPerPerson: 3,
   pollMs: 15000,

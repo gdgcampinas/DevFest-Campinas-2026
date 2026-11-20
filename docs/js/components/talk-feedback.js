@@ -3,6 +3,8 @@
  * "Minhas palestras". Puro template — recebe o estado já resolvido
  * (features/talk-feedback.js decide o estado, isso aqui só desenha). Fases:
  *   "checkin"         → ainda não fez check-in nessa palestra
+ *   "checkin-before"  → o check-in ainda não abriu (abre `leadMinutes` antes da palestra; só com a trava de horário ligada)
+ *   "checkin-closed"  → o check-in já fechou (passou da janela)
  *   "checkin-confirm" → confirmação inline antes de gravar (sem diálogo nativo do navegador)
  *   "waiting"         → check-in feito (ou sessão sem check-in, `checkedIn` falso), palestra ainda não terminou
  *   "rate"            → pode avaliar (check-in feito + palestra terminada)
@@ -11,7 +13,7 @@
  * handler delegado saber qual palestra. `message` é um aviso de erro opcional;
  * `name` pré-preenche o nome (obrigatório) com o da última avaliação.
  */
-function talkFeedbackMarkup({ phase, entryKey, title = "", message = "", name = "", invite = "", checkedIn = true }) {
+function talkFeedbackMarkup({ phase, entryKey, title = "", message = "", name = "", invite = "", checkedIn = true, leadMinutes = 0 }) {
   const note = message ? `<p class="form-error" role="alert">${message}</p>` : "";
 
   if (phase === "checkin") {
@@ -21,6 +23,13 @@ function talkFeedbackMarkup({ phase, entryKey, title = "", message = "", name = 
       ${note}
       <button type="button" class="chip-btn chip-btn--primary" data-feedback-checkin data-entry-key="${entryKey}" data-track-event="checkin" data-track-target="${entryKey}">${iconMarkup("check")}${t("checkin.button", "Já estou na sala, fazer check-in")}</button>
     </div>`;
+  }
+
+  if (phase === "checkin-before" || phase === "checkin-closed") {
+    const text = phase === "checkin-before"
+      ? t("checkin.before", "O check-in abre {n} minutos antes da palestra.", { n: leadMinutes })
+      : t("checkin.closed", "O check-in dessa palestra já encerrou.");
+    return `<div class="talk-feedback talk-feedback--waiting">${iconMarkup("clock")}${text}</div>`;
   }
 
   if (phase === "checkin-confirm") {

@@ -32,7 +32,7 @@ function talkKeyStarted(startedMinAgo, track = uniqueTrack()) {
   return `${start.toISOString()}|${track}`;
 }
 const LIVE = () => talkKeyStarted(10);
-const NOT_STARTED = () => talkKeyStarted(-30);
+const NOT_STARTED = () => talkKeyStarted(-5); // começa daqui a 5 min: ainda dentro da janela do check-in (abre 10 min antes), mas antes da palestra valer pra pergunta e voto
 const ENDED = () => talkKeyStarted(60);
 
 const base = { edition: "2026" };

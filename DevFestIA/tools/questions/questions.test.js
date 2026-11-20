@@ -13,7 +13,7 @@ const root = path.join(__dirname, "..", "..", "..");
 const { rankQuestions } = require(path.join(root, "docs/js/features/question-ranking.js"));
 const { buildBoardSnapshot } = require(path.join(root, "docs/js/features/board-snapshot.js"));
 const { createBoardPublisher, approvedSignature } = require(path.join(root, "docs/js/features/board-publisher.js"));
-const { questionWindowState } = require(path.join(root, "docs/js/features/question-window.js"));
+const { questionWindowState, checkinWindowState } = require(path.join(root, "docs/js/features/question-window.js"));
 const { questionEntryKey, firstFreeQuestionSlot } = require(path.join(root, "docs/js/features/question-slots.js"));
 
 const question = (id, createdAtMs, extra = {}) => ({ id, text: id, name: "x", createdAtMs, status: "approved", ...extra });
@@ -74,6 +74,17 @@ test("janela: com a trava desligada (DEV) fica sempre aberta, em qualquer horár
   assert.strictEqual(questionWindowState(slot, at("23:59:00"), { enforce: true }), "closed");
 });
 
+test("janela do check-in: abre `leadMinutes` antes do início, fecha `tailMinutes` depois do fim (limites inclusos); desligada fica sempre aberta", () => {
+  const window = { enforce: true, leadMinutes: 10, tailMinutes: 600 };
+  assert.strictEqual(checkinWindowState(slot, at("11:49:59"), window), "before");
+  assert.strictEqual(checkinWindowState(slot, at("11:50:00"), window), "open");
+  assert.strictEqual(checkinWindowState(slot, at("12:20:00"), window), "open");
+  assert.strictEqual(checkinWindowState(slot, at("22:40:00"), window), "open");
+  assert.strictEqual(checkinWindowState(slot, at("22:40:01"), window), "closed");
+  assert.strictEqual(checkinWindowState(slot, new Date("2026-11-20T12:00:00Z"), { ...window, enforce: false }), "open");
+  assert.strictEqual(checkinWindowState(slot, new Date("2026-11-20T12:00:00Z")), "open", "sem opções, nada é imposto");
+});
+
 test("janela: as regras arredondam o início pro minuto, então a tela nunca abre antes do banco", () => {
   const withSeconds = { start: new Date("2026-11-28T12:00:30Z"), end: new Date("2026-11-28T12:40:30Z") };
   assert.strictEqual(questionWindowState(withSeconds, at("12:00:10")), "before");
@@ -101,6 +112,12 @@ test("config x regras: limite de texto e de perguntas por pessoa batem", () => {
 test("config x regras: a trava de horário está igual na tela (enforceWindow) e nas regras (windowEnforced)", () => {
   const rulesValue = rules.match(/function windowEnforced\(\) \{\s*return (true|false); \/\/ TRAVA-DE-HORARIO/)[1] === "true";
   assert.equal(config().enforceWindow, rulesValue, "ligue/desligue a trava nos dois lugares: data/talk-questions.js e firestore.rules");
+});
+
+test("config x regras: a janela do check-in é a mesma na tela (checkinLeadMinutes, checkinTailMinutes) e nas regras", () => {
+  const rule = name => Number(rules.match(new RegExp(`function ${name}\\(\\) \\{\\s*return (\\d+);`))[1]);
+  assert.equal(config().checkinLeadMinutes, rule("checkinLeadMinutes"), "antecedência do check-in: data/talk-questions.js x firestore.rules");
+  assert.equal(config().checkinTailMinutes, rule("checkinTailMinutes"), "fim da janela do check-in: data/talk-questions.js x firestore.rules");
 });
 
 test("config x regras: 1 ingresso = 1 cadastro está igual na tela (requireTicket) e nas regras (raffleRequiresTicket)", () => {
