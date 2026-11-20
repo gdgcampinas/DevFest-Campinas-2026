@@ -116,6 +116,7 @@ function initMural() {
     teaser: createTeaserScene({ repository: muralTeasersRepository, schedule: SCHEDULE }),
     wall: createWallScene({ promptLabelOf: id => wallConfigRepository.prompt(id)?.label ?? id, rotation }),
     speakers: createSpeakersScene({ pool: extractSpeakers(SCHEDULE, TRACKS, EVENT.timezone), slots: TRACKS.length, preload: url => preloadImage(url, { timeoutMs: config.speakerPhotoTimeoutMs, schedule }), metaOf: speakerMetaLine }),
+    history: createHistoryScene({ photos: historyPhotosRepository, mosaic: historyMosaicRepository.getAll(), text: historyTextsRepository.getAll(), years: anniversaryYears({ eventYear: Number(EVENT.date.slice(0, 4)), ...anniversaryConfigRepository.getAll() }), founded: anniversaryConfigRepository.getAll().communityFounded, preload }),
     team: createTeamScene({ repository: teamRepository, preload: url => preloadImage(url, { timeoutMs: config.speakerPhotoTimeoutMs, schedule }), rotation }),
     phoenix: createPhoenixScene({ preload, imageUrl: brandRepository.getAll().mascot, title, subtitle: eventDateLabel(SCHEDULE, EVENT.timezone) }),
     podium: createPodiumScene({ talkIndex, highlightOf: talkHighlightsRepository.forTalk }),

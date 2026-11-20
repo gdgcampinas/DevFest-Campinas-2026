@@ -7,7 +7,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 
-const site = loadSite({ scripts: [...SITE_BASE, "components/escape-html.js", "data/anniversary.js", "components/anniversary-badge.js", "features/release-gate.js", "features/anniversary.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "components/escape-html.js", "data/anniversary.js", "components/number-template.js", "components/anniversary-badge.js", "features/release-gate.js", "features/anniversary.js"] });
 const { document } = site;
 test.after(() => site.window.close());
 const g = name => site.get(name);

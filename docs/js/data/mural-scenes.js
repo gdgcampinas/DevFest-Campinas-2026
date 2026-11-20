@@ -33,6 +33,8 @@
  *
  * "QR dos créditos" (`qr-creditos`): leva à página dos créditos do Google Cloud (creditos.html, data/gcp-credits.js); só dentro da janela do link (`windows[0]`) e com `GCP_CREDITS.public` ligado; ensaio antes: `?cenas=qr-creditos`.
  *
+ * "10 anos de DevFest" (`type: "history"`): mosaico com fotos da história da comunidade, título com os anos e agradecimento (data/history.js). Nasce desligada junto com a seção da home (`HISTORY_CONFIG.public`); `?cenas=historia` a ensaia. Nunca mostra foto sozinha: com menos de 4 carregadas a cena some.
+ *
  * "Fundos de tela" (`type: "wallpapers"`): três celulares com os fundos do evento (data/wallpapers.js) e um QR pra página fundos.html (com `?origem=telao`, pra contar quem veio do telão); duas entradas dão duas passadas por volta, cada uma com outros três fundos. Só entra com a página pública (`WALLPAPERS_CONFIG.public`).
  * "Onde estamos" (`type: "venue"`): a foto do prédio do evento (a `featured` de data/venue-photos.js, ou `params.photo`) com o prédio, o campus, a entrada e o endereço (data/venue.js) numa faixa embaixo. Só entra com as fotos do campus públicas (`VENUE_PHOTOS_CONFIG.public`), junto com a galeria da página Como chegar.
  * "Álbum" (`type: "album"`): X fotos de um álbum do Google Fotos (data/mural-albums.js) no modelo de `params.model` (collage, portrait-strip, polaroid, feature, mosaic ou auto, que escolhe pela
@@ -108,6 +110,7 @@ const MURAL_SCENES = [
   { id: "palestrantes-antes", label: "Palestrantes: um de cada trilha (antes e depois)", type: "speakers", seconds: 14, transition: "rise", requires: { reveal: true, phases: ["before", "after"] }, params: { kicker: "Quem vem aí", title: "Palestrantes do DevFest" } },
   { id: "palestrantes-almoco", label: "Palestrantes: um de cada trilha (almoço)", type: "speakers", seconds: 14, transition: "rise", requires: { reveal: true, moments: ["lunch"] }, params: { kicker: "Quem vem aí", title: "Palestrantes do DevFest" } },
   { id: "qr-avaliar", label: "QR: avalie o evento", type: "qr", seconds: 16, transition: "slide", from: "2026-11-28T17:15:00-03:00", params: { kicker: "Obrigado por participar", heading: "Avalie o DevFest", hint: "Escaneie e conte como foi o evento", path: "index.html?avaliar=1" } },
+  { id: "historia", label: "10 anos de DevFest (mosaico de fotos)", type: "history", seconds: 16, transition: "zoom", enabled: HISTORY_CONFIG.public, requires: { phases: ["before", "live", "after"] }, params: {} },
   { id: "obrigado", label: "Obrigado", type: "event-phase", seconds: 12, requires: { phases: ["after"] }, params: { kind: "thanks" } },
 ];
 
