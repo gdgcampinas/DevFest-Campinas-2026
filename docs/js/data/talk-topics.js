@@ -39,6 +39,7 @@ const TALK_TOPICS_BY_SPEAKER = {
   // Carreira em Tecnologia
   "gabriel-rodrigues-de-souza": ["carreira", "lideranca"],
   "valerio-matias": ["carreira"],
+  "jesse-freitas": ["ia", "lideranca"],
   "alexandra-regina-cavalleiros": ["carreira", "ia"],
   "nakyta-nara-lucca": ["carreira", "negocios"],
   "amanda-araujo-duaibs": ["carreira", "lideranca"],
