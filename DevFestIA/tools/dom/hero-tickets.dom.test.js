@@ -21,7 +21,9 @@ test("vendas fechadas (lista de espera ou prévia): nenhum destaque", () => {
 });
 
 test("vendas abertas: o selo e um cartão por tipo de ingresso, com nome, preço e vagas do dado", () => {
-  const open = g("heroTicketsHighlight")({ tickets: { salesOpen: true }, types, text, formatPrice });
+  // Com o encerramento da camiseta liberado (`public`), o cartão dela troca as vagas pelo aviso (testado abaixo); aqui vale o estado com vendas abertas.
+  const openTypes = types.map(type => ({ ...type, soldOut: { ...type.soldOut, public: false } }));
+  const open = g("heroTicketsHighlight")({ tickets: { salesOpen: true }, types: openTypes, text, formatPrice });
   assert.match(open.badge, /INGRESSOS ABERTOS/);
   const box = site.document.createElement("div");
   box.innerHTML = open.cards;
