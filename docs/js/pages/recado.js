@@ -6,7 +6,8 @@
 function initRecadoPage() {
   initShell("recados");
   const text = wallTextsRepository.getAll();
-  const config = wallConfigRepository.getAll();
+  const devMode = isDevModeStored();
+  const config = { ...wallConfigRepository.getAll(), prompts: wallConfigRepository.visiblePrompts({ devMode }) }; // pergunta nova só aparece no modo DEV até liberar
   const now = resolveNow();
   const hour = iso => formatEventTime(new Date(iso), EVENT.timezone, CODE_LOCALE);
   document.getElementById("wallMascot").innerHTML = mascotMarkup("wall-head-mascot");
@@ -19,7 +20,7 @@ function initRecadoPage() {
     rules: { validateWallPost, nextWallSlot, wallEntry },
     getUid: () => window.firebaseClient.ensureAnonymousUid(),
     text,
-    phaseOf: () => wallPhase(now(), config, { devMode: isDevModeStored() }),
+    phaseOf: () => wallPhase(now(), config, { devMode }),
     hours: { from: hour(config.window.from), until: hour(config.window.until) },
   });
 }

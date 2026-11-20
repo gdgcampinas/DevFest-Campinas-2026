@@ -304,6 +304,7 @@ const LOCALIZED_DATASETS = [
   () => heroTicketsTextsRepository.getAll(),
   () => wallpapersRepository.getAll(),
   () => wallpaperTextsRepository.getAll(),
+  () => anniversaryTextsRepository.getAll(),
   () => ticketsHeroTextsRepository.getAll(),
   () => tshirtSizesRepository.getAll(),
   () => tshirtSizesTextsRepository.getAll(),

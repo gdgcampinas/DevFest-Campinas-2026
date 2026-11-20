@@ -4,6 +4,7 @@
  *   window        quando o envio vale: `from` e `until` (ISO com fuso; hoje o dia do evento, das 08:00 às 17:30). Antes dela a página diz quando abre; depois, que encerrou (features/wall-window.js)
  *   maxLength     tamanho do recado (ESPELHAR a regra: 120 = "size() < 121")  |  maxNickname: apelido opcional (30)  |  maxPerPerson: recados por aparelho (3, ESPELHAR `wall-[1-3]` nas regras)
  *   prompts       as perguntas que a pessoa escolhe: `id` (vai no recado), `label` (a pergunta, em letra grande no telão), `placeholder` (a ajuda do campo). O telão tem uma cena por pergunta (data/mural-scenes.js, `params.prompt`).
+ *                 `public: false` = pergunta nova só no modo DEV (a página de recados a esconde em produção e a cena dela do telão fica desligada); sem `public` (ou `true`) vale pra todo mundo.
  *   blocklist     palavras que a página recusa antes de enviar (filtro de primeira linha: o moderador SEMPRE aprova antes de ir ao ar; ver features/wall-text.js)
  */
 const WALL_CONFIG = {
@@ -17,8 +18,17 @@ const WALL_CONFIG = {
     { id: "buscar", label: "O que você veio buscar?", placeholder: "Conhecer gente, aprender, trocar ideia..." },
     { id: "recado", label: "Um recado para quem você veio encontrar", placeholder: "Escreva com carinho, vai pro telão" },
     { id: "significou", label: "O que o DevFest significou para você?", placeholder: "Em uma frase" },
+    { id: "primeiro-devfest", label: "Qual foi o seu primeiro DevFest?", placeholder: "O ano, a cidade e um momento que marcou", public: false }, // 10 anos de DevFest (2026-11-20); só em DEV até liberar
   ],
   blocklist: ["puta", "putaria", "caralho", "porra", "merda", "buceta", "cuzao", "viado", "viadinho", "arrombado", "babaca", "idiota", "imbecil", "fdp", "pqp", "vsf", "vtnc", "otario", "desgraca"],
 };
 
-const wallConfigRepository = createRepository(WALL_CONFIG, { prompt: id => WALL_CONFIG.prompts.find(prompt => prompt.id === id) ?? null });
+const promptReleased = prompt => prompt.public !== false;
+
+const wallConfigRepository = createRepository(WALL_CONFIG, {
+  prompt: id => WALL_CONFIG.prompts.find(prompt => prompt.id === id) ?? null,
+  /** As perguntas que a plateia vê: as liberadas e, no modo DEV (`devMode`), todas (features/release-gate.js). */
+  visiblePrompts: ({ devMode = false } = {}) => WALL_CONFIG.prompts.filter(prompt => promptReleased(prompt) || devMode),
+  /** A pergunta `id` está liberada? (liga e desliga a cena dela no telão, data/mural-scenes.js) */
+  promptPublic: id => { const prompt = WALL_CONFIG.prompts.find(item => item.id === id); return Boolean(prompt) && promptReleased(prompt); },
+});

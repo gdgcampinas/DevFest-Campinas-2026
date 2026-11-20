@@ -35,6 +35,7 @@ function initHome() {
   renderRealizacao(EVENT.hosts, document.querySelector(".realizacao-grid"), { by: REALIZATION_BY });
   renderTestimonials(testimonialsRepository.getAll(), document.getElementById("testimonialsSection"), document.querySelector(".testimonials-grid"));
   initSponsorsSection({ reveal, tiers: sponsorsRepository.getAll(), sectionEl: document.getElementById("sponsorsSection"), gridEl: document.querySelector(".sponsors-grid"), soonMessage: t("home.sponsorsSoon", "Patrocinadores serão revelados em breve.") });
+  initAnniversaryBadge(document.getElementById("anniversaryBadge"), { config: anniversaryConfigRepository.getAll(), text: anniversaryTextsRepository.getAll(), eventYear: Number(EVENT.date.slice(0, 4)), devMode: isDevModeStored() });
   initWallpaperBand(document.getElementById("wallpaperBand"), { config: wallpaperBandConfigRepository.getAll(), wallpapers: wallpapersRepository.getAll(), text: wallpaperTextsRepository.getAll(), devMode: isDevModeStored() });
   initPartnerCommunitiesSection({ reveal, communities: partnerCommunitiesRepository.getAll(), sectionEl: document.getElementById("partnerCommunitiesSection"), gridEl: document.querySelector(".partner-communities-grid") });
 
