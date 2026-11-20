@@ -92,7 +92,7 @@ test("a palestra descrita leva pessoas com foto e cargo, o texto curto (blurb ou
 
 test("agora e próximas: vaga em aberto (`vacant`) não é palestra: a coluna fica sem 'agora' e a próxima real aparece", () => {
   const withVacancy = [
-    { talks: { ia: talk("IA 1"), mobile: { title: "Título a confirmar", speakers: [], vacant: true } }, start: at("09:00"), end: at("09:40") },
+    { talks: { ia: talk("IA 1"), mobile: { title: "Em breve", speakers: [], vacant: true } }, start: at("09:00"), end: at("09:40") },
     { talks: { ia: talk("IA 2"), mobile: talk("Mobile 2") }, start: at("09:45"), end: at("10:25") },
   ];
   const [ia, mobile] = resolveNowAndNext({ schedule: withVacancy, tracks, now: at("09:10"), phaseOf }).columns;

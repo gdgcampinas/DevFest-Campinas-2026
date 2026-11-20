@@ -23,7 +23,7 @@ warns.forEach(w=>fail(w));
 const fmt=new Set(o.TALK_FORMATS.map(f=>f.id));
 slots.forEach((s,i)=>{const ids=[];o.TRACKS.forEach(t=>{const d=s.talks[t.id];
  if(!d){fail(`slot ${i} sem talk ${t.id}`);return}
- if(!d.title||d.title==="Título a confirmar")fail(`slot ${i} ${t.id} sem título real`);
+ if(!d.title||d.title==="Em breve")fail(`slot ${i} ${t.id} sem título real`);
  if(!fmt.has(d.format))fail(`slot ${i} ${t.id} formato inválido ${d.format}`);
  if(!d.description)fail(`slot ${i} ${t.id} sem descrição`);
  if(!d.tags||!d.tags.length)fail(`slot ${i} ${t.id} sem tags`);

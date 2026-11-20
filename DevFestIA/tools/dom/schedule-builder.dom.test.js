@@ -24,7 +24,7 @@ test("vaga vazia do catálogo: por padrão rotaciona o pool (mock), com { rotate
   const real = build({ rotateSpeakers: false });
   assert.equal(real.a.speakers[0].id, "p1", "a palestra escalada continua com a pessoa dela");
   assert.deepEqual([...real.b.speakers], [], "a vaga vazia não ganha ninguém");
-  assert.equal(real.b.title, "Título a confirmar");
+  assert.equal(real.b.title, "Em breve");
 });
 
 test("linha da pessoa: selo, cargo e empresa na ordem, só o que vier preenchido", () => {

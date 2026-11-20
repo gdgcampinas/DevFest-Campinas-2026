@@ -82,9 +82,9 @@ test("a página sobe e roda o rodízio: 'agora e próximas' com a grade, e a tel
   page.site.window.close();
 });
 
-test("`alwaysReveal` desligado (o padrão do telão): o line-up só aparece revelado: sem ?lineup=1 a cena 'agora' (dado mock) não entra e a reserva sustenta a tela", async () => {
+test("`alwaysReveal` desligado (o padrão do telão): com o line-up escondido (`lineupRevealed` false) a cena 'agora' (dado mock) não entra e a reserva sustenta a tela", async () => {
   const dom = loadSite({ scripts: SCRIPTS, html: BODY, url: "http://localhost/telao.html?cenas=agora&ensaio=0&demo=2026-11-28T09:10", globals: { fetch: async () => ({ ok: true, text: async () => HTML }), Image: class { set src(url) { setTimeout(() => this.onload?.(), 0); } } } });
-  dom.run("Object.assign(MURAL_CONFIG, { reserveSeconds: 0.15, alwaysReveal: false }); MURAL_CONFIG.network.probeEveryMs = 1000000;");
+  dom.run("EVENT.lineupRevealed = false; Object.assign(MURAL_CONFIG, { reserveSeconds: 0.15, alwaysReveal: false }); MURAL_CONFIG.network.probeEveryMs = 1000000;");
   dom.run(PAGE, "pages/mural.js");
   await waitFor(() => dom.document.querySelector(".mural-scene.is-active")?.dataset.scene === "reserva");
   assert.equal(dom.document.querySelector('[data-scene="agora"]'), null);
@@ -415,6 +415,7 @@ test("telão: só produção; modo DEV (gravado ou na URL) nunca vale, e o ensai
   });
   assert.equal(page.site.run("sessionStorage.getItem('devfest-campinas-2026:dev-mode')"), null, "modo DEV gravado foi limpo");
   assert.equal(page.site.run("sessionStorage.getItem('devfest-campinas-2026:rehearsal')"), null, "ensaio gravado foi limpo");
+  page.site.run("EVENT.lineupRevealed = false");
   assert.equal(page.site.run("resolveReveal()"), false, "line-up escondido: dados de produção");
   page.site.window.close();
   const dev = boot({ search: "", rawUrl: "http://localhost/telao.html?lineup=1&demo=2026-11-28T09:10" });

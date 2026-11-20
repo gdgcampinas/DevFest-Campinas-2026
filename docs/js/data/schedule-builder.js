@@ -47,7 +47,7 @@ function placeholderTalks(tracks, speakerPool, talkIndex, { rotateSpeakers = tru
     track.id,
     {
       speakers: rotateSpeakers ? [speakerPool[(talkIndex * tracks.length + i) % speakerPool.length]] : [],
-      title: "Título a confirmar",
+      title: "Em breve",
       vacant: true, // vaga sem palestra definida: o telão não a mostra como "agora" nem "a seguir"
       format: "palestra",
       description: "",

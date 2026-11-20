@@ -1,17 +1,14 @@
 /**
- * Dados PROD do DevFest Campinas 2026 — line-up ainda é MOCK
- * (EVENT.lineupRevealed false), escondido do público por padrão pra
- * ninguém confundir com a programação oficial (gente já achou que era
- * real). Quem precisa ver o mock (time interno) abre com `?lineup=1` —
- * "modo DEV" por URL, mesmo site/config, nada separado (ver
- * warnIfMockContent/resolveReveal em app.js). Quando o line-up real for
- * confirmado: trocar o catálogo mock pelos dados reais (mesmo formato),
- * voltar `lineupRevealed` pra `true`, e manter schedule.dev.js idêntico
- * a este arquivo.
- *
- * TBD: data, horário, local e trilhas ainda não confirmados — ajustar
- * abaixo assim que o time fechar.
- */
+* Dados PROD do DevFest Campinas 2026. O line-up REAL está liberado
+* (EVENT.lineupRevealed true, 2026-11-20). Pra esconder de novo: false
+* (o público volta a ver o catálogo mock; `?lineup=1` força o real, modo
+* DEV por URL, ver resolveReveal em app.js). Vaga sem palestra definida
+* (`null` em LINEUP_TALKS_BY_TRACK) aparece como "Em breve". O ramo mock
+* (mock-*.js) só serve de reserva e aos testes de tela.
+*
+* TBD: data, horário, local e trilhas ainda não confirmados — ajustar
+* abaixo assim que o time fechar.
+*/
 const EVENT = {
   name: "DevFest Campinas",
   date: "2026-11-28", // America/Sao_Paulo, sem horário de verão
@@ -23,7 +20,7 @@ const EVENT = {
   venue: "Local a definir",
   venueConfirmed: false, // false = calendário/agenda usam só o endereço (cidade) em vez do nome do local
   address: "Campinas, SP",
-  lineupRevealed: false, // PROD: mock escondido por padrão; "?lineup=1" (modo DEV) força mostrar
+  lineupRevealed: true, // line-up real liberado em PROD (2026-11-20, autorizado pelo Renato); false volta a esconder (mostra o mock, "?lineup=1" força o real)
   // 1..N coanfitriões/patrocinadores exibidos no header, nessa ordem. `logo` (opcional) é o logo
   // horizontal com o nome, mostrado no lugar de "icon + nome"; o cartão "Eu vou!" usa o do 1º host.
   // Adicionar entradas aqui quando parceiros forem confirmados — o
@@ -84,7 +81,7 @@ const TRACKS = [
 ];
 
 /**
- * LINE-UP REAL (grade do Renato, 2026-11-03): 5 trilhas x 9 palestras. Vaga vazia = `null` (aparece como "Título a confirmar", sem palestrante).
+ * LINE-UP REAL (grade do Renato, 2026-11-03): 5 trilhas x 9 palestras. Vaga vazia = `null` (aparece como "Em breve", sem palestrante).
  * Cargo e nome vêm da grade; descrição, LinkedIn e foto vêm do C4P (foto ausente = iniciais). Nenhum e-mail ou telefone do C4P entra aqui. Só aparece em modo DEV (?lineup=1) até a revelação, ver `showRealLineup` abaixo.
  * `[id, nome, cargo, selo, foto, linkedin]`
  */
@@ -116,13 +113,11 @@ const LINEUP_SPEAKER_ROWS = [
   ["alexandre-cabral", "Alexandre Cabral", "Senior Software Engineer, Alpaca", "GDE", "assets/img/lineup/alexandre-cabral.webp", "https://www.linkedin.com/in/alexandre-cabral-bedeschi/"],
   ["beatriz-moraes-souza-rodrigues", "Beatriz Moraes Souza Rodrigues", "Analytics Engineer no Albert Einstein", "", "assets/img/lineup/beatriz-moraes-souza-rodrigues.webp", "https://www.linkedin.com/in/beatrizmsrodrigues"],
   ["fabio-baldin", "Fabio Baldin", "Fabrica de Inovação Limeira - Diretor Geral", "", "assets/img/lineup/fabio-baldin.webp", "https://br.linkedin.com/in/fabiobaldin"],
-  ["jesse-freitas", "Jessé Freitas", "levva - CTO", "", "assets/img/lineup/jesse-freitas.webp", "https://www.linkedin.com/in/jesse--freitas"],
   ["vinicius-rodrigues-da-cunha-perallis", "Vinicius Rodrigues da Cunha Perallis", "CEO da Hacker Rangers", "", "assets/img/lineup/vinicius-rodrigues-da-cunha-perallis.webp", "https://www.linkedin.com/in/vperallis/"],
   ["sara-bandeira-coutinho", "Sara Bandeira Coutinho", "Banco do Brasil | Assessor de TI III", "", "assets/img/lineup/sara-bandeira-coutinho.webp", "https://www.linkedin.com/in/sarabcoutinho/"],
   ["julia-cansado", "Júlia Cansado", "Developer, Lab. QUAPÁ / Solved", "GDE", "assets/img/lineup/julia-cansado.webp", "https://www.linkedin.com/in/julia-cansado/"],
   ["joao-otavio-de-goes", "João Otávio de Góes", "San Jose Institute of Technology, Coordenador", "", "assets/img/lineup/joao-otavio-de-goes.webp", "https://www.linkedin.com/in/j0hngoes/"],
   ["marcelo-pinheiro", "Marcelo Pinheiro", "Fellow AI Enginner - Levva", "", "assets/img/lineup/marcelo-pinheiro.webp", "https://www.linkedin.com/in/marcelo-c-pinheiro/"],
-  ["irina-bezzan-miquelin", "Irina Bezzan Miquelin", "Diretora de RH - Jobstar", "", "assets/img/lineup/irina-bezzan-miquelin.webp", "https://www.linkedin.com/in/irinabezzanmiquelin"],
   ["larissa-azevedo", "Larissa Azevedo", "Microsoft MVP | Mentora de carreira | Software Engineer", "", "assets/img/lineup/larissa-azevedo.webp", "https://www.linkedin.com/in/larissasazevedo/"],
   ["helson-carlos-dos-santos", "Helson Carlos dos Santos", "Senior Software Engineer - BMW TechWorks Brasil", "", "assets/img/lineup/helson-carlos-dos-santos.webp", "https://linkedin.com/in/helsonsant/"],
   ["thais-santos-souza", "Thaís Santos Souza", "Arquiteta de Soluções Sênior no Bradesco", "", "assets/img/lineup/thais-santos-souza.webp", "https://www.linkedin.com/in/thaís-santos-souza-b05845112"],
@@ -180,12 +175,12 @@ const LINEUP_TALKS_BY_TRACK = {
   mentoring: [
     ["Além do Código", "gabriel-rodrigues-de-souza", "Nem sempre quem evolui mais na carreira é o melhor tecnicamente, e sim quem consegue ser entendido e fazer o time avançar junto. Nesta palestra, mostro como a comunicação escrita, falada e assíncrona impacta sua visibilidade, sua confiança e suas oportunidades."],
     ["Jeitinho Brasileiro - Fazendo a diferença no trabalho internacional", "valerio-matias", "Aprendizados da prestação de serviços de TI em uma multinacional alemã, com foco no trabalho internacional e em como a cultura brasileira pode ajudar ou atrapalhar."],
-    ["Seu desenvolvedor ficou 10x mais rápido. Seu SDLC não.", "jesse-freitas", "A IA acelerou o desenvolvedor, mas o SDLC acompanhou? Nesta palestra, vamos explorar a evolução de copilotos para agentes, passando por Agentic Engineering, Context Engineering, qualidade, evals e governança — e como preparar o ciclo de desenvolvimento para entregar resultados verificáveis, não apenas código mais rápido.\n\nJessé Freitas é CTO da Levva, com MBA em Arquitetura de Soluções pela FIAP. Atua há mais de 20 anos em tecnologia, liderando times e iniciativas de engenharia, dados e IA, com foco na aplicação prática de IA no desenvolvimento de software."],
+    null,
     ["Longevidade Profissional e IA como ferramenta de reinvenção para a sua carreira", "alexandra-regina-cavalleiros", "Não adianta pensar em carreira longa sem pensar também em saúde, energia, equilíbrio e qualidade de vida. A palestra parte da trajetória de uma profissional que construiu carreira em TI, se aposentou, virou professora, entrou no universo gamer, passou a produzir conteúdo e segue aprendendo novas tecnologias.\nTemas: como a IA muda as profissões de tecnologia, o que aprender além das ferramentas, a importância de aprender continuamente, a IA como aceleradora de criatividade e produtividade, o risco de ficar parado, mulheres 40+ e 50+ no mercado, a experiência como diferencial e a reinvenção profissional depois dos 50."],
     ["Você provavelmente já faz pitch. Só talvez não chame isso de pitch.", "nakyta-nara-lucca", "Fazer um pitch não é apenas apresentar uma startup, vender um produto ou participar de um hackathon. No dia a dia profissional, estamos constantemente apresentando ideias, projetos, soluções, nossas competências e muitas vezes precisamos fazer isso em poucos minutos. Nesta palestra, vamos entender o que caracteriza um bom pitch, como selecionar as informações mais relevantes e como organizá-las de acordo com o público e o objetivo da conversa. Também vamos discutir como comunicar valor, gerar interesse e tornar uma mensagem mais clara, objetiva e convincente."],
     ["Infiltradas em Tech: mulheres que encontraram seu espaço além do código", ["amanda-araujo-duaibs", "anna-beatriz-callejon", "cristiane-cursino-santos", "nakyta-nara-lucca"], "Será que para trabalhar com tecnologia é preciso ser desenvolvedora? Mulheres com caminhos diferentes e uma mesma área: dados, agilidade, comunidade e tecnologia se encontram em uma conversa sobre carreira, barreiras e oportunidades para quem nem sempre começou, ou atua, diretamente no código.\nCom base nas próprias experiências e nas histórias de pioneiras como Ada Lovelace e Florence Nightingale, discutimos como mulheres ocuparam espaços de inovação mesmo quando eles não pareciam feitos para elas. Uma conversa sobre entrar, permanecer e construir espaço em tech, mesmo fora do estereótipo."],
     ["Marketing digital para pequenos empreendedores", "bianca-bordon-weiller", "Como divulgar seu negócio de forma autêntica e eficiente. Uma palestra sobre marketing para quem tem poucos recursos: posicionamento, conteúdo e divulgação acessível para atrair clientes e fortalecer sua marca."],
-    ["2035: Você Contrataria um Humano?", "irina-bezzan-miquelin", "Imagine um processo seletivo em 2035: de um lado, um profissional humano com anos de experiência; do outro, um agente de IA disponível 24 horas, capaz de executar tarefas complexas e aprender continuamente. Quem você escolheria?\nCom uma abordagem futurista e provocativa, a palestra discute a evolução do recrutamento, o impacto dos agentes autônomos nas profissões de tecnologia, os desafios da formação de talentos e as competências humanas que podem ficar ainda mais valiosas, a partir da visão de uma liderança de RH em uma HR Tech.\nO público pode esperar cenários distópicos, dilemas éticos e uma pergunta desconfortável: se a IA executa cada vez mais atividades, por que uma empresa contrataria você?"],
+    null,
     ["A Promessa da IA", "ana-paula-rodrigues", "A IA chegou prometendo automatizar tarefas, aumentar a produtividade e nos devolver tempo. Mas estamos mesmo trabalhando menos ou só encontrando novas formas de trabalhar mais? A partir de pesquisas recentes sobre o impacto da IA na rotina de profissionais de tecnologia, a palestra explora o paradoxo da produtividade: quanto mais eficientes, maiores as expectativas, as demandas e a dificuldade de desconectar.\nDe forma prática e baseada em evidências, discute hiperconectividade, sobrecarga cognitiva e excesso de trabalho, e apresenta estratégias para estabelecer limites, preservar a atenção, descansar melhor e usar a IA de forma mais consciente."],
   ].map(lineupTalk),
   cloudsec: [
