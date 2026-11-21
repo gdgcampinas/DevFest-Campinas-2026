@@ -8,7 +8,7 @@
  *           pra direita, mostra a fênix e esconde o logo por inteiro, em vez de deixá-lo cortado pela metade), por forma de tela ("ultrawide", "wide", "standard", "tall"; `default` vale pras que faltarem): "x% y%"
  * As formas vêm de features/mural-stage.js (data-shape do palco). Arquivos em assets/img/mural-art-*.webp.
  */
-const MURAL_ARTS_VERSION = 1;
+const MURAL_ARTS_VERSION = 2;
 const muralArtFile = name => `assets/img/mural-art-${name}.webp?v=${MURAL_ARTS_VERSION}`;
 
 const MURAL_ARTS = {
