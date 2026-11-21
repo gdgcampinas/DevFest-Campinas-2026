@@ -17,8 +17,8 @@ function anniversarySealMarkup({ years, firstDevFest, eventYear, text }) {
     <circle cx="100" cy="100" r="80" fill="#0b0d18" stroke="#fff3c4" stroke-width="1.5"/>
     <path d="M46.3 69 A62 62 0 0 1 153.7 69" fill="none" stroke="#4285f4" stroke-width="20"/>
     <path d="M46.3 131 A62 62 0 0 0 153.7 131" fill="none" stroke="#ea4335" stroke-width="20"/>
-    <text font-size="10" font-weight="700" fill="#fff" letter-spacing="1.5" text-anchor="middle"><textPath href="#sealTop" startOffset="50%">${escapeHtml(text.top)}</textPath></text>
-    <text font-size="10" font-weight="700" fill="#fff" letter-spacing="2" text-anchor="middle"><textPath href="#sealBottom" startOffset="50%">${escapeHtml(`${firstDevFest} · ${eventYear}`)}</textPath></text>
+    <text font-size="9" font-weight="700" fill="#fff" letter-spacing=".8" text-anchor="middle"><textPath href="#sealTop" startOffset="50%">${escapeHtml(text.top)}</textPath></text>
+    <text font-size="9" font-weight="700" fill="#fff" letter-spacing="1.6" text-anchor="middle"><textPath href="#sealBottom" startOffset="50%">${escapeHtml(`${firstDevFest} · ${eventYear}`)}</textPath></text>
     <g fill="#34a853">${leaves}</g>
     <text x="100" y="116" font-size="56" font-weight="800" fill="#fbbc04" stroke="#fff3c4" stroke-width="1" text-anchor="middle">${escapeHtml(years.devfest)}</text>
     <text x="100" y="128" font-size="9" font-weight="700" fill="#fff" letter-spacing="3" text-anchor="middle">${escapeHtml(text.unit)}</text>
