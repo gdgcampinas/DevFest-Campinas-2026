@@ -28,7 +28,8 @@ test("DEV ou `public: true`: o local da PUC entra no EVENT, confirmado, com os l
     assert.equal(event.entrance, "Entrada pelo portão 2");
     assert.equal(site.get("venueAccessLine")(event), "Prédio H-02 · Entrada pelo portão 2");
     assert.match(event.address, /^Av\. Dom Humberto Mozzoni, 120-160, Parque dos Jacarandás/, "o endereço escrito não repete o nome do local");
-    assert.match(event.mapQuery, /^PUC Campinas - Campus I, Av\./, "o mapa procura nome + rua");
+    assert.equal(event.mapQuery, "Av. Dom Humberto Mozzoni, 120, Campinas, SP", "o mapa procura só o endereço da rua com um número: com o nome do campus ou a faixa 120-160 o Google não acha o pino");
+    assert.ok(!event.mapQuery.includes("120-160") && !/Campus/.test(event.mapQuery));
     assert.equal(event.mapZoom, 16);
     assert.equal(event.venueConfirmed, true);
     assert.equal(event.venueLinks.map(link => link.id).join(), "map,about");

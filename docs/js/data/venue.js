@@ -9,7 +9,7 @@ const VENUE = {
   building: "Prédio H-02", // o prédio do evento
   entrance: "Entrada pelo portão 2", // por onde entrar (aparece junto do endereço e no mapa)
   address: "Av. Dom Humberto Mozzoni, 120-160, Parque dos Jacarandás, Campinas, SP", // o que aparece escrito no site
-  mapQuery: "PUC Campinas - Campus I, Av. Dom Humberto Mozzoni, 120-160, Parque dos Jacarandás, Campinas, SP", // o que o Google Maps procura (nome + rua: o pino cai no campus)
+  mapQuery: "Av. Dom Humberto Mozzoni, 120, Campinas, SP", // o que o Google Maps procura: SÓ o endereço da rua com um número (a busca por nome do campus ou por faixa "120-160" não acha o pino e mostra a região sem marcador; este põe o pino na PUC, testado em 2026-11-21)
   mapZoom: 16,
   links: [
     { id: "map", label: "Mapa do campus (PDF)", url: "https://www.puc-campinas.edu.br/wp-content/uploads/2026/07/Mapa-PUC-Campus-I-26-2.pdf" },

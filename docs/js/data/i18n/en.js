@@ -558,7 +558,7 @@ I18N_DICTIONARIES.en = {
     "Local a definir": "Venue to be announced",
     "PUC-Campinas, Campus I": "PUC-Campinas, Campus I",
     "Av. Dom Humberto Mozzoni, 120-160, Parque dos Jacarandás, Campinas, SP": "Av. Dom Humberto Mozzoni, 120-160, Parque dos Jacarandás, Campinas, SP",
-    "PUC Campinas - Campus I, Av. Dom Humberto Mozzoni, 120-160, Parque dos Jacarandás, Campinas, SP": "PUC Campinas - Campus I, Av. Dom Humberto Mozzoni, 120-160, Parque dos Jacarandás, Campinas, SP",
+    "Av. Dom Humberto Mozzoni, 120, Campinas, SP": "Av. Dom Humberto Mozzoni, 120, Campinas, SP",
     "INGRESSOS ABERTOS": "TICKETS ON SALE",
     "Masculina": "Men's",
     "Feminina": "Women's",
