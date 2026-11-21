@@ -7,6 +7,7 @@
  *   ?tela=1920x1080  ?proporcao=3:1  ?margem=2   simulam o telão e a margem segura (features/mural-stage.js)
  *   ?videos=<endereço>                            troca de onde vêm os clipes de vídeo (teste local); sem isso vale <intermediário>/media/
  *   ?cenas=agora,album-2025                          só essas cenas, na ordem pedida
+ *   ?logos=1                                      ensaia o logo dos colchetes do GDG no rodapé (TELAO_FOOTER_CONFIG) antes de liberar
  *   ?selo=1                                       ensaia o selo redondo de aniversário (ANNIVERSARY_CONFIG.telaoSeal) antes de liberar
  *   ?diag=1                                       painel de saúde (cena, falhas, rede, fontes, recargas)
  *   ?demo=AAAA-MM-DDTHH:MM | ?ensaio=HH:MM       os mesmos modos de teste do resto do site (app.js); `?lineup=` NÃO vale no telão (só produção)
@@ -207,7 +208,8 @@ function initMural() {
   });
 
   // ---------- rodapé, painel de diagnóstico e partida ----------
-  footerEl.innerHTML = muralFooterMarkup({ logoSrc, name: title });
+  const showBrackets = params.get("logos") === "1" || telaoFooterConfigRepository.getAll().bracketsPublic; // os colchetes do GDG no rodapé: ensaio por ?logos=1 até liberar
+  footerEl.innerHTML = muralFooterMarkup({ logoSrc, name: title, bracketsSrc: showBrackets ? brandRepository.getAll().brackets : "" });
   scheduleEvery(schedule, config.clockEveryMs, () => {
     updateMuralFooter(footerEl, { time: formatEventTime(clock(), EVENT.timezone), online: network.state().online });
     if (diagOn) renderDiag();

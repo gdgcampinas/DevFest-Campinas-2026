@@ -1,6 +1,7 @@
-/** Moldura fixa do mural: rodapé com a marca, o aviso de "sem internet" (só quando precisa) e o relógio do evento. */
-function muralFooterMarkup({ logoSrc, name }) {
-  return `<img class="mf-logo" src="${escapeHtml(logoSrc)}" alt=""><span class="mf-name">${escapeHtml(name)}</span><span class="mf-status" data-status hidden>Sem internet, mostrando o que já temos</span><span class="mf-clock" data-clock></span>`;
+/** Moldura fixa do mural: rodapé com a marca (o logo do GDG Campinas e, com `bracketsSrc`, o logo dos colchetes do Google Developer Groups depois de um traço), o aviso de "sem internet" (só quando precisa) e o relógio do evento. */
+function muralFooterMarkup({ logoSrc, name, bracketsSrc = "" }) {
+  const brackets = bracketsSrc ? `<span class="mf-sep" aria-hidden="true"></span><img class="mf-brackets" src="${escapeHtml(bracketsSrc)}" alt="Google Developer Groups">` : "";
+  return `<img class="mf-logo" src="${escapeHtml(logoSrc)}" alt="">${brackets}<span class="mf-name">${escapeHtml(name)}</span><span class="mf-status" data-status hidden>Sem internet, mostrando o que já temos</span><span class="mf-clock" data-clock></span>`;
 }
 
 function updateMuralFooter(footerEl, { time, online }) {

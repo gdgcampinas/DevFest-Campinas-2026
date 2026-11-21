@@ -50,6 +50,8 @@ html.kiosk,html.kiosk *{cursor:none !important}
   border-top:calc(var(--u) * .2) solid oklch(30% .02 260);font:600 calc(var(--u) * 2) var(--font-body);color:var(--muted);
 }
 .mf-logo{height:calc(var(--u) * 3.2);width:auto}
+.mf-brackets{height:calc(var(--u) * 3.8);width:auto;flex:none}
+.mf-sep{flex:none;width:calc(var(--u) * .2);height:calc(var(--u) * 2.8);background:oklch(38% .02 260)}
 .mf-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mf-status{padding:calc(var(--u) * .4) calc(var(--u) * 1.4);border-radius:99px;background:oklch(35% .12 27);color:#fff;font-size:calc(var(--u) * 1.7)}
 .mf-status[hidden]{display:none}
