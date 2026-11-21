@@ -498,3 +498,16 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .mural-stage[data-shape="tall"] .ms-history-marco::after{background:linear-gradient(0deg,oklch(8% .01 260 / .94) 0%,oklch(8% .01 260 / .75) 45%,transparent 75%)}
 .mural-stage[data-shape="tall"] .ms-history-badge{top:18%;right:50%;transform:translate(50%,0)}
 .mural-stage[data-shape="tall"] .ms-history-tile{width:calc((100% - var(--gap)) / 2);height:calc((100% - (var(--rows-tall) - 1) * var(--gap)) / var(--rows-tall))}
+
+/* selo redondo "10 anos de DevFest" no canto de todas as cenas, menos vídeo e emergência (features/anniversary-seal.js): entra girando, pulsa o brilho e passa um reflexo de tempos em tempos */
+.mural-stage{--seal-w:calc(var(--u) * 13)}
+.mural-seal{position:absolute;right:var(--m);top:var(--m);width:var(--seal-w);aspect-ratio:1;z-index:30;pointer-events:none}
+.mural-stage[data-seal] :is(.ms-head,.ms-history-top){padding-right:calc(var(--seal-w) + var(--u) * 1.5)} /* o selo ocupa o canto: os cabeçalhos das cenas deixam o espaço dele */
+.mural-seal[hidden]{display:none}
+.mural-seal.is-in{animation:ms-seal-in 1.1s cubic-bezier(.2,1.25,.4,1) both}
+.mural-seal .seal-svg{display:block;width:100%;height:100%;overflow:visible;animation:ms-seal-glow 4.5s ease-in-out infinite}
+.mural-seal .seal-shine{transform:skewX(-20deg);animation:ms-seal-shine 9s ease-in-out infinite}
+@keyframes ms-seal-in{from{opacity:0;transform:rotate(-140deg) scale(.3)}to{opacity:1;transform:none}}
+@keyframes ms-seal-glow{0%,100%{filter:drop-shadow(0 0 calc(var(--u) * .5) oklch(82% .17 85 / .35))}50%{filter:drop-shadow(0 0 calc(var(--u) * 1.6) oklch(82% .17 85 / .8))}}
+@keyframes ms-seal-shine{0%,65%{transform:skewX(-20deg) translateX(0)}100%{transform:skewX(-20deg) translateX(330px)}}
+.mural-stage[data-shape="tall"]{--seal-w:calc(var(--u) * 17)}

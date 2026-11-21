@@ -7,6 +7,7 @@
  *   ?tela=1920x1080  ?proporcao=3:1  ?margem=2   simulam o telão e a margem segura (features/mural-stage.js)
  *   ?videos=<endereço>                            troca de onde vêm os clipes de vídeo (teste local); sem isso vale <intermediário>/media/
  *   ?cenas=agora,album-2025                          só essas cenas, na ordem pedida
+ *   ?selo=1                                       ensaia o selo redondo de aniversário (ANNIVERSARY_CONFIG.telaoSeal) antes de liberar
  *   ?diag=1                                       painel de saúde (cena, falhas, rede, fontes, recargas)
  *   ?demo=AAAA-MM-DDTHH:MM | ?ensaio=HH:MM       os mesmos modos de teste do resto do site (app.js); `?lineup=` NÃO vale no telão (só produção)
  */
@@ -133,6 +134,13 @@ function initMural() {
     reserve: createReserveScene({ logoSrc, title, subtitle: eventDateLabel(SCHEDULE, EVENT.timezone), ...grid }),
   };
 
+  // ---------- selo de aniversário (canto de todas as cenas, menos vídeo e emergência; só com `ANNIVERSARY_CONFIG.telaoSeal.public` ou `?selo=1` no ensaio) ----------
+  const sealConfig = anniversaryConfigRepository.getAll();
+  const seal = initAnniversarySeal(document.getElementById("muralSeal"), {
+    config: params.get("selo") === "1" ? { ...sealConfig, telaoSeal: { ...sealConfig.telaoSeal, public: true } } : sealConfig,
+    text: anniversaryTextsRepository.getAll(), eventYear: Number(EVENT.date.slice(0, 4)),
+  });
+
   // ---------- motor ----------
   const mural = createMural({
     contentEl, registry, config, schedule, nowMs, ledger,
@@ -146,7 +154,7 @@ function initMural() {
       return { now: clock(), reveal, phase: state.phase, moment: state.activeSlot?.moment ?? null, live, network: network.state() };
     },
     onBoundary: () => watchdog.check({ atBoundary: true }).action === "reload",
-    onSceneChange: () => contentEl.querySelector('[data-scene="boot"]')?.remove(),
+    onSceneChange: ({ scene }) => { contentEl.querySelector('[data-scene="boot"]')?.remove(); seal.show(scene); },
     onFailure: (scene, error) => console.warn(`[mural] cena ${scene.id} falhou:`, error),
   });
 
