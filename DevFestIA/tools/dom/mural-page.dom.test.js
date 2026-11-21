@@ -16,6 +16,8 @@ const HTML = fs.readFileSync(path.join(DOCS, "telao.html"), "utf8");
 /** Os scripts COMUNS do telao.html, na ordem (os módulos do Firebase e a biblioteca de QR do CDN entram como substitutos; a partida da página fica por último). */
 const SCRIPTS = [...HTML.matchAll(/<script src="(js\/[^"?]+)[^"]*"/g)].map(match => match[1].replace("js/", "").replace("data/schedule.dev.js", "data/schedule.js")).filter(file => file !== "pages/mural.js");
 const PAGE = fs.readFileSync(path.join(DOCS, "js", "pages", "mural.js"), "utf8");
+/** Versão (?v=) das artes, lida do dado: um novo arquivo de arte sobe a versão e o teste acompanha, sem número fixo aqui. */
+const ART_VERSION = fs.readFileSync(path.join(DOCS, "js", "data", "mural-arts.js"), "utf8").match(/MURAL_ARTS_VERSION = (\d+)/)[1];
 
 const BODY = `<!doctype html><html><body><div class="mural-backdrop"><div class="mural-stage" id="muralStage"><main id="muralContent"></main><footer id="muralFooter"></footer><div class="mural-seal" id="muralSeal" hidden></div><aside id="muralDiag" hidden></aside></div></div></body></html>`;
 
@@ -102,7 +104,7 @@ test("telão: com `alwaysReveal` ligado (só pra ensaio) o line-up aparece mesmo
 test("a arte do convite abre o mural ANTES do evento e não entra durante ele (a reserva segura a tela)", async () => {
   const before = boot({ search: "cenas=abertura", demo: "2026-11-20T09:10" });
   await waitFor(() => before.active() === "abertura");
-  assert.equal(before.document.querySelector("img.ms-art-img").getAttribute("src"), "assets/img/mural-art-invite.webp?v=1");
+  assert.equal(before.document.querySelector("img.ms-art-img").getAttribute("src"), `assets/img/mural-art-invite.webp?v=${ART_VERSION}`);
   before.site.window.close();
   const during = boot({ search: "cenas=abertura" });
   await waitFor(() => during.active() === "reserva");
@@ -113,7 +115,7 @@ test("a arte do convite abre o mural ANTES do evento e não entra durante ele (a
 test("selfie na página: arte do pôr do sol de fundo, sem frase de apoio", async () => {
   const page = boot({ search: "cenas=selfie" });
   await waitFor(() => page.active() === "selfie");
-  assert.equal(page.document.querySelector(".ms-art-img").getAttribute("src"), "assets/img/mural-art-sunset.webp?v=1");
+  assert.equal(page.document.querySelector(".ms-art-img").getAttribute("src"), `assets/img/mural-art-sunset.webp?v=${ART_VERSION}`);
   assert.ok(!/Tire sua foto/.test(page.activeText()));
   page.site.window.close();
 });
