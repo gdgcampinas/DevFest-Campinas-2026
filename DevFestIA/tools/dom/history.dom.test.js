@@ -23,13 +23,13 @@ const mosaic = g("historyMosaicRepository").getAll();
 const anniversary = g("anniversaryConfigRepository").getAll();
 const MURAL_SKIP = g("MURAL_SKIP");
 const createRotation = () => { const cursors = new Map(); return { next(key, count) { const index = (cursors.get(key) ?? 0) % count; cursors.set(key, (index + 1) % count); return index; } }; };
-const scene = (extra = {}) => g("createHistoryScene")({ photos, mosaic, text, years: { community: 13, devfest: 10 }, founded: 2013, perPage: 8, rotation: createRotation(), preload: async () => {}, ...extra });
+const scene = (extra = {}) => g("createHistoryScene")({ photos, mosaic, text, years: { community: 17, devfest: 10 }, founded: 2009, perPage: 8, rotation: createRotation(), preload: async () => {}, ...extra });
 const mount = () => document.createElement("section");
 const init = (el, extra = {}) => g("initHistory")(el, { config, text, milestones, mosaic, photos, anniversary, eventYear: 2026, ...extra });
 
 test("os dados apontam pra fotos que existem: arquivo no disco, marco e mosaico com id válido, mínimo de fotos no mosaico", () => {
   photos.getAll().forEach(photo => assert.ok(fs.existsSync(path.join(DOCS, photo.file)), photo.file));
-  milestones.forEach(milestone => assert.ok(photos.getById(milestone.photo), `${milestone.id}: foto ${milestone.photo} não existe`));
+  milestones.forEach(milestone => assert.ok(milestone.photo ? photos.getById(milestone.photo) : milestone.badge, `${milestone.id}: precisa de foto que existe ou de badge`));
   mosaic.forEach(id => assert.ok(photos.getById(id), `mosaico: foto ${id} não existe`));
   assert.ok(mosaic.length >= 4, "o telão nunca mostra uma foto sozinha");
   assert.equal(new Set(milestones.map(item => item.id)).size, milestones.length, "ids de marco únicos");
@@ -55,9 +55,9 @@ test("a linha do tempo mostra um cartão por marco com foto, ano e os números d
   init(el, { devMode: true });
   const cards = el.querySelectorAll(".history-milestone");
   assert.equal(cards.length, milestones.length);
-  assert.deepEqual(Array.from(cards, card => card.querySelector(".history-year").textContent).slice(0, 5), ["2013", "2014", "2016", "2017", "2018"]);
-  assert.match(textOf(el.querySelector(".history-head h2")), /Nossa história: 13 anos de comunidade/);
-  assert.deepEqual(Array.from(el.querySelectorAll(".history-head h2 b"), b => b.textContent), ["13"]);
+  assert.deepEqual(Array.from(cards, card => card.querySelector(".history-year").textContent).slice(0, 5), ["2009", "2013", "2014", "2016", "2017"]);
+  assert.match(textOf(el.querySelector(".history-head h2")), /Nossa história: 17 anos de comunidade/);
+  assert.deepEqual(Array.from(el.querySelectorAll(".history-head h2 b"), b => b.textContent), ["17"]);
   assert.match(textOf(el.querySelector('[data-milestone="hoje"] h3')), /10 anos de DevFest/);
   assert.equal(el.querySelectorAll(".history-mosaic img").length, mosaic.length, "todas as fotos estão na página (as extras dentro de 'Ver todas')");
   assert.equal(el.querySelectorAll(":scope > .history-mosaic figure").length, config.galleryVisible, "só as primeiras aparecem direto");
@@ -67,6 +67,20 @@ test("a linha do tempo mostra um cartão por marco com foto, ano e os números d
   assert.match(textOf(more.querySelector(".history-more-open")), new RegExp(`Ver todas as ${mosaic.length} fotos`));
   assert.ok(Array.from(el.querySelectorAll("img")).every(img => img.getAttribute("alt")), "toda foto tem texto alternativo");
   assert.ok(!el.innerHTML.includes("{") && !el.innerHTML.includes("undefined"));
+});
+
+test("a história começa em 2009 com o GTUG: marco sem foto mostra o selo de texto no lugar dela e nenhum texto diz 2013 como fundação", () => {
+  const el = mount();
+  init(el, { devMode: true });
+  const first = el.querySelector('[data-milestone="fundacao"]');
+  assert.equal(first.querySelector(".history-year").textContent, "2009");
+  assert.match(textOf(first.querySelector("h3")), /GTUG Campinas/);
+  assert.equal(first.querySelector("img"), null, "sem foto até chegarem as do arquivo");
+  assert.equal(first.querySelector(".history-badge").textContent, "GTUG");
+  assert.match(textOf(first.querySelector("p")), /julho de 2009/);
+  assert.equal(anniversary.communityFounded, 2009);
+  assert.match(textOf(el.querySelector(".history-kicker")), /Desde 2009/);
+  assert.ok(!/Nasce o GDG Campinas/.test(el.innerHTML));
 });
 
 test("a foto com crédito mostra a legenda 'Foto: nome' e as sem crédito não mostram nada", () => {
@@ -90,7 +104,7 @@ test("cena do telão: cada passada mostra uma página de fotos, pré-carrega só
   view.innerHTML = history.render(ready).markup;
   assert.equal(view.querySelectorAll(".ms-history-tile img").length, pageSize);
   assert.match(textOf(view.querySelector(".ms-title")), /10 anos de DevFest em Campinas/);
-  assert.match(textOf(view.querySelector(".ms-history-thanks")), /desde 2013/);
+  assert.match(textOf(view.querySelector(".ms-history-thanks")), /desde 2009/);
   const grid = view.querySelector(".ms-history-grid").getAttribute("style");
   assert.match(grid, new RegExp(`--cols:4;--rows:${Math.ceil(pageSize / 4)};--rows-tall:${Math.ceil(pageSize / 2)}`), "colunas e linhas pro CSS centrar a última linha");
 });
@@ -136,9 +150,9 @@ test("o cartão da home leva à página de história, com os anos em destaque, e
   assert.equal(teaser({ config: { ...config, public: false }, devMode: true }), true);
   const link = el.querySelector("a.history-teaser-card");
   assert.equal(link.getAttribute("href"), "historia.html");
-  assert.match(textOf(link), /Nossa história: 13 anos de comunidade/);
+  assert.match(textOf(link), /Nossa história: 17 anos de comunidade/);
   assert.match(textOf(link), /Conheça a nossa história/);
-  assert.deepEqual(Array.from(link.querySelectorAll("b"), b => b.textContent), ["13"]);
+  assert.deepEqual(Array.from(link.querySelectorAll("b"), b => b.textContent), ["17"]);
   assert.equal(teaser({ config: { ...config, public: true } }), true, "liberado vale pra todo mundo");
 });
 

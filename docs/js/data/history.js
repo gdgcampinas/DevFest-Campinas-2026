@@ -42,7 +42,8 @@ const HISTORY_PHOTOS = [
 ];
 
 const HISTORY_MILESTONES = [
-  { id: "fundacao", year: "2013", title: "Nasce o GDG Campinas", text: "A comunidade de desenvolvedores de Campinas começa a se encontrar.", photo: "gdg-2013-logo" },
+  { id: "fundacao", year: "2009", title: "Nasce o GTUG Campinas", text: "Em julho de 2009 o grupo e o domínio são registrados, e o Google confirma a criação do GTUG, o Google Technology User Group de Campinas, que depois virou GDG.", badge: "GTUG" },
+  { id: "logo", year: "2013", title: "O logo do GDG Campinas", text: "A comunidade publica o logo do GDG Campinas em 13 de janeiro de 2013.", photo: "gdg-2013-logo" },
   { id: "encontros", year: "2014", title: "Os primeiros encontros", text: "Pequenos encontros reúnem quem desenvolve em Campinas para aprender junto.", photo: "encontro-2014" },
   { id: "primeiro-devfest", year: "2016", title: "O primeiro DevFest", text: "O DevFest chega a Campinas e junta a comunidade num dia inteiro de tecnologia.", photo: "devfest-2016-palco" },
   { id: "devfest-2017", year: "2017", title: "#MakeConnections", text: "Trilhas, patrocinadores e salas cheias: o DevFest vira o encontro do ano.", photo: "devfest-2017-plateia-lotada" },
@@ -64,9 +65,9 @@ const HISTORY_TEXTS = {
   linkTitle: "Nossa história: {community} anos de comunidade",
   linkCta: "Conheça a nossa história →",
   soon: "A nossa história chega em breve.",
-  kicker: "Desde 2013",
+  kicker: "Desde 2009",
   title: "Nossa história: {community} anos de comunidade",
-  sub: "Do primeiro encontro ao DevFest de hoje.",
+  sub: "Do GTUG de 2009 ao DevFest de hoje.",
   mosaicTitle: "A comunidade em ação",
   showAll: "Ver todas as {n} fotos",
   showLess: "Ver menos fotos",

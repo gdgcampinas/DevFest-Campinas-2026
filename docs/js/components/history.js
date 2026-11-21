@@ -6,13 +6,19 @@ function historyCreditMarkup(photo, text) {
   return photo.credit ? `<small class="history-credit">${escapeHtml(text.photoBy.replace("{name}", photo.credit))}</small>` : "";
 }
 
-function historyMilestoneMarkup({ milestone, photo }, { years, text }) {
+/** A foto do marco; sem foto, o `badge` do marco (texto grande) ocupa o lugar dela. */
+function historyMilestoneMediaMarkup({ milestone, photo }, text) {
+  if (!photo) return `<div class="history-badge" aria-hidden="true">${escapeHtml(milestone.badge)}</div>`;
   return `
-    <li class="history-milestone" data-milestone="${escapeHtml(milestone.id)}">
       <figure>
         <img src="${escapeHtml(photo.file)}" alt="${escapeHtml(photo.alt)}" loading="lazy" decoding="async">
         ${historyCreditMarkup(photo, text)}
-      </figure>
+      </figure>`;
+}
+
+function historyMilestoneMarkup({ milestone, photo }, { years, text }) {
+  return `
+    <li class="history-milestone" data-milestone="${escapeHtml(milestone.id)}">${historyMilestoneMediaMarkup({ milestone, photo }, text)}
       <div class="history-text">
         <span class="history-year">${escapeHtml(milestone.year)}</span>
         <h3>${numberTemplateMarkup(milestone.title, years)}</h3>

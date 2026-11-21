@@ -1,12 +1,12 @@
 /**
- * Aniversário da comunidade (só dado, sem DOM): o selo "13 anos de GDG Campinas · 10 anos de DevFest" da página principal (features/anniversary.js).
+ * Aniversário da comunidade (só dado, sem DOM): o selo "17 anos de GDG Campinas · 10 anos de DevFest" da página principal (features/anniversary.js).
  * Os anos saem da data do evento (data/schedule.js, EVENT.date), então o selo se atualiza sozinho na próxima edição; aqui só moram os marcos.
  *   public            false = só no modo DEV até liberar (features/release-gate.js); true libera em produção
- *   communityFounded  ano em que o GDG Campinas nasceu (13/01/2013)  |  firstDevFest  ano do primeiro DevFest em Campinas (2016)
+ *   communityFounded  ano em que o GDG Campinas nasceu, ainda como GTUG (grupo registrado em 21/07/2009, por Douglas Kayama)  |  firstDevFest  ano do primeiro DevFest em Campinas (2016)
  */
 const ANNIVERSARY_CONFIG = {
   public: true, // liberado em PROD em 2026-11-20 (pedido do Renato); false volta a escondê-lo (só no modo DEV)
-  communityFounded: 2013,
+  communityFounded: 2009,
   firstDevFest: 2016,
 };
 

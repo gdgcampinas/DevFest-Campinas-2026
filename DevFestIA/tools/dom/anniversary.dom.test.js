@@ -15,9 +15,9 @@ const config = g("anniversaryConfigRepository").getAll();
 const text = g("anniversaryTextsRepository").getAll();
 const mount = () => document.createElement("div");
 
-test("os anos saem da data do evento: 2026 é 13 anos de GDG Campinas e 10 de DevFest", () => {
+test("os anos saem da data do evento: 2026 é 17 anos de GDG Campinas (desde 2009) e 10 de DevFest", () => {
   const years = g("anniversaryYears")({ eventYear: 2026, communityFounded: config.communityFounded, firstDevFest: config.firstDevFest });
-  assert.equal(years.community, 13);
+  assert.equal(years.community, 17);
   assert.equal(years.devfest, 10);
   assert.equal(g("anniversaryYears")({ eventYear: 2027, ...config }).devfest, 11, "o selo acompanha a próxima edição sozinho");
 });
@@ -38,11 +38,11 @@ test("liberado em PROD nos dados entregues; a regra: com `public` falso só o mo
 test("o selo diz os dois números e o texto escapado, sem sobra de {community} ou {devfest}", () => {
   const el = mount();
   g("initAnniversaryBadge")(el, { config: { ...config, public: true }, text, eventYear: 2026 });
-  assert.equal(textOf(el.querySelector(".anniversary-badge")), "13 anos de GDG Campinas · 10 anos de DevFest");
+  assert.equal(textOf(el.querySelector(".anniversary-badge")), "17 anos de GDG Campinas · 10 anos de DevFest");
   const link = el.querySelector("a.anniversary-badge");
   assert.ok(link, "o selo é um link");
   assert.equal(link.getAttribute("href"), "historia.html", "leva à página de história");
-  assert.deepEqual(Array.from(el.querySelectorAll(".anniversary-badge b"), number => number.textContent), ["13", "10"], "os números vêm em destaque");
+  assert.deepEqual(Array.from(el.querySelectorAll(".anniversary-badge b"), number => number.textContent), ["17", "10"], "os números vêm em destaque");
   assert.ok(!el.innerHTML.includes("{") && !el.innerHTML.includes("undefined"));
   assert.ok(el.querySelector(".anniversary-badge svg, .anniversary-badge .icon"), "ícone");
 });

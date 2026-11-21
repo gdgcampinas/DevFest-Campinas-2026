@@ -14,9 +14,10 @@
 .history-milestone:nth-child(4n+3){--milestone-color:var(--google-yellow)}
 .history-milestone:nth-child(4n+4){--milestone-color:var(--google-green)}
 .history-milestone::after{content:"";position:absolute;left:50%;top:50%;width:20px;height:20px;border-radius:50%;transform:translate(-50%,-50%);background:var(--milestone-color);box-shadow:0 0 0 6px var(--bg,#05060a),0 0 24px color-mix(in oklch,var(--milestone-color) 70%,transparent)}
-.history-milestone:nth-child(even) figure{order:2}
+.history-milestone:nth-child(even) figure,.history-milestone:nth-child(even) .history-badge{order:2}
 .history-milestone figure,.history-mosaic figure{margin:0;position:relative}
 .history-milestone figure{overflow:hidden;border-radius:18px;border:2px solid color-mix(in oklch,var(--milestone-color) 70%,transparent);aspect-ratio:16/10;background:#0b0d18;box-shadow:0 12px 40px rgb(0 0 0/.45)}
+.history-badge{display:grid;place-items:center;aspect-ratio:16/10;border-radius:18px;border:2px solid color-mix(in oklch,var(--milestone-color) 70%,transparent);background:linear-gradient(135deg,color-mix(in oklch,var(--milestone-color) 22%,#0b0d18),#0b0d18);box-shadow:0 12px 40px rgb(0 0 0/.45);font:800 clamp(2.4rem,9vw,5rem)/1 var(--font-display);letter-spacing:.06em;color:var(--milestone-color)}
 .history-milestone img{display:block;width:100%;height:100%;object-fit:cover}
 .history-text{display:flex;flex-direction:column;gap:6px}
 .history-year{font:800 clamp(2rem,5vw,3.2rem)/1 var(--font-display);color:var(--milestone-color)}
