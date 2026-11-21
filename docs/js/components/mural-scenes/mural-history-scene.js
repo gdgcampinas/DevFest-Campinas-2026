@@ -7,8 +7,12 @@
 function createHistoryScene({ photos, mosaic, text, years, founded, perPage = 8, rotation, preload, minPhotos = 4 }) {
   const all = mosaic.map(id => photos.getById(id)).filter(Boolean);
   const pageCount = Math.ceil(all.length / perPage);
-  const size = Math.ceil(all.length / (pageCount || 1)); // páginas equilibradas: a última nunca fica com 1 ou 2 fotos (que a regra do telão esconderia)
-  const pages = Array.from({ length: pageCount }, (_, index) => all.slice(index * size, (index + 1) * size));
+  const base = Math.floor(all.length / (pageCount || 1));
+  const bigPages = all.length - base * pageCount; // as primeiras `bigPages` páginas levam 1 foto a mais: páginas equilibradas, nenhuma fica com 1 ou 2 fotos (que a regra do telão esconderia)
+  const pages = Array.from({ length: pageCount }, (_, index) => {
+    const start = index * base + Math.min(index, bigPages);
+    return all.slice(start, start + base + (index < bigPages ? 1 : 0));
+  });
   return {
     async prepare() {
       if (!pages.length) return MURAL_SKIP;
