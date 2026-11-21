@@ -1,7 +1,7 @@
 /**
  * Feature: o selo de aniversário do cabeçalho de todas as páginas (leva a historia.html) ("13 anos de GDG Campinas · 10 anos de DevFest"). Tudo por parâmetro: `config` e `text`
  * (data/anniversary.js) e o ano do evento. Só aparece quando liberado (`config.public`, ou no modo DEV: features/release-gate.js).
- * O selo REDONDO (components/anniversary-seal.js) vem à esquerda da pílula quando `config.siteSeal` está liberado (ou no modo DEV).
+ * O selo REDONDO (components/anniversary-seal.js) fica ao lado do logo do GDG Campinas no topo (`showAnniversarySeal`) quando `config.siteSeal` está liberado (ou no modo DEV).
  * Dual: `anniversaryYears` é função pura e roda no Node (testes).
  */
 function anniversaryYears({ eventYear, communityFounded, firstDevFest }) {
@@ -11,13 +11,16 @@ function anniversaryYears({ eventYear, communityFounded, firstDevFest }) {
 function initAnniversaryBadge(mountEl, { config, text, eventYear, href, devMode = false }) {
   const years = anniversaryYears({ eventYear, ...config });
   const visible = isReleased(config, { devMode }) && years.community > 0 && years.devfest > 0;
-  const sealOn = visible && isReleased(config.siteSeal ?? {}, { devMode });
   mountEl.hidden = !visible;
-  mountEl.classList.toggle("has-seal", sealOn);
-  mountEl.innerHTML = visible ? anniversaryHeaderMarkup({
-    pillMarkup: anniversaryBadgeMarkup(text.badge, years, { href }), href,
-    sealMarkup: sealOn ? anniversarySealMarkup({ years, firstDevFest: config.firstDevFest, eventYear, text: text.seal }) : "",
-  }) : "";
+  mountEl.innerHTML = visible ? anniversaryBadgeMarkup(text.badge, years, { href }) : "";
+  return visible;
+}
+
+/** O selo REDONDO ao lado do logo do GDG Campinas, no topo de toda página (`into` = o #brand): link pra história, só com `config.siteSeal` liberado (ou no modo DEV). Devolve se apareceu. */
+function showAnniversarySeal({ into, config, text, eventYear, href, devMode = false }) {
+  const years = anniversaryYears({ eventYear, ...config });
+  const visible = Boolean(into) && isReleased(config.siteSeal ?? {}, { devMode }) && years.devfest > 0;
+  if (visible) into.insertAdjacentHTML("beforeend", anniversarySealLinkMarkup({ href, sealMarkup: anniversarySealMarkup({ years, firstDevFest: config.firstDevFest, eventYear, text: text.seal }) }));
   return visible;
 }
 

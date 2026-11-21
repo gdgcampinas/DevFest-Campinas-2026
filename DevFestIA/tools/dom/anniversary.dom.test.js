@@ -69,25 +69,30 @@ test("o selo vai em toda página: showAnniversaryBadge cria o espaço depois da 
   assert.equal(g("showAnniversaryBadge")({ after: null, config, text, eventYear: 2026 }), false, "sem cabeçalho não faz nada");
 });
 
-test("o selo REDONDO no site (opção B): à esquerda da pílula, na mesma linha, clicável pra história; liberado em PROD (com a chave desligada só o modo DEV) e a pílula com o '17 anos' continua", () => {
+test("o selo REDONDO no site fica ao lado do logo do GDG Campinas, no topo, e leva à história; liberado em PROD (com a chave desligada só o modo DEV); a pílula mantém os 17 anos", () => {
   const released = { ...config, public: true };
-  const el = mount();
+  const brand = () => { const el = document.createElement("div"); el.id = "brand"; el.innerHTML = '<img class="brand-logo" alt="">'; return el; };
+  const show = (el, extra) => g("showAnniversarySeal")({ into: el, config: released, text, eventYear: 2026, href: "historia.html", ...extra });
   assert.equal(config.siteSeal.public, true, "liberado em produção");
-  const hiddenSeal = { ...released, siteSeal: { public: false } };
-  g("initAnniversaryBadge")(el, { config: hiddenSeal, text, eventYear: 2026, devMode: false });
-  assert.equal(el.querySelector(".anniversary-seal"), null, "com a chave desligada, em produção só a pílula");
-  assert.equal(el.classList.contains("has-seal"), false);
-  g("initAnniversaryBadge")(el, { config: hiddenSeal, text, eventYear: 2026, devMode: true });
+  const off = brand();
+  assert.equal(show(off, { config: { ...released, siteSeal: { public: false } }, devMode: false }), false);
+  assert.equal(off.querySelector(".anniversary-seal"), null, "com a chave desligada, em produção nada");
+  const dev = brand();
+  assert.equal(show(dev, { config: { ...released, siteSeal: { public: false } }, devMode: true }), true, "no modo DEV aparece");
+  const el = brand();
+  assert.equal(show(el, {}), true);
   const seal = el.querySelector("a.anniversary-seal");
-  assert.ok(seal, "no modo DEV o selo redondo aparece");
   assert.equal(seal.getAttribute("href"), "historia.html", "leva à história");
   assert.equal(seal.querySelector("svg").getAttribute("aria-label"), "10 anos de DevFest em Campinas");
-  assert.equal(seal.nextElementSibling.className, "anniversary-badge", "o selo vem ANTES da pílula, na mesma linha");
-  assert.equal(textOf(el.querySelector(".anniversary-badge")), "17 anos de GDG Campinas · 10 anos de DevFest", "a pílula mantém o texto dos 17 anos");
-  assert.ok(el.classList.contains("has-seal"));
-  g("initAnniversaryBadge")(el, { config: { ...released, siteSeal: { public: true } }, text, eventYear: 2026, devMode: false });
-  assert.ok(el.querySelector(".anniversary-seal"), "liberado vale pra todo mundo");
-  assert.equal(g("anniversaryHeaderMarkup")({ pillMarkup: "<b>x</b>" }), "<b>x</b>", "sem selo é só a pílula");
+  assert.equal(seal.previousElementSibling.className, "brand-logo", "o selo vem logo DEPOIS do logo do GDG, na mesma linha do topo");
+  assert.equal(show(brand(), { eventYear: 2016 }), false, "em 2016 o DevFest tem 0 anos");
+  assert.equal(show(null, {}), false, "sem o espaço do logo não faz nada");
+  const pill = mount();
+  g("initAnniversaryBadge")(pill, { config: released, text, eventYear: 2026 });
+  assert.equal(textOf(pill.querySelector(".anniversary-badge")), "17 anos de GDG Campinas · 10 anos de DevFest", "a pílula mantém o texto dos 17 anos");
+  assert.equal(pill.querySelector(".anniversary-seal"), null, "o selo não repete dentro da pílula");
+  const app = require("node:fs").readFileSync(require("node:path").join(__dirname, "..", "..", "..", "docs", "js", "app.js"), "utf8");
+  assert.match(app, /showAnniversarySeal\(\{ into: document\.getElementById\("brand"\)/);
 });
 
 test("o texto do selo cabe na faixa: o arco de cima e o de baixo têm mais espaço do que o texto (letras pequenas o bastante pra não cortar o começo)", () => {
