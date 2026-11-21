@@ -7,7 +7,7 @@
  */
 const HISTORY_CONFIG = {
   public: true, // liberada em PROD em 2026-11-20 (pedido do Renato); false volta a esconder tudo (só no modo DEV)
-  archivePublic: false, // as fotos novas dos álbuns 2016 a 2019 (marcos, galeria e telão): false = só no modo DEV; true libera em PROD
+  archivePublic: true, // liberado em PROD em 2026-11-21 (pedido do Renato): as fotos dos álbuns 2016 a 2019 (marcos, galeria e telão); false volta a escondê-las (só no modo DEV)
   galleryVisible: 12,
   scenePerPage: 8,
 };

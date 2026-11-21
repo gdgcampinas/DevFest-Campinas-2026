@@ -83,11 +83,11 @@ test("a história começa em 2009 com o GTUG: marco sem foto mostra o selo de te
   assert.ok(!/Nasce o GDG Campinas/.test(el.innerHTML));
 });
 
-test("o acervo novo (archive: true) só aparece no modo DEV até `archivePublic`: marcos, galeria e filtro seguem a mesma chave", () => {
+test("o acervo (archive: true) está liberado em PROD; a regra: com `archivePublic` falso só o modo DEV vê, e marcos, galeria e filtro seguem a mesma chave", () => {
   const archiveIds = mosaic.filter(id => photos.getById(id).archive);
   assert.ok(archiveIds.length >= 30, "as fotos dos álbuns 2016 a 2019 entraram");
-  assert.equal(config.archivePublic, false, "o acervo nasce só em DEV");
-  const publicConfig = { ...config, public: true };
+  assert.equal(config.archivePublic, true, "liberado em produção");
+  const publicConfig = { ...config, public: true, archivePublic: false };
   const shown = (extra) => { const el = mount(); init(el, { config: publicConfig, ...extra }); return el; };
   const hidden = shown({ devMode: false });
   assert.equal(hidden.querySelectorAll(".history-mosaic img").length, mosaic.length - archiveIds.length, "em PROD só as fotos antigas");
