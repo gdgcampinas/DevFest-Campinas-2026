@@ -516,6 +516,7 @@ I18N_DICTIONARIES.en = {
     "Em julho de 2009 o grupo e o domínio são registrados, e o Google confirma a criação do GTUG, o Google Technology User Group de Campinas, que depois virou GDG.": "In July 2009 the group and the domain are registered, and Google confirms the creation of GTUG, the Google Technology User Group of Campinas, which later became GDG.",
     "O logo do GDG Campinas": "The GDG Campinas logo",
     "Filtrar as fotos": "Filter the photos",
+    "Encontro na Bosch": "Meetup at Bosch",
     "Foto ampliada": "Enlarged photo",
     "Foto anterior": "Previous photo",
     "Próxima foto": "Next photo",

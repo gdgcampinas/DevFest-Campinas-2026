@@ -128,6 +128,20 @@ test("o telão passa pelo acervo só quando liberado (a página do telão ignora
   assert.equal(g("historyReleased")({}, false), true);
 });
 
+test("a galeria sai em ordem cronológica: começa no DevFest 2016, os anos nunca voltam, dentro do ano vale a data do evento e foto sem ano fica no fim", () => {
+  const dated = mosaic.map(id => photos.getById(id)).filter(photo => photo.year);
+  assert.equal(`${dated[0].event} ${dated[0].year}`, "DevFest 2016", "começa em 2016");
+  assert.deepEqual(dated.map(photo => photo.year), dated.map(photo => photo.year).sort(), "os anos só sobem");
+  const firstUndated = mosaic.findIndex(id => !photos.getById(id).year);
+  assert.ok(mosaic.slice(firstUndated).every(id => !photos.getById(id).year), "sem ano, tudo no fim");
+  const order = [];
+  dated.forEach(photo => { const key = `${photo.event} ${photo.year}`; if (order[order.length - 1] !== key) order.push(key); });
+  const expected = Object.keys(g("HISTORY_EVENT_DATES")).filter(key => order.includes(key));
+  assert.deepEqual(order.filter(key => expected.includes(key)), expected, "um bloco por evento, na ordem das datas");
+  const ids = g("historyChronologicalIds")(["undated", "b", "a"], { getById: id => ({ undated: {}, a: { year: 2017, event: "UX Day" }, b: { year: 2016, event: "DevFest" } })[id] });
+  assert.deepEqual(Array.from(ids), ["b", "a", "undated"]);
+});
+
 test("a foto com crédito mostra a legenda 'Foto: nome' e as sem crédito não mostram nada", () => {
   const el = mount();
   init(el, { devMode: true });

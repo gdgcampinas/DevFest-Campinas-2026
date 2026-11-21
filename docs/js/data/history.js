@@ -6,6 +6,7 @@
  *   milestones  os marcos da linha do tempo, em ordem: `year` (o rótulo do cartão), `title`, `text` e `photo` (id de `photos`). Os números do selo de aniversário entram por
  *               {community} e {devfest} (anos de GDG Campinas e de DevFest, de data/anniversary.js), então o texto acompanha a próxima edição sozinho
  *   archive     foto/marco com `archive: true` só aparece no modo DEV até `HISTORY_CONFIG.archivePublic` (historyReleased); `event`, `year` e `kind` (devfest | outros) alimentam a legenda e o filtro
+ *   mosaic      a galeria sai em ORDEM CRONOLÓGICA (historyChronologicalIds + HISTORY_EVENT_DATES): do DevFest 2016 pra frente, foto sem ano no fim; a ordem da lista só desempata
  *   mosaic      ids de `photos` da galeria "A comunidade em ação" (home e telão); `HISTORY_CONFIG.galleryVisible` = quantas aparecem na página antes do "Ver todas as fotos"; `HISTORY_CONFIG.scenePerPage` = fotos por passada no telão
  */
 const HISTORY_PHOTOS = [
@@ -38,7 +39,7 @@ const HISTORY_PHOTOS = [
   { id: "devfest-2017-palestra-patrocinadores", file: "assets/img/historia/devfest-2017-palestra-patrocinadores.webp", alt: "Palestra diante do painel de patrocinadores e do logo GDG DevFest Campinas", event: "DevFest", year: 2017, kind: "devfest" },
   { id: "devfest-palestrante-banner", file: "assets/img/historia/devfest-palestrante-banner.webp", alt: "Palestrante diante do banner do GDG Campinas", event: "DevFest", kind: "devfest" },
   { id: "datafest-2017-auditorio", file: "assets/img/historia/datafest-2017-auditorio.webp", alt: "Auditório cheio no DataFest 2017, evento da comunidade GDG Campinas", event: "DataFest", year: 2017, kind: "outros" },
-  { id: "comunidade-bosch-palestra", file: "assets/img/historia/comunidade-bosch-palestra.webp", alt: "Palestrante diante do banner do GDG Campinas e da plateia num encontro na Bosch, em 2026" },
+  { id: "comunidade-bosch-palestra", file: "assets/img/historia/comunidade-bosch-palestra.webp", alt: "Palestrante diante do banner do GDG Campinas e da plateia num encontro na Bosch, em 2026", event: "Encontro na Bosch", year: 2026 },
   { id: "comunidade-2026", file: "assets/img/historia/comunidade-2026.webp", alt: "Centenas de pessoas posando juntas num encontro do GDG Campinas na Bosch, em agosto de 2026" },
   // Acervo (álbuns da comunidade 2016 a 2019, escolhidos em 2026-11-21): `archive: true` = só no modo DEV até `HISTORY_CONFIG.archivePublic`
   { id: "devfest-2016-auditorio-cheio", file: "assets/img/historia/devfest-2016-auditorio-cheio.webp", alt: "Auditório cheio de gente no GDG DevFest Campinas 2016", event: "DevFest", year: 2016, kind: "devfest", archive: true },
@@ -184,7 +185,26 @@ const HISTORY_TEXTS = {
 /** Foto ou marco do acervo (`archive: true`) só entra quando o acervo está liberado (`showArchive`); o resto é sempre público. Usado pela página, pela home e pelo telão. */
 const historyReleased = (item, showArchive) => !item.archive || showArchive;
 
+/**
+ * Quando cada evento aconteceu (mês), pra galeria ficar em ordem cronológica: a chave é "evento ano" da foto. Dia a dia só importa a ordem; o mês do DataFest 2017 é aproximado (entre o Quality Fest e o DevFest).
+ * Foto com ano mas sem evento conhecido entra no fim do ano; foto SEM ano (sem data certa) vai pro fim de tudo.
+ */
+const HISTORY_EVENT_DATES = {
+  "DevFest 2016": "2016-11", "UX Day 2017": "2017-06", "Quality Fest 2017": "2017-09", "DataFest 2017": "2017-10", "DevFest 2017": "2017-11",
+  "Quality Fest 2018": "2018-09", "AndroidFest 2018": "2018-10", "DataFest 2018": "2018-10-31", "DevFest 2018": "2018-11", "DataFest 2019": "2019-12",
+};
+
+/** Os ids em ordem cronológica (estável: dentro do mesmo evento vale a ordem da lista). `photos` é o repository de fotos. */
+function historyChronologicalIds(ids, photos) {
+  const dateOf = id => {
+    const photo = photos.getById(id);
+    if (!photo?.year) return "9999";
+    return HISTORY_EVENT_DATES[`${photo.event} ${photo.year}`] ?? `${photo.year}-99`;
+  };
+  return ids.map((id, order) => ({ id, order, date: dateOf(id) })).sort((a, b) => a.date.localeCompare(b.date) || a.order - b.order).map(item => item.id);
+}
+
 const historyPhotosRepository = createRepository(HISTORY_PHOTOS, { getById: id => HISTORY_PHOTOS.find(photo => photo.id === id) });
 const historyMilestonesRepository = createRepository(HISTORY_MILESTONES);
-const historyMosaicRepository = createRepository(HISTORY_MOSAIC);
+const historyMosaicRepository = createRepository(historyChronologicalIds(HISTORY_MOSAIC, historyPhotosRepository));
 const historyTextsRepository = createRepository(HISTORY_TEXTS);
