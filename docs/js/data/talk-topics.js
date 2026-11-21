@@ -31,6 +31,7 @@ const TALK_TOPICS_BY_SPEAKER = {
   "leandro-garcia": ["ia", "negocios"],
   "lucas-mateus-mazei-sobrinho": ["lideranca", "ia"],
   "guilherme-de-oliveira-macedo": ["ia", "seguranca"],
+  "irina-bezzan-miquelin": ["carreira", "ia"],
   "isaque-dias-coelho": ["mobile", "ia"],
   "angelica-oliveira": ["mobile", "ia"],
   "fabio-baldin": ["lideranca", "ia"],
