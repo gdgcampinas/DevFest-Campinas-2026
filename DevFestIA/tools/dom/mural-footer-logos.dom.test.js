@@ -36,7 +36,7 @@ test("o arquivo dos colchetes existe, tem as quatro cores e o ensaio e a chave e
   assert.ok(fs.existsSync(file));
   const svg = fs.readFileSync(file, "utf8");
   ["#ea4335", "#1a73e8", "#34a853", "#fbbc04"].forEach(color => assert.ok(svg.includes(color), color));
-  assert.equal(g("telaoFooterConfigRepository").getAll().bracketsPublic, false, "nasce só em ensaio");
+  assert.equal(g("telaoFooterConfigRepository").getAll().bracketsPublic, true, "liberado em produção");
   const mural = fs.readFileSync(path.join(DOCS, "js/pages/mural.js"), "utf8");
   assert.match(mural, /params\.get\("logos"\) === "1" \|\| telaoFooterConfigRepository\.getAll\(\)\.bracketsPublic/);
   assert.match(mural, /bracketsSrc: showBrackets \? brandRepository\.getAll\(\)\.brackets : ""/);

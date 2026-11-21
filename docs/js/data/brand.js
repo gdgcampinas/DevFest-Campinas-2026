@@ -11,7 +11,7 @@ const BRAND = {
 };
 
 /** Rodapé do telão: `bracketsPublic` liga o logo dos colchetes ao lado do GDG Campinas (opção 1 do Renato, 2026-11-21). false = só ensaio (`telao.html?logos=1`); true libera em produção. */
-const TELAO_FOOTER_CONFIG = { bracketsPublic: false };
+const TELAO_FOOTER_CONFIG = { bracketsPublic: true }; // liberado em PROD em 2026-11-21 (pedido do Renato); false volta a mostrar só o logo do GDG Campinas
 
 const brandRepository = createRepository(BRAND);
 const telaoFooterConfigRepository = createRepository(TELAO_FOOTER_CONFIG);

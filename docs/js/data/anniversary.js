@@ -13,8 +13,8 @@ const ANNIVERSARY_CONFIG = {
   // o SELO REDONDO "10 anos de DevFest" no canto de todas as cenas do telão (components/anniversary-seal.js, features/anniversary-seal.js). O telão é só produção (não tem modo DEV):
   // `public: false` = só no ensaio (`telao.html?selo=1`); true libera. Some nas cenas dos tipos de `hideOnTypes` (vídeos) e nas de `hideOnIds` (a emergência do moderador). `leftOnTypes`: nas cenas desses tipos (as do QR code, que ocupa o lado direito; nos fundos de tela o canto direito fica livre e o título está à esquerda, então ali ele fica à direita) o selo muda pro canto ESQUERDO pra nunca cobrir o QR.
   // o MESMO selo redondo no cabeçalho do SITE (opção B do Renato, 2026-11-21): à esquerda da pílula, clicável (leva à história). `public: false` = só no modo DEV; true libera em produção.
-  siteSeal: { public: false },
-  telaoSeal: { public: false, hideOnTypes: ["video"], hideOnIds: ["emergencia"], leftOnTypes: ["qr"] },
+  siteSeal: { public: true }, // liberado em PROD em 2026-11-21 (pedido do Renato); false volta a escondê-lo (só no modo DEV)
+  telaoSeal: { public: true, /* liberado em PROD em 2026-11-21; false = só o ensaio (?selo=1) */ hideOnTypes: ["video"], hideOnIds: ["emergencia"], leftOnTypes: ["qr"] },
 };
 
 const ANNIVERSARY_TEXTS = {

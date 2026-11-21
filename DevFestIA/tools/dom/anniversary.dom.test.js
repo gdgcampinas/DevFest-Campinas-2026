@@ -69,14 +69,15 @@ test("o selo vai em toda página: showAnniversaryBadge cria o espaço depois da 
   assert.equal(g("showAnniversaryBadge")({ after: null, config, text, eventYear: 2026 }), false, "sem cabeçalho não faz nada");
 });
 
-test("o selo REDONDO no site (opção B): à esquerda da pílula, na mesma linha, clicável pra história; nasce só em DEV e a pílula com o '17 anos' continua", () => {
+test("o selo REDONDO no site (opção B): à esquerda da pílula, na mesma linha, clicável pra história; liberado em PROD (com a chave desligada só o modo DEV) e a pílula com o '17 anos' continua", () => {
   const released = { ...config, public: true };
   const el = mount();
-  assert.equal(config.siteSeal.public, false, "só em DEV até liberar");
-  g("initAnniversaryBadge")(el, { config: released, text, eventYear: 2026, devMode: false });
-  assert.equal(el.querySelector(".anniversary-seal"), null, "em produção ainda sem o selo redondo");
+  assert.equal(config.siteSeal.public, true, "liberado em produção");
+  const hiddenSeal = { ...released, siteSeal: { public: false } };
+  g("initAnniversaryBadge")(el, { config: hiddenSeal, text, eventYear: 2026, devMode: false });
+  assert.equal(el.querySelector(".anniversary-seal"), null, "com a chave desligada, em produção só a pílula");
   assert.equal(el.classList.contains("has-seal"), false);
-  g("initAnniversaryBadge")(el, { config: released, text, eventYear: 2026, devMode: true });
+  g("initAnniversaryBadge")(el, { config: hiddenSeal, text, eventYear: 2026, devMode: true });
   const seal = el.querySelector("a.anniversary-seal");
   assert.ok(seal, "no modo DEV o selo redondo aparece");
   assert.equal(seal.getAttribute("href"), "historia.html", "leva à história");

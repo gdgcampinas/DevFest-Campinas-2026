@@ -40,8 +40,9 @@ test("o texto e os anos entram escapados", () => {
 
 test("a regra: com `public` ligado aparece em toda cena, menos nas de vídeo e na emergência; desligado nunca aparece", () => {
   const visible = g("sealVisibleFor");
-  assert.equal(config.telaoSeal.public, false, "nasce desligado: só o ensaio mostra");
-  assert.equal(visible(config, { id: "agora", type: "now-next" }), false);
+  const off = { ...config, telaoSeal: { ...config.telaoSeal, public: false } };
+  assert.equal(config.telaoSeal.public, true, "liberado em produção");
+  assert.equal(visible(off, { id: "agora", type: "now-next" }), false, "com a chave desligada só o ensaio mostra");
   assert.equal(visible(released, { id: "agora", type: "now-next" }), true);
   ["historia-marco", "patrocinio-master", "selfie", "reserva"].forEach(id => assert.equal(visible(released, { id, type: "history" }), true, id));
   assert.equal(visible(released, { id: "video-bosch", type: "video" }), false, "vídeo: nunca");
@@ -91,7 +92,7 @@ test("o selo aparece e some conforme a cena, e ENTRA de novo (animação) a cada
   assert.ok(!el.classList.contains("is-in"), "de uma cena com selo pra outra ele fica parado, sem reanimar");
   assert.equal(seal.show({ id: "emergencia", type: "emergency" }), false);
   const off = mount();
-  assert.equal(g("initAnniversarySeal")(off, { config, text, eventYear: 2026 }).show({ id: "agora", type: "now-next" }), false, "desligado: nada");
+  assert.equal(g("initAnniversarySeal")(off, { config: { ...config, telaoSeal: { ...config.telaoSeal, public: false } }, text, eventYear: 2026 }).show({ id: "agora", type: "now-next" }), false, "desligado: nada");
   assert.equal(off.innerHTML, "");
   const early = mount();
   assert.equal(g("initAnniversarySeal")(early, { config: released, text, eventYear: 2016 }).show({ id: "agora", type: "now-next" }), false, "em 2016 o DevFest tem 0 anos");

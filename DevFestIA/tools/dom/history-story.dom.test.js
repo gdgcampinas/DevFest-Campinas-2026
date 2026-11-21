@@ -156,9 +156,9 @@ test("cena 'completa': uma passada só com a duração da soma dos passos, a tro
   assert.equal((await make({ milestones: [], highlights: [], mosaic: [] }).prepare({ view: "completa" })), MURAL_SKIP);
 });
 
-test("a liberação: a história completa nasce desligada, o mosaico de antes segue ligado, e as cenas entram nos momentos certos", () => {
+test("a liberação: a história completa está liberada em PROD e desliga o mosaico de antes, e as cenas entram nos momentos certos", () => {
   const catalog = fs.readFileSync(path.join(DOCS, "js/data/mural-scenes.js"), "utf8");
-  assert.equal(config.storyPublic, false, "só ensaio até liberar");
+  assert.equal(config.storyPublic, true, "liberada em produção");
   assert.match(catalog, /id: "historia", [^\n]*enabled: HISTORY_CONFIG\.public && !HISTORY_CONFIG\.storyPublic/);
   ["historia-evento", "historia-marco", "historia-destaque", "historia-completa", "historia-completa-fora"].forEach(id => assert.match(catalog, new RegExp(`id: "${id}", [^\\n]*enabled: HISTORY_CONFIG\\.storyPublic`), id));
   assert.match(catalog, /id: "historia-completa", [^\n]*moments: \["lunch", "back-to-room", "closing"\]/);
