@@ -17,7 +17,7 @@ const HTML = fs.readFileSync(path.join(DOCS, "telao.html"), "utf8");
 const SCRIPTS = [...HTML.matchAll(/<script src="(js\/[^"?]+)[^"]*"/g)].map(match => match[1].replace("js/", "").replace("data/schedule.dev.js", "data/schedule.js")).filter(file => file !== "pages/mural.js");
 const PAGE = fs.readFileSync(path.join(DOCS, "js", "pages", "mural.js"), "utf8");
 
-const BODY = `<!doctype html><html><body><div class="mural-backdrop"><div class="mural-stage" id="muralStage"><main id="muralContent"></main><footer id="muralFooter"></footer><aside id="muralDiag" hidden></aside></div></div></body></html>`;
+const BODY = `<!doctype html><html><body><div class="mural-backdrop"><div class="mural-stage" id="muralStage"><main id="muralContent"></main><footer id="muralFooter"></footer><div class="mural-seal" id="muralSeal" hidden></div><aside id="muralDiag" hidden></aside></div></div></body></html>`;
 
 /** Sobe a página com tudo de fora substituído. `search` = parâmetros de URL; `overrides` ajusta o que pode mudar (rede, QR, registered). */
 function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => true, registered = { total: 120 }, initialPodium = null, albums = null, initialControl = null, rawUrl = null, beforePage = null }) {
