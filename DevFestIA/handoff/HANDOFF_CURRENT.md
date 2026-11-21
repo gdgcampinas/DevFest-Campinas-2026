@@ -1,5 +1,34 @@
 # Handoff — Current State
 
+## SESSÃO 16 (2026-11-20 a 2026-11-21): LINE-UP REAL EM PROD, DADOS DEV x PROD, HISTÓRIA 2009 A 2026, SELO DE 10 ANOS, TELÃO COM A HISTÓRIA COMPLETA, MASCOTE "GUMBLE" (protocolo de novo chat, ~95% de contexto)
+
+**Estado ao encerrar:** branch `development` em `8df4c23` (promoção para `main` é automática pelo workflow "Publicar no main"; no último conferido `main` estava em `e3744da` e a validação do `8df4c23` rodava; conferir `gh run list`). Árvore limpa (só `.claude/` não rastreado). Deploy do GitHub Pages leva ~2 min; o navegador do painel guarda página velha (usar `?r=algo`). Detalhes item a item: itens 57 a 94 desta lista (os números sobem de baixo pra cima: o 94 é o mais novo). Resumo técnico permanente em `PROJECT_CONTEXT.md` (bloco "Fase 20 a 21 de novembro de 2026").
+
+**Feito e NO AR em PROD (tudo liberado pelo Renato):**
+- Line-up real: 45 palestras + plenária conferidas ao vivo contra a planilha base (Drive `15TeUlfCkHizEiYJ6FHf6xCrpYpAtaYEI`); entraram Lucas Mateus Mazei Sobrinho, Guilherme de Oliveira Macedo, Jessé Freitas e Irina Bezzan Miquelin de volta; grade sem nenhuma vaga "Em breve".
+- Quiz "Monte sua trilha" refeito sobre as palestras reais (assuntos em `data/talk-topics.js`, peso por posição); Coding Jam (Liga de TI da PUC); janela de horário e janela do check-in (regras do Firestore + cliente); limpeza real dos dados de teste (244 docs, `mural-wall` incluído na lista de limpeza); dados DEV e PROD separados (`edition` 2026 x 2026-dev).
+- Fundos de tela novos (mais novos primeiro) + faixa na home; pergunta do mural "Qual foi o seu primeiro DevFest?"; Selo de aniversário do cabeçalho (agora "17 anos de GDG Campinas · 10 anos de DevFest", fundação em 2009 como GTUG, corrigido pelo e-mail do Douglas Kayama).
+- Página "Nossa história" (menu + card na home): linha do tempo 2009 (marco sem foto com selo "GTUG"), 2013 (logo), 2014, 2016, 2017 (UX Day e Quality Fest), 2018, 2019 (DataFest), 2026; galeria de 117 fotos em ORDEM CRONOLÓGICA com filtro (Todas, DevFest, Outros eventos), legenda "Evento ano" e foto ampliada ao clicar (`components/lightbox.js`, `features/lightbox.js`); acervo de 2016 a 2019 liberado (`HISTORY_CONFIG.archivePublic: true`).
+- Telão: cenas da história (`params.view`: `mosaico`, `evento`, `marco`, `destaque`, `completa`, tudo ligado por `HISTORY_CONFIG.storyPublic: true`), selo redondo "10 anos de DevFest" em todas as cenas menos vídeo e emergência (vai pro canto ESQUERDO nas cenas de QR), logos GDG Campinas + colchetes do Google Developer Groups no rodapé (`TELAO_FOOTER_CONFIG.bracketsPublic: true`).
+- Site: selo redondo ao lado do logo do GDG no topo de toda página (`ANNIVERSARY_CONFIG.siteSeal.public: true`), clicável pra história.
+- Mapa do local: pino corrigido (`mapQuery` = "Av. Dom Humberto Mozzoni, 120, Campinas, SP").
+- Mascote: só "Gumble" em todo texto (46 trocas) e na arte `mural-art-gumbleton.webp` (editada). Nomes de arquivo e ids com "gumbleton" ficam.
+
+**Depende do Renato / pendências:**
+1. Douglas Kayama vai mandar fotos, logo e fatos de 2009 (encaixar no cartão de abertura da história) e quando o GTUG virou GDG; autorizar o nome dele no site.
+2. Arquivo OFICIAL do logo dos colchetes do GDG (o do repo é redesenhado, `assets/brand/gdg-brackets.svg`); arte oficial nova do Gumble com o nome certo, se houver.
+3. Data certa do DataFest 2017 (ordem usa outubro/2017 aproximado) e o ano de 12 fotos antigas sem ano; fotos do Elotech (álbum não mandado).
+4. Planilha base x site: sala de Cloud/Segurança (site "Torre do Castelo", planilha "a definir"); "Infiltradas em Tech" mostra 4 palestrantes e a planilha só a Amanda; nome do palestrante de "Usando Robot Framework" (site "Guilherme Martins", planilha sem nome); Irina e Jessé voltaram, conferir o resto.
+5. Dados: os 2 recados de teste aprovados só saem na próxima limpeza real (precisa "pode apagar" explícito); `requireTicket` do sorteio antes do evento; `reset-teste.html` nos aparelhos de teste; regras de janela para `mural-wall`.
+6. Conferir ao vivo o telão passando pela volta completa e o novo arquivo de arte do Gumble (a última conferência foi antes do deploy do `8df4c23`); a mensagem "NOS ITE" do Renato chegou cortada (talvez outros itens do site com o nome antigo: pedir o print).
+
+**ARMADILHAS aprendidas nesta sessão:**
+- O TELÃO NÃO TEM MODO DEV (só produção): recurso novo nasce atrás de uma chave `false` em `data/*.js` e é ensaiado por URL (`?cenas=id1,id2`, `?selo=1`, `?logos=1`, `?demo=2026-11-28T12:30` finge o almoço); o telão leva ~15 s pra abrir a primeira cena (tela preta no começo é normal).
+- Testes: alguns arquivos só falham quando rodam em paralelo (`node --test` de tudo); rodar o arquivo sozinho antes de achar que quebrou. NUNCA encadear `; git commit` depois dos testes (um commit saiu com teste vermelho): usar `&&`. `sed -i` no macOS exige `-i ''` (usar python). `git add -A` leva arquivos pendentes de outro assunto pro mesmo commit.
+- Todo arquivo de script novo precisa entrar nas listas dos testes de tela (harness e `page-scripts.dom.test.js`) e em cada HTML; campos novos de dado de foto (`fit`, `hd`) entraram na lista de ignorados do `check-i18n.js`; todo texto de dado novo precisa de tradução em `data/i18n/en.js`.
+- Fotos: achar duplicadas por hash de imagem antes de publicar (4 foram removidas); fotos novas em webp 1280 px (destaques do telão em 1920 px na pasta `hd/`).
+- Regras fixas: commit e PR em inglês e SEM menção de IA; chamar de Renatão; respostas curtas sem travessão; análise não muda código, só implementa com autorização; mostrar o desenho antes quando ele pedir ("mostra antes de aplicar"); não monitorar CI em loop.
+
 ## CONTINUIDADE CRUZADA DE MARCA E REDES SOCIAIS (2026-10-18)
 
 - O contexto de identidade e comunicação do projeto guarda-chuva GDG Campinas foi consolidado em `../../../../handoff/HANDOFF_CURRENT.md` e `../../../../docs/Marca_e_Mascote_2026.md`. A tarefa inclui peças comunitárias para Sympla, cards de palestrantes/voluntários, camiseta e futura estratégia de Instagram/LinkedIn; essas artes não são parte do código do site e não estão automaticamente aprovadas/publicadas.

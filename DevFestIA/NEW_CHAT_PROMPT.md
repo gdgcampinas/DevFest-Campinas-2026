@@ -2,7 +2,7 @@
 
 Cole o bloco abaixo como primeira mensagem do novo chat. Sem precisar adicionar contexto extra — tudo está nos arquivos do projeto.
 
-**Atualizado em 2026-11-10.** Para comunicação visual/redes sociais, a fonte de continuidade é o projeto guarda-chuva GDG Campinas: leia `../../PROJECT_CONTEXT.md`, `../../handoff/HANDOFF_CURRENT.md`, `../../docs/Continuidade.md`, `../../README.md`, `../../docs/Marca_e_Mascote_2026.md`, `../../Design/devfest-ingressos-liberados-2026/README.md` e este prompt, nessa ordem. O estado do site deve ser revalidado no Git; históricos abaixo não substituem o handoff atual.
+**Atualizado em 2026-11-21 (fim da sessão 16).** O estado mais novo do SITE está na seção "SESSÃO 16" do topo de `handoff/HANDOFF_CURRENT.md`; o texto abaixo do bloco sobre o post das trilhas é histórico. Para comunicação visual/redes sociais, a fonte de continuidade é o projeto guarda-chuva GDG Campinas: leia `../../PROJECT_CONTEXT.md`, `../../handoff/HANDOFF_CURRENT.md`, `../../docs/Continuidade.md`, `../../README.md`, `../../docs/Marca_e_Mascote_2026.md`, `../../Design/devfest-ingressos-liberados-2026/README.md` e este prompt, nessa ordem. O estado do site deve ser revalidado no Git; históricos abaixo não substituem o handoff atual.
 
 ## Continuidade prioritária — post das trilhas (10/11/2026)
 
@@ -29,13 +29,15 @@ Snapshot Git histórico de 03/11/2026 (substituído pela verificação prioritá
 ```
 Você está entrando no repositório do site do DevFest Campinas 2026 (GDG Campinas).
 
-CONTEXTO PRIORITÁRIO (2026-11-10)
-A tarefa atual é retomar o post das trilhas. Renatão avaliou o primeiro carrossel de sete telas em `../../Design/devfest-trilhas-2026/` como ruim. Não reutilizar como aprovado; após ler os arquivos na ordem indicada, resumir estado, pendências e riscos, e propor uma direção visual melhor antes de gerar outra versão. O código atual separa quatro trilhas públicas e cinco trilhas reais em DEV; nomes, agrupamentos e frases precisam de validação antes de divulgação. Rascunhos não autorizam publicação ou alterações no site.
+CONTEXTO PRIORITÁRIO (2026-11-21, fim da sessão 16)
+Nome do chat: "DevFest Campinas 2026 site setup". A tarefa é o SITE (código em `FrontEnd/DevFest-Campinas-2026/`). Para código, leia PRIMEIRO `DevFestIA/handoff/HANDOFF_CURRENT.md` (seção "SESSÃO 16" no topo: estado, o que está no ar, pendências do Renato e armadilhas), depois `DevFestIA/project-docs/PROJECT_CONTEXT.md` (bloco "Fase 20 a 21 de novembro de 2026"), `DevFestIA/CLAUDE.md` e `DevFestIA/project-docs/Continuidade.md`. O que mudou na sessão 16 e está EM PRODUÇÃO: line-up real (45 palestras e plenária conferidas contra a planilha), quiz refeito, dados DEV x PROD separados (edição 2026 x 2026-dev), página "Nossa história" (2009 a 2026, 117 fotos em ordem cronológica, filtro, foto ampliada), selo redondo de 10 anos no site e no telão, logos GDG + colchetes no rodapé do telão, cenas da história completa no telão, pino do mapa corrigido e o mascote chamado só de "Gumble" (nunca "Gumbleton" em texto novo). Pendências que dependem do Renato: material do Douglas Kayama sobre 2009 (fundador, 21/07/2009, era GTUG), logo oficial dos colchetes do GDG, data do DataFest 2017, 12 fotos antigas sem ano, fotos do Elotech, sala de Cloud/Segurança, nome do palestrante de Robot Framework.
 
-VERIFICAÇÃO GIT LOCAL (2026-11-10; revalidar em nova sessão)
-No repo `FrontEnd/DevFest-Campinas-2026/`, branch `development`, HEAD `5105bae`, igual a `origin/development` e um commit à frente de `origin/main` (`0c59804`). O worktree contém `M DevFestIA/NEW_CHAT_PROMPT.md` e `?? .claude/`; preservar. CI `✅ Validar` de `5105bae` passou. Pages/Sympla passaram para `0c59804`; não afirmar que `5105bae` já está publicado em `main`. Nenhum commit ou push feito nesta continuidade.
+REGRAS QUE O RENATÃO REPETIU (valem sempre): chamar de "Renatão"; respostas curtas e objetivas, sem travessão; análise não muda código, só implemente com autorização ("pode aplicar", "autorizado"); quando ele pedir "mostra antes" mostrar um desenho ou plano ANTES; commits e PRs em inglês, um commit por melhoria e SEM nenhuma menção de IA (nada de Co-Authored-By nem "Generated with"); não monitorar CI/deploy em loop (deploy leva uns 2 min; só conferir ao vivo quando ele pedir "confere ao vivo"); passar links completos; recurso novo do telão nasce com a chave desligada porque o telão não tem modo DEV (ensaio por URL: `?cenas=`, `?selo=1`, `?logos=1`, `?demo=`).
 
-PASSO 1 — Leia primeiro o contexto do projeto guarda-chuva, nesta ordem
+VERIFICAÇÃO GIT (2026-11-21; revalidar em nova sessão)
+No repo `FrontEnd/DevFest-Campinas-2026/`, branch `development`, HEAD `8df4c23` ("Replace the old mascot name drawn inside the Gumble art on the big screen") mais o commit de protocolo desta atualização de documentos; `main` é promovido automaticamente pelo workflow "Publicar no main" depois do CI verde. Worktree limpo (só `.claude/` não rastreado). Conferir `gh run list` e se a arte nova do Gumble (`assets/img/mural-art-gumbleton.webp`, `MURAL_ARTS_VERSION = 2`) está no ar.
+
+PASSO 1 — Se o pedido for sobre o SITE, comece pelos arquivos de `DevFestIA/` citados acima. Se for sobre comunicação visual/redes, leia o projeto guarda-chuva, nesta ordem
 1. `../../PROJECT_CONTEXT.md`
 2. `../../handoff/HANDOFF_CURRENT.md`
 3. `../../docs/Continuidade.md`
