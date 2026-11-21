@@ -27,8 +27,22 @@ function historyMilestoneMarkup({ milestone, photo }, { years, text }) {
     </li>`;
 }
 
+/** A legenda do evento da foto ("DevFest 2016"), quando a foto tem `event`. */
+function historyEventMarkup(photo) {
+  return photo.event ? `<small class="history-event">${escapeHtml([photo.event, photo.year].filter(Boolean).join(" "))}</small>` : "";
+}
+
 function historyTileMarkup(photo, text) {
-  return `<figure role="listitem"><img src="${escapeHtml(photo.file)}" alt="${escapeHtml(photo.alt)}" loading="lazy" decoding="async">${historyCreditMarkup(photo, text)}</figure>`;
+  const kind = photo.kind ? ` data-kind="${escapeHtml(photo.kind)}"` : "";
+  return `<figure role="listitem"${kind}><img src="${escapeHtml(photo.file)}" alt="${escapeHtml(photo.alt)}" loading="lazy" decoding="async">${historyEventMarkup(photo)}${historyCreditMarkup(photo, text)}</figure>`;
+}
+
+/** Os botões do filtro da galeria ("Todas" + um por tipo de evento que existe nas fotos); sem tipo nenhum, sem filtro. */
+function historyFilterMarkup(photos, text) {
+  const kinds = Object.keys(text.filterKinds).filter(kind => photos.some(photo => photo.kind === kind));
+  if (!kinds.length) return "";
+  const chip = (filter, label, active) => `<button type="button" class="history-chip${active ? " is-active" : ""}" data-filter="${escapeHtml(filter)}" aria-pressed="${active}">${escapeHtml(label)}</button>`;
+  return `<div class="history-filter" role="group" aria-label="${escapeHtml(text.filterLabel)}">${chip("all", text.filterAll, true)}${kinds.map(kind => chip(kind, text.filterKinds[kind], false)).join("")}</div>`;
 }
 
 /** A galeria: as primeiras `visible` fotos na grade e, se sobrar, o resto dentro de "Ver todas as N fotos" (um <details>, sem script). */
@@ -53,6 +67,7 @@ function historySectionMarkup({ text, milestones, mosaic, years, galleryVisible 
     </div>
     <ol class="history-timeline">${milestones.map(item => historyMilestoneMarkup(item, { years, text })).join("")}</ol>
     <h3 class="history-mosaic-title">${escapeHtml(text.mosaicTitle)}</h3>
+    ${historyFilterMarkup(mosaic, text)}
     ${historyMosaicMarkup(mosaic, text, { visible: galleryVisible })}`;
 }
 

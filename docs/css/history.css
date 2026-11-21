@@ -58,3 +58,12 @@
 .history-teaser-card strong{font:800 clamp(1.25rem,3.6vw,1.8rem)/1.2 var(--font-display);color:oklch(97% 0.005 260)}
 .history-teaser-card strong b{color:var(--amber)}
 .history-teaser-cta{font:700 14px var(--font-body);color:var(--amber)}
+
+.history-filter{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:0 0 16px}
+.history-chip{padding:8px 18px;border:1.5px solid color-mix(in oklch,var(--amber) 55%,transparent);border-radius:999px;background:transparent;font:700 14px var(--font-body);color:var(--amber);cursor:pointer;transition:background .2s ease}
+.history-chip:hover{background:color-mix(in oklch,var(--amber) 14%,transparent)}
+.history-chip.is-active{background:var(--amber);color:#1a1300}
+.history-chip:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+.is-filtered .history-more{display:none}
+.history-event{position:absolute;left:8px;bottom:8px;padding:2px 9px;border-radius:999px;background:rgb(0 0 0/.62);font:600 11px var(--font-body);color:#fff}
+.history-mosaic figure[hidden]{display:none}

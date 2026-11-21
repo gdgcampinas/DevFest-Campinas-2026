@@ -83,6 +83,51 @@ test("a história começa em 2009 com o GTUG: marco sem foto mostra o selo de te
   assert.ok(!/Nasce o GDG Campinas/.test(el.innerHTML));
 });
 
+test("o acervo novo (archive: true) só aparece no modo DEV até `archivePublic`: marcos, galeria e filtro seguem a mesma chave", () => {
+  const archiveIds = mosaic.filter(id => photos.getById(id).archive);
+  assert.ok(archiveIds.length >= 30, "as fotos dos álbuns 2016 a 2019 entraram");
+  assert.equal(config.archivePublic, false, "o acervo nasce só em DEV");
+  const publicConfig = { ...config, public: true };
+  const shown = (extra) => { const el = mount(); init(el, { config: publicConfig, ...extra }); return el; };
+  const hidden = shown({ devMode: false });
+  assert.equal(hidden.querySelectorAll(".history-mosaic img").length, mosaic.length - archiveIds.length, "em PROD só as fotos antigas");
+  assert.equal(hidden.querySelector('[data-milestone="eventos-2018"]'), null);
+  const dev = shown({ devMode: true });
+  assert.ok(dev.querySelector('[data-milestone="eventos-2018"]') && dev.querySelector('[data-milestone="datafest-2019"]'));
+  assert.equal(dev.querySelectorAll(".history-mosaic img").length, mosaic.length);
+  const released = shown({ config: { ...publicConfig, archivePublic: true }, devMode: false });
+  assert.equal(released.querySelectorAll(".history-mosaic img").length, mosaic.length, "liberado vale pra todo mundo");
+  archiveIds.forEach(id => { const photo = photos.getById(id); assert.ok(photo.event && photo.year && photo.kind, `${id}: evento, ano e tipo`); });
+});
+
+test("a galeria tem filtro por tipo de evento: DevFest, outros eventos e todas; cada foto do acervo mostra evento e ano", () => {
+  const el = mount();
+  init(el, { devMode: true });
+  const chips = Array.from(el.querySelectorAll(".history-chip"));
+  assert.deepEqual(chips.map(chip => chip.dataset.filter), ["all", "devfest", "outros"]);
+  assert.equal(chips[0].getAttribute("aria-pressed"), "true");
+  const figures = Array.from(el.querySelectorAll(".history-mosaic figure"));
+  assert.ok(figures.some(figure => figure.querySelector(".history-event")?.textContent === "UX Day 2017"));
+  chips[2].click();
+  assert.ok(figures.filter(figure => figure.dataset.kind === "outros").every(figure => !figure.hidden));
+  assert.ok(figures.filter(figure => figure.dataset.kind !== "outros").every(figure => figure.hidden), "só os outros eventos ficam");
+  assert.equal(el.querySelectorAll(":scope > .history-mosaic figure:not([hidden])").length, figures.filter(figure => figure.dataset.kind === "outros").length, "tudo do filtro fica junto na grade principal");
+  assert.equal(el.querySelectorAll(".history-more figure").length, 0, "o 'Ver todas' esvazia e some");
+  assert.equal(chips[2].getAttribute("aria-pressed"), "true");
+  chips[0].click();
+  assert.ok(figures.every(figure => !figure.hidden));
+  assert.equal(el.classList.contains("is-filtered"), false);
+  assert.equal(el.querySelectorAll(":scope > .history-mosaic figure").length, config.galleryVisible, "cada foto volta ao lugar de antes");
+});
+
+test("o telão passa pelo acervo só quando liberado (a página do telão ignora o modo DEV)", () => {
+  const mural = fs.readFileSync(path.join(DOCS, "js/pages/mural.js"), "utf8");
+  assert.match(mural, /mosaic: historyMosaicRepository\.getAll\(\)\.filter\(id => historyReleased\([^\n]*archivePublic\)\)/);
+  assert.equal(g("historyReleased")({ archive: true }, false), false);
+  assert.equal(g("historyReleased")({ archive: true }, true), true);
+  assert.equal(g("historyReleased")({}, false), true);
+});
+
 test("a foto com crédito mostra a legenda 'Foto: nome' e as sem crédito não mostram nada", () => {
   const el = mount();
   init(el, { devMode: true });
@@ -97,7 +142,7 @@ test("cena do telão: cada passada mostra uma página de fotos, pré-carrega só
   const history = scene({ preload: async url => { preloaded.push(url); } });
   const ready = await history.prepare();
   const pageSize = Math.ceil(mosaic.length / Math.ceil(mosaic.length / 8));
-  assert.equal(ready.length, pageSize);
+  assert.equal(ready.length, pageSize, "a primeira página é a maior");
   assert.ok(pageSize <= 8 && pageSize >= 4);
   assert.deepEqual(Array.from(preloaded), Array.from(mosaic.slice(0, pageSize), id => photos.getById(id).file), "pré-carrega só a página mostrada");
   const view = document.createElement("div");
@@ -122,6 +167,17 @@ test("cena do telão: as passadas seguem pelas páginas e, ao longo delas, TODAS
   assert.deepEqual([...seen].sort(), [...mosaic].sort());
   const again = await history.prepare();
   assert.equal(again[0].id, mosaic[0], "depois da última página volta pra primeira");
+});
+
+test("cena do telão: com qualquer total de fotos as páginas ficam equilibradas (diferem em no máximo 1) e nenhuma passa de 8 nem fica com menos de 4", async () => {
+  for (const total of [27, 33, 49, 56, 57, 59, 63, 64]) {
+    const ids = Array.from(mosaic).concat(Array.from(mosaic), Array.from(mosaic)).slice(0, total);
+    const sizes = [];
+    const history = scene({ mosaic: ids });
+    for (let index = 0; index < Math.ceil(total / 8); index++) sizes.push((await history.prepare()).length);
+    assert.ok(Math.max(...sizes) <= 8 && Math.min(...sizes) >= 4 && Math.max(...sizes) - Math.min(...sizes) <= 1, `${total} fotos: ${sizes}`);
+    assert.equal(sizes.reduce((sum, size) => sum + size, 0), total);
+  }
 });
 
 test("cena do telão: página com menos de 4 fotos carregadas some (nunca uma foto sozinha) e foto que não carrega fica de fora", async () => {
