@@ -54,7 +54,7 @@ test("lista os moderadores em ordem alfabética com o botão de remover; lista v
   assert.match(textOf(root), /só o dono da conta/i);
   const empty = mount({ initial: [] });
   assert.match(textOf(empty.root.querySelector("[data-slot=list]")), /o dono sempre pode tudo/i);
-  assert.ok(empty.root.querySelector("[data-slot=list] img.ad-empty-mascot"), "estado vazio com o Gumbleton");
+  assert.ok(empty.root.querySelector("[data-slot=list] img.ad-empty-mascot"), "estado vazio com o Gumble");
 });
 
 test("cadastrar: valida, grava com o e-mail limpo e quem cadastrou, limpa o campo e avisa; erro de validação mantém o texto", async () => {

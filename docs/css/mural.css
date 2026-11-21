@@ -396,7 +396,7 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .mural-stage[data-shape="tall"] .ms-team-text{align-items:center}
 .mural-stage[data-shape="ultrawide"] .ms-team-photo .ms-avatar{width:calc(var(--u) * 36);height:calc(var(--u) * 36)}
 
-/* cena "message": texto grande e acolhedor; o brilho de fundo muda de cor por conjunto (as 4 cores do Google) e o Gumbleton fica no canto */
+/* cena "message": texto grande e acolhedor; o brilho de fundo muda de cor por conjunto (as 4 cores do Google) e o Gumble fica no canto */
 .ms-message{position:relative;flex-direction:row;align-items:center;justify-content:space-between;gap:calc(var(--u) * 4);overflow:hidden;border-radius:calc(var(--u) * 3);--glow:var(--google-blue)}
 .ms-message[data-set="icebreaker"]{--glow:var(--google-yellow)}
 .ms-message[data-set="welcome"]{--glow:var(--google-green)}
@@ -458,7 +458,7 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .mural-stage[data-shape="tall"] .ms-day-block[data-kind="banner"] span{display:inline}
 .ms-message .ms-kicker{font-size:calc(var(--u) * 3.2)}
 
-/* Gumbleton em cima do texto das cenas de fase (contagem de antes do evento e agradecimento) */
+/* Gumble em cima do texto das cenas de fase (contagem de antes do evento e agradecimento) */
 .ms-big-mascot{height:calc(var(--u) * 30);width:auto;object-fit:contain;filter:drop-shadow(0 calc(var(--u) * 1) calc(var(--u) * 2) oklch(0% 0 0 / .45))}
 
 /* legenda do vídeo (o vídeo toca mudo): faixa escura translúcida no pé, letra grande e legível de longe, até 2 linhas */

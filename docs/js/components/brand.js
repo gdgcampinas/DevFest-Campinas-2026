@@ -1,5 +1,5 @@
 /**
- * Marcação da marca (mascote Gumbleton e logo do GDG Campinas): uma peça só pra todas as telas, a partir de data/brand.js. Imagem que não carrega some sozinha (`onerror` remove o elemento): a tela
+ * Marcação da marca (mascote Gumble e logo do GDG Campinas): uma peça só pra todas as telas, a partir de data/brand.js. Imagem que não carrega some sozinha (`onerror` remove o elemento): a tela
  * nunca mostra imagem quebrada. `className` é a classe da tela que usa (o tamanho é dela). Decorativa (`alt` vazio) no mascote; o logo leva o nome da comunidade.
  */
 function mascotMarkup(className = "brand-mascot") {

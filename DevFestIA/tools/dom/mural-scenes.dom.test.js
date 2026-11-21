@@ -347,7 +347,7 @@ test("arte: como ela se adapta a qualquer proporção sai do dado, por forma de 
   assert.deepEqual([plain["--fit"], plain["--focus"]], ["cover", "50% 50%"], "sem dado: preenche e centraliza");
 });
 
-test("as artes do dado: o banner preenche (cover) com foco por forma, as peças com texto aparecem inteiras (contain) e e o Gumbleton (tem o selo com texto) também aparece inteiro", () => {
+test("as artes do dado: o banner preenche (cover) com foco por forma, as peças com texto aparecem inteiras (contain) e e o Gumble (tem o selo com texto) também aparece inteiro", () => {
   const arts = g("muralArtsRepository");
   assert.equal(arts.get("sunset").fit, "cover");
   assert.ok(arts.get("sunset").focus.tall && arts.get("sunset").focus.wide && arts.get("sunset").focus.standard && arts.get("sunset").focus.ultrawide);
@@ -898,7 +898,7 @@ test("recados: o texto e o apelido da plateia nunca viram HTML", () => {
   assert.match(textOf(view), /<img src=x onerror=alert\(1\)>/);
 });
 
-test("cenas de fase com o Gumbleton: contagem (antes) e agradecimento (depois) ganham o mascote quando a imagem vem do dado; sem imagem seguem como eram", () => {
+test("cenas de fase com o Gumble: contagem (antes) e agradecimento (depois) ganham o mascote quando a imagem vem do dado; sem imagem seguem como eram", () => {
   const schedule = [{ start: at("08:00"), end: at("18:00") }];
   const withMascot = g("createEventPhaseScene")({ schedule, title: "DevFest", mascotUrl: "assets/img/gumbleton.png" });
   for (const kind of ["countdown", "thanks"]) {

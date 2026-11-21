@@ -1,6 +1,6 @@
 /**
  * Cenas de fase do evento: `params.kind` = "countdown" (antes de abrir: contagem regressiva que anda sozinha) ou "thanks" (depois do fim: agradecimento).
- * Quem decide em que fase cada uma aparece é o dado (`requires.phases`). O Gumbleton fica em cima do texto (`mascotUrl`, opcional). Tudo injetado: `schedule` (a grade), `title`, `mascotUrl`.
+ * Quem decide em que fase cada uma aparece é o dado (`requires.phases`). O Gumble fica em cima do texto (`mascotUrl`, opcional). Tudo injetado: `schedule` (a grade), `title`, `mascotUrl`.
  */
 function createEventPhaseScene({ schedule, title, mascotUrl = "" }) {
   const mascot = mascotUrl ? muralMascotMarkup(mascotUrl, "ms-big-mascot") : "";

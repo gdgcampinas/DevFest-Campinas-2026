@@ -1,5 +1,5 @@
 /**
- * Convites pro mural de recados no site: o CARTÃO da home (Gumbleton, título, frase e botão) e o LINK curto que aparece depois que a pessoa avalia uma palestra. Só texto escapado e classes do
+ * Convites pro mural de recados no site: o CARTÃO da home (Gumble, título, frase e botão) e o LINK curto que aparece depois que a pessoa avalia uma palestra. Só texto escapado e classes do
  * styles.css (.chip-btn) e do css/wall.css; o texto vem de data/wall-texts.js (já traduzido) e o endereço é o da página de recados.
  */
 function wallInviteCardMarkup({ text, href }) {

@@ -34,7 +34,7 @@ test("convite fora da janela é vazio (antes e depois); dentro dela vem o cartã
   assert.equal(card.querySelector("a").getAttribute("href"), "recado.html");
   assert.match(textOf(card), /Recados no telão/);
   assert.match(textOf(card), /Deixar meu recado/);
-  assert.ok(card.querySelector("img.wall-invite-mascot"), "com o Gumbleton");
+  assert.ok(card.querySelector("img.wall-invite-mascot"), "com o Gumble");
   const link = document.createElement("div");
   link.innerHTML = open.linkMarkup();
   assert.match(textOf(link), /Quer deixar um recado para o telão\? Deixar meu recado/);

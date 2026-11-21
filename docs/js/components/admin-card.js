@@ -1,4 +1,4 @@
-/** Estado vazio padrão do admin: o Gumbleton e uma frase (lista de moderadores, filas de recados). Uma marcação só pras telas que têm lista. */
+/** Estado vazio padrão do admin: o Gumble e uma frase (lista de moderadores, filas de recados). Uma marcação só pras telas que têm lista. */
 function adminEmptyMarkup(text) {
   return `<div class="ad-empty">${mascotMarkup("ad-empty-mascot")}<p>${escapeHtml(text)}</p></div>`;
 }

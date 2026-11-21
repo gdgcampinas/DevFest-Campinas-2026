@@ -1508,6 +1508,14 @@ img[data-zoom-photo]:focus-visible{outline:2px solid var(--text);outline-offset:
 
 /* Selo de aniversário da página principal (features/anniversary.js): dourado, maior, com brilho; os números em destaque */
 .anniversary{margin:14px 0 0}
+.anniversary.has-seal{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.anniversary-seal{flex:none;display:block;width:72px;height:72px;border-radius:50%;transition:transform .25s ease}
+.anniversary-seal:hover{transform:scale(1.07) rotate(-4deg)}
+.anniversary-seal:focus-visible{outline:3px solid var(--amber);outline-offset:3px}
+.anniversary-seal .seal-svg{display:block;width:100%;height:100%;overflow:visible}
+@media(prefers-reduced-motion:no-preference){.anniversary-seal .seal-shine{transform:skewX(-20deg);animation:anniversary-seal-shine 2.2s ease-out .9s 1 both}}
+@keyframes anniversary-seal-shine{from{transform:skewX(-20deg) translateX(0)}to{transform:skewX(-20deg) translateX(330px)}}
+@media(max-width:480px){.anniversary-seal{width:58px;height:58px}}
 .anniversary-badge{display:inline-flex;align-items:center;gap:10px;max-width:100%;padding:9px 20px;border:1.5px solid var(--amber);border-radius:999px;background:linear-gradient(100deg,color-mix(in oklch,var(--amber) 30%,transparent),color-mix(in oklch,var(--amber) 8%,transparent));box-shadow:0 0 22px color-mix(in oklch,var(--amber) 38%,transparent);font:600 clamp(13px,3.4vw,16px)/1.3 var(--font-body);letter-spacing:.01em;color:oklch(96% 0.03 85)}
 .anniversary-badge{text-decoration:none;cursor:pointer;transition:transform .2s ease,border-color .2s ease}
 .anniversary-badge:hover{transform:translateY(-2px)}

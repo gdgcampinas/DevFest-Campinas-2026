@@ -64,7 +64,7 @@ test("enviar: grava como pendente no espaço 1 do aparelho, com a pergunta e o a
   await waitFor(() => /Recebemos/.test(textOf(root)));
   assert.deepEqual(JSON.parse(JSON.stringify(added)), [{ uid: "uid1", entryKey: "wall-1", data: { entryKey: "wall-1", text: "Vim buscar gente boa", prompt: config.prompts[0].id, status: "pending", nickname: "Ana" } }]);
   assert.match(textOf(root), /Mandar outro recado \(2\)/);
-  assert.ok(root.querySelector("img.wall-mascot"), "o Gumbleton comemora o envio");
+  assert.ok(root.querySelector("img.wall-mascot"), "o Gumble comemora o envio");
 });
 
 test("mandar outro: o formulário volta limpo no espaço seguinte; no último recado não oferece mais", async () => {

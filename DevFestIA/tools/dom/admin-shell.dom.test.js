@@ -46,7 +46,7 @@ test("sem login: só a porta de entrada com o botão do Google, menu escondido e
   const { body, nav, events, window } = setup();
   await waitFor(() => body.querySelector("[data-mod-signin]"));
   assert.match(textOf(body), /Área de admin/);
-  assert.ok(body.querySelector("img.ad-bar-mascot"), "o Gumbleton recebe quem chega");
+  assert.ok(body.querySelector("img.ad-bar-mascot"), "o Gumble recebe quem chega");
   assert.equal(nav.hidden, true);
   assert.deepEqual(events, []);
   window.close();

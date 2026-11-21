@@ -10,7 +10,7 @@ const path = require("node:path");
 const docs = path.join(__dirname, "../../../docs");
 const REQUIRED_BEFORE_APP = ["js/components/escape-html.js", "js/components/track-attrs.js"];
 // O selo de aniversário do cabeçalho (app.js, showAnniversaryBadge) roda em toda página que tem a linha `#headerMeta`.
-const REQUIRED_WITH_HEADER = ["js/data/anniversary.js", "js/components/number-template.js", "js/components/anniversary-badge.js", "js/features/anniversary.js", "js/features/release-gate.js"];
+const REQUIRED_WITH_HEADER = ["js/data/anniversary.js", "js/components/number-template.js", "js/components/anniversary-seal.js", "js/components/anniversary-badge.js", "js/features/anniversary.js", "js/features/release-gate.js"];
 const pages = fs.readdirSync(docs).filter(name => name.endsWith(".html"));
 
 for (const page of pages) {

@@ -84,7 +84,7 @@ test("lista que não carrega avisa (sem permissão ou conexão), vazio explica e
   assert.match(textOf(mount({ listenError: new Error("x") }).root.querySelector("[data-slot=message]")), /Não consegui ler os recados/);
   const empty = mount();
   assert.match(textOf(empty.root.querySelector("[data-slot=pending]")), /Nenhum recado aqui/);
-  assert.equal(empty.root.querySelector("[data-slot=pending] .ad-empty img.ad-empty-mascot").getAttribute("src"), "assets/img/gumbleton.png", "estado vazio com o Gumbleton");
+  assert.equal(empty.root.querySelector("[data-slot=pending] .ad-empty img.ad-empty-mascot").getAttribute("src"), "assets/img/gumbleton.png", "estado vazio com o Gumble");
   const evil = mount({ initial: [post("a", "pending", 1, { text: "<img src=x onerror=alert(1)>", nickname: "<b>x</b>" })] });
   assert.equal(evil.root.querySelector(".ad-note img"), null, "nenhuma imagem injetada pelo texto da plateia");
   assert.equal(evil.root.querySelector("b"), null);

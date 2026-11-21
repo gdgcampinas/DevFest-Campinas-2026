@@ -14,7 +14,7 @@ const muralArtFile = name => `assets/img/mural-art-${name}.webp?v=${MURAL_ARTS_V
 const MURAL_ARTS = {
   sunset: { file: muralArtFile("sunset"), alt: "Fênix sobre Campinas ao pôr do sol", fit: "cover", focus: { default: "100% 50%", ultrawide: "50% 50%", wide: "100% 50%", standard: "100% 50%", tall: "88% 40%" } },
   invite: { file: muralArtFile("invite"), alt: "DevFest Campinas 2026, 28/11: um dia inteiro de conteúdo técnico", fit: "contain", focus: { default: "50% 50%" } },
-  gumbleton: { file: muralArtFile("gumbleton"), alt: "Gumbleton, a fênix do GDG Campinas, voando sobre Campinas", fit: "contain", focus: { default: "50% 40%" } },
+  gumbleton: { file: muralArtFile("gumbleton"), alt: "Gumble, a fênix do GDG Campinas, voando sobre Campinas", fit: "contain", focus: { default: "50% 40%" } },
 };
 
 const muralArtsRepository = createRepository(MURAL_ARTS, {
