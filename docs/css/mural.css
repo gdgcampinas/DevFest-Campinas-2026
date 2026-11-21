@@ -474,4 +474,27 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .ms-history-tile{margin:0;box-sizing:border-box;flex:none;min-height:0;overflow:hidden;border-radius:calc(var(--u) * 1.6);width:calc((100% - (var(--cols) - 1) * var(--gap)) / var(--cols));height:calc((100% - (var(--rows) - 1) * var(--gap)) / var(--rows))}
 .ms-history-tile img{display:block;width:100%;height:100%;object-fit:cover}
 .ms-history-thanks{margin:0;text-align:center;font:600 calc(var(--u) * 3) var(--font-body);color:oklch(88% .01 260)}
+/* história: o nome do evento no canto do mosaico, o cartão do marco e o destaque em tela cheia (cenas `history`, components/mural-scenes/mural-history-views.js) */
+.ms-history-top{display:flex;align-items:flex-end;justify-content:space-between;gap:calc(var(--u) * 2)}
+.ms-history-label{margin:0;flex:none;padding:calc(var(--u) * .7) calc(var(--u) * 2);border-radius:99px;background:var(--amber);font:800 calc(var(--u) * 3.4) var(--font-display);color:#1a1300;animation:ms-pop .6s both}
+.ms-history-tour{height:100%}
+.ms-history-tour>.ms{animation:ms-in .6s both}
+.ms-history-marco{position:relative;overflow:hidden;border-radius:calc(var(--u) * 1.6);background:#000}
+.ms-history-media{position:absolute;inset:0;border-radius:0}
+.ms-history-media--side{left:46%}
+.ms-history-media .ms-art-img{animation:ms-kenburns var(--step-ms,var(--scene-ms,12000ms)) ease-out both}
+.ms-history-marco::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,oklch(8% .01 260 / .94) 0%,oklch(8% .01 260 / .78) 34%,transparent 62%)}
+.ms-history-marco-text{position:relative;z-index:1;align-self:flex-start;margin:auto 0;padding:0 calc(var(--u) * 5);max-width:48%;display:flex;flex-direction:column;gap:calc(var(--u) * 1.4);animation:ms-rise .8s .2s both}
+.ms-history-year{font:800 calc(var(--u) * 15) / 1 var(--font-display);color:var(--amber);text-shadow:0 0 calc(var(--u) * 3) oklch(80% .17 85 / .45)}
+.ms-history-marco .ms-title{font-size:calc(var(--u) * 6.4)}
+.ms-history-marco-text p{margin:0;font:500 calc(var(--u) * 3) / 1.4 var(--font-body);color:oklch(92% .01 260)}
+.ms-history-marco[data-kind="badge"]{background:radial-gradient(ellipse at 75% 50%,oklch(30% .09 260),oklch(9% .01 260) 70%)}
+.ms-history-marco[data-kind="badge"]::after{display:none}
+.ms-history-badge{position:absolute;right:calc(var(--u) * 6);top:50%;transform:translateY(-50%);font:800 calc(var(--u) * 26) / 1 var(--font-display);letter-spacing:.06em;color:var(--accent);opacity:.9;animation:ms-zoom .9s both}
+.ms-history-destaque .ms-art-img{animation:ms-kenburns var(--step-ms,var(--scene-ms,10000ms)) ease-out both}
+.ms-history-caption{position:absolute;left:calc(var(--u) * 3);bottom:calc(var(--u) * 3);z-index:1;margin:0;padding:calc(var(--u) * .8) calc(var(--u) * 2.4);border-radius:99px;background:oklch(8% .01 260 / .78);font:800 calc(var(--u) * 3.6) var(--font-display);color:var(--amber);animation:ms-rise .8s .3s both}
+@keyframes ms-kenburns{from{transform:scale(1)}to{transform:scale(1.07)}}
+.mural-stage[data-shape="tall"] .ms-history-marco-text{max-width:none;margin:auto 0 calc(var(--u) * 4);padding:0 calc(var(--u) * 3)}
+.mural-stage[data-shape="tall"] .ms-history-marco::after{background:linear-gradient(0deg,oklch(8% .01 260 / .94) 0%,oklch(8% .01 260 / .75) 45%,transparent 75%)}
+.mural-stage[data-shape="tall"] .ms-history-badge{top:18%;right:50%;transform:translate(50%,0)}
 .mural-stage[data-shape="tall"] .ms-history-tile{width:calc((100% - var(--gap)) / 2);height:calc((100% - (var(--rows-tall) - 1) * var(--gap)) / var(--rows-tall))}

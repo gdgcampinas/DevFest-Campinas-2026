@@ -517,6 +517,7 @@ I18N_DICTIONARIES.en = {
     "O logo do GDG Campinas": "The GDG Campinas logo",
     "Filtrar as fotos": "Filter the photos",
     "Encontro na Bosch": "Meetup at Bosch",
+    "Mais momentos da nossa história": "More moments from our story",
     "Foto ampliada": "Enlarged photo",
     "Foto anterior": "Previous photo",
     "Próxima foto": "Next photo",

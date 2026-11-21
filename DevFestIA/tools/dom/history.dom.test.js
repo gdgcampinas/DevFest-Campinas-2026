@@ -11,7 +11,7 @@ const path = require("node:path");
 const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 
 const DOCS = path.join(__dirname, "..", "..", "..", "docs");
-const site = loadSite({ scripts: [...SITE_BASE, "components/escape-html.js", "features/mural.js", "data/anniversary.js", "data/history-config.js", "data/history.js", "components/number-template.js", "components/history.js", "features/release-gate.js", "features/anniversary.js", "features/history.js", "components/mural-scenes/mural-scene-kit.js", "components/mural-scenes/mural-history-scene.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "components/escape-html.js", "features/mural.js", "data/anniversary.js", "data/history-config.js", "data/history.js", "components/number-template.js", "components/history.js", "features/release-gate.js", "features/anniversary.js", "features/history-story.js", "features/history.js", "components/mural-scenes/mural-scene-kit.js", "components/mural-scenes/mural-history-views.js", "components/mural-scenes/mural-history-scene.js"] });
 const { document } = site;
 test.after(() => site.window.close());
 const g = name => site.get(name);
@@ -122,7 +122,8 @@ test("a galeria tem filtro por tipo de evento: DevFest, outros eventos e todas; 
 
 test("o telão passa pelo acervo só quando liberado (a página do telão ignora o modo DEV)", () => {
   const mural = fs.readFileSync(path.join(DOCS, "js/pages/mural.js"), "utf8");
-  assert.match(mural, /mosaic: historyMosaicRepository\.getAll\(\)\.filter\(id => historyReleased\([^\n]*archivePublic\)\)/);
+  assert.match(mural, /historyShown = id => historyReleased\([^\n]*archivePublic\)/);
+  assert.match(mural, /mosaic: historyMosaicRepository\.getAll\(\)\.filter\(historyShown\), highlights: historyHighlightsRepository\.getAll\(\)\.filter\(historyShown\)/);
   assert.equal(g("historyReleased")({ archive: true }, false), false);
   assert.equal(g("historyReleased")({ archive: true }, true), true);
   assert.equal(g("historyReleased")({}, false), true);
@@ -154,13 +155,14 @@ test("a foto com crédito mostra a legenda 'Foto: nome' e as sem crédito não m
 test("cena do telão: cada passada mostra uma página de fotos, pré-carrega só ela e o título e o agradecimento vêm com os números em destaque", async () => {
   const preloaded = [];
   const history = scene({ preload: async url => { preloaded.push(url); } });
-  const ready = await history.prepare();
+  const prepared = await history.prepare();
+  const ready = prepared.page.photos;
   const pageSize = Math.ceil(mosaic.length / Math.ceil(mosaic.length / 8));
   assert.equal(ready.length, pageSize, "a primeira página é a maior");
   assert.ok(pageSize <= 8 && pageSize >= 4);
   assert.deepEqual(Array.from(preloaded), Array.from(mosaic.slice(0, pageSize), id => photos.getById(id).file), "pré-carrega só a página mostrada");
   const view = document.createElement("div");
-  view.innerHTML = history.render(ready).markup;
+  view.innerHTML = history.render(prepared).markup;
   assert.equal(view.querySelectorAll(".ms-history-tile img").length, pageSize);
   assert.match(textOf(view.querySelector(".ms-title")), /10 anos de DevFest em Campinas/);
   assert.match(textOf(view.querySelector(".ms-history-thanks")), /desde 2009/);
@@ -173,13 +175,14 @@ test("cena do telão: as passadas seguem pelas páginas e, ao longo delas, TODAS
   const seen = new Set();
   const pages = Math.ceil(mosaic.length / 8);
   for (let index = 0; index < pages; index++) {
-    const page = await history.prepare();
-    assert.notEqual(page, MURAL_SKIP, `a página ${index + 1} não pode sumir`);
+    const prepared = await history.prepare();
+    assert.notEqual(prepared, MURAL_SKIP, `a página ${index + 1} não pode sumir`);
+    const page = prepared.page.photos;
     assert.ok(page.length >= 4, "nunca uma foto sozinha");
     page.forEach(photo => seen.add(photo.id));
   }
   assert.deepEqual([...seen].sort(), [...mosaic].sort());
-  const again = await history.prepare();
+  const again = (await history.prepare()).page.photos;
   assert.equal(again[0].id, mosaic[0], "depois da última página volta pra primeira");
 });
 
@@ -188,7 +191,7 @@ test("cena do telão: com qualquer total de fotos as páginas ficam equilibradas
     const ids = Array.from(mosaic).concat(Array.from(mosaic), Array.from(mosaic)).slice(0, total);
     const sizes = [];
     const history = scene({ mosaic: ids });
-    for (let index = 0; index < Math.ceil(total / 8); index++) sizes.push((await history.prepare()).length);
+    for (let index = 0; index < Math.ceil(total / 8); index++) sizes.push((await history.prepare()).page.photos.length);
     assert.ok(Math.max(...sizes) <= 8 && Math.min(...sizes) >= 4 && Math.max(...sizes) - Math.min(...sizes) <= 1, `${total} fotos: ${sizes}`);
     assert.equal(sizes.reduce((sum, size) => sum + size, 0), total);
   }
@@ -200,7 +203,7 @@ test("cena do telão: página com menos de 4 fotos carregadas some (nunca uma fo
   const failingMost = scene({ preload: async url => { if (firstPage.indexOf(url) > 2) throw new Error("falhou"); } });
   assert.equal(await failingMost.prepare(), MURAL_SKIP);
   const failingOne = scene({ preload: async url => { if (url === firstPage[0]) throw new Error("falhou"); } });
-  assert.equal((await failingOne.prepare()).length, pageSize - 1);
+  assert.equal((await failingOne.prepare()).page.photos.length, pageSize - 1);
   assert.equal(await scene({ mosaic: [] }).prepare(), MURAL_SKIP);
 });
 

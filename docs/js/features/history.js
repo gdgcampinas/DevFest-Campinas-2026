@@ -25,7 +25,7 @@ function bindHistoryFilter(sectionEl) {
 function initHistory(sectionEl, { config, text, milestones, mosaic, photos, anniversary, eventYear, devMode = false }) {
   const showArchive = isReleased({ public: config.archivePublic }, { devMode });
   const resolve = id => photos.getById(id) ?? null;
-  const items = milestones.filter(milestone => historyReleased(milestone, showArchive)).map(milestone => ({ milestone, photo: milestone.photo ? resolve(milestone.photo) : null })).filter(item => item.photo || (!item.milestone.photo && item.milestone.badge));
+  const items = historyMilestoneItems({ milestones, resolve, showArchive });
   const mosaicPhotos = mosaic.map(resolve).filter(photo => photo && historyReleased(photo, showArchive));
   const visible = isReleased(config, { devMode }) && items.length > 0;
   sectionEl.hidden = !visible;

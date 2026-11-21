@@ -86,6 +86,15 @@ function initMural() {
   const rotation = createRotation();
   const qrTargets = createQrTargets({ siteUrl: EVENT.url, extraQuery: () => rehearsal.query, albumProxyUrl: proxyUrl, links: contactRepository.getAll() });
   const qrRenderer = createQrRenderer();
+  const historyConfig = historyConfigRepository.getAll();
+  const historyShown = id => historyReleased(historyPhotosRepository.getById(id) ?? {}, historyConfig.archivePublic);
+  const historyScene = createHistoryScene({
+    photos: historyPhotosRepository, text: historyTextsRepository.getAll(), rotation, preload,
+    mosaic: historyMosaicRepository.getAll().filter(historyShown), highlights: historyHighlightsRepository.getAll().filter(historyShown),
+    milestones: historyMilestoneItems({ milestones: historyMilestonesRepository.getAll(), resolve: id => historyPhotosRepository.getById(id) ?? null, showArchive: historyConfig.archivePublic }),
+    years: anniversaryYears({ eventYear: Number(EVENT.date.slice(0, 4)), ...anniversaryConfigRepository.getAll() }), founded: anniversaryConfigRepository.getAll().communityFounded,
+    perPage: historyConfig.scenePerPage, tourSeconds: historyConfig.tour,
+  });
   const registry = {
     "now-next": createNowNextScene(grid),
     album: createAlbumScene({
@@ -116,7 +125,7 @@ function initMural() {
     teaser: createTeaserScene({ repository: muralTeasersRepository, schedule: SCHEDULE }),
     wall: createWallScene({ promptLabelOf: id => wallConfigRepository.prompt(id)?.label ?? id, rotation }),
     speakers: createSpeakersScene({ pool: extractSpeakers(SCHEDULE, TRACKS, EVENT.timezone), slots: TRACKS.length, preload: url => preloadImage(url, { timeoutMs: config.speakerPhotoTimeoutMs, schedule }), metaOf: speakerMetaLine }),
-    history: createHistoryScene({ photos: historyPhotosRepository, mosaic: historyMosaicRepository.getAll().filter(id => historyReleased(historyPhotosRepository.getById(id) ?? {}, historyConfigRepository.getAll().archivePublic)), text: historyTextsRepository.getAll(), years: anniversaryYears({ eventYear: Number(EVENT.date.slice(0, 4)), ...anniversaryConfigRepository.getAll() }), founded: anniversaryConfigRepository.getAll().communityFounded, perPage: historyConfigRepository.getAll().scenePerPage, rotation, preload }),
+    history: historyScene,
     team: createTeamScene({ repository: teamRepository, preload: url => preloadImage(url, { timeoutMs: config.speakerPhotoTimeoutMs, schedule }), rotation }),
     phoenix: createPhoenixScene({ preload, imageUrl: brandRepository.getAll().mascot, title, subtitle: eventDateLabel(SCHEDULE, EVENT.timezone) }),
     podium: createPodiumScene({ talkIndex, highlightOf: talkHighlightsRepository.forTalk }),
