@@ -50,6 +50,28 @@ test("a regra: com `public` ligado aparece em toda cena, menos nas de vídeo e n
   assert.equal(visible(released, null), false);
 });
 
+test("nas cenas de QR code o selo vai pro canto ESQUERDO (nunca cobre o QR) e volta pra direita nas outras; entra de novo ao trocar de lado", () => {
+  const side = g("sealSideFor");
+  assert.deepEqual(Array.from(config.telaoSeal.leftOnTypes), ["qr"]);
+  ["qr-avaliar", "qr-recados", "qr-comunidade"].forEach(id => assert.equal(side(released, { id, type: "qr" }), "left", id));
+  ["agora", "historia-marco", "fundos-1", "tips"].forEach((id, index) => assert.equal(side(released, { id, type: ["now-next", "history", "wallpapers", "tips"][index] }), "right", id));
+  const el = mount();
+  const seal = g("initAnniversarySeal")(el, { config: released, text, eventYear: 2026 });
+  seal.show({ id: "agora", type: "now-next" });
+  assert.equal(el.dataset.side, "right");
+  assert.equal(el.parentElement.hasAttribute("data-seal-left"), false);
+  el.classList.remove("is-in");
+  seal.show({ id: "qr-avaliar", type: "qr" });
+  assert.equal(el.dataset.side, "left");
+  assert.equal(el.parentElement.hasAttribute("data-seal-left"), true, "o palco libera o outro canto pros cabeçalhos");
+  assert.ok(el.classList.contains("is-in"), "trocou de lado: entra de novo");
+  seal.show({ id: "agora", type: "now-next" });
+  assert.equal(el.dataset.side, "right");
+  assert.equal(el.parentElement.hasAttribute("data-seal-left"), false);
+  const css = fs.readFileSync(path.join(DOCS, "css/mural.css"), "utf8");
+  assert.match(css, /\.mural-seal\[data-side="left"\]\{right:auto;left:var\(--m\)\}/);
+});
+
 test("o selo aparece e some conforme a cena, e ENTRA de novo (animação) a cada volta; ano zero não mostra nada", () => {
   const el = mount();
   const seal = g("initAnniversarySeal")(el, { config: released, text, eventYear: 2026 });
@@ -87,5 +109,5 @@ test("o telão carrega o selo e o liga: elemento, scripts na ordem, `?selo=1` de
   const css = fs.readFileSync(path.join(DOCS, "css/mural.css"), "utf8");
   assert.match(css, /\.mural-seal\.is-in\{animation:ms-seal-in/);
   assert.match(css, /@keyframes ms-seal-shine/);
-  assert.match(css, /\.mural-stage\[data-seal\] :is\(\.ms-head,\.ms-history-top\)\{padding-right:/, "os cabeçalhos deixam o canto livre");
+  assert.match(css, /\.mural-stage\[data-seal\]:not\(\[data-seal-left\]\) :is\(\.ms-head,\.ms-history-top\)\{padding-right:/, "os cabeçalhos deixam o canto livre");
 });
