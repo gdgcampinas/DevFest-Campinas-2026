@@ -7,7 +7,12 @@ function initHistoriaPage() {
     config: historyConfigRepository.getAll(), text, milestones: historyMilestonesRepository.getAll(), mosaic: historyMosaicRepository.getAll(), photos: historyPhotosRepository,
     anniversary: anniversaryConfigRepository.getAll(), eventYear: Number(EVENT.date.slice(0, 4)), devMode: isDevModeStored(),
   });
-  if (!shown) {
+  if (shown) {
+    initLightbox(sectionEl, {
+      selector: ".history-milestone img, .history-mosaic img", createModal, text: text.lightbox,
+      describe: img => ({ title: img.closest("figure")?.querySelector(".history-event")?.textContent ?? "", caption: img.alt }),
+    });
+  } else {
     sectionEl.hidden = false;
     sectionEl.innerHTML = historySoonMarkup(text);
   }

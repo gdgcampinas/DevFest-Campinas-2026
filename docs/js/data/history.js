@@ -115,6 +115,7 @@ const HISTORY_TEXTS = {
   filterLabel: "Filtrar as fotos",
   filterAll: "Todas",
   filterKinds: { devfest: "DevFest", outros: "Outros eventos" },
+  lightbox: { label: "Foto ampliada", prev: "Foto anterior", next: "Próxima foto" },
   sceneThanks: "Obrigado por fazer parte dessa história desde {founded}.",
 };
 
