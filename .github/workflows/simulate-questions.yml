@@ -1,0 +1,44 @@
+name: 🧪 Simular perguntas (DEV)
+
+run-name: 🧪 Simular perguntas (DEV), trilha ${{ inputs.track }}, palestra ${{ inputs.talk }}
+
+# Grava perguntas de EXEMPLO de uma palestra na edição do DEV (2026-dev), pra testar a tela do moderador e o quadro da sala sem esperar a palestra
+# (as regras do Firestore só deixam a plateia perguntar com a palestra no ar). Nunca toca na edição de produção (ver DevFestIA/tools/simulate-questions/simulate-plan.js).
+# Repetir regrava os mesmos documentos (volta tudo ao estado de exemplo). Para limpar: workflow "🧹 Limpar dados de teste" com "dados do modo DEV" marcado.
+on:
+  workflow_dispatch:
+    inputs:
+      track:
+        description: "Trilha"
+        type: choice
+        options: [ia, webdata, mobile, cloudsec, mentoring]
+        default: ia
+      talk:
+        description: "Número da palestra na trilha (1 = a primeira do dia)"
+        type: string
+        default: "1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: simulate-questions
+  cancel-in-progress: false
+
+jobs:
+  simulate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Simulate questions on DEV
+        run: node DevFestIA/tools/simulate-questions/simulate.js
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          TRACK: ${{ inputs.track }}
+          TALK: ${{ inputs.talk }}
