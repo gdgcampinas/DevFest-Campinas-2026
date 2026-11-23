@@ -6,3 +6,8 @@
 .mf-tile.is-hidden{border-style:dashed}
 .mf-time{position:absolute;top:14px;left:14px;padding:2px 8px;border-radius:99px;background:oklch(8% .01 260 / .78);font:700 12px var(--font-body);color:#fff}
 .mf-tile .chip-btn{justify-content:center}
+.mf-toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.mf-tabs{display:flex;flex-wrap:wrap;gap:8px}
+.mf-tab{padding:8px 14px;border:1px solid var(--card-border);border-radius:99px;background:transparent;color:var(--muted);font:600 14px var(--font-body);cursor:pointer}
+.mf-tab.is-active{border-color:var(--google-green);background:color-mix(in oklch,var(--google-green) 18%,transparent);color:var(--text)}
+.mf-approve-all{margin-left:auto}

@@ -397,7 +397,8 @@ function albumScene({ preload = async () => {}, nowMs = () => 0 } = {}) {
   });
   return { scene, requested };
 }
-const albumCtx = (albums, extra = {}) => ctx({ live: { albums, ...extra } });
+/** O álbum ao vivo exige aprovação (`approval: true`): por padrão o contexto já traz TODAS as fotos dele aprovadas, e `extra.approved` troca isso (os testes da aprovação). */
+const albumCtx = (albums, extra = {}) => ctx({ live: { albums, approved: { "ao-vivo": (albums["ao-vivo"]?.photos ?? []).map(photo => photo.id) }, ...extra } });
 const liveAlbum = photos => ({ id: "ao-vivo", title: "Ao vivo", photos });
 const render = async (scene, params, context) => html(scene.render(await scene.prepare(params, context), params, context).markup);
 
@@ -501,7 +502,7 @@ test("foto nova (latest): a que acabou de chegar em destaque grande com as mais 
   const album = { "ao-vivo": liveAlbum(landscapes(5)) };
   const newest = albumPhoto("RECEM", 4032, 3024);
   assert.equal(await scene.prepare({ album: "ao-vivo", latest: true }, albumCtx(album)), MURAL_SKIP, "sem foto nova nada aparece");
-  const withNew = albumCtx(album, { newPhoto: { key: "ao-vivo", photo: newest, photos: [newest] } });
+  const withNew = albumCtx(album, { newPhoto: { key: "ao-vivo", photo: newest, photos: [newest] }, approved: { "ao-vivo": [...album["ao-vivo"].photos.map(photo => photo.id), "RECEM"] } });
   const el = await render(scene, { album: "ao-vivo", latest: true, badge: "Nova foto da galera" }, withNew);
   const tiles = [...el.querySelectorAll(".ms-album--feature .ms-album-tile img")].map(img => img.getAttribute("src"));
   assert.equal(tiles.length, 4, "nunca sozinha: destaque + 3");
@@ -510,7 +511,21 @@ test("foto nova (latest): a que acabou de chegar em destaque grande com as mais 
   assert.match(textOf(el), /Nova foto da galera/);
   assert.equal(requested.length, 4);
   assert.equal(await scene.prepare({ album: "elotech-agibank", latest: true }, albumCtx({ "elotech-agibank": liveAlbum(landscapes(2)) }, { newPhoto: { key: "ao-vivo", photo: newest, photos: [newest] } })), MURAL_SKIP, "foto nova de outro álbum");
-  assert.equal(await scene.prepare({ album: "ao-vivo", latest: true }, albumCtx(album, { newPhoto: { key: "ao-vivo", photo: newest, photos: [newest] }, hidden: { "ao-vivo": ["RECEM"] } })), MURAL_SKIP, "o moderador tirou do ar");
+  assert.equal(await scene.prepare({ album: "ao-vivo", latest: true }, albumCtx(album, { newPhoto: { key: "ao-vivo", photo: newest, photos: [newest] }, hidden: { "ao-vivo": ["RECEM"] }, approved: { "ao-vivo": ["RECEM"] } })), MURAL_SKIP, "o moderador tirou do ar");
+});
+
+test("álbum com aprovação: só as fotos aprovadas entram; sem a lista de aprovadas a cena não aparece; a escondida sai mesmo aprovada; álbum sem aprovação ignora a lista", async () => {
+  const { scene } = albumScene();
+  const album = { "ao-vivo": liveAlbum(landscapes(6)) };
+  const ids = prepared => [...prepared.items.map(item => item.photo.id)].sort();
+  assert.equal(await scene.prepare({ album: "ao-vivo" }, ctx({ live: { albums: album } })), MURAL_SKIP, "a lista de aprovadas ainda não chegou");
+  assert.equal(await scene.prepare({ album: "ao-vivo" }, albumCtx(album, { approved: { "ao-vivo": [] } })), MURAL_SKIP, "nenhuma aprovada");
+  assert.deepEqual(ids(await scene.prepare({ album: "ao-vivo", model: "collage", count: 4 }, albumCtx(album, { approved: { "ao-vivo": ["L0", "L1", "L2", "L3", "L4"] }, hidden: { "ao-vivo": ["L4"] } }))), ["L0", "L1", "L2", "L3"]);
+  assert.deepEqual(ids(await scene.prepare({ album: "elotech-agibank", model: "collage", count: 4 }, albumCtx({ "elotech-agibank": liveAlbum(landscapes(6)) }, { approved: {} }))).length, 4, "álbum sem aprovação não precisa de lista");
+  const newest = albumPhoto("RECEM", 4032, 3024);
+  const latestCtx = approved => albumCtx({ "ao-vivo": liveAlbum(landscapes(5)) }, { newPhoto: { key: "ao-vivo", photo: newest, photos: [newest] }, approved: { "ao-vivo": approved } });
+  assert.equal(await scene.prepare({ album: "ao-vivo", latest: true }, latestCtx(["L0", "L1", "L2", "L3", "L4"])), MURAL_SKIP, "a foto nova ainda não foi aprovada");
+  assert.ok((await scene.prepare({ album: "ao-vivo", latest: true }, latestCtx(["L0", "L1", "L2", "L3", "L4", "RECEM"]))).items.length >= 2, "aprovada, ganha o destaque");
 });
 
 test("álbum: ordem 'shuffle' embaralha uma vez e 'newest' mantém a lista como veio; o modelo desconhecido falha", async () => {

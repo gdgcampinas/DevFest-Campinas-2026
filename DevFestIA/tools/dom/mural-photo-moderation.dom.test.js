@@ -17,7 +17,7 @@ const mountMuralPhotoModeration = site.get("mountMuralPhotoModeration");
 const photo = (id, addedAt) => ({ id, url: `https://lh3.googleusercontent.com/pw/${id}`, width: 4000, height: 3000, addedAt });
 const album = { id: "ao-vivo", label: "DevFest 2026 ao vivo" };
 
-function setup({ photos = [photo("c", 3), photo("b", 2), photo("a", 1)], hiddenInitial = null, email = "mod@gmail.com", limit = 60, setImpl, access } = {}) {
+function setup({ approval = false, approvedInitial = null, photos = [photo("c", 3), photo("b", 2), photo("a", 1)], hiddenInitial = null, email = "mod@gmail.com", limit = 60, setImpl, access } = {}) {
   document.body.innerHTML = `<main id="modBody"></main>`;
   const clock = createFakeClock();
   const writes = [];
@@ -25,6 +25,12 @@ function setup({ photos = [photo("c", 3), photo("b", 2), photo("a", 1)], hiddenI
   const calls = { album: 0, signOut: 0 };
   let albumPhotos = photos;
   let albumFails = false;
+  const approvedWrites = [];
+  const approvedListeners = [];
+  const approvedRepository = {
+    listen: (id, onNext, onError) => { approvedListeners.push({ id, onNext, onError }); onNext(approvedInitial); return () => approvedListeners.pop(); },
+    set: async (id, data) => { approvedWrites.push({ id, data }); },
+  };
   const hiddenRepository = {
     listen: (id, onNext, onError) => { listeners.push({ id, onNext, onError }); onNext(hiddenInitial); return () => listeners.pop(); },
     set: setImpl ?? (async (id, data) => { writes.push({ id, data }); }),
@@ -32,11 +38,11 @@ function setup({ photos = [photo("c", 3), photo("b", 2), photo("a", 1)], hiddenI
   const login = { signIn: async () => email, restore: async () => (email === "restore" ? "mod@gmail.com" : null), signOut: async () => { calls.signOut++; } };
   const rootEl = document.getElementById("modBody");
   initMuralPhotoModeration(rootEl, {
-    album, hiddenRepository, login, ...(access ? { access, accessText: site.get("moderatorAccessTextsRepository").getAll() } : {}), schedule: clock.schedule, refreshMs: 30000, limit, formatTime: item => `h${item.addedAt}`,
+    album: approval ? { ...album, approval: true } : album, hiddenRepository, approvedRepository, login, ...(access ? { access, accessText: site.get("moderatorAccessTextsRepository").getAll() } : {}), schedule: clock.schedule, refreshMs: 30000, limit, formatTime: item => `h${item.addedAt}`,
     albumsRepository: { get: async () => { calls.album++; if (albumFails) throw new Error("sem rede"); return { photos: albumPhotos }; } },
     whenReady: task => task(),
   });
-  return { rootEl, clock, writes, listeners, calls, setPhotos: list => { albumPhotos = list; }, failAlbum: value => { albumFails = value; }, signIn: async () => { rootEl.querySelector("[data-mod-signin]").click(); await waitFor(() => rootEl.querySelector(".mf-grid")); } };
+  return { rootEl, clock, writes, approvedWrites, approvedListeners, listeners, calls, setPhotos: list => { albumPhotos = list; }, failAlbum: value => { albumFails = value; }, signIn: async () => { rootEl.querySelector("[data-mod-signin]").click(); await waitFor(() => rootEl.querySelector(".mf-grid")); } };
 }
 const tiles = root => [...root.querySelectorAll(".mf-tile")];
 
@@ -218,4 +224,81 @@ test("não deu pra verificar a conta (rede): bloqueia com 'tentar de novo', que 
   rootEl.querySelector("[data-mod-retry]").click();
   await waitFor(() => rootEl.querySelector(".mf-tile"));
   assert.equal(listeners.length, 1);
+});
+
+// ---------- álbum com aprovação (`approval: true`): Pendentes, No ar e Fora do ar ----------
+/** Os arrays vêm do jsdom (outro realm): comparar como JSON. */
+const plain = value => JSON.parse(JSON.stringify(value));
+const tabLabels = root => [...root.querySelectorAll("[data-mod-tab]")].map(tab => textOf(tab));
+const buttonsOf = tile => [...tile.querySelectorAll("button")].map(button => textOf(button));
+
+test("álbum com aprovação: abre em Pendentes, com as fotos novas esperando, as contagens das três abas e o 'Aprovar todas'", async () => {
+  const { rootEl, signIn, listeners, approvedWrites, writes } = setup({ approval: true, approvedInitial: { ids: ["a"] }, hiddenInitial: { ids: [] } });
+  await signIn();
+  assert.deepEqual(tabLabels(rootEl), ["Pendentes · 2", "No ar · 1", "Fora do ar · 0"]);
+  assert.match(textOf(rootEl), /Nada vai ao telão sem você aprovar/);
+  assert.deepEqual(tiles(rootEl).map(tile => textOf(tile.querySelector(".mf-time"))), ["h3", "h2"], "só as pendentes, a mais nova primeiro");
+  assert.ok(tiles(rootEl).every(tile => JSON.stringify(buttonsOf(tile)) === JSON.stringify(["Aprovar", "Recusar"])));
+  assert.ok(rootEl.querySelector("[data-approve-all]"));
+  assert.equal(listeners.length, 1, "escuta a lista de escondidas");
+  assert.deepEqual([approvedWrites.length, writes.length], [0, 0], "abrir a tela não grava nada");
+});
+
+test("Aprovar grava a lista de aprovadas (nada em escondidas) e a foto passa de Pendentes para No ar", async () => {
+  const { rootEl, signIn, approvedWrites, writes } = setup({ approval: true, approvedInitial: { ids: [] }, hiddenInitial: { ids: [] } });
+  await signIn();
+  tiles(rootEl)[1].querySelector("[data-photo-approve]").click(); // a foto "b"
+  await waitFor(() => approvedWrites.length === 1);
+  assert.deepEqual(plain(approvedWrites[0]), { id: "ao-vivo", data: { ids: ["b"] } });
+  assert.equal(writes.length, 0);
+  assert.deepEqual(tabLabels(rootEl), ["Pendentes · 2", "No ar · 1", "Fora do ar · 0"]);
+  rootEl.querySelector('[data-mod-tab="live"]').click();
+  assert.match(textOf(rootEl), /As 1 fotos aprovadas/);
+  assert.deepEqual(buttonsOf(tiles(rootEl)[0]), ["Tirar do ar"]);
+});
+
+test("Recusar esconde a foto (vai para Fora do ar, sem aprovar) e Voltar ao ar aprova de novo e tira da lista de escondidas", async () => {
+  const { rootEl, signIn, approvedWrites, writes } = setup({ approval: true, approvedInitial: { ids: [] }, hiddenInitial: { ids: [] } });
+  await signIn();
+  tiles(rootEl)[0].querySelector("[data-photo-reject]").click(); // a foto "c"
+  await waitFor(() => writes.length === 1);
+  assert.deepEqual(plain(writes[0]), { id: "ao-vivo", data: { ids: ["c"] } });
+  assert.equal(approvedWrites.length, 0);
+  await waitFor(() => !rootEl.querySelector("button[disabled]")); // terminou de salvar
+  assert.deepEqual(tabLabels(rootEl), ["Pendentes · 2", "No ar · 0", "Fora do ar · 1"]);
+  rootEl.querySelector('[data-mod-tab="off"]').click();
+  assert.match(textOf(rootEl), /Voltar ao ar aprova a foto de novo/);
+  assert.deepEqual(buttonsOf(tiles(rootEl)[0]), ["Voltar ao ar"]);
+  await waitFor(() => rootEl.querySelector("[data-photo-restore]:not([disabled])"));
+  tiles(rootEl)[0].querySelector("[data-photo-restore]").click();
+  await waitFor(() => approvedWrites.length === 1 && writes.length === 2);
+  assert.deepEqual(plain(approvedWrites[0].data.ids), ["c"]);
+  assert.deepEqual(plain(writes[1].data.ids), [], "saiu da lista de escondidas");
+});
+
+test("Tirar do ar (foto aprovada) esconde sem desaprovar; 'Aprovar todas as pendentes' aprova só as pendentes de uma vez", async () => {
+  const { rootEl, signIn, approvedWrites, writes } = setup({ approval: true, approvedInitial: { ids: ["a"] }, hiddenInitial: { ids: [] } });
+  await signIn();
+  rootEl.querySelector('[data-mod-tab="live"]').click();
+  tiles(rootEl)[0].querySelector("[data-photo-takedown]").click();
+  await waitFor(() => writes.length === 1);
+  assert.deepEqual(plain(writes[0].data.ids), ["a"]);
+  assert.equal(approvedWrites.length, 0, "a lista de aprovadas não muda");
+  rootEl.querySelector('[data-mod-tab="pending"]').click();
+  rootEl.querySelector("[data-approve-all]").click();
+  await waitFor(() => approvedWrites.length === 1);
+  assert.deepEqual([...approvedWrites[0].data.ids].sort(), ["a", "b", "c"]);
+  assert.equal(rootEl.querySelector("[data-approve-all]"), null, "sem pendentes não há botão");
+  assert.match(textOf(rootEl), /Nenhuma foto esperando/);
+});
+
+test("aprovação: a lista de aprovadas que chega do banco atualiza a tela; sem permissão avisa e desfaz; até ler a lista nada de aprovar", async () => {
+  const { rootEl, signIn, approvedListeners } = setup({ approval: true, approvedInitial: { ids: [] }, hiddenInitial: { ids: [] }, setImpl: async () => { throw Object.assign(new Error("negado"), { code: "permission-denied" }); } });
+  await signIn();
+  approvedListeners[0].onNext({ ids: ["a", "b", "c"] });
+  assert.deepEqual(tabLabels(rootEl), ["Pendentes · 0", "No ar · 3", "Fora do ar · 0"]);
+  approvedListeners[0].onNext({ ids: [] });
+  tiles(rootEl)[0].querySelector("[data-photo-reject]").click();
+  await waitFor(() => /Sem permissão/.test(textOf(rootEl)));
+  assert.deepEqual(tabLabels(rootEl)[0], "Pendentes · 3", "a foto voltou para Pendentes");
 });

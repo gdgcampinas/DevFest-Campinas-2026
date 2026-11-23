@@ -22,9 +22,10 @@ const ART_VERSION = fs.readFileSync(path.join(DOCS, "js", "data", "mural-arts.js
 const BODY = `<!doctype html><html><body><div class="mural-backdrop"><div class="mural-stage" id="muralStage"><main id="muralContent"></main><footer id="muralFooter"></footer><div class="mural-seal" id="muralSeal" hidden></div><aside id="muralDiag" hidden></aside></div></div></body></html>`;
 
 /** Sobe a página com tudo de fora substituído. `search` = parâmetros de URL; `overrides` ajusta o que pode mudar (rede, QR, registered). */
-function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => true, registered = { total: 120 }, initialPodium = null, albums = null, initialControl = null, rawUrl = null, beforePage = null }) {
+function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => true, registered = { total: 120 }, initialPodium = null, albums = null, approvedIds = null, initialControl = null, rawUrl = null, beforePage = null }) {
   const contestListeners = new Map();
   const hiddenListeners = new Map();
+  const approvedListeners = new Map();
   const controlListeners = new Map();
   const globals = {
     QRCode: qr ? function QRCode(el, options) { el.dataset.qrText = options.text; el.innerHTML = "<img>"; } : undefined,
@@ -41,6 +42,8 @@ function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => t
     firebaseClient: { ensureAnonymousUid: async () => "uid" },
     eventStatsRepository: { get: async () => registered },
     muralHiddenRepository: { listen: (key, onNext) => { hiddenListeners.set(key, onNext); onNext(null); return () => hiddenListeners.delete(key); } },
+    // fotos aprovadas (o álbum ao vivo exige aprovação): por padrão todas as do álbum já vêm aprovadas, `approvedIds` troca a lista inicial
+    muralApprovedRepository: { listen: (key, onNext) => { approvedListeners.set(key, onNext); onNext({ ids: approvedIds ?? (albums?.[key]?.photos ?? []).map(photo => photo.id) }); return () => approvedListeners.delete(key); } },
     muralControlRepository: { listen: (key, onNext) => { controlListeners.set(key, onNext); onNext(initialControl); return () => controlListeners.delete(key); } },
     contestResultsRepository: { listen: (key, onNext) => { contestListeners.set(key, onNext); onNext(initialPodium ? { podium: initialPodium } : null); return () => contestListeners.delete(key); } },
   };
@@ -66,7 +69,7 @@ function boot({ search, demo = "2026-11-28T09:10", qr = true, internet = () => t
   site.run(PAGE, "pages/mural.js");
   const document = site.document;
   return {
-    site, document, contestListeners, hiddenListeners, controlListeners,
+    site, document, contestListeners, hiddenListeners, approvedListeners, controlListeners,
     active: () => document.querySelector(".mural-scene.is-active")?.dataset.scene ?? null,
     activeText: () => textOf(document.querySelector(".mural-scene.is-active") ?? document.body),
     confetti: () => site.run("__confetti"),
@@ -172,6 +175,19 @@ test("foto escondida pelo moderador some do telão (a lista vem do banco por esc
   page.site.window.close();
 });
 
+test("álbum ao vivo com aprovação: foto que o moderador ainda não aprovou não vai ao telão, e aprovar a faz entrar na hora", async () => {
+  const albums = { "ao-vivo": albumBody("Ao vivo", ["a", "b", "c", "d", "e", "f"]) };
+  const page = boot({ search: "cenas=album-ao-vivo,dicas&albuns=https://proxy.test", albums, approvedIds: [] });
+  await waitFor(() => page.active() === "dicas");
+  assert.equal(page.document.querySelector('[data-scene="album-ao-vivo"]'), null, "nenhuma aprovada: a cena não aparece");
+  page.approvedListeners.get("ao-vivo")({ ids: ["a", "b", "c", "d", "e"] });
+  await waitFor(() => page.active() === "album-ao-vivo");
+  const shown = () => [...page.document.querySelectorAll(".mural-scene.is-active .ms-album-tile img")].map(img => img.getAttribute("src").match(/pw\/(\w)=/)[1]).sort().join("");
+  await waitFor(() => shown() === "abcde");
+  assert.ok(!shown().includes("f"), "a que não foi aprovada não aparece");
+  page.site.window.close();
+});
+
 test("foto nova no álbum ao vivo: entra em destaque na frente do rodízio com o selo; as que já estavam lá não viram destaque", async () => {
   const albums = { "ao-vivo": albumBody("Ao vivo", ["a", "b", "c"]) };
   const page = boot({ search: "cenas=dicas,foto-nova&albuns=https://proxy.test", albums });
@@ -179,6 +195,9 @@ test("foto nova no álbum ao vivo: entra em destaque na frente do rodízio com o
   await new Promise(resolve => setTimeout(resolve, 150)); // algumas leituras do álbum sem novidade
   assert.equal(page.document.querySelector('[data-scene="foto-nova"]'), null, "as 3 fotos que já estavam lá não são novas");
   albums["ao-vivo"] = albumBody("Ao vivo", ["NOVA", "a", "b", "c"]);
+  await new Promise(resolve => setTimeout(resolve, 150)); // o álbum ao vivo exige aprovação: a nova ainda espera o moderador
+  assert.equal(page.document.querySelector('[data-scene="foto-nova"]'), null, "foto não aprovada não ganha destaque");
+  page.approvedListeners.get("ao-vivo")({ ids: ["NOVA", "a", "b", "c"] });
   await waitFor(() => page.active() === "foto-nova");
   assert.equal(page.document.querySelector(".ms-album--feature .ms-album-tile img").getAttribute("src"), "https://lh3.googleusercontent.com/pw/NOVA=w1400-h1000", "a nova é a grande, com mais 3 ao lado");
   assert.match(page.activeText(), /Nova foto da galera/);

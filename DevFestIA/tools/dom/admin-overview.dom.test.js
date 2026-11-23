@@ -183,6 +183,25 @@ test("cartão de fotos: total do álbum e quantas estão fora do ar; cada metade
   assert.equal(brokenViews.at(-1).lines[1], "Fora do ar: 2", "a lista de fotos fora do ar continua valendo");
 });
 
+test("cartão de fotos de álbum com aprovação: quantas esperam o moderador (nem aprovadas nem escondidas), em alerta; em dia fica ok; stop desliga as duas escutas", async () => {
+  const clock = createFakeClock(JAM.getTime());
+  const listeners = { hidden: [], approved: [] };
+  const albumsRepository = { get: async () => ({ photos: ["p0", "p1", "p2", "p3", "p4"].map(id => ({ id })) }) };
+  const listenTo = (name, doc) => ({ listen: (id, onNext) => { listeners[name].push(id); onNext(doc); return () => listeners[name].pop(); } });
+  const make = (approved, hidden) => g("createAdminPhotosCard")({ definition: definitions.photos, album: { id: "ao-vivo", label: "ao vivo", approval: true }, albumsRepository, hiddenRepository: listenTo("hidden", hidden), approvedRepository: listenTo("approved", approved), timer: clock.schedule });
+  const views = [];
+  const stop = make({ ids: ["p0", "p1"] }, { ids: ["p1"] })(view => views.push({ ...view, lines: [...view.lines] }), () => {});
+  await waitFor(() => views.at(-1)?.headline === "3 esperando");
+  assert.deepEqual(views.at(-1), { headline: "3 esperando", tone: "warn", lines: ["Álbum: ao vivo", "Abra Fotos para aprovar", "No ar: 1"] });
+  assert.deepEqual([listeners.hidden, listeners.approved], [["ao-vivo"], ["ao-vivo"]]);
+  stop();
+  assert.deepEqual([listeners.hidden.length, listeners.approved.length, clock.pending()], [0, 0, 0]);
+  const done = [];
+  make({ ids: ["p0", "p1", "p2", "p3", "p4"] }, null)(view => done.push({ ...view, lines: [...view.lines] }), () => {});
+  await waitFor(() => done.at(-1)?.headline === "Nenhuma esperando");
+  assert.deepEqual(done.at(-1), { headline: "Nenhuma esperando", tone: "ok", lines: ["Álbum: ao vivo", "Tudo em dia", "No ar: 5"] });
+});
+
 test("cartão de fotos: sem álbum ao vivo configurado (intermediário desligado) pede o aviso de erro do cartão", () => {
   const errors = [];
   const card = g("createAdminPhotosCard")({ definition: definitions.photos, album: null, albumsRepository: null, hiddenRepository: {}, timer: createFakeClock().schedule });

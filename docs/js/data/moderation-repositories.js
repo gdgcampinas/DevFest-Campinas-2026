@@ -60,6 +60,12 @@ const moderationMuralHiddenRepository = window.createFirestoreDocumentRepository
   collectionName: "mural-hidden",
 });
 
+/** Fotos aprovadas do mural (`mural-approved/<álbum>`), do lado do moderador: lê e regrava a lista de ids (aprovar / recusar fotos novas do álbum com aprovação). */
+const moderationMuralApprovedRepository = window.createFirestoreDocumentRepository({
+  db: window.moderatorClient.db,
+  collectionName: "mural-approved",
+});
+
 /** Controle remoto do mural (`mural-control/current`), do lado do moderador: lê o estado e regrava o documento inteiro (aviso, fixar, pausar, recarregar, emergência). */
 const moderationMuralControlRepository = window.createFirestoreDocumentRepository({
   db: window.moderatorClient.db,
@@ -75,6 +81,7 @@ const moderationModeratorsRepository = window.createFirestoreCollectionRepositor
 window.moderationModeratorsRepository = moderationModeratorsRepository;
 window.moderationMuralControlRepository = moderationMuralControlRepository;
 window.moderationMuralHiddenRepository = moderationMuralHiddenRepository;
+window.moderationMuralApprovedRepository = moderationMuralApprovedRepository;
 window.moderationQuestionsRepository = moderationQuestionsRepository;
 window.moderationContestProjectsRepository = moderationContestProjectsRepository;
 window.moderationContestVotesRepository = moderationContestVotesRepository;

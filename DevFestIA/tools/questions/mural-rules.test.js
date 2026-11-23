@@ -56,6 +56,32 @@ test("mural-hidden: o id do álbum só aceita letras minúsculas, números e hí
   denied(await deleteDoc(mod, "mural-hidden", "devfest-2025"));
 });
 
+// ---------- fotos APROVADAS (`mural-approved/<álbum>`): o mesmo formato e as mesmas regras do `mural-hidden` ----------
+const putApproved = (who, album, data = hiddenData()) => createDoc(who, "mural-approved", album, data, { stamp: "updatedAt" });
+
+test("mural-approved: o moderador grava e regrava a lista de aprovadas; o mural lê pelo id, ninguém lista, sem login não lê", { skip }, async () => {
+  const mod = moderator();
+  allowed(await putApproved(mod, "ao-vivo", hiddenData(["AF1QipAAA", "AF1QipBBB"])));
+  allowed(await putApproved(mod, "ao-vivo", hiddenData(["AF1QipAAA", "AF1QipBBB", "AF1QipCCC"])), "regrava o documento inteiro (update)");
+  allowed(await getDoc(person(), "mural-approved", "ao-vivo"));
+  denied(await getDoc(null, "mural-approved", "ao-vivo"));
+  denied(await query(person(), "mural-approved", { edition: "2026" }));
+  denied(await query(mod, "mural-approved", { edition: "2026" }), "nem o moderador lista");
+});
+
+test("mural-approved: plateia (anônimo) não grava; só o formato certo vale (campos, edição, horário do servidor, no máximo 500); ninguém apaga", { skip }, async () => {
+  const mod = moderator();
+  denied(await putApproved(person(), "ao-vivo"));
+  denied(await putApproved(null, "ao-vivo"));
+  denied(await putApproved(mod, "ao-vivo", hiddenData(["a"], { extra: 1 })), "campo a mais");
+  denied(await putApproved(mod, "ao-vivo", hiddenData("AF1QipAAA")), "ids que não é lista");
+  denied(await putApproved(mod, "ao-vivo", { ...hiddenData(), edition: "1999" }), "edição desconhecida");
+  denied(await putApproved(mod, "Ao Vivo"), "id do álbum fora do padrão");
+  denied(await putApproved(mod, "ao-vivo", hiddenData(Array.from({ length: 501 }, (_, i) => `id${i}`))), "501 ids");
+  allowed(await putApproved(mod, "ao-vivo", hiddenData(Array.from({ length: 500 }, (_, i) => `id${i}`))), "500 ids ainda vale");
+  denied(await deleteDoc(mod, "mural-approved", "ao-vivo"));
+});
+
 // ---------- controle remoto (`mural-control/current`) ----------
 const controlData = (extra = {}) => ({ edition: base.edition, notices: [], emergency: null, hold: null, reload: 0, ...extra });
 const putControl = (who, data = controlData(), id = "current") => createDoc(who, "mural-control", id, data, { stamp: "updatedAt" });

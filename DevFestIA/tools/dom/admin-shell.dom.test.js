@@ -251,6 +251,7 @@ test("a página admin.html inteira: abre logado na seção Atalhos com os links 
 function bootAdminPage(hash) {
   const controlListeners = [];
   const hiddenListeners = [];
+  const approvedListeners = [];
   const site = loadSite({
     scripts: SCRIPTS,
     html: BODY,
@@ -260,6 +261,7 @@ function bootAdminPage(hash) {
       moderatorClient: { restoreModerator: async () => "mod@gmail.com", signInWithGoogle: async () => "mod@gmail.com", signOutModerator: async () => {} },
       moderationMuralControlRepository: { listen: (key, onNext) => { controlListeners.push(key); onNext(null); return () => controlListeners.pop(); }, set: async () => {} },
       moderationMuralHiddenRepository: { listen: (id, onNext) => { hiddenListeners.push(id); onNext({ ids: [] }); return () => hiddenListeners.pop(); }, set: async () => {} },
+      moderationMuralApprovedRepository: { listen: (id, onNext) => { approvedListeners.push(id); onNext({ ids: [] }); return () => approvedListeners.pop(); }, set: async () => {} },
       moderationQuestionsRepository: { countWhere: async filters => (filters.talkKey.endsWith("|ia") ? 4 : 0) },
       moderationWallRepository: { countWhere: async () => 2, listen: (filters, onNext) => { onNext([{ id: "a", status: "pending", text: "oi", prompt: "buscar", createdAtMs: 1 }]); return () => {}; }, update: async () => {} },
       moderationWaitlistRepository: {
@@ -274,7 +276,7 @@ function bootAdminPage(hash) {
     },
   });
   site.run(PAGE, "pages/admin.js");
-  return { site, controlListeners, hiddenListeners, body: site.document.getElementById("adminBody") };
+  return { site, controlListeners, hiddenListeners, approvedListeners, body: site.document.getElementById("adminBody") };
 }
 
 test("a página admin.html: a seção Telão traz o controle do telão SEM um segundo login nem título repetido, e sair da seção desliga a escuta", async () => {
@@ -291,13 +293,16 @@ test("a página admin.html: a seção Telão traz o controle do telão SEM um se
   site.window.close();
 });
 
-test("a página admin.html: a seção Fotos lê o álbum ao vivo pelo intermediário e escuta a lista de fotos fora do ar", async () => {
-  const { site, hiddenListeners, body } = bootAdminPage("#fotos");
+test("a página admin.html: a seção Fotos lê o álbum ao vivo pelo intermediário e escuta as listas de fotos fora do ar e aprovadas (a foto nova espera em Pendentes)", async () => {
+  const { site, hiddenListeners, approvedListeners, body } = bootAdminPage("#fotos");
   await waitFor(() => body.querySelectorAll(".mf-tile").length === 1);
   assert.deepEqual(hiddenListeners, ["ao-vivo"]);
+  assert.deepEqual(approvedListeners, ["ao-vivo"]);
   assert.equal(body.querySelectorAll("[data-mod-signin]").length, 0);
   assert.equal(body.querySelectorAll("h1").length, 1);
-  assert.match(textOf(body), /As 1 fotos mais novas/);
+  assert.match(textOf(body), /Pendentes · 1.*No ar · 0.*Fora do ar · 0/);
+  assert.match(textOf(body), /Nada vai ao telão sem você aprovar/);
+  assert.match(textOf(body), /Aprovar todas as pendentes/);
   site.window.close();
 });
 
@@ -309,7 +314,7 @@ test("a página admin.html: a visão geral abre por padrão com os 7 cartões do
   assert.match(card("control"), /Telão normal/);
   assert.match(card("rooms"), /5 de 5 com palestra no ar/);
   assert.match(card("pending"), /4 na fila/);
-  assert.match(card("photos"), /1 foto\(s\)/);
+  assert.match(card("photos"), /1 esperando/);
   assert.match(card("wall"), /2 esperando/);
   assert.match(card("waitlist"), /7 na lista/);
   assert.match(card("registered"), /321/);

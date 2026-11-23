@@ -8,10 +8,12 @@
  * (ex.: `ids` das fotos escondidas), e documento que não existe vira lista vazia.
  * `bind.notifyNew` avisa FOTO NOVA numa lista que chega várias vezes (álbum ao vivo): a primeira leitura é a base; as novas vão pra `live[notifyNew.live]` ({ key, photo, photos }, a mais
  * nova primeiro) por `expireMs`, e a cena de destaque entra na frente do rodízio no máximo uma vez a cada `minGapMs` (as outras só entram no rodízio normal, sem enchê-lo de interrupções).
+ * `bind.renotify` (id de OUTRA fonte com `notifyNew`, ex.: `album-live`): quando este documento muda (as fotos aprovadas), refaz o aviso de foto nova daquela fonte com a lista que já chegou, pra foto que o moderador acabou de aprovar ganhar o destaque.
+ * `visiblePhotos(chave, fotos)` filtra o que vale como foto nova (álbum com aprovação: só as aprovadas) e devolve `null` enquanto a lista de aprovadas ainda não chegou (nada é anunciado, e a primeira lista completa vira a base).
  * `bind.handle` entrega o documento inteiro a um TRATADOR injetado por nome (`handlers`: ex.: o controle remoto, features/mural-control.js).
  * Tudo injetado: `definitions`, `live` (objeto de estado), `mural` (pushInterrupt), `handlers`, `celebrate`, `schedule`, `nowMs`, `createDetector`, `createNewDetector`. Dual (navegador e Node).
  */
-function createLiveBindings({ definitions, live, mural, handlers = {}, celebrate = () => {}, schedule = fn => { fn(); return () => {}; }, nowMs = () => Date.now(), createDetector = createFreshPublishDetector, createNewDetector = createNewItemsDetector }) {
+function createLiveBindings({ definitions, live, mural, handlers = {}, celebrate = () => {}, schedule = fn => { fn(); return () => {}; }, nowMs = () => Date.now(), createDetector = createFreshPublishDetector, createNewDetector = createNewItemsDetector, visiblePhotos = (key, photos) => photos }) {
   const detectors = new Map();
   const newDetectors = new Map();
   const lastNotified = new Map();
@@ -24,7 +26,9 @@ function createLiveBindings({ definitions, live, mural, handlers = {}, celebrate
     return newDetectors.get(id);
   };
 
-  function announceNew(sourceId, key, spec, photos) {
+  function announceNew(sourceId, key, spec, allPhotos) {
+    const photos = visiblePhotos(key, allPhotos);
+    if (!photos) return;
     const fresh = newDetectorFor(sourceId).observe(photos);
     if (!fresh.length) return;
     const announced = { key, photo: fresh[0], photos: fresh };
@@ -33,6 +37,13 @@ function createLiveBindings({ definitions, live, mural, handlers = {}, celebrate
     if (nowMs() - (lastNotified.get(sourceId) ?? -Infinity) < (spec.minGapMs ?? 0)) return;
     lastNotified.set(sourceId, nowMs());
     mural.pushInterrupt(spec.interrupt);
+  }
+
+  /** Refaz o aviso de foto nova da fonte `targetId` (a de `notifyNew`) pro álbum `key`, com a lista que ela já entregou. */
+  function renotify(targetId, key) {
+    const spec = definitions.find(item => item.id === targetId)?.bind?.notifyNew;
+    const photos = live[definitions.find(item => item.id === targetId)?.bind?.live]?.[key]?.photos;
+    if (spec && photos) announceNew(`${targetId}:${key}`, key, spec, photos);
   }
 
   return function onLiveUpdate(sourceId, value) {
@@ -48,6 +59,7 @@ function createLiveBindings({ definitions, live, mural, handlers = {}, celebrate
       const field = bind.collect.field;
       (live[bind.live] ??= {})[key] = field ? value?.[field] ?? [] : value;
       if (bind.notifyNew && value?.photos) announceNew(sourceId, key, bind.notifyNew, value.photos);
+      if (bind.renotify) renotify(bind.renotify, key);
       return;
     }
     if (!bind.pick) {

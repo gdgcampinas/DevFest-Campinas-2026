@@ -163,6 +163,54 @@ test("foto nova: um aviso mais novo não é apagado pelo prazo do anterior; álb
   assert.equal(pushed.length, 3);
 });
 
+// ---------- álbum com aprovação: a foto só vira "foto nova" depois de aprovada ----------
+function approvalSetup() {
+  const { createFakeClock } = require("../lib/fake-clock.js");
+  const clock = createFakeClock();
+  const live = {};
+  const pushed = [];
+  const definitions = [
+    { id: "album", bind: { live: "albums", collect: true, notifyNew: { live: "newPhoto", minGapMs: 0, expireMs: 120000, interrupt: { sceneId: "foto-nova", priority: 80, ttlMs: 60000, immediate: true } } } },
+    { id: "approved", bind: { live: "approved", collect: { field: "ids" }, renotify: "album" } },
+  ];
+  const visiblePhotos = (key, photos) => (live.approved?.[key] ? photos.filter(photo => live.approved[key].includes(photo.id)) : null);
+  const onUpdate = createLiveBindings({ definitions, live, mural: { pushInterrupt: interrupt => pushed.push(interrupt) }, schedule: clock.schedule, nowMs: clock.nowMs, visiblePhotos });
+  return { live, pushed, onUpdate };
+}
+
+test("aprovação: sem a lista de aprovadas nada é anunciado; a primeira lista completa é a base (nada de destaque pras já aprovadas)", () => {
+  const { live, pushed, onUpdate } = approvalSetup();
+  onUpdate("album:ao-vivo", albumOf(["a", "b"]));
+  assert.equal(live.newPhoto, undefined);
+  onUpdate("approved:ao-vivo", { ids: ["a", "b"] });
+  assert.equal(live.newPhoto, undefined, "as já aprovadas viram a base, não foto nova");
+  assert.equal(pushed.length, 0);
+});
+
+test("aprovação: foto nova não aprovada não ganha destaque; quando o moderador a aprova, ela entra em destaque na frente do rodízio", () => {
+  const { live, pushed, onUpdate } = approvalSetup();
+  onUpdate("approved:ao-vivo", { ids: ["a", "b"] });
+  onUpdate("album:ao-vivo", albumOf(["a", "b"]));
+  onUpdate("album:ao-vivo", albumOf(["c", "a", "b"]));
+  assert.equal(live.newPhoto, undefined, "c ainda espera aprovação");
+  assert.equal(pushed.length, 0);
+  onUpdate("approved:ao-vivo", { ids: ["a", "b", "c"] });
+  assert.equal(live.newPhoto.photo.id, "c");
+  assert.equal(pushed.length, 1);
+  assert.equal(pushed[0].sceneId, "foto-nova");
+  onUpdate("approved:ao-vivo", { ids: ["a", "b", "c"] });
+  assert.equal(pushed.length, 1, "a mesma lista de novo não repete o destaque");
+});
+
+test("aprovação: se a lista de aprovadas chega antes do álbum, a primeira leitura do álbum é a base", () => {
+  const { live, pushed, onUpdate } = approvalSetup();
+  onUpdate("approved:ao-vivo", { ids: ["a", "b"] });
+  assert.equal(live.newPhoto, undefined);
+  onUpdate("album:ao-vivo", albumOf(["a", "b"]));
+  assert.equal(live.newPhoto, undefined);
+  assert.equal(pushed.length, 0);
+});
+
 test("tratador (bind.handle): o documento inteiro vai pro tratador injetado por nome (o controle remoto), sem mexer no estado das cenas", () => {
   const received = [];
   const live = {};

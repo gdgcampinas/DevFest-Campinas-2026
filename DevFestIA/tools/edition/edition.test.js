@@ -19,7 +19,7 @@ test("produção grava na edição 2026; o modo DEV grava os dados de atividade 
 });
 
 test("dado de referência (inscritos, estatísticas, moderadores, recados e o resto do telão) fica sempre na edição de produção, mesmo no DEV", () => {
-  ["registrations", "event-stats", "sync-state", "moderators", "mural-wall", "mural-hidden", "mural-control", "waitlist"].forEach(collectionName => {
+  ["registrations", "event-stats", "sync-state", "moderators", "mural-wall", "mural-hidden", "mural-approved", "mural-control", "waitlist"].forEach(collectionName => {
     assert.equal(resolveEdition({ collectionName, devMode: true }), CURRENT_EDITION, collectionName);
   });
 });

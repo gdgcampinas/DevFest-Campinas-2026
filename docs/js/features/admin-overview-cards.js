@@ -52,18 +52,32 @@ function createAdminPendingQuestionsCard({ definition, schedule, tracks, now, al
   }, onError);
 }
 
-function createAdminPhotosCard({ definition, album, albumsRepository, hiddenRepository, timer }) {
+/**
+ * Cartão "Fotos do telão". Álbum sem aprovação: total de fotos e quantas estão fora do ar. Álbum com aprovação (`album.approval`): quantas fotos ESPERAM o moderador (nem aprovadas nem escondidas),
+ * em alerta quando há alguma, e a contagem das aprovadas. `approvedRepository` só é usado no álbum com aprovação.
+ */
+function createAdminPhotosCard({ definition, album, albumsRepository, hiddenRepository, approvedRepository, timer }) {
   return (onView, onError) => {
     if (!album || !albumsRepository) {
       onError(new Error("álbum ao vivo não configurado"));
       return () => {};
     }
-    const parts = { total: undefined, hidden: undefined }; // undefined = ainda lendo, null = falhou
+    const parts = { photos: undefined, hidden: undefined, approved: album.approval ? undefined : null }; // undefined = ainda lendo, null = falhou (ou não se aplica, em approved)
     const show = value => (value === undefined ? "…" : value === null ? "não consegui ler" : String(value));
-    const render = () => onView({ headline: `${show(parts.total)} foto(s)`, tone: parts.total === null || parts.hidden === null ? "warn" : "ok", lines: [`Álbum: ${album.label}`, `Fora do ar: ${show(parts.hidden)}`] });
-    const stopAlbum = pollOpen({ read: async () => (await albumsRepository.get(album.id)).photos.length, intervalMs: definition.intervalMs, schedule: timer, keepAlive: true })(total => { parts.total = total; render(); }, () => { parts.total = null; render(); });
-    const stopHidden = hiddenRepository.listen(album.id, doc => { parts.hidden = doc?.ids?.length ?? 0; render(); }, () => { parts.hidden = null; render(); });
-    return () => { stopAlbum(); stopHidden(); };
+    const ready = () => parts.photos && parts.hidden && (parts.approved || !album.approval);
+    const failed = () => parts.photos === null || parts.hidden === null || (album.approval && parts.approved === null);
+    const render = () => {
+      if (album.approval && ready()) {
+        const waiting = parts.photos.filter(id => !parts.approved.has(id) && !parts.hidden.has(id)).length;
+        onView({ headline: waiting ? `${waiting} esperando` : "Nenhuma esperando", tone: waiting ? "warn" : "ok", lines: [`Álbum: ${album.label}`, waiting ? "Abra Fotos para aprovar" : "Tudo em dia", `No ar: ${parts.approved.size - [...parts.approved].filter(id => parts.hidden.has(id)).length}`] });
+        return;
+      }
+      onView({ headline: `${show(parts.photos && parts.photos.length)} foto(s)`, tone: failed() ? "warn" : "ok", lines: [`Álbum: ${album.label}`, `Fora do ar: ${show(parts.hidden && parts.hidden.size)}`] });
+    };
+    const stopAlbum = pollOpen({ read: async () => (await albumsRepository.get(album.id)).photos.map(photo => photo.id), intervalMs: definition.intervalMs, schedule: timer, keepAlive: true })(ids => { parts.photos = ids; render(); }, () => { parts.photos = null; render(); });
+    const stopHidden = hiddenRepository.listen(album.id, doc => { parts.hidden = new Set(doc?.ids ?? []); render(); }, () => { parts.hidden = null; render(); });
+    const stopApproved = album.approval ? approvedRepository.listen(album.id, doc => { parts.approved = new Set(doc?.ids ?? []); render(); }, () => { parts.approved = null; render(); }) : () => {};
+    return () => { stopAlbum(); stopHidden(); stopApproved(); };
   };
 }
 
@@ -123,6 +137,7 @@ function defaultAdminOverviewDeps({ album, albumsRepository }) {
     wallRepository: window.moderationWallRepository,
     waitlistRepository: window.moderationWaitlistRepository,
     hiddenRepository: window.moderationMuralHiddenRepository,
+    approvedRepository: window.moderationMuralApprovedRepository,
     statsRepository: window.eventStatsRepository,
     edition: CURRENT_EDITION,
     getUid: () => window.firebaseClient.ensureAnonymousUid(),

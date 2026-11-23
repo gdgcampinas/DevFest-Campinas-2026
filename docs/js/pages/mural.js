@@ -186,6 +186,7 @@ function initMural() {
   // ---------- fontes ao vivo ----------
   const bindings = createLiveBindings({
     definitions: muralSourcesRepository.getAll(), live, mural, schedule, nowMs,
+    visiblePhotos: (key, photos) => albumVisiblePhotos({ meta: muralAlbumsRepository.get(key), photos, approvedIds: live.approved?.[key] }),
     handlers: { control: doc => control.apply(doc) },
     celebrate: () => createConfetti().fire({ origin: { x: window.innerWidth / 2, y: window.innerHeight / 2 }, force: true }),
   });
@@ -194,11 +195,12 @@ function initMural() {
       schedule, nowMs, backoff: config.network.backoff, onUpdate: bindings,
       sources: buildLiveSources({
         definitions: muralSourcesRepository.getAll(), schedule,
-        repositories: { eventStats: () => window.eventStatsRepository, contestResults: () => window.contestResultsRepository, albums: () => albumsRepository, muralHidden: () => window.muralHiddenRepository, muralControl: () => window.muralControlRepository, wall: () => window.wallRepository },
+        repositories: { eventStats: () => window.eventStatsRepository, contestResults: () => window.contestResultsRepository, albums: () => albumsRepository, muralHidden: () => window.muralHiddenRepository, muralApproved: () => window.muralApprovedRepository, muralControl: () => window.muralControlRepository, wall: () => window.wallRepository },
         keyResolvers: {
           albums: () => albumKeys().map(entry => entry.key),
           "live-albums": () => albumKeys(true),
           "other-albums": () => albumKeys(false),
+          "approval-albums": () => (proxyUrl ? muralAlbumsRepository.withApproval().map(album => album.id) : []),
           "contest-sessions": () => talkIndex.getAll().filter(entry => talkHighlightsRepository.hasContest(entry.data)).map(entry => entry.key),
         },
         getUid: () => window.firebaseClient.ensureAnonymousUid(),

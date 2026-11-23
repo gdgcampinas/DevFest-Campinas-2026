@@ -3,11 +3,22 @@
  * polaroid, feature, mosaic ou "auto", que escolhe pela orientação das fotos do álbum), `params.count` (quantas fotos; padrão do modelo), `params.badge` (selo, ex.: "Nova foto da galera") e
  * `params.latest` (a foto mais nova que acabou de chegar, `ctx.live.newPhoto`, em destaque grande no modelo "feature", com as mais recentes ao lado).
  * NUNCA uma foto sozinha: cada modelo tem um mínimo (`min`, data/mural-album-models.js) e com menos fotos que isso a cena não aparece (MURAL_SKIP) até o álbum encher.
- * A lista de fotos vem da fonte ao vivo (`ctx.live.albums[id]`, lida do intermediário a cada 45 s no ao vivo); fotos que o moderador escondeu (`ctx.live.hidden[id]`, lista de ids) não entram.
+ * A lista de fotos vem da fonte ao vivo (`ctx.live.albums[id]`, lida do intermediário a cada 45 s no ao vivo); fotos que o moderador escondeu (`ctx.live.hidden[id]`, lista de ids) não entram, e no álbum com aprovação (`approval`) só entram as aprovadas (`ctx.live.approved[id]`; sem essa lista a cena não aparece).
  * Cada foto é pré-carregada NO TAMANHO que o modelo usa, com tempo limite; a que falha vai de castigo e é trocada por outra na mesma preparação, então nunca aparece imagem quebrada.
  * Sem lista (intermediário fora do ar e nada guardado) a cena não aparece (MURAL_SKIP) e o rodízio segue com as outras.
  * Tudo injetado: `albums`, `models` e `autoRules` (data), `renderers` (um por modelo), `createPool` (fila de fotos por álbum), `preload`, `orderPhotos`.
  */
+/**
+ * As fotos do álbum que podem ir ao telão: no álbum com aprovação (`meta.approval`) só as que o moderador aprovou (`approvedIds`), e em qualquer álbum fora as escondidas (`hiddenIds`).
+ * Devolve `null` quando o álbum exige aprovação e a lista de aprovadas ainda não chegou (ninguém mostra foto não aprovada por falta de lista). Puro, usado pela cena e pelo aviso de foto nova.
+ */
+function albumVisiblePhotos({ meta, photos, approvedIds, hiddenIds = [] }) {
+  if (meta?.approval && !approvedIds) return null;
+  const approved = new Set(approvedIds ?? []);
+  const hidden = new Set(hiddenIds);
+  return photos.filter(photo => (!meta?.approval || approved.has(photo.id)) && !hidden.has(photo.id));
+}
+
 function createAlbumScene({ albums, models, autoRules, renderers, createPool, preload, orderPhotos = photos => photos }) {
   const pools = new Map();
   const acceptFor = prefer => (prefer === "any" ? undefined : photo => photoOrientation(photo) === prefer);
@@ -35,16 +46,16 @@ function createAlbumScene({ albums, models, autoRules, renderers, createPool, pr
       if (!meta) throw new Error(`álbum desconhecido: ${params.album}`);
       const album = ctx.live.albums?.[meta.id];
       if (!album) return MURAL_SKIP;
-      const hidden = new Set(ctx.live.hidden?.[meta.id] ?? []);
-      const photos = album.photos.filter(photo => !hidden.has(photo.id));
-      if (!photos.length) return MURAL_SKIP;
+      const visibility = { meta, approvedIds: ctx.live.approved?.[meta.id], hiddenIds: ctx.live.hidden?.[meta.id] };
+      const photos = albumVisiblePhotos({ ...visibility, photos: album.photos });
+      if (!photos?.length) return MURAL_SKIP;
 
       let model;
       let pool = null;
       let candidates;
       if (params.latest) {
         const latest = ctx.live.newPhoto;
-        if (!latest || latest.key !== meta.id || hidden.has(latest.photo.id)) return MURAL_SKIP;
+        if (!latest || latest.key !== meta.id || !albumVisiblePhotos({ ...visibility, photos: [latest.photo] })?.length) return MURAL_SKIP;
         model = chooseAlbumModel({ model: "feature", photos, models, autoRules });
         candidates = [latest.photo, ...photos.filter(photo => photo.id !== latest.photo.id)].slice(0, params.count ?? model.count);
       } else {
