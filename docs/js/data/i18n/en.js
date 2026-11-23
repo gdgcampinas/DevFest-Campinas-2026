@@ -463,6 +463,8 @@ I18N_DICTIONARIES.en = {
     "Piadas ou comentários ofensivos sobre gênero, orientação sexual, raça, religião, nacionalidade ou corpo não são bem-vindos.": "Offensive jokes or comments about gender, sexual orientation, race, religion, nationality or body are not welcome.",
     "Espaço seguro": "Safe space",
     "Contato físico não solicitado não é permitido.": "Unsolicited physical contact is not allowed.",
+    "Comunidade apartidária e laica": "A non-partisan and secular community",
+    "O GDG Campinas e o DevFest Campinas são apartidários e laicos. Não representam partido, candidato, religião ou igreja, e não são espaço para propaganda política ou religiosa. Aqui o assunto é tecnologia, e todas as pessoas são bem-vindas, qualquer que seja a crença ou a opinião.": "GDG Campinas and DevFest Campinas are non-partisan and secular. They do not represent any party, candidate, religion or church, and are not a place for political or religious campaigning. Here the topic is technology, and everyone is welcome, whatever their beliefs or opinions.",
     "Consentimento": "Consent",
     "Continuar interagindo com alguém depois que essa pessoa pediu pra parar não é permitido.": "Continuing to interact with someone after they asked you to stop is not allowed.",
     "Consequências": "Consequences",

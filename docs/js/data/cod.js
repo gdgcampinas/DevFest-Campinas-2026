@@ -33,6 +33,12 @@ const CODE_OF_CONDUCT = {
       title: "Consequências",
       body: "Comportamento fora dessas regras pode resultar em expulsão do evento, sem reembolso.",
     },
+    {
+      trackColor: "var(--google-blue)",
+      icon: "shield",
+      title: "Comunidade apartidária e laica",
+      body: "O GDG Campinas e o DevFest Campinas são apartidários e laicos. Não representam partido, candidato, religião ou igreja, e não são espaço para propaganda política ou religiosa. Aqui o assunto é tecnologia, e todas as pessoas são bem-vindas, qualquer que seja a crença ou a opinião.",
+    },
   ],
   contact: {
     title: "Fale com a gente",
