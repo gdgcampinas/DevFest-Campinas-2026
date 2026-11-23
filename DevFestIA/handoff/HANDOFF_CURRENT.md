@@ -1,5 +1,20 @@
 # Handoff — Current State
 
+## SESSÃO 17 (2026-11-23): CI TRAVADO CORRIGIDO, CÓDIGO DE CONDUTA APARTIDÁRIO E LAICO, TEXTO DO CODING JAM, FOTOS COM APROVAÇÃO
+
+**Feito (tudo no `development`, um commit por melhoria, inglês, sem menção de IA):**
+- **CI travado:** o `8df4c23` subiu `MURAL_ARTS_VERSION` para 2 e o teste `mural-page.dom.test.js` esperava `?v=1` fixo; a asserção falhava dentro do telão simulado e o processo não encerrava (CI "in progress" por 25 min+). Agora o teste lê a versão do dado (`c9f5343`). Sinal de teste de tela que trava no CI: rodar os arquivos `dom` um a um com `perl -e 'alarm 25; exec @ARGV' node --test <arquivo>` pra achar o culpado.
+- **Código de conduta:** quinta regra "Comunidade apartidária e laica" em `data/cod.js` (+ inglês). A página do WhatsApp mora em outro repositório (`gdg-campinas/codigo-de-conduta-grupo-whatsapp`) e ficou FORA do escopo (Renato: foco só no evento).
+- **Coding Jam:** chamada "Construa com IA. Juntos. Em duas horas." (destaque, card da grade e teaser do telão) e descrição nova no card (`description` em `data/parallel-sessions.js`, com a Liga de TI). Votação e pódio ficaram como estavam.
+- **FOTOS COM APROVAÇÃO (pedido do Renato):** no álbum ao vivo a foto só vai ao telão DEPOIS de o moderador aprovar. `approval: true` em `data/mural-albums.js` (ligado em PROD e DEV); lista de ids aprovadas em `mural-approved/<álbum>` (regras no `firestore.rules`, mesmo formato do `mural-hidden`, até 500 ids); recusar/tirar do ar continua em `mural-hidden`. Tela Fotos do admin: abas Pendentes, No ar e Fora do ar (esta última não estava no desenho: sem ela uma recusa por engano não teria volta; "Voltar ao ar" aprova de novo) e "Aprovar todas as pendentes" (as que estão na tela, até 60). Cartão da visão geral mostra "N esperando". O telão filtra por `albumVisiblePhotos` (cena de álbum) e o destaque "foto nova" só dispara pra foto aprovada (`bind.renotify` + `visiblePhotos` em `features/mural-live-bindings.js`); sem a lista de aprovadas o álbum ao vivo não aparece (falha fechada).
+
+**DEPENDE DO RENATO (importante):**
+1. **PUBLICAR AS REGRAS DO FIRESTORE** (`DevFestIA/firebase/firestore.rules`, coleção nova `mural-approved`). As regras não sobem pelo CI. Sem isso o moderador não consegue aprovar e o telão não lê a lista: o álbum ao vivo fica sem foto nenhuma.
+2. Alguém aprovando no dia: sem aprovação nenhuma foto nova do álbum ao vivo chega ao telão (as cenas dos outros álbuns seguem).
+3. Foto recusada continua dentro do álbum do Google Fotos (só sai de lá à mão, no próprio Google Fotos).
+
+**Armadilhas novas:** o telão exibe `albums.ao-vivo` só com `live.approved["ao-vivo"]` (testes de cena usam `albumCtx`, que já aprova tudo por padrão); `createLiveBindings` ganhou `visiblePhotos`; teste de tela que clica em botão logo depois de salvar precisa esperar o botão sair de `disabled`.
+
 ## SESSÃO 16 (2026-11-20 a 2026-11-21): LINE-UP REAL EM PROD, DADOS DEV x PROD, HISTÓRIA 2009 A 2026, SELO DE 10 ANOS, TELÃO COM A HISTÓRIA COMPLETA, MASCOTE "GUMBLE" (protocolo de novo chat, ~95% de contexto)
 
 **Estado ao encerrar:** branch `development` em `8df4c23` (promoção para `main` é automática pelo workflow "Publicar no main"; no último conferido `main` estava em `e3744da` e a validação do `8df4c23` rodava; conferir `gh run list`). Árvore limpa (só `.claude/` não rastreado). Deploy do GitHub Pages leva ~2 min; o navegador do painel guarda página velha (usar `?r=algo`). Detalhes item a item: itens 57 a 94 desta lista (os números sobem de baixo pra cima: o 94 é o mais novo). Resumo técnico permanente em `PROJECT_CONTEXT.md` (bloco "Fase 20 a 21 de novembro de 2026").

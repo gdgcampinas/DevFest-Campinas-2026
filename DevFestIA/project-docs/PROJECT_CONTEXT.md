@@ -1315,3 +1315,11 @@ architectural, functional, or data-state impact:
    `git log`/`git status`, not against memory of a previous session.
 
 See `project-docs/Continuidade.md` for the full rule.
+
+## Fotos do telão com aprovação (sessão 17, 23 de novembro de 2026)
+
+- **Regra:** álbum com `approval: true` (`data/mural-albums.js`; hoje só o `ao-vivo`) só mostra no telão a foto que o moderador APROVOU. Os outros álbuns seguem como antes (entram sozinhos, o moderador pode tirar do ar).
+- **Dados:** `mural-approved/<álbum>` (documento com `ids`, até 500; regras iguais às do `mural-hidden`: o telão lê pelo id, só o moderador grava, ninguém lista nem apaga; coleção de dado de referência, edição de produção). `mural-hidden` guarda as recusadas e as tiradas do ar. Foto visível = aprovada E não escondida.
+- **Telão:** nova fonte `approved` em `data/mural-sources.js` (uma escuta por álbum com aprovação, `window.muralApprovedRepository`), `albumVisiblePhotos` (puro, em `components/mural-scenes/mural-album-scene.js`) usado pela cena e pelo aviso de foto nova; `bind.renotify` refaz o aviso quando a lista de aprovadas muda; sem a lista a cena não aparece.
+- **Admin > Fotos:** `components/mural-photo-moderation.js` (`photoApprovalGroups`, abas Pendentes, No ar e Fora do ar) e `features/mural-photo-moderation.js` (aprovar, recusar, tirar do ar, voltar ao ar, aprovar todas as pendentes); cartão "Fotos do telão" da visão geral mostra quantas esperam.
+- **Publicação:** as regras do Firestore precisam ser publicadas à parte (não sobem pelo CI).
