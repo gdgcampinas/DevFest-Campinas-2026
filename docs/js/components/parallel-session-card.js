@@ -24,6 +24,8 @@ function parallelSessionCardMarkup({ session, round, roundIndex, host, highlight
       <span class="parallel-kicker">${session.kicker}</span>
       <span class="parallel-tag">${texts.tag}</span>
       <h3 class="parallel-title">${label}</h3>
+      ${highlight?.tagline ? `<p class="parallel-tagline">${highlight.tagline}</p>` : ""}
+      ${session.description ? `<p class="parallel-desc">${session.description}</p>` : ""}
       <p class="parallel-meta">${iconMarkup("clock")}${round.start}–${round.end}</p>
       <p class="parallel-meta">${iconMarkup("pin")}${session.place}</p>
       ${parallelHostMarkup(host, { talk: session.name, color: session.color })}

@@ -43,7 +43,7 @@ test("card do Coding Jam: chip Workshop mais chip Coding Jam, frase, pódio 1º 
   assert.ok(card.classList.contains("talk--highlight"));
   assert.match(card.getAttribute("style"), /--highlight-color:var\(--google-yellow\)/);
   assert.deepEqual(texts(root, ".talk-format"), ["Workshop", "Coding Jam"]);
-  assert.equal(textOf(root.querySelector(".talk-highlight-tagline")), "Monte seu projeto, apresente e dispute o pódio");
+  assert.equal(textOf(root.querySelector(".talk-highlight-tagline")), "Construa com IA. Juntos. Em duas horas.");
   assert.deepEqual(texts(root, ".talk-podium-slot"), ["1º lugar", "2º lugar", "3º lugar"]);
   assert.equal(textOf(root.querySelector(".talk-highlight-note")), "Traga seu notebook");
   assert.ok(root.querySelector(".talk-highlight-note svg"), "o aviso tem o ícone do dado");
@@ -216,7 +216,7 @@ test("índice e calendário: o Coding Jam favorita, compartilha por código e va
   const entry = site.get("talkToCalendarEntry")(index.get(key), event, "https://site/");
   assert.equal(entry.title, "GDG Campinas Coding Jam");
   assert.deepEqual(plain([entry.start.toISOString(), entry.end.toISOString()]), ["2026-11-28T17:15:00.000Z", "2026-11-28T17:55:00.000Z"]);
-  assert.match(entry.details, /Coding Jam: Monte seu projeto, apresente e dispute o pódio/);
+  assert.match(entry.details, /Coding Jam: Construa com IA. Juntos. Em duas horas./);
   assert.ok(!entry.details.includes("Palestrante(s)"), "quem conduz não vira palestrante no calendário");
   const ics = site.get("buildIcs")([entry], { name: "Agenda" });
   assert.match(ics, /SUMMARY:GDG Campinas Coding Jam/);

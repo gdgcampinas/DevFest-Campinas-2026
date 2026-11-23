@@ -26,7 +26,7 @@ const TALK_HIGHLIGHTS = [
     icon: "trophy",
     color: "var(--google-yellow)",
     ribbon: "Mão na massa",
-    tagline: "Monte seu projeto, apresente e dispute o pódio",
+    tagline: "Construa com IA. Juntos. Em duas horas.",
     note: "Traga seu notebook",
     noteIcon: "laptop",
     tools: { label: "Recomendamos usar", items: ["Antigravity", "Antigravity IDE", "Gemini"] },

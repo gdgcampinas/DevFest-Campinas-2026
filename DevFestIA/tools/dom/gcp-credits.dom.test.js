@@ -169,7 +169,7 @@ test("a grade põe o card alto ao lado das sessões que ele cobre, sem mexer na 
   assert.equal(group.querySelectorAll(".parallel-span-slots .slot").length, 2);
   assert.equal([...el.querySelectorAll(".slot")].map(slotEl => slotEl.dataset.index).join(), "0,1,2,3,4", "mesma ordem e mesmo índice das sessões");
   const card = group.querySelector(".parallel-card");
-  assert.match(card.textContent, /Mão na massa.*Lab de IA.*Em paralelo às palestras.*Coding Jam.*10:00–12:00.*Laboratório com computadores.*Liga de TI da PUC/s);
+  assert.match(card.textContent, /Mão na massa.*Lab de IA.*Em paralelo às palestras.*Coding Jam.*Construa com IA\. Juntos\. Em duas horas\..*protótipo funcional.*facilitadores da Liga de TI.*10:00–12:00.*Laboratório com computadores.*Liga de TI da PUC/s);
   assert.doesNotMatch(card.textContent, /Quem faz o lab/, "sem rótulo: a Liga aparece como quem fala");
   assert.match(card.getAttribute("style"), /--band-color:var\(--ia\)/, "a cor é a da trilha de IA/Vibe Coding");
   assert.equal(card.querySelector("a.parallel-cta").getAttribute("href"), "creditos.html");

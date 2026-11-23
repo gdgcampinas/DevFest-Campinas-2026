@@ -7,7 +7,7 @@
  *   leadMinutes   quantos minutos antes do início a atração entra no rodízio
  */
 const MURAL_TEASERS = [
-  { id: "codejam", title: "Coding Jam", call: "Traga seu notebook e venha construir com a gente", source: { highlight: "codejam" }, leadMinutes: 30 },
+  { id: "codejam", title: "Coding Jam", call: "Construa com IA. Juntos. Em duas horas.", source: { highlight: "codejam" }, leadMinutes: 30 },
   { id: "encerramento", title: "Encerramento", call: "Fique até o fim: é a hora de celebrar o dia juntos", source: { moment: "closing" }, leadMinutes: 20 },
   { id: "sorteio", title: "Sorteio", call: "Cadastre-se pelo QR e participe", source: { at: "" }, leadMinutes: 15, enabled: false }, // ligar quando o horário do sorteio estiver definido (source.at)
 ];
