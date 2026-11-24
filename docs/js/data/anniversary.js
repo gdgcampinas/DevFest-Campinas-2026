@@ -14,7 +14,7 @@ const ANNIVERSARY_CONFIG = {
   // `public: false` = só no ensaio (`telao.html?selo=1`); true libera. Some nas cenas dos tipos de `hideOnTypes` (vídeos) e nas de `hideOnIds` (a emergência do moderador). `leftOnTypes`: nas cenas desses tipos (as do QR code, que ocupa o lado direito; nos fundos de tela o canto direito fica livre e o título está à esquerda, então ali ele fica à direita) o selo muda pro canto ESQUERDO pra nunca cobrir o QR.
   // o MESMO selo redondo no cabeçalho do SITE (opção B do Renato, 2026-11-21): à esquerda da pílula, clicável (leva à história). `public: false` = só no modo DEV; true libera em produção.
   siteSeal: { public: true }, // liberado em PROD em 2026-11-21 (pedido do Renato); false volta a escondê-lo (só no modo DEV)
-  telaoSeal: { public: true, /* liberado em PROD em 2026-11-21; false = só o ensaio (?selo=1) */ hideOnTypes: ["video"], hideOnIds: ["emergencia"], leftOnTypes: ["qr"] },
+  telaoSeal: { public: true, /* liberado em PROD em 2026-11-21; false = só o ensaio (?selo=1) */ hideOnTypes: ["video"], hideOnIds: ["emergencia", "fundo-foto-1", "fundo-foto-2", "fundo-foto-3", "fundo-foto-4"], leftOnTypes: ["qr"] },
 };
 
 const ANNIVERSARY_TEXTS = {

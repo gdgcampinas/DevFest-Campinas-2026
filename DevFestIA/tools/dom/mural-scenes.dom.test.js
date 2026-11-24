@@ -347,15 +347,30 @@ test("arte: como ela se adapta a qualquer proporção sai do dado, por forma de 
   assert.deepEqual([plain["--fit"], plain["--focus"]], ["cover", "50% 50%"], "sem dado: preenche e centraliza");
 });
 
-test("as artes do dado: o banner preenche (cover) com foco por forma, as peças com texto aparecem inteiras (contain) e e o Gumble (tem o selo com texto) também aparece inteiro", () => {
+test("as artes do dado: os 10 fundos de foto aparecem inteiros (contain, o cabeçalho e o rodapé já vêm desenhados) e as antigas saíram", () => {
   const arts = g("muralArtsRepository");
-  assert.equal(arts.get("sunset").fit, "cover");
-  assert.ok(arts.get("sunset").focus.tall && arts.get("sunset").focus.wide && arts.get("sunset").focus.standard && arts.get("sunset").focus.ultrawide);
-  assert.equal(arts.get("invite").fit, "contain", "arte com texto não pode ser cortada");
-  assert.equal(arts.get("gumbleton").fit, "contain", "o selo GUMBLETON é texto: em tela vertical o cover o cortava");
-  assert.equal(arts.get("nao-existe"), null);
-  Object.values(arts.getAll()).forEach(art => assert.match(art.file, /^assets\/img\/mural-art-[a-z]+\.webp\?v=\d+$/));
+  const ids = Array.from({ length: 10 }, (_, index) => `fundo-${String(index + 1).padStart(2, "0")}`);
+  assert.deepEqual(Object.keys(arts.getAll()), ids);
+  ids.forEach(id => assert.equal(arts.get(id).fit, "contain", `${id}: tem texto, não pode ser cortada`));
+  ["sunset", "invite", "gumbleton", "nao-existe"].forEach(id => assert.equal(arts.get(id), null, id));
+  Object.values(arts.getAll()).forEach(art => assert.match(art.file, /^assets\/img\/mural-art-fundo-\d{2}\.webp\?v=\d+$/));
 });
+
+test("arte sorteada: cada passada mostra uma da lista, sem repetir antes de todas passarem, e a lista inteira volta a valer depois", async () => {
+  const repository = { get: id => (id === "nao-existe" ? null : { file: `${id}.webp`, alt: id, fit: "contain" }) };
+  const preloaded = [];
+  const scene = g("createArtScene")({ repository, preload: async url => preloaded.push(url), random: () => 0.5 });
+  const pool = ["a", "b", "c", "d"];
+  const pass = async () => (await scene.prepare({ pool })).file;
+  const first = [await pass(), await pass(), await pass(), await pass()];
+  assert.deepEqual([...first].sort(), ["a.webp", "b.webp", "c.webp", "d.webp"], "uma volta mostra todas, sem repetir");
+  const second = [await pass(), await pass(), await pass(), await pass()];
+  assert.deepEqual([...second].sort(), ["a.webp", "b.webp", "c.webp", "d.webp"]);
+  assert.notEqual(second[0], first[3], "na virada do saco não repete a última");
+  assert.equal(preloaded.length, 8);
+  await assert.rejects(scene.prepare({ pool: ["nao-existe"] }), /arte desconhecida/);
+});
+
 
 test("selfie com arte de fundo: a arte preenche e o nome e a data ficam numa faixa embaixo; sem logo nem fênix duplicados", async () => {
   const arts = { get: id => (id === "sunset" ? { file: "s.webp", fit: "cover" } : null) };

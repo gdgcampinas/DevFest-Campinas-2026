@@ -16,6 +16,8 @@
  * "Arte" (`type: "art"`): peça pronta de design em tela cheia, `params.art` = id em data/mural-arts.js (que decide como ela se adapta a qualquer proporção de telão).
  * "Vídeo" (`type: "video"`): o próximo clipe pronto de `params.playlist` (data/mural-videos.js); tempo de tela = a duração do clipe. Toca mudo e COM SOM só nos momentos/fases da playlist (almoço, encerramento, antes e depois);
  * as cenas `*-intervalo` entram só no almoço e no encerramento pra dar mais tempo de vídeo quando ninguém está em palestra. Sem o intermediário ligado ou sem clipe baixado a cena some.
+
+ * "Fundo de foto" (`type: "art"` com `params.pool`, ids `fundo-foto-1..4`): o telão como painel de foto; cada passada SORTEIA uma das artes de `params.pool` (sem repetir antes de todas passarem). As artes já trazem cabeçalho, selo e rodapé desenhados (o selo do telão fica escondido nessas cenas, `hideOnIds` em data/anniversary.js). As cenas antigas `abertura`, `selfie` e `arte-gumbleton` estão DESLIGADAS (`enabled: false`) a pedido do Renato (2026-11-24); religar = trocar `params.art` por uma arte que exista e tirar o `enabled: false`.
  * Fundo animado (`params.backdrop: { playlist }`, em qualquer cena que o aceite pelo `withBackdrop`, components/mural-scenes/mural-backdrop.js): um clipe da lista toca mudo, em laço e escurecido atrás do conteúdo; sem clipe pronto a cena aparece normal. `apoio-video` usa isso na cena do logo da PUC.
  * Liberação dos vídeos da PUC: `PUC_VIDEO_CONFIG.public` (data/puc-videos.js) liga/desliga as cenas `video-puc-*` e `apoio-video` (e põe a `apoio` simples no lugar delas quando desligada).
  * "Linha do dia" (`type: "day-timeline"`): a grade inteira como uma faixa de blocos com o que já passou, o que está no ar e o que vem aí (usa a grade, então só com o line-up revelado).
@@ -43,8 +45,11 @@
  * Tempo de tela por cota de patrocínio: cada cota é uma cena (Master mais tempo, as demais agrupadas). Fotos: cada cena de álbum mostra as próximas da fila,
  * então repetir a cena mostra mais fotos.
  */
+/** Os fundos de foto (data/mural-arts.js, `fundo-01`..`fundo-10`) que a cena "art" com `params.pool` sorteia: cada passada mostra um, sem repetir antes de todos terem passado. As cenas `fundo-foto-1..4` espalham isso pelo dia. */
+const MURAL_PHOTO_BACKDROPS = Array.from({ length: 10 }, (_, index) => `fundo-${String(index + 1).padStart(2, "0")}`);
+
 const MURAL_SCENES = [
-  { id: "abertura", label: "Convite de abertura", type: "art", seconds: 10, transition: "zoom", requires: { phases: ["before"] }, params: { art: "invite" } },
+  { id: "abertura", enabled: false, label: "Convite de abertura", type: "art", seconds: 10, transition: "zoom", requires: { phases: ["before"] }, params: { art: "invite" } },
   { id: "agora", label: "Agora e próximas", type: "now-next", seconds: 22, requires: { reveal: true, phases: ["before", "live"] }, params: {} },
   { id: "aviso", label: "Avisos", type: "notice", seconds: 12, transition: "zoom", requires: { live: "notices" }, params: {} },
   { id: "rolando-0", label: "Rolando agora (sala 1)", type: "spotlight", seconds: 8, requires: { reveal: true, phases: ["live"] }, params: { slot: 0 } },
@@ -53,6 +58,7 @@ const MURAL_SCENES = [
   { id: "rolando-3", label: "Rolando agora (sala 4)", type: "spotlight", seconds: 8, requires: { reveal: true, phases: ["live"] }, params: { slot: 3 } },
   { id: "rolando-4", label: "Rolando agora (sala 5)", type: "spotlight", seconds: 8, requires: { reveal: true, phases: ["live"] }, params: { slot: 4 } },
   { id: "album-ao-vivo", label: "Fotos ao vivo", type: "album", seconds: 14, requires: { live: "albums" }, params: { album: "ao-vivo", model: "auto" } },
+  { id: "fundo-foto-1", label: "Fundo de foto (sorteado, 1ª passada)", type: "art", seconds: 10, transition: "zoom", params: { pool: MURAL_PHOTO_BACKDROPS } },
   { id: "foto-nova", label: "Foto nova da galera", type: "album", seconds: 10, transition: "zoom", requires: { live: "newPhoto" }, params: { album: "ao-vivo", latest: true, badge: "Nova foto da galera" } },
   { id: "album-2025-mosaico", label: "Mosaico DevFest 2025", type: "album", seconds: 14, transition: "zoom", requires: { live: "albums" }, params: { album: "devfest-2025", model: "mosaic" } },
   { id: "patrocinio-master", label: "Patrocínio Master", type: "sponsors", seconds: 12, params: { tiers: ["Master"], title: "Quem faz o DevFest Campinas acontecer" } },
@@ -77,20 +83,23 @@ const MURAL_SCENES = [
   { id: "recados-significou", label: "Recados: o que o DevFest significou", type: "wall", seconds: 16, transition: "zoom", requires: { phases: ["live", "after"], live: "wall" }, params: { prompt: "significou" } },
   { id: "qr-recados", label: "QR: deixe seu recado", type: "qr", seconds: 16, transition: "slide", enabled: WALL_CONFIG.open, from: WALL_CONFIG.window.from, until: WALL_CONFIG.window.until, requires: { live: "wall" }, params: { kicker: "Participe", heading: "Deixe seu recado no telão", hint: "Escaneie, escreva em uma frase e a equipe aprova. A galera vai ver!", path: "recado.html", showUrl: false } },
   { id: "time-1", label: "Quem faz o DevFest Campinas (1)", type: "team", seconds: 11, transition: "rise", params: { kicker: "Gente como você, de casa", title: "Quem faz o DevFest Campinas acontecer" } },
+  { id: "fundo-foto-2", label: "Fundo de foto (sorteado, 2ª passada)", type: "art", seconds: 10, transition: "zoom", params: { pool: MURAL_PHOTO_BACKDROPS } },
   { id: "dicas", label: "Dicas", type: "tips", seconds: 16, params: { title: "Aproveite o DevFest Campinas 2026" } },
   { id: "historia-marco", label: "Nossa história: um marco da linha do tempo", type: "history", seconds: 12, transition: "zoom", enabled: HISTORY_CONFIG.storyPublic, requires: { phases: ["before", "live", "after"] }, params: { view: "marco" } },
   { id: "time-2", label: "Quem faz o DevFest Campinas (2)", type: "team", seconds: 11, transition: "rise", params: { kicker: "Gente como você, de casa", title: "Quem faz o DevFest Campinas acontecer" } },
   { id: "album-2025", label: "Fotos DevFest 2025", type: "album", seconds: 14, requires: { live: "albums" }, params: { album: "devfest-2025", model: "auto" } },
+  { id: "fundo-foto-3", label: "Fundo de foto (sorteado, 3ª passada)", type: "art", seconds: 10, transition: "zoom", params: { pool: MURAL_PHOTO_BACKDROPS } },
   { id: "patrocinio-demais", label: "Demais patrocinadores", type: "sponsors", seconds: 14, params: { tiers: ["Especialista", "Sênior", "Pleno"], title: "Quem faz o DevFest Campinas acontecer" } },
   { id: "patrocinio-apoio", label: "Patrocinadores de apoio", type: "sponsors", seconds: 12, params: { tiers: ["Júnior", "Intern", "Cota Permuta"], title: "Quem faz o DevFest Campinas acontecer", layout: "compact" } },
   { id: "apoio", label: "Apoio institucional", type: "sponsors", seconds: 10, enabled: !PUC_VIDEO_CONFIG.public, params: { tiers: ["Apoio"], kicker: "Nossa casa", title: "Quem faz o DevFest Campinas acontecer", layout: "apoio" } },
   { id: "apoio-video", label: "Apoio institucional com fundo animado (PUC)", type: "sponsors", seconds: 12, enabled: PUC_VIDEO_CONFIG.public, params: { tiers: ["Apoio"], kicker: "Nossa casa", title: "Quem faz o DevFest Campinas acontecer", layout: "apoio", backdrop: { playlist: "puc-fundo" } } },
   { id: "parceiros", label: "Parceiros", type: "sponsors", seconds: 10, params: { tiers: ["Parceiros"], kicker: "Quem caminha com a gente", title: "Quem faz o DevFest Campinas acontecer", layout: "compact" } },
   { id: "comunidades", label: "Comunidades parceiras", type: "sponsors", seconds: 10, params: { tiers: ["Comunidades parceiras"], kicker: "Quem caminha com a gente", title: "Comunidades parceiras que fazem o DevFest Campinas acontecer", layout: "compact" } },
+  { id: "fundo-foto-4", label: "Fundo de foto (sorteado, 4ª passada)", type: "art", seconds: 10, transition: "zoom", params: { pool: MURAL_PHOTO_BACKDROPS } },
   { id: "agradecimento-patrocinio", label: "Agradecimento aos patrocinadores", type: "sponsors", seconds: 20, transition: "zoom", requires: { moments: ["lunch", "closing"] }, params: { kicker: "Muito obrigado", title: "A quem faz o DevFest acontecer", layout: "thanks" } },
-  { id: "selfie", label: "Selfie", type: "selfie", seconds: 20, transition: "zoom", params: { hashtag: "", art: "sunset" } },
+  { id: "selfie", enabled: false, label: "Selfie", type: "selfie", seconds: 20, transition: "zoom", params: { hashtag: "", art: "sunset" } },
   { id: "fundos-1", label: "Fundos de tela (QR)", type: "wallpapers", seconds: 16, transition: "zoom", enabled: WALLPAPERS_CONFIG.public, params: { kicker: "Fundos de tela", heading: "O Gumble agora mora no seu celular", hint: "Escaneie e escolha o seu fundo", path: "fundos.html?origem=telao" } },
-  { id: "arte-gumbleton", label: "Arte do Gumble", type: "art", seconds: 8, transition: "zoom", params: { art: "gumbleton" } },
+  { id: "arte-gumbleton", enabled: false, label: "Arte do Gumble", type: "art", seconds: 8, transition: "zoom", params: { art: "gumbleton" } },
   { id: "video-fiap", label: "Vídeo FIAP (patrocinadora)", type: "video", transition: "zoom", params: { playlist: "fiap" } },
   { id: "video-bosch", label: "Vídeo Bosch (patrocinadora)", type: "video", transition: "zoom", params: { playlist: "bosch" } },
   { id: "video-puc-resumo", label: "Vídeo PUC-Campinas (30 s)", type: "video", transition: "zoom", enabled: PUC_VIDEO_CONFIG.public, params: { playlist: "puc-resumo" } },

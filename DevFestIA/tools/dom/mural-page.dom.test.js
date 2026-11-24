@@ -104,22 +104,21 @@ test("telão: com `alwaysReveal` ligado (só pra ensaio) o line-up aparece mesmo
   page.site.window.close();
 });
 
-test("a arte do convite abre o mural ANTES do evento e não entra durante ele (a reserva segura a tela)", async () => {
-  const before = boot({ search: "cenas=abertura", demo: "2026-11-20T09:10" });
-  await waitFor(() => before.active() === "abertura");
-  assert.equal(before.document.querySelector("img.ms-art-img").getAttribute("src"), `assets/img/mural-art-invite.webp?v=${ART_VERSION}`);
-  before.site.window.close();
-  const during = boot({ search: "cenas=abertura" });
-  await waitFor(() => during.active() === "reserva");
-  assert.equal(during.document.querySelector('[data-scene="abertura"]'), null);
-  during.site.window.close();
+test("as cenas antigas (convite de abertura, selfie do pôr do sol, arte do Gumble) estão desligadas no dado e não entram no rodízio", async () => {
+  const page = boot({ search: "" });
+  const scenes = page.site.get("MURAL_SCENES");
+  for (const id of ["abertura", "selfie", "arte-gumbleton"]) assert.equal(scenes.find(scene => scene.id === id).enabled, false, id);
+  const rotation = scenes.filter(scene => scene.enabled !== false).map(scene => scene.id);
+  assert.deepEqual(["fundo-foto-1", "fundo-foto-2", "fundo-foto-3", "fundo-foto-4"].filter(id => !rotation.includes(id)), [], "os fundos de foto sorteados estão no rodízio");
+  page.site.window.close();
 });
 
-test("selfie na página: arte do pôr do sol de fundo, sem frase de apoio", async () => {
-  const page = boot({ search: "cenas=selfie" });
-  await waitFor(() => page.active() === "selfie");
-  assert.equal(page.document.querySelector(".ms-art-img").getAttribute("src"), `assets/img/mural-art-sunset.webp?v=${ART_VERSION}`);
-  assert.ok(!/Tire sua foto/.test(page.activeText()));
+test("fundo de foto: a cena sorteia uma das 10 artes (4:3, inteira, sem cortar) e o selo do telão não duplica o que já vem desenhado na arte", async () => {
+  const page = boot({ search: "cenas=fundo-foto-1" });
+  await waitFor(() => page.active() === "fundo-foto-1");
+  const src = page.document.querySelector("img.ms-art-img").getAttribute("src");
+  assert.match(src, new RegExp(`^assets/img/mural-art-fundo-(0[1-9]|10)\\.webp\\?v=${ART_VERSION}$`));
+  assert.ok(fs.existsSync(path.join(DOCS, src.split("?")[0])), "a imagem existe");
   page.site.window.close();
 });
 
