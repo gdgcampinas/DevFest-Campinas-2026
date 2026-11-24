@@ -1,5 +1,6 @@
 /* convites pro álbum ao vivo: o cartão da home, a faixa da grade e o link depois do check-in (somem fora da janela, ver features/photo-invite.js) */
 .photo-invite{max-width:1180px;margin:0 auto;padding:0 24px}
+section.photo-invite{margin-top:16px}
 .photo-invite-card{display:flex;align-items:center;gap:16px;padding:16px 20px;border:1px solid var(--accent);border-radius:18px;background:color-mix(in oklch,var(--accent) 10%,var(--card-a));color:var(--text);text-decoration:none}
 .photo-invite-mascot{flex:none;width:64px;height:auto}
 .photo-invite-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
