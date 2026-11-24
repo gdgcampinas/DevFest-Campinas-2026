@@ -38,7 +38,7 @@ function showFormError(formEl, submitBtn, message) {
   submitBtn.insertAdjacentHTML("beforebegin", `<p class="form-error" role="alert">${message}</p>`);
 }
 
-function initTalkFeedback(rootEl, { index, reveal = true, now = () => new Date(), checkinWindow = {}, myCheckins, myRatings, myName, invite = () => "" }) {
+function initTalkFeedback(rootEl, { index, reveal = true, now = () => new Date(), checkinWindow = {}, myCheckins, myRatings, myName, invite = () => "", photoInvite = () => "" }) {
   const announceChange = () => rootEl.dispatchEvent(new CustomEvent(FEEDBACK_CHANGED_EVENT));
 
   /** "before", "open" ou "closed": o banco só aceita o check-in dentro da janela (`checkinWindow`, ver checkinWindowState). */
@@ -73,7 +73,7 @@ function initTalkFeedback(rootEl, { index, reveal = true, now = () => new Date()
   function render(containerEl, entry, { message = "" } = {}) {
     if (!reveal || !containerEl) return;
     containerEl.dataset.feedbackContainer = entry.key;
-    containerEl.innerHTML = talkFeedbackMarkup({ ...stateFor(entry), name: myName.get(), message, invite: invite() });
+    containerEl.innerHTML = talkFeedbackMarkup({ ...stateFor(entry), name: myName.get(), message, invite: invite(), photoInvite: photoInvite() });
   }
 
   /** `?checkin=<code>` na URL: faz o check-in e limpa o parâmetro. Agendado por runAfterModules. */

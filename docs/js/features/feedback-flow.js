@@ -23,12 +23,13 @@ function initFeedbackFlow({
   questionsConfig = talkQuestionsConfigRepository.getAll(),
   contestConfig = talkContestConfigRepository.getAll(),
   invite = () => "",
+  photoInvite = () => "",
 }) {
   const index = calendar.index;
   const endsAt = schedule[schedule.length - 1].end;
   const startsAt = schedule[0].start;
   const checkinWindow = { enforce: questionsConfig.enforceWindow, leadMinutes: questionsConfig.checkinLeadMinutes, tailMinutes: questionsConfig.checkinTailMinutes }; // a mesma trava das perguntas e a janela do check-in (espelham as regras)
-  const feedback = initTalkFeedback(document.body, { index, reveal, now, checkinWindow, myCheckins, myRatings, myName, invite });
+  const feedback = initTalkFeedback(document.body, { index, reveal, now, checkinWindow, myCheckins, myRatings, myName, invite, photoInvite });
   const eventFeedback = initEventFeedback(document.body, { form, myRatings, myName, now, endsAt });
   if (!reveal) return { feedback, eventFeedback };
   const questions = initTalkQuestions(document.body, { index, config: questionsConfig, myCheckins, myVotes, myAsked, myName, now, ensureCheckin: feedback.checkin });

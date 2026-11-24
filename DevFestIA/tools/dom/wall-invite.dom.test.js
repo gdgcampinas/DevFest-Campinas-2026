@@ -8,7 +8,7 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 const { createFakeClock } = require("../lib/fake-clock.js");
 
-const site = loadSite({ scripts: [...SITE_BASE, "features/scheduler.js", "data/brand.js", "components/brand.js", "data/wall-config.js", "data/wall-texts.js", "features/wall-window.js", "components/wall-invite.js", "features/wall-invite.js", "components/talk-feedback.js", "components/rating-inputs.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "features/scheduler.js", "features/invite-slot.js", "data/brand.js", "components/brand.js", "data/wall-config.js", "data/wall-texts.js", "features/wall-window.js", "components/wall-invite.js", "features/wall-invite.js", "components/talk-feedback.js", "components/rating-inputs.js"] });
 const { window, document } = site;
 test.after(() => window.close());
 const g = name => site.get(name);

@@ -7,6 +7,8 @@ function initHome() {
   const reveal = initShell("principal");
   const wallInvite = defaultWallInvite();
   initWallInviteCard(document.getElementById("wallInvite"), { invite: wallInvite });
+  const photoInvite = defaultPhotoInvite();
+  initInviteSlot(document.getElementById("photoInvite"), { render: photoInvite.cardMarkup });
   initWaitlist(document.getElementById("waitlist"), { ...defaultWaitlistDeps(), source: "home" });
 
   initStickyStatus(document.getElementById("hero"), document.getElementById("stickyStatus"));
@@ -15,7 +17,7 @@ function initHome() {
   const modal = createTalkModal();
   initSpeakerPhotoZoom();
   const calendar = initCalendarActions(document.body, { schedule: SCHEDULE, tracks: TRACKS, event: EVENT, favorites: favoritesRepository });
-  const { feedback, eventFeedback, questions, contest } = initFeedbackFlow({ calendar, reveal, createModal, invite: wallInvite.linkMarkup });
+  const { feedback, eventFeedback, questions, contest } = initFeedbackFlow({ calendar, reveal, createModal, invite: wallInvite.linkMarkup, photoInvite: photoInvite.linkMarkup });
   initTalkDetails(document.body, { schedule: SCHEDULE, tracks: TRACKS, timezone: EVENT.timezone, reveal, modal, favorites: favoritesRepository, calendar, feedback, questions, contest });
   initFavorites(document.body, favoritesRepository);
 

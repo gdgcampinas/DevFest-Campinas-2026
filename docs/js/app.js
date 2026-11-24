@@ -321,6 +321,7 @@ const LOCALIZED_DATASETS = [
   () => highlightsRepository.getAll(),
   () => analyticsRepository.getAll(),
   () => wallTextsRepository.getAll(),
+  () => photoInviteTextsRepository.getAll(),
   () => wallConfigRepository.getAll().prompts,
   () => waitlistTextsRepository.getAll(),
   () => patrocinioIntroRepository.getAll(),

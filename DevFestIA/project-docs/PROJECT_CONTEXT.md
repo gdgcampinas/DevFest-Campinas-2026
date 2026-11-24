@@ -1323,3 +1323,11 @@ See `project-docs/Continuidade.md` for the full rule.
 - **Telão:** nova fonte `approved` em `data/mural-sources.js` (uma escuta por álbum com aprovação, `window.muralApprovedRepository`), `albumVisiblePhotos` (puro, em `components/mural-scenes/mural-album-scene.js`) usado pela cena e pelo aviso de foto nova; `bind.renotify` refaz o aviso quando a lista de aprovadas muda; sem a lista a cena não aparece.
 - **Admin > Fotos:** `components/mural-photo-moderation.js` (`photoApprovalGroups`, abas Pendentes, No ar e Fora do ar) e `features/mural-photo-moderation.js` (aprovar, recusar, tirar do ar, voltar ao ar, aprovar todas as pendentes); cartão "Fotos do telão" da visão geral mostra quantas esperam.
 - **Publicação:** as regras do Firestore precisam ser publicadas à parte (não sobem pelo CI).
+
+## Convite para o álbum ao vivo no site (sessão 17, 23 de novembro de 2026)
+
+- **O quê:** botão "Mande sua foto" que leva ao convite do álbum colaborativo `ao-vivo` pelo intermediário (`<albums.proxyUrl>/join/ao-vivo`, `data/mural-config.js`): o link do álbum nunca entra no site. Três lugares: cartão na home, faixa na grade e link no bloco "Check-in feito" da palestra (parâmetro `photoInvite` de `initFeedbackFlow` e de `initTalkFeedback`, vazio por padrão).
+- **Dado:** `data/photo-invite.js` (`PHOTO_INVITE`: `public`, `open`, `albumId`, `window`; `PHOTO_INVITE_TEXTS`). Textos traduzidos em `i18n/en.js` e registrados em `LOCALIZED_DATASETS` (`app.js`). O texto só promete a moderação, não o telão.
+- **Regra:** `photoInvitePhase(now, config, { devMode })` em `features/photo-invite-window.js` (pura, dual): `open: false` fecha sempre; modo DEV abre sempre; `public: false` fecha em produção (`isReleased`); senão vale a janela (hoje 28/11 07:30 até 29/11 00:00, fuso do evento). `photoInviteHref` monta o endereço; sem intermediário não há convite.
+- **Peças:** `features/photo-invite.js` (`createPhotoInvite`, `defaultPhotoInvite`), `components/photo-invite.js` (cartão, faixa, link), `css/photo-invite.css`, `features/invite-slot.js` (`initInviteSlot`: espaço que some e volta sozinho; o cartão do mural de recados usa o mesmo). `grade.html` precisa de `features/scheduler.js` por causa do `initInviteSlot`.
+- **Liberar:** trocar `public` para `true` em `data/photo-invite.js` e subir o `?v=`; o relógio faz o resto.
