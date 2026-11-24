@@ -4,6 +4,10 @@ Cole o bloco abaixo como primeira mensagem do novo chat. Sem precisar adicionar 
 
 **Atualizado em 2026-11-21 (fim da sessão 16).** O estado mais novo do SITE está na seção "SESSÃO 16" do topo de `handoff/HANDOFF_CURRENT.md`; o texto abaixo do bloco sobre o post das trilhas é histórico. Para comunicação visual/redes sociais, a fonte de continuidade é o projeto guarda-chuva GDG Campinas: leia `../../PROJECT_CONTEXT.md`, `../../handoff/HANDOFF_CURRENT.md`, `../../docs/Continuidade.md`, `../../README.md`, `../../docs/Marca_e_Mascote_2026.md`, `../../Design/devfest-ingressos-liberados-2026/README.md` e este prompt, nessa ordem. O estado do site deve ser revalidado no Git; históricos abaixo não substituem o handoff atual.
 
+## Comunicação — atualização de 24/11/2026
+
+Para retomar esta conversa de artes e vídeo, leia primeiro o consolidado no projeto guarda-chuva: `/Users/renatoramos/Documents/Projects/GDGCampinas/handoff/HANDOFF_2026-11-24_COMUNICACAO.md`. O vídeo narrado v1 dos dez anos está exportado, mas aguarda apresentação e revisão. Post de recorde atual: v10; Red Bridge atual: v2 com asa. Os registros anteriores deste prompt são históricos e não substituem esse consolidado. Nenhuma publicação autorizada.
+
 ## Continuidade prioritária — post das trilhas (10/11/2026)
 
 Renatão quer retomar o post das trilhas. O primeiro rascunho de sete telas está em `../../Design/devfest-trilhas-2026/`, mas ele disse que ficou ruim. Não reaproveitar como aprovado: apresentar nova direção visual antes de renderizar outra versão. O mock anterior usava cinco temas e frases editoriais propostas; as frases não são conteúdo confirmado.
