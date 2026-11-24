@@ -49,6 +49,8 @@ const SPONSORS = [
     { public: true, name: "Agibank", link: "https://agibank.com.br", imageUrl: "assets/brand/agibank.webp", description: "Um banco orgulhosamente brasileiro e popular, digital sempre e presencial quando o cliente quiser." },
     // REAL e LIBERADA em produção e em DEV (2026-11-11, `public: true`, pedido do Renato). Logo recortado rente ao desenho do arquivo enviado (fundo branco), na caixa branca padrão. Instagram: https://www.instagram.com/jobstar_ai/
     { public: true, name: "Jobstar", link: "https://jobstar.ai", imageUrl: "assets/brand/jobstar.webp", description: "Jobstar Carreiras: seu próximo passo profissional começa aqui." },
+    // REAL e LIBERADA em produção, em DEV e no telão (2026-11-24, `public: true`, pedido do Renato). Logo azul e cinza sobre fundo preto enviado pelo Renato, recortado rente ao desenho (1300 px de largura), na caixa branca padrão (fica um retângulo preto, como a Red Bridge). A descrição é o slogan da empresa. Site: https://fourlab3d.com/
+    { public: true, name: "Fourlab 3D", link: "https://fourlab3d.com/", imageUrl: "assets/brand/fourlab-3d.webp", description: "Você imagina. A gente imprime." },
   ] },
   { id: "comunidades", tier: "Comunidades parceiras", elements: [
     // REAL e LIBERADA em produção (2026-10-30, `public: true`). Logo enviado pelo Renato, com o fundo preto original (texto branco e verde-limão), na caixa branca padrão.
