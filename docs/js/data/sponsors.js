@@ -51,6 +51,8 @@ const SPONSORS = [
     { public: true, name: "Jobstar", link: "https://jobstar.ai", imageUrl: "assets/brand/jobstar.webp", description: "Jobstar Carreiras: seu próximo passo profissional começa aqui." },
     // REAL e LIBERADA em produção, em DEV e no telão (2026-11-24, `public: true`, pedido do Renato). Logo azul e cinza sobre fundo preto enviado pelo Renato, recortado rente ao desenho (1300 px de largura), na caixa branca padrão (fica um retângulo preto, como a Red Bridge). A descrição é o slogan da empresa. Site: https://fourlab3d.com/
     { public: true, name: "Fourlab 3D", link: "https://fourlab3d.com/", imageUrl: "assets/brand/fourlab-3d.webp", description: "Você imagina. A gente imprime." },
+    // REAL e LIBERADA em produção, em DEV e no telão (2026-11-24, `public: true`, pedido do Renato). Logo oficial coral enviado pelo Renato (PNG 1920x1080 com fundo transparente), recortado com folga em volta (1400 px de largura), na caixa branca padrão. O link é o do programa de estágio Next Gen AI que a empresa pediu para divulgar.
+    { public: true, name: "CI&T", link: "https://ciandt.com/br/pt-br/carreiras/programa-de-estagio", imageUrl: "assets/brand/cit.webp", description: "Conheça o programa de estágio Next Gen AI da CI&T." },
   ] },
   { id: "comunidades", tier: "Comunidades parceiras", elements: [
     // REAL e LIBERADA em produção (2026-10-30, `public: true`). Logo enviado pelo Renato, com o fundo preto original (texto branco e verde-limão), na caixa branca padrão.
