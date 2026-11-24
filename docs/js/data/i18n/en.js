@@ -118,7 +118,7 @@ I18N_DICTIONARIES.en = {
     "checkin.before": "Check-in opens {n} minutes before the talk.",
     "checkin.closed": "Check-in for this talk has closed.",
     "checkin.title": "Check in to this talk",
-    "checkin.hint": "Scan the room's QR code to check in and unlock feedback at the end of the talk.",
+    "checkin.hint": "When you are in the room, tap the button below. It unlocks questions and feedback at the end of the talk.",
     "checkin.button": "I'm in the room, check in",
     "checkin.confirmTitle": "Confirm check-in",
     "checkin.confirmText": "Confirm your check-in to {title}?",

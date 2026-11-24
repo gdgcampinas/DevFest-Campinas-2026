@@ -19,7 +19,7 @@ function talkFeedbackMarkup({ phase, entryKey, title = "", message = "", name = 
   if (phase === "checkin") {
     return `<div class="talk-feedback">
       <p class="talk-feedback-title">${iconMarkup("mic")}${t("checkin.title", "Check-in dessa palestra")}</p>
-      <p class="talk-feedback-hint">${t("checkin.hint", "Escaneie o QR code da sala pra fazer check-in e liberar a avaliação no fim da palestra.")}</p>
+      <p class="talk-feedback-hint">${t("checkin.hint", "Quando estiver na sala, toque no botão abaixo. Isso libera as perguntas e a avaliação no fim da palestra.")}</p>
       ${note}
       <button type="button" class="chip-btn chip-btn--primary" data-feedback-checkin data-entry-key="${entryKey}" data-track-event="checkin" data-track-target="${entryKey}">${iconMarkup("check")}${t("checkin.button", "Já estou na sala, fazer check-in")}</button>
     </div>`;
