@@ -110,14 +110,24 @@ test("as cenas antigas (convite de abertura, selfie do pôr do sol, arte do Gumb
   for (const id of ["abertura", "selfie", "arte-gumbleton"]) assert.equal(scenes.find(scene => scene.id === id).enabled, false, id);
   const rotation = scenes.filter(scene => scene.enabled !== false).map(scene => scene.id);
   assert.deepEqual(["fundo-foto-1", "fundo-foto-2", "fundo-foto-3", "fundo-foto-4"].filter(id => !rotation.includes(id)), [], "os fundos de foto sorteados estão no rodízio");
+  const arts = page.site.get("muralArtsRepository").getAll();
+  assert.deepEqual([...page.site.get("MURAL_PHOTO_BACKDROPS")], Object.keys(arts), "o sorteio cobre todas as artes e nenhuma que não existe");
+  Object.values(arts).forEach(art => assert.ok(fs.existsSync(path.join(DOCS, art.file.split("?")[0])), art.file));
   page.site.window.close();
 });
 
 test("fundo de foto: a cena sorteia uma das 10 artes (4:3, inteira, sem cortar) e o selo do telão não duplica o que já vem desenhado na arte", async () => {
   const page = boot({ search: "cenas=fundo-foto-1" });
+
+test("ensaio ?fundos=: a cena de fundo de foto sorteia só entre as artes pedidas (uma só = arte fixa)", async () => {
+  const page = boot({ search: "cenas=fundo-foto-1&fundos=fundo-v4-12" });
+  await waitFor(() => page.active() === "fundo-foto-1");
+  assert.equal(page.document.querySelector("img.ms-art-img").getAttribute("src"), `assets/img/mural-art-fundo-v4-12.webp?v=${ART_VERSION}`);
+  page.site.window.close();
+});
   await waitFor(() => page.active() === "fundo-foto-1");
   const src = page.document.querySelector("img.ms-art-img").getAttribute("src");
-  assert.match(src, new RegExp(`^assets/img/mural-art-fundo-(0[1-9]|10)\\.webp\\?v=${ART_VERSION}$`));
+  assert.match(src, new RegExp(`^assets/img/mural-art-fundo-(v4-)?(0[1-9]|[12]\\d|30)\\.webp\\?v=${ART_VERSION}$`));
   assert.ok(fs.existsSync(path.join(DOCS, src.split("?")[0])), "a imagem existe");
   page.site.window.close();
 });

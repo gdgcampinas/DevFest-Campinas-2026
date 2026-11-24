@@ -347,13 +347,13 @@ test("arte: como ela se adapta a qualquer proporção sai do dado, por forma de 
   assert.deepEqual([plain["--fit"], plain["--focus"]], ["cover", "50% 50%"], "sem dado: preenche e centraliza");
 });
 
-test("as artes do dado: os 10 fundos de foto aparecem inteiros (contain, o cabeçalho e o rodapé já vêm desenhados) e as antigas saíram", () => {
+test("as artes do dado: os 40 fundos de foto (10 + 30 do lote v4) aparecem inteiros (contain, o cabeçalho e o rodapé já vêm desenhados), e as antigas saíram", () => {
   const arts = g("muralArtsRepository");
-  const ids = Array.from({ length: 10 }, (_, index) => `fundo-${String(index + 1).padStart(2, "0")}`);
+  const ids = [...Array.from({ length: 10 }, (_, index) => `fundo-${String(index + 1).padStart(2, "0")}`), ...Array.from({ length: 30 }, (_, index) => `fundo-v4-${String(index + 1).padStart(2, "0")}`)];
   assert.deepEqual(Object.keys(arts.getAll()), ids);
   ids.forEach(id => assert.equal(arts.get(id).fit, "contain", `${id}: tem texto, não pode ser cortada`));
   ["sunset", "invite", "gumbleton", "nao-existe"].forEach(id => assert.equal(arts.get(id), null, id));
-  Object.values(arts.getAll()).forEach(art => assert.match(art.file, /^assets\/img\/mural-art-fundo-\d{2}\.webp\?v=\d+$/));
+  Object.values(arts.getAll()).forEach(art => assert.match(art.file, /^assets\/img\/mural-art-fundo-(v4-)?\d{2}\.webp\?v=\d+$/));
 });
 
 test("arte sorteada: cada passada mostra uma da lista, sem repetir antes de todas passarem, e a lista inteira volta a valer depois", async () => {

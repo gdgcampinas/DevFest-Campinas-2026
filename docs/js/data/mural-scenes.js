@@ -45,8 +45,11 @@
  * Tempo de tela por cota de patrocínio: cada cota é uma cena (Master mais tempo, as demais agrupadas). Fotos: cada cena de álbum mostra as próximas da fila,
  * então repetir a cena mostra mais fotos.
  */
-/** Os fundos de foto (data/mural-arts.js, `fundo-01`..`fundo-10`) que a cena "art" com `params.pool` sorteia: cada passada mostra um, sem repetir antes de todos terem passado. As cenas `fundo-foto-1..4` espalham isso pelo dia. */
-const MURAL_PHOTO_BACKDROPS = Array.from({ length: 10 }, (_, index) => `fundo-${String(index + 1).padStart(2, "0")}`);
+/** Os fundos de foto (data/mural-arts.js: `fundo-01`..`fundo-10` e `fundo-v4-01`..`fundo-v4-30`, 40 no total) que a cena "art" com `params.pool` sorteia: cada passada mostra um, sem repetir antes de todos terem passado. As cenas `fundo-foto-1..4` espalham isso pelo dia. */
+const MURAL_PHOTO_BACKDROPS = [
+  ...Array.from({ length: 10 }, (_, index) => `fundo-${String(index + 1).padStart(2, "0")}`),
+  ...Array.from({ length: 30 }, (_, index) => `fundo-v4-${String(index + 1).padStart(2, "0")}`),
+];
 
 const MURAL_SCENES = [
   { id: "abertura", enabled: false, label: "Convite de abertura", type: "art", seconds: 10, transition: "zoom", requires: { phases: ["before"] }, params: { art: "invite" } },

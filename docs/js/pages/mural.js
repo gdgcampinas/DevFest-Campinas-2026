@@ -7,6 +7,7 @@
  *   ?tela=1920x1080  ?proporcao=3:1  ?margem=2   simulam o telão e a margem segura (features/mural-stage.js)
  *   ?videos=<endereço>                            troca de onde vêm os clipes de vídeo (teste local); sem isso vale <intermediário>/media/
  *   ?cenas=agora,album-2025                          só essas cenas, na ordem pedida
+ *   ?fundos=fundo-v4-05,fundo-03                     ensaio: as cenas de fundo de foto sorteiam só entre essas artes (ids de data/mural-arts.js); com um só id a arte fica fixa
  *   ?logos=1                                      ensaia o logo dos colchetes do GDG no rodapé (TELAO_FOOTER_CONFIG) antes de liberar
  *   ?selo=1                                       ensaia o selo redondo de aniversário (ANNIVERSARY_CONFIG.telaoSeal) antes de liberar
  *   ?diag=1                                       painel de saúde (cena, falhas, rede, fontes, recargas)
@@ -76,7 +77,9 @@ function initMural() {
 
   // ---------- vídeos: baixados antes (um de cada vez) e guardados no navegador; sem intermediário não há o que baixar ----------
   const videoCache = createVideoCache({ cacheStorage: window.caches ?? null, fetchFn: url => fetch(url), urlApi: URL, cacheName: config.video.cacheName, nowMs, retryMs: config.video.retryMs });
-  const scenes = filterScenesByIds(muralScenesRepository.getAll(), (params.get("cenas") ?? "").split(",").filter(Boolean));
+  const rehearsalBackdrops = (params.get("fundos") ?? "").split(",").filter(Boolean);
+  const pickedScenes = filterScenesByIds(muralScenesRepository.getAll(), (params.get("cenas") ?? "").split(",").filter(Boolean));
+  const scenes = rehearsalBackdrops.length ? pickedScenes.map(scene => (scene.params?.pool ? { ...scene, params: { ...scene.params, pool: rehearsalBackdrops } } : scene)) : pickedScenes;
   const playlistsInUse = scenes.filter(scene => scene.enabled !== false).flatMap(scene => [scene.params?.playlist, scene.params?.backdrop?.playlist]).filter(Boolean); // cena desligada (vídeo ainda não liberado) não baixa nada
   if (mediaBase) videoCache.warm(muralVideosRepository.filesFor(playlistsInUse).map(file => `${mediaBase}${file}`));
   const clipPicker = createClipPicker({ videos: muralVideosRepository, cache: videoCache, baseUrl: mediaBase }); // um só: a cena de vídeo e os fundos animados dividem a vez de cada lista
