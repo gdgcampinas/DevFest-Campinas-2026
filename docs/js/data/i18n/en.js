@@ -86,7 +86,7 @@ I18N_DICTIONARIES.en = {
     "common.or": "or",
     "common.close": "Close",
     "myTalks.progress": "{done} of {total} rated",
-    "myTalks.empty": "You haven't checked in to any talk yet. Scan the room's QR code or open the talk in the {grade} to check in.",
+    "myTalks.empty": "You haven't checked in to any talk yet. Open the talk in the {grade} and tap check-in when you are in the room.",
     "myTalks.gradeLink": "schedule",
     "myTalks.title": "My talks",
     "myTalks.event": "The event",

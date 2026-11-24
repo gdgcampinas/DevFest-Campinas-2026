@@ -4,7 +4,7 @@
  * dependem de informação da organização (Wi-Fi, estacionamento, comida): preencher o texto e ligar. Aviso por celular (ao vivo) fica pra Fase 2.
  */
 const MURAL_TIPS = [
-  { id: "checkin", icon: "check", title: "Faça check-in", text: "Escaneie o QR da sala em cada palestra. Ele libera as perguntas e a avaliação." },
+  { id: "checkin", icon: "check", title: "Faça check-in", text: "Faça o check-in no site em cada palestra. Ele libera as perguntas e a avaliação." },
   { id: "perguntas", icon: "chat", title: "Pergunte ao vivo", text: "Mande sua pergunta pelo celular e vote nas dos colegas. As melhores sobem no telão da sala." },
   { id: "agenda", icon: "star", title: "Monte sua agenda", text: "Toque na estrela das palestras que você quer ver e leve a sua agenda no celular." },
   { id: "avaliar", icon: "sparkles", title: "Avalie as palestras", text: "Sua nota ajuda quem palestrou e quem organiza a próxima edição." },

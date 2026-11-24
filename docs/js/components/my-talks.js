@@ -21,7 +21,7 @@ function myTalksMarkup({ items, done, notice = "" }) {
     </section>`).join("");
   const body = items.length
     ? `<p class="my-talks-progress" data-my-talks-progress>${myTalksProgressLabel(done, items.length)}</p><div class="my-talks-list">${list}</div>`
-    : `<p class="my-talks-empty">${t("myTalks.empty", "Você ainda não fez check-in em nenhuma palestra. Escaneie o QR code da sala ou abra a palestra na {grade} pra fazer check-in.", { grade: `<a href="grade.html">${t("myTalks.gradeLink", "grade")}</a>` })}</p>`;
+    : `<p class="my-talks-empty">${t("myTalks.empty", "Você ainda não fez check-in em nenhuma palestra. Abra a palestra na {grade} e toque em check-in quando estiver na sala.", { grade: `<a href="grade.html">${t("myTalks.gradeLink", "grade")}</a>` })}</p>`;
   return `<div class="my-talks">
     <h3 class="my-talks-title">${iconMarkup("star")}${t("myTalks.title", "Minhas palestras")}</h3>
     ${notice ? `<p class="my-talks-notice" role="alert">${notice}</p>` : ""}
