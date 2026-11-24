@@ -16,7 +16,7 @@
 1. **PUBLICAR AS REGRAS DO FIRESTORE** (`DevFestIA/firebase/firestore.rules`, coleção nova `mural-approved`). As regras não sobem pelo CI. Sem isso o moderador não consegue aprovar e o telão não lê a lista: o álbum ao vivo fica sem foto nenhuma.
 2. Alguém aprovando no dia: sem aprovação nenhuma foto nova do álbum ao vivo chega ao telão (as cenas dos outros álbuns seguem).
 3. Foto recusada continua dentro do álbum do Google Fotos (só sai de lá à mão, no próprio Google Fotos).
-4. **Convite do álbum no site:** testar em DEV (`?lineup=1`) e, no dia 28/11, liberar trocando `PHOTO_INVITE.public` para `true` (antes das 07:30). Alguém precisa aprovar as fotos pendentes no admin.
+4. **Convite do álbum no site:** já liberado em produção (`public: true`, 2026-11-24); a janela só mostra de 28/11 07:30 a 29/11 00:00. Testar em DEV (`?lineup=1`) antes. Alguém precisa aprovar as fotos pendentes no admin.
 
 **Armadilhas novas:** o telão exibe `albums.ao-vivo` só com `live.approved["ao-vivo"]` (testes de cena usam `albumCtx`, que já aprova tudo por padrão); `createLiveBindings` ganhou `visiblePhotos`; teste de tela que clica em botão logo depois de salvar precisa esperar o botão sair de `disabled`.
 
