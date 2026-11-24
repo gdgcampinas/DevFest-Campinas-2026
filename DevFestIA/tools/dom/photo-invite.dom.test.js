@@ -93,26 +93,27 @@ test("depois do check-in: o link aparece no bloco 'check-in feito' (só dentro d
   assert.doesNotMatch(textOf(plain), /foto/, "sem o parâmetro, nada muda");
 });
 
-test("o convite padrão: nasce fechado em produção (public false), abre no modo DEV, e depois de liberado vale pela janela e pelo relógio do site (?demo=)", () => {
+test("o convite padrão: liberado em produção (public true), vale pela janela e pelo relógio do site (?demo=), abre sempre no modo DEV, e o interruptor open false fecha tudo", () => {
   const config = g("PHOTO_INVITE");
-  assert.equal(config.public, false, "a liberação em produção é uma decisão do Renato");
+  assert.equal(config.public, true, "liberado em produção pelo Renato; a janela é que segura até 28/11 07:30");
   assert.equal(config.window.from, "2026-11-28T07:30:00-03:00");
   window.isDevModeStored = () => false;
   window.resolveNow = () => () => new Date("2026-11-28T12:00:00-03:00");
-  assert.equal(g("defaultPhotoInvite")().isOpen(), false, "produção, ainda não liberado");
+  assert.equal(g("defaultPhotoInvite")().isOpen(), true, "produção, dentro da janela");
   window.isDevModeStored = () => true;
   assert.equal(g("defaultPhotoInvite")().isOpen(), true, "DEV: a janela não vale");
   assert.ok(g("defaultPhotoInvite")().cardMarkup().includes("/join/ao-vivo"), "o endereço sai do intermediário do mural");
   window.isDevModeStored = () => false;
-  config.public = true;
   try {
-    assert.equal(g("defaultPhotoInvite")().isOpen(), true, "liberado, dentro da janela");
     window.resolveNow = () => () => new Date("2026-11-28T07:00:00-03:00");
-    assert.equal(g("defaultPhotoInvite")().isOpen(), false, "liberado, mas antes das 07:30");
+    assert.equal(g("defaultPhotoInvite")().isOpen(), false, "antes das 07:30 fica fechado");
     window.resolveNow = () => () => new Date("2026-11-29T00:30:00-03:00");
-    assert.equal(g("defaultPhotoInvite")().isOpen(), false, "liberado, mas depois da meia-noite");
+    assert.equal(g("defaultPhotoInvite")().isOpen(), false, "depois da meia-noite fica fechado");
+    window.resolveNow = () => () => new Date("2026-11-28T12:00:00-03:00");
+    config.open = false;
+    assert.equal(g("defaultPhotoInvite")().isOpen(), false, "interruptor manual fecha na hora");
   } finally {
-    config.public = false;
+    config.open = true;
   }
 });
 

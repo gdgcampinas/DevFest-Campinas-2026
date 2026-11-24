@@ -1,14 +1,14 @@
 /**
  * CONVITE PARA O ÁLBUM AO VIVO (só dado, sem lógica): o botão "Mande sua foto" no site (cartão da home, faixa da grade e aviso depois do check-in).
  * O botão leva ao convite do álbum colaborativo pelo intermediário (`<albums.proxyUrl>/join/<albumId>`, data/mural-config.js): o link do álbum nunca está no site.
- *   public     false = só no modo DEV até liberar (features/release-gate.js); true libera em produção, mas só dentro da janela (`window`)
+ *   public     false = só no modo DEV (features/release-gate.js); true (liberado em 2026-11-24) vale em produção, mas só dentro da janela (`window`)
  *   open       false fecha na hora, seja qual for o relógio ou o modo (interruptor manual)
  *   albumId    o álbum colaborativo ao vivo (data/mural-albums.js, `live: true`)
  *   window     quando o convite aparece: `from` e `until` (ISO com fuso). Hoje das 07:30 do dia do evento até a meia-noite (features/photo-invite-window.js)
  * As fotos passam pela moderação (aprovar antes de exibir), então o texto promete só isso, sem falar em telão.
  */
 const PHOTO_INVITE = {
-  public: false,
+  public: true,
   open: true,
   albumId: "ao-vivo",
   window: { from: "2026-11-28T07:30:00-03:00", until: "2026-11-29T00:00:00-03:00" },
