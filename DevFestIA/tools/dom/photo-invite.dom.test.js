@@ -38,14 +38,15 @@ test("fora da janela os três convites são vazios; dentro dela vêm o cartão, 
   assert.match(textOf(card), /Mande sua foto do DevFest/);
   assert.match(textOf(card), /A equipe aprova cada foto antes de ela ser exibida/);
   assert.match(textOf(card), /Entrar no álbum/);
+  assert.match(textOf(card), /app Google Fotos e de uma conta Google/);
   assert.ok(card.querySelector("img.photo-invite-mascot"), "com o Gumble");
   const banner = html(open.bannerMarkup());
   assert.equal(banner.querySelector("a").getAttribute("href"), HREF);
-  assert.match(textOf(banner), /Mande suas fotos do evento/);
+  assert.match(textOf(banner), /Mande suas fotos pelo app Google Fotos/);
   assert.match(textOf(banner), /Enviar foto/);
   const link = html(open.linkMarkup());
   assert.equal(link.querySelector("a").getAttribute("href"), HREF);
-  assert.match(textOf(link), /Tirou uma foto\? Mande para o álbum ao vivo/);
+  assert.match(textOf(link), /Tirou uma foto\? Mande para o álbum ao vivo pelo app Google Fotos/);
 });
 
 test("os textos prometem só a moderação: nada de telão", () => {

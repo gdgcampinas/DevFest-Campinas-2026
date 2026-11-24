@@ -16,12 +16,12 @@ const PHOTO_INVITE = {
 
 const PHOTO_INVITE_TEXTS = {
   cardTitle: "Mande sua foto do DevFest",
-  cardText: "Entre no álbum ao vivo e adicione suas fotos. A equipe aprova cada foto antes de ela ser exibida.",
+  cardText: "Para enviar fotos você precisa do app Google Fotos e de uma conta Google. Entre no álbum ao vivo e adicione suas fotos. A equipe aprova cada foto antes de ela ser exibida.",
   cardButton: "Entrar no álbum",
-  bannerText: "Mande suas fotos do evento. A equipe aprova antes de exibir.",
+  bannerText: "Mande suas fotos pelo app Google Fotos. A equipe aprova antes de exibir.",
   bannerButton: "Enviar foto",
   afterCheckin: "Tirou uma foto?",
-  afterCheckinButton: "Mande para o álbum ao vivo",
+  afterCheckinButton: "Mande para o álbum ao vivo pelo app Google Fotos",
 };
 
 const photoInviteConfigRepository = createRepository(PHOTO_INVITE);
