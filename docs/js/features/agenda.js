@@ -50,6 +50,16 @@ function talkCardOptions(slot, index, track, timezone, { reveal = true, favorite
   };
 }
 
+/**
+ * Opções da estrela da PLENÁRIA (a faixa com palestrante): a fala é uma palestra como as outras, com a mesma chave de favorito do modal (`talkKey(slot, trackId)`).
+ * Faixa sem palestrante (credenciamento, almoço) e agenda sem favoritos devolvem `{}`: sem estrela. Usado pela agenda completa e pelo "ao vivo agora" (live-status.js).
+ */
+function bannerFavoriteOptions(slot, favorites) {
+  if (!favorites || !slot.keynote?.speakers?.length) return {};
+  const key = talkKey(slot, slot.keynote.trackId);
+  return { talkKey: key, favorite: favorites.has(key) };
+}
+
 function renderLegend(tracks, mountEl) {
   mountEl.innerHTML = tracks
     .map(track => {
@@ -73,7 +83,7 @@ function renderAgenda(schedule, tracks, timezone, mountEl, { reveal = true, favo
   const slotsHtml = schedule.map((slot, index) => {
     const time = formatEventTime(slot.start, timezone);
     const body = slot.banner
-      ? bannerMarkup(slot, index)
+      ? bannerMarkup(slot, index, bannerFavoriteOptions(slot, favorites))
       : `<div class="talks" data-view="all">${tracks.map(track => trackCardMarkup(track, slot.talks[track.id], talkCardOptions(slot, index, track, timezone, { reveal, favorites }))).join("")}</div>`;
     return `<div class="slot" data-index="${index}"><div class="slot-time">${time}</div>${body}</div>`;
   });

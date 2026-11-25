@@ -147,7 +147,7 @@ function createLiveStatus({ schedule, tracks, event, elements = {}, now = () => 
             <div class="hero-label"><span class="dot"></span>${happeningNowLabel()}</div>
             ${nextChange}
           </div>
-          ${bannerMarkup(slot, state.activeIndex)}
+          ${bannerMarkup(slot, state.activeIndex, bannerFavoriteOptions(slot, favorites))}
         </div>`;
       stickyTxt.textContent = slot.banner;
     } else {

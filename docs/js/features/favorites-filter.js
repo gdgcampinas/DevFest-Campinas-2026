@@ -1,7 +1,7 @@
 /**
  * Feature: filtro "Minha agenda" da Grade. Liga/desliga o modo
  * `.favs-only` no scopeEl (só CSS esconde o que não é favorito),
- * esconde slots sem favorito visível e mostra o estado vazio.
+ * esconde slots sem favorito visível (a plenária conta como palestra; faixas sem palestra ficam) e mostra o estado vazio.
  * Respeita a aba de trilha ativa (evento "trackfilterchange"). `startActive` abre já no modo "Minha agenda" (link "Abrir minha agenda" da home).
  * Precisa ser inicializado depois de initFavorites (mesma ordem de
  * inscrição no repository), pra .is-fav já estar atualizado.
@@ -27,9 +27,11 @@ function initFavoritesFilter({ toggleEl, scopeEl, emptyEl, repository, startActi
     let anyVisible = false;
     scopeEl.querySelectorAll(".slot").forEach(slotEl => {
       const talksEl = slotEl.querySelector(".talks");
-      if (!talksEl) return;
-      const view = talksEl.dataset.view;
-      const hasFavorite = [...talksEl.querySelectorAll(".talk")].some(card => isVisibleFavorite(card, view));
+      const keynoteEl = slotEl.querySelector(".banner--keynote[data-talk-key]"); // a plenária: faixa com a fala dela e estrela
+      if (!talksEl && !keynoteEl) return; // faixa sem palestra (credenciamento, almoço): fica sempre visível, é o esqueleto do dia
+      const hasFavorite = talksEl
+        ? [...talksEl.querySelectorAll(".talk")].some(card => isVisibleFavorite(card, talksEl.dataset.view))
+        : keynoteEl.classList.contains("is-fav");
       slotEl.classList.toggle("no-fav", !hasFavorite);
       anyVisible = anyVisible || hasFavorite;
     });

@@ -150,12 +150,13 @@ function talkDetailMarkup(track, data, { reveal = true, timeRange = "", room = "
 
 /**
  * Sessão combinada (credenciamento, pausa, encerramento) — mesmo bloco
- * usado na agenda completa e no hero "ao vivo agora".
+ * usado na agenda completa e no hero "ao vivo agora". `{ talkKey, favorite }` (opcional, só da plenária): estrela e favorito da fala.
  */
-function bannerMarkup(slot, slotIndex = -1) {
+function bannerMarkup(slot, slotIndex = -1, { talkKey = "", favorite = false } = {}) {
   const head = `<div class="t">${slot.banner}</div>${slot.room ? `<div class="r">${slot.room}</div>` : ""}`;
   if (!slot.keynote?.speakers?.length) return `<div class="banner">${head}</div>`;
-  return `<div class="banner banner--keynote">${head}${keynoteMarkup(slot.keynote, slotIndex)}</div>`;
+  // `talkKey` (opcional): a fala da plenária é uma palestra como as outras, então ganha a estrela e o estado de favorito (features/favorites.js sincroniza o `is-fav` pelo data-talk-key)
+  return `<div class="banner banner--keynote${favorite ? " is-fav" : ""}"${talkKey ? ` data-talk-key="${talkKey}"` : ""}>${talkKey ? favoriteButtonMarkup({ key: talkKey, active: favorite }) : ""}${head}${keynoteMarkup(slot.keynote, slotIndex)}</div>`;
 }
 
 /**
