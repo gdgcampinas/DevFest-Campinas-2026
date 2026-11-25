@@ -25,28 +25,29 @@ function favoritesWith(count) {
   };
 }
 
-function promo({ count = 0, dev = true, config = { public: false, open: true, badgeUntil: "2026-11-28T00:00:00-03:00" }, now = new Date("2026-11-25T12:00:00-03:00") } = {}) {
+function promo({ count = 0, dev = true, config = { public: false, open: true, gradeHref: "grade.html", openParam: "agenda", badgeUntil: "2026-11-28T00:00:00-03:00" }, search = "", now = new Date("2026-11-25T12:00:00-03:00") } = {}) {
   const favorites = favoritesWith(count);
-  const built = g("createAgendaPromo")({ text, config, favorites, devMode: () => dev, now: () => now, savedLabel: n => `${n} palestras salvas` });
+  const built = g("createAgendaPromo")({ text, config, favorites, devMode: () => dev, now: () => now, savedLabel: n => `${n} palestras salvas`, search: () => search });
   return { favorites, promo: built };
 }
 
-test("cartão: quem ainda não salvou nada vê o convite e o botão 'Ver a programação' (leva à Grade)", () => {
+test("cartão: quem ainda não salvou nada vê o convite e o botão 'Monte sua agenda' (leva à Grade para montar)", () => {
   const card = html(promo().promo.cardMarkup());
   assert.equal(card.querySelector("a").getAttribute("href"), "grade.html");
   assert.match(textOf(card), /Monte a sua agenda/);
   assert.match(textOf(card), /Toque na estrela das palestras que quer ver/);
   assert.match(textOf(card), /exporte para o calendário ou mande no WhatsApp/);
-  assert.match(textOf(card), /Ver a programação/);
+  assert.match(textOf(card), /Monte sua agenda/);
   assert.ok(card.querySelector(".promo-icon svg"), "com a estrela");
 });
 
-test("cartão: quem já salvou vê a contagem e 'Abrir minha agenda'", () => {
+test("cartão: quem já salvou vê a contagem e 'Abrir minha agenda', que abre a Grade JÁ no filtro 'Minha agenda'", () => {
   const card = html(promo({ count: 5 }).promo.cardMarkup());
+  assert.equal(card.querySelector("a").getAttribute("href"), "grade.html?agenda=1");
   assert.match(textOf(card), /Sua agenda no DevFest/);
   assert.match(textOf(card), /5 palestras salvas/);
   assert.match(textOf(card), /Abrir minha agenda/);
-  assert.doesNotMatch(textOf(card), /Ver a programação/);
+  assert.doesNotMatch(textOf(card), /Monte sua agenda/);
 });
 
 test("dica: só para quem ainda não salvou nada (some na primeira estrela), cada página com a sua frase", () => {
@@ -64,7 +65,7 @@ test("selo 'Novo': vale até a data de `badgeUntil` e some depois", () => {
 });
 
 test("regra de abrir: `public: false` só no modo DEV; `public: true` abre em produção; `open: false` fecha tudo, até no DEV", () => {
-  const closedEverywhere = { public: false, open: true, badgeUntil: "2026-11-28T00:00:00-03:00" };
+  const closedEverywhere = { public: false, open: true, gradeHref: "grade.html", openParam: "agenda", badgeUntil: "2026-11-28T00:00:00-03:00" };
   assert.equal(promo({ dev: false, config: closedEverywhere }).promo.isOpen(), false, "produção, ainda não liberado");
   assert.equal(promo({ dev: false, config: closedEverywhere }).promo.cardMarkup(), "");
   assert.equal(promo({ dev: false, config: closedEverywhere }).promo.tipMarkup("gradeTip"), "");
@@ -124,4 +125,27 @@ test("o aviso padrão sai dos favoritos do site e do modo DEV guardado", () => {
   assert.match(textOf(card), /Monte a sua agenda|Sua agenda no DevFest/);
   window.isDevModeStored = () => false;
   assert.match(textOf(html(g("defaultAgendaPromo")().cardMarkup())), /Monte a sua agenda|Sua agenda no DevFest/, "produção: liberado");
+});
+
+test("a Grade abre já na 'Minha agenda' só quando a página vem de `?agenda=1`", () => {
+  assert.equal(promo({ search: "?agenda=1" }).promo.opensMyAgenda(), true);
+  assert.equal(promo({ search: "?lineup=1&agenda=1" }).promo.opensMyAgenda(), true);
+  assert.equal(promo({ search: "" }).promo.opensMyAgenda(), false);
+  assert.equal(promo({ search: "?agenda=0" }).promo.opensMyAgenda(), false);
+  assert.equal(promo({ dev: false, search: "?agenda=1" }).promo.opensMyAgenda(), true, "o parâmetro vale mesmo com o aviso fechado");
+});
+
+test("filtro da Grade: `startActive` abre no modo 'Minha agenda' (só os favoritos), sem clique", () => {
+  document.body.innerHTML = `<button id="t"></button><p id="empty" hidden></p><div id="scope"><div class="slot"><div class="talks" data-view="all"><div class="talk is-fav"></div><div class="talk"></div></div></div></div>`;
+  const repository = { count: () => 1, subscribe: () => () => {} };
+  const toggleEl = document.getElementById("t");
+  g("renderFavoritesToggle")(toggleEl, "Minha agenda");
+  g("initFavoritesFilter")({ toggleEl, scopeEl: document.getElementById("scope"), emptyEl: document.getElementById("empty"), repository, startActive: true });
+  assert.ok(document.getElementById("scope").classList.contains("favs-only"));
+  assert.equal(toggleEl.getAttribute("aria-pressed"), "true");
+  document.body.innerHTML = `<button id="t"></button><p id="empty" hidden></p><div id="scope"></div>`;
+  const plainToggle = document.getElementById("t");
+  g("renderFavoritesToggle")(plainToggle, "Minha agenda");
+  g("initFavoritesFilter")({ toggleEl: plainToggle, scopeEl: document.getElementById("scope"), emptyEl: document.getElementById("empty"), repository });
+  assert.ok(!document.getElementById("scope").classList.contains("favs-only"), "sem o parâmetro, abre normal");
 });

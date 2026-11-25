@@ -3,18 +3,23 @@
  * Aqui ficam o interruptor e os textos dos avisos que apresentam isso no site: cartão da home, dica na Grade, dica em Palestrantes, selo "Novo" no botão e a dica do telão.
  *   public       false = só no modo DEV (features/release-gate.js); true (liberado em 2026-11-25) vale em produção. Sem janela de horário: a agenda serve para planejar antes do evento
  *   open         false fecha tudo na hora, seja qual for o modo (interruptor manual)
+
+ *   gradeHref    a página da Grade (onde se monta a agenda)
+ *   openParam    parâmetro da Grade que já abre na "Minha agenda" (filtro ligado): `<gradeHref>?<openParam>=1`, usado pelo botão "Abrir minha agenda"
  *   badgeUntil   o selo "Novo" do botão "Minha agenda" some depois desta data (ISO com fuso)
  */
 const AGENDA_PROMO = {
   public: true, // LIBERADO em produção em 2026-11-25 (pedido do Renato: pode mostrar antes do evento)
   open: true,
+  gradeHref: "grade.html",
+  openParam: "agenda",
   badgeUntil: "2026-11-28T00:00:00-03:00",
 };
 
 const AGENDA_PROMO_TEXTS = {
   cardTitle: "Monte a sua agenda",
   cardText: "Toque na estrela das palestras que quer ver. Leve no celular, exporte para o calendário ou mande no WhatsApp.",
-  cardButton: "Ver a programação",
+  cardButton: "Monte sua agenda",
   savedTitle: "Sua agenda no DevFest",
   savedButton: "Abrir minha agenda",
   gradeTip: "Toque na estrela de uma palestra para montar a sua agenda. Depois exporte para o calendário ou mande no WhatsApp.",

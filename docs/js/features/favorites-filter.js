@@ -2,7 +2,7 @@
  * Feature: filtro "Minha agenda" da Grade. Liga/desliga o modo
  * `.favs-only` no scopeEl (só CSS esconde o que não é favorito),
  * esconde slots sem favorito visível e mostra o estado vazio.
- * Respeita a aba de trilha ativa (evento "trackfilterchange").
+ * Respeita a aba de trilha ativa (evento "trackfilterchange"). `startActive` abre já no modo "Minha agenda" (link "Abrir minha agenda" da home).
  * Precisa ser inicializado depois de initFavorites (mesma ordem de
  * inscrição no repository), pra .is-fav já estar atualizado.
  */
@@ -11,7 +11,7 @@ function renderFavoritesToggle(toggleEl, label, { badge = "" } = {}) {
   toggleEl.innerHTML = `${iconMarkup("star")}<span>${label}</span><span class="fav-count" data-fav-count>0</span>${badge}`;
 }
 
-function initFavoritesFilter({ toggleEl, scopeEl, emptyEl, repository }) {
+function initFavoritesFilter({ toggleEl, scopeEl, emptyEl, repository, startActive = false }) {
   const countEl = toggleEl.querySelector("[data-fav-count]");
 
   function isVisibleFavorite(card, view) {
@@ -42,5 +42,6 @@ function initFavoritesFilter({ toggleEl, scopeEl, emptyEl, repository }) {
   });
   scopeEl.addEventListener("trackfilterchange", refresh);
   repository.subscribe(refresh);
+  if (startActive) scopeEl.classList.add("favs-only");
   refresh();
 }

@@ -512,7 +512,7 @@ I18N_DICTIONARIES.en = {
     "Mande para o álbum ao vivo pelo app Google Fotos": "Send it to the live album with the Google Photos app",
     "Monte a sua agenda": "Build your agenda",
     "Toque na estrela das palestras que quer ver. Leve no celular, exporte para o calendário ou mande no WhatsApp.": "Tap the star on the talks you want to see. Take it on your phone, export it to your calendar or send it on WhatsApp.",
-    "Ver a programação": "See the schedule",
+    "Monte sua agenda": "Build your agenda",
     "Sua agenda no DevFest": "Your DevFest agenda",
     "Abrir minha agenda": "Open my agenda",
     "Toque na estrela de uma palestra para montar a sua agenda. Depois exporte para o calendário ou mande no WhatsApp.": "Tap the star on a talk to build your agenda. Then export it to your calendar or send it on WhatsApp.",
