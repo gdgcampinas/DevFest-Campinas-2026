@@ -60,6 +60,13 @@ function bannerFavoriteOptions(slot, favorites) {
   return { talkKey: key, favorite: favorites.has(key) };
 }
 
+/** Opções da estrela do card da sessão em paralelo (Coding Jam): chave própria (`parallelTalkKey`) e estado salvo; sem repositório de favoritos, sem estrela. */
+function parallelFavoriteOptions(placement, favorites) {
+  if (!favorites) return {};
+  const key = parallelTalkKey(placement);
+  return { talkKey: key, favorite: favorites.has(key) };
+}
+
 function renderLegend(tracks, mountEl) {
   mountEl.innerHTML = tracks
     .map(track => {
@@ -91,7 +98,7 @@ function renderAgenda(schedule, tracks, timezone, mountEl, { reveal = true, favo
   const parts = [];
   for (let index = 0; index <= schedule.length; index++) {
     groupsAt(index).forEach(placement => {
-      parts.push(parallelGroupMarkup(placement, slotsHtml.slice(placement.from, placement.to + 1).join(""), parallelTexts));
+      parts.push(parallelGroupMarkup(placement, slotsHtml.slice(placement.from, placement.to + 1).join(""), parallelTexts, parallelFavoriteOptions(placement, favorites)));
     });
     const covered = parallel.some(placement => placement.from <= index && index <= placement.to);
     if (index < schedule.length && !covered) parts.push(slotsHtml[index]);

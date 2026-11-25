@@ -15,6 +15,11 @@ function parallelPlacements(sessions, schedule, toDate, { findHost = () => undef
   })).sort((a, b) => a.start - b.start);
 }
 
+/** A chave de favorito de uma rodada da sessão em paralelo (a "Coding Jam" na "Minha agenda"): não colide com a das palestras (`início|trilha`) e fica estável entre os recarregamentos. */
+function parallelTalkKey({ session, roundIndex }) {
+  return `parallel|${session.id}|${roundIndex}`;
+}
+
 /** Quem faz a sessão, no formato de quem fala: { name, photo, social: [{ name, link }] } (o logo da marca vira a foto; Linktree e Instagram viram ícones); sem marca achada, `null`. */
 function resolveParallelHost(session, findHost) {
   const sponsor = session.host && findHost(session.host.sponsor);

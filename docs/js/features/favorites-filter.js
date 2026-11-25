@@ -35,7 +35,8 @@ function initFavoritesFilter({ toggleEl, scopeEl, emptyEl, repository, startActi
       slotEl.classList.toggle("no-fav", !hasFavorite);
       anyVisible = anyVisible || hasFavorite;
     });
-    emptyEl.hidden = !only || anyVisible;
+    const savedParallel = Boolean(scopeEl.querySelector(".parallel-card.is-fav")); // a sessão em paralelo salva também conta como "tem o que mostrar"
+    emptyEl.hidden = !only || anyVisible || savedParallel;
   }
 
   toggleEl.addEventListener("click", () => {

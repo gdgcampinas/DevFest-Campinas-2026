@@ -10,6 +10,10 @@
     repeating-linear-gradient(135deg,color-mix(in oklch,var(--band-color) 13%,transparent) 0 14px,transparent 14px 28px),
     linear-gradient(160deg,var(--card-a),var(--card-b));
 }
+.parallel-card>.fav-btn{position:absolute;top:38px;right:12px;z-index:2}
+/* "Minha agenda": o card da sessão só fica se estiver salvo; o grupo some quando não sobra nada nele */
+.favs-only .parallel-card:not(.is-fav){display:none}
+.favs-only .parallel-span:not(:has(.slot:not(.no-fav))):not(:has(.parallel-card.is-fav)){display:none}
 /* o conteúdo acompanha a rolagem dentro da faixa alta, para o botão estar sempre à vista */
 .parallel-card-body{position:sticky;top:76px;display:flex;flex-direction:column;gap:6px;margin-top:10px}
 .parallel-kicker{align-self:flex-start;padding:3px 10px;border-radius:100px;background:var(--band-color);color:oklch(14% 0.01 260);font:800 12px var(--font-body);letter-spacing:.4px;text-transform:uppercase}
