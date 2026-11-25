@@ -58,6 +58,15 @@ function createPersistedSetRepository({ storageKey, storage = browserStorage() }
       listeners.forEach(listener => listener());
       return items.size - before;
     },
+    /** Mantém só as chaves que `isValid` aceita (limpa o que ficou salvo de uma versão antiga da grade). Só grava e avisa se algo saiu; devolve quantas saíram. */
+    retain(isValid) {
+      const stale = [...items].filter(key => !isValid(key));
+      if (stale.length === 0) return 0;
+      stale.forEach(key => items.delete(key));
+      write();
+      listeners.forEach(listener => listener());
+      return stale.length;
+    },
     /** Retorna a função que cancela a inscrição. */
     subscribe(listener) {
       listeners.add(listener);

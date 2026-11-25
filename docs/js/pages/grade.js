@@ -18,7 +18,7 @@ function initGrade() {
   const agendaEl = document.getElementById("agenda");
   renderLegend(TRACKS, document.querySelector(".tracks-legend"));
   renderTabs(TRACKS, tabsEl);
-  const parallel = parallelPlacements(parallelSessionsRepository.visible({ devMode: isDevModeStored() }), SCHEDULE, eventTime, { findHost: name => sponsorsRepository.findByName(name), findHighlight: id => talkHighlightsRepository.getById(id) }); // só DEV até `public` em data/parallel-sessions.js
+  const parallel = defaultParallelPlacements(); // só DEV até `public` em data/parallel-sessions.js
   renderAgenda(SCHEDULE, TRACKS, EVENT.timezone, agendaEl, { reveal, favorites: favoritesRepository, parallel, parallelTexts: parallelSessionsRepository.texts() });
   initTrackFilter(tabsEl, agendaEl);
 
@@ -29,7 +29,7 @@ function initGrade() {
   initInviteSlot(document.getElementById("agendaTip"), { render: () => agendaPromo.tipMarkup("gradeTip"), subscribe: favoritesRepository.subscribe });
   initFavoritesFilter({ toggleEl: favToggleEl, scopeEl: agendaEl, emptyEl: document.getElementById("favoritesEmpty"), repository: favoritesRepository, startActive: agendaPromo.opensMyAgenda() });
 
-  const calendar = initCalendarActions(document.body, { schedule: SCHEDULE, tracks: TRACKS, event: EVENT, favorites: favoritesRepository });
+  const calendar = initCalendarActions(document.body, { schedule: SCHEDULE, tracks: TRACKS, event: EVENT, favorites: favoritesRepository, parallel });
   initAgendaShare({ mountEl: document.getElementById("agendaActions"), favorites: favoritesRepository, index: calendar.index, baseUrl: calendar.siteUrl });
   initSharedAgendaBanner({
     bannerEl: document.getElementById("sharedAgendaBanner"),

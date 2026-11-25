@@ -15,6 +15,11 @@ function parallelPlacements(sessions, schedule, toDate, { findHost = () => undef
   })).sort((a, b) => a.start - b.start);
 }
 
+/** As rodadas das sessões em paralelo que a pessoa vê (públicas; todas no modo DEV), já ligadas à marca e ao destaque: a grade, o calendário e o link de compartilhar usam a mesma lista. */
+function defaultParallelPlacements() {
+  return parallelPlacements(parallelSessionsRepository.visible({ devMode: isDevModeStored() }), SCHEDULE, eventTime, { findHost: name => sponsorsRepository.findByName(name), findHighlight: id => talkHighlightsRepository.getById(id) });
+}
+
 /** A chave de favorito de uma rodada da sessão em paralelo (a "Coding Jam" na "Minha agenda"): não colide com a das palestras (`início|trilha`) e fica estável entre os recarregamentos. */
 function parallelTalkKey({ session, roundIndex }) {
   return `parallel|${session.id}|${roundIndex}`;

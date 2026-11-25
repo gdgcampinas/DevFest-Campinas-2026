@@ -11,7 +11,20 @@ function talkShareCode(slot, trackId, timezone) {
   return `${formatEventTime(slot.start, timezone, CODE_LOCALE).replace(":", "")}.${trackId}`;
 }
 
-function buildTalkIndex(schedule, tracks, timezone) {
+/**
+ * A rodada de uma sessão em paralelo (Coding Jam) no formato das palestras do índice, só pro calendário e pro link de compartilhar:
+ * a chave é a de favorito (`parallelTalkKey`), o código é "horário.id da sessão" ("1000.codejam") e a "trilha" leva a etiqueta, a sala e a cor da sessão.
+ */
+function parallelIndexEntry(placement, timezone) {
+  const { session, start, end } = placement;
+  const slot = { start, end };
+  const track = { id: session.trackId, label: session.kicker, room: session.place, color: session.color };
+  const data = { title: session.name, description: session.description, highlight: session.highlightId };
+  return { key: parallelTalkKey(placement), code: talkShareCode(slot, session.id, timezone), slot, slotIndex: -1, track, data };
+}
+
+/** `parallel` (opcional): as rodadas das sessões em paralelo (features/parallel-sessions.js), que entram no índice depois das palestras. */
+function buildTalkIndex(schedule, tracks, timezone, { parallel = [] } = {}) {
   const entries = [];
   schedule.forEach((slot, slotIndex) => {
     const talks = slotTalks(slot);
@@ -21,6 +34,7 @@ function buildTalkIndex(schedule, tracks, timezone) {
       entries.push({ key: talkKey(slot, track.id), code: talkShareCode(slot, track.id, timezone), slot, slotIndex, track, data });
     });
   });
+  parallel.forEach(placement => entries.push(parallelIndexEntry(placement, timezone)));
   const byKey = new Map(entries.map(entry => [entry.key, entry]));
   const byCode = new Map(entries.map(entry => [entry.code, entry]));
   return createRepository(entries, {

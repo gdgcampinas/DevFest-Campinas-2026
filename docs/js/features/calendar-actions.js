@@ -2,12 +2,13 @@
  * Feature: ações de calendário por clique, um listener delegado no
  * rootEl. `[data-ics-key]` baixa o .ics de uma palestra;
  * `[data-agenda-export]` baixa o .ics de toda a "Minha agenda"
- * (favoritos em ordem de horário). Monta o índice de palestras e devolve
+ * (favoritos em ordem de horário; `parallel` = as rodadas das sessões em paralelo, a Coding Jam, entram junto). Monta o índice de palestras e devolve
  * { index, event, siteUrl }, o contexto que as outras peças reaproveitam.
  */
-function initCalendarActions(rootEl, { schedule, tracks, event, favorites, page = "grade.html" }) {
-  const index = buildTalkIndex(schedule, tracks, event.timezone);
+function initCalendarActions(rootEl, { schedule, tracks, event, favorites, parallel = [], page = "grade.html" }) {
+  const index = buildTalkIndex(schedule, tracks, event.timezone, { parallel });
   const siteUrl = new URL(page, document.baseURI).href;
+  favorites?.retain(key => index.get(key)); // favorito de uma palestra que não existe mais (ou de outra versão da grade) inflava o contador de "Minha agenda"
   const toEntry = entry => talkToCalendarEntry(entry, event, siteUrl);
 
   rootEl.addEventListener("click", clickEvent => {
