@@ -82,6 +82,22 @@ test("dicas reais do mural: os itens que dependem da organização (Wi-Fi, estac
   assert.ok(!active.some(tip => ["wifi", "estacionamento", "comida"].includes(tip.id)));
 });
 
+test("dicas por id: `params.ids` pede só essas dicas (inclusive a exclusiva da agenda), na ordem dos ids; a cena comum nunca mostra as exclusivas", () => {
+  const items = [{ id: "agenda", icon: "star", title: "Agenda", text: "t1" }, { id: "agenda-calendario", icon: "calendar", title: "Calendário", text: "t2", exclusive: true }, { id: "outra", icon: "check", title: "Outra", text: "t3" }];
+  const repository = g("createRepository")(items, { getActive: () => items.filter(tip => !tip.exclusive), getByIds: ids => ids.map(id => items.find(tip => tip.id === id)).filter(Boolean) });
+  const scene = g("createTipsScene")({ repository });
+  assert.deepEqual(scene.prepare({}, ctx()).map(tip => tip.id), ["agenda", "outra"], "a cena comum não traz a exclusiva");
+  assert.deepEqual(scene.prepare({ ids: ["agenda-calendario", "agenda"] }, ctx()).map(tip => tip.id), ["agenda-calendario", "agenda"]);
+  assert.equal(scene.prepare({ ids: ["nao-existe"] }, ctx()), MURAL_SKIP);
+});
+
+test("dicas reais: a dica 'Leve a agenda no calendário' é exclusiva da cena da agenda e a cena 'agenda-dica' fica fechada em produção até `AGENDA_PROMO.public`", () => {
+  const repository = g("muralTipsRepository");
+  const now = new Date("2026-11-28T12:00:00Z");
+  assert.ok(!repository.getActive(now).some(tip => tip.id === "agenda-calendario"));
+  assert.deepEqual(repository.getByIds(["agenda", "agenda-calendario"], now).map(tip => tip.id), ["agenda", "agenda-calendario"]);
+});
+
 test("fênix: pré-carrega a imagem; se falhar a cena falha em vez de mostrar imagem quebrada", async () => {
   const ok = g("createPhoenixScene")({ preload: async () => {}, imageUrl: "f.png", title: "DevFest Campinas 2026", subtitle: "28 de novembro" });
   await ok.prepare();

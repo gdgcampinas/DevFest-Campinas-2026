@@ -9,6 +9,8 @@ function initHome() {
   initWallInviteCard(document.getElementById("wallInvite"), { invite: wallInvite });
   const photoInvite = defaultPhotoInvite();
   initInviteSlot(document.getElementById("photoInvite"), { render: photoInvite.cardMarkup });
+  const agendaPromo = defaultAgendaPromo();
+  initInviteSlot(document.getElementById("agendaPromo"), { render: agendaPromo.cardMarkup, subscribe: favoritesRepository.subscribe });
   initWaitlist(document.getElementById("waitlist"), { ...defaultWaitlistDeps(), source: "home" });
 
   initStickyStatus(document.getElementById("hero"), document.getElementById("stickyStatus"));

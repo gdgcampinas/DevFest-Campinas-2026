@@ -17,6 +17,8 @@ function initPalestrantes() {
   renderSpeakersSection(speakers, document.getElementById("speakersSection"), gridEl, { reveal, showAll: () => filter.select(ALL_TRACKS) });
 
   initFavorites(document.body, favoritesRepository);
+  const agendaPromo = defaultAgendaPromo();
+  initInviteSlot(document.getElementById("agendaTip"), { render: () => agendaPromo.tipMarkup("speakersTip"), subscribe: favoritesRepository.subscribe });
   const modal = createTalkModal();
   initSpeakerPhotoZoom();
   const wallInvite = defaultWallInvite();

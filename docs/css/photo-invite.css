@@ -1,16 +1,7 @@
-/* convites pro álbum ao vivo: o cartão da home, a faixa da grade e o link depois do check-in (somem fora da janela, ver features/photo-invite.js) */
-.photo-invite{max-width:1180px;margin:0 auto;padding:0 24px}
-section.photo-invite{margin-top:16px}
-.photo-invite-card{display:flex;align-items:center;gap:16px;padding:16px 20px;border:1px solid var(--accent);border-radius:18px;background:color-mix(in oklch,var(--accent) 10%,var(--card-a));color:var(--text);text-decoration:none}
+/* convites pro álbum ao vivo: só o que é do álbum (o mascote, o botão da faixa e o link depois do check-in); o espaço, o cartão e a faixa vêm do css/promo.css. Somem fora da janela (features/photo-invite.js) */
 .photo-invite-mascot{flex:none;width:64px;height:auto}
-.photo-invite-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
-.photo-invite-body b{font:800 18px var(--font-display)}
-.photo-invite-body span{font:500 15px/1.4 var(--font-body);color:var(--muted)}
-.photo-invite-card .chip-btn{flex:none;min-height:44px;display:inline-flex;align-items:center}
-.photo-invite-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 16px;padding:12px 16px;border:1px solid var(--accent);border-radius:14px;background:color-mix(in oklch,var(--accent) 10%,var(--card-a));color:var(--text);text-decoration:none;font:600 14px/1.4 var(--font-body)}
 .photo-invite-banner b{flex:none;color:var(--accent);font-weight:800;white-space:nowrap}
 .photo-invite-link{margin:8px 0 0;font:600 14px var(--font-body);color:var(--muted)}
 .talk-feedback--waiting{flex-wrap:wrap}
 .talk-feedback--waiting .photo-invite-link{flex-basis:100%;margin:2px 0 0}
 .photo-invite-link a{color:var(--accent);font-weight:800}
-@media(max-width:560px){.photo-invite-card{flex-wrap:wrap}.photo-invite-card .chip-btn{width:100%;justify-content:center}}

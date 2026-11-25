@@ -24,7 +24,9 @@ function initGrade() {
 
   initFavorites(document.body, favoritesRepository);
   const favToggleEl = document.getElementById("favToggle");
-  renderFavoritesToggle(favToggleEl, t("agenda.mine", "Minha agenda"));
+  const agendaPromo = defaultAgendaPromo();
+  renderFavoritesToggle(favToggleEl, t("agenda.mine", "Minha agenda"), { badge: agendaPromo.badgeMarkup() });
+  initInviteSlot(document.getElementById("agendaTip"), { render: () => agendaPromo.tipMarkup("gradeTip"), subscribe: favoritesRepository.subscribe });
   initFavoritesFilter({ toggleEl: favToggleEl, scopeEl: agendaEl, emptyEl: document.getElementById("favoritesEmpty"), repository: favoritesRepository });
 
   const calendar = initCalendarActions(document.body, { schedule: SCHEDULE, tracks: TRACKS, event: EVENT, favorites: favoritesRepository });

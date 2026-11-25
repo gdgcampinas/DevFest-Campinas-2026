@@ -6,9 +6,9 @@
  * Precisa ser inicializado depois de initFavorites (mesma ordem de
  * inscrição no repository), pra .is-fav já estar atualizado.
  */
-function renderFavoritesToggle(toggleEl, label) {
+function renderFavoritesToggle(toggleEl, label, { badge = "" } = {}) {
   toggleEl.dataset.trackEvent = "my_agenda_view";
-  toggleEl.innerHTML = `${iconMarkup("star")}<span>${label}</span><span class="fav-count" data-fav-count>0</span>`;
+  toggleEl.innerHTML = `${iconMarkup("star")}<span>${label}</span><span class="fav-count" data-fav-count>0</span>${badge}`;
 }
 
 function initFavoritesFilter({ toggleEl, scopeEl, emptyEl, repository }) {

@@ -1,8 +1,9 @@
-/** Cena de dicas e avisos: os itens ativos de `repository` (data/mural-tips.js), até `params.max` (padrão 4), em cartões com ícone. Sem item ativo, a cena não aparece (MURAL_SKIP). */
+/** Cena de dicas e avisos: os itens ativos de `repository` (data/mural-tips.js), até `params.max` (padrão 4), em cartões com ícone. `params.ids` pede só essas dicas (as exclusivas de uma cena só saem por aqui). Sem item ativo, a cena não aparece (MURAL_SKIP). */
 function createTipsScene({ repository }) {
   return {
     prepare(params, ctx) {
-      const items = repository.getActive(ctx.now).slice(0, params.max ?? 4);
+      const active = params.ids ? repository.getByIds(params.ids, ctx.now) : repository.getActive(ctx.now);
+      const items = active.slice(0, params.max ?? 4);
       return items.length ? items : MURAL_SKIP;
     },
     render(items, params) {

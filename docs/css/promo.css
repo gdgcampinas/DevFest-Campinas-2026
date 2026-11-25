@@ -1,0 +1,15 @@
+/* avisos de divulgação do site (convites do álbum, "Minha agenda"): o espaço da página, o cartão, a dica em linha e o selo. Cada recurso só põe o que é próprio dele (ver photo-invite.css, agenda-promo) */
+.promo-slot{max-width:1180px;margin:0 auto;padding:0 24px}
+section.promo-slot{margin-top:16px}
+.promo-card{display:flex;align-items:center;gap:16px;padding:16px 20px;border:1px solid var(--accent);border-radius:18px;background:color-mix(in oklch,var(--accent) 10%,var(--card-a));color:var(--text);text-decoration:none}
+.promo-card-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.promo-card-body b{font:800 18px var(--font-display)}
+.promo-card-body span{font:500 15px/1.4 var(--font-body);color:var(--muted)}
+.promo-card .chip-btn{flex:none;min-height:44px;display:inline-flex;align-items:center}
+.promo-icon{flex:none;width:48px;height:48px;border-radius:50%;background:var(--google-yellow);color:#3a3300;display:flex;align-items:center;justify-content:center}
+.promo-icon svg{width:24px;height:24px}
+.promo-tip{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 16px;padding:12px 16px;border:1px solid var(--accent);border-radius:14px;background:color-mix(in oklch,var(--accent) 10%,var(--card-a));color:var(--text);text-decoration:none;font:600 14px/1.4 var(--font-body)}
+.promo-tip>svg{flex:none;width:18px;height:18px;color:var(--google-yellow)}
+.promo-tip>span{flex:1}
+.promo-badge{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:999px;background:var(--google-yellow);color:#3a3300;font:700 11px var(--font-body)}
+@media(max-width:560px){.promo-card{flex-wrap:wrap}.promo-card .chip-btn{width:100%;justify-content:center}}
