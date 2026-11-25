@@ -91,7 +91,7 @@ test("dicas por id: `params.ids` pede só essas dicas (inclusive a exclusiva da 
   assert.equal(scene.prepare({ ids: ["nao-existe"] }, ctx()), MURAL_SKIP);
 });
 
-test("dicas reais: a dica 'Leve a agenda no calendário' é exclusiva da cena da agenda e a cena 'agenda-dica' fica fechada em produção até `AGENDA_PROMO.public`", () => {
+test("dicas reais: a dica 'Leve a agenda no calendário' é exclusiva da cena da agenda e a cena 'agenda-dica' liga junto com `AGENDA_PROMO.public`", () => {
   const repository = g("muralTipsRepository");
   const now = new Date("2026-11-28T12:00:00Z");
   assert.ok(!repository.getActive(now).some(tip => tip.id === "agenda-calendario"));

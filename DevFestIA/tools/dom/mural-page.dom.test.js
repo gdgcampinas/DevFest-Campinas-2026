@@ -109,8 +109,8 @@ test("as cenas antigas (convite de abertura, selfie do pôr do sol, arte do Gumb
   const scenes = page.site.get("MURAL_SCENES");
   for (const id of ["abertura", "selfie", "arte-gumbleton"]) assert.equal(scenes.find(scene => scene.id === id).enabled, false, id);
   const rotation = scenes.filter(scene => scene.enabled !== false).map(scene => scene.id);
-  assert.equal(scenes.find(scene => scene.id === "agenda-dica").enabled, false, "a dica da agenda no telão só liga com AGENDA_PROMO.public");
-  assert.ok(!rotation.includes("agenda-dica"));
+  assert.equal(scenes.find(scene => scene.id === "agenda-dica").enabled, page.site.get("AGENDA_PROMO").public, "a dica da agenda no telão liga junto com AGENDA_PROMO.public");
+  assert.ok(rotation.includes("agenda-dica"), "liberada: está no rodízio");
   assert.deepEqual(["fundo-foto-1", "fundo-foto-2", "fundo-foto-3", "fundo-foto-4"].filter(id => !rotation.includes(id)), [], "os fundos de foto sorteados estão no rodízio");
   const arts = page.site.get("muralArtsRepository").getAll();
   assert.deepEqual([...page.site.get("MURAL_PHOTO_BACKDROPS")], Object.keys(arts), "o sorteio cobre todas as artes e nenhuma que não existe");

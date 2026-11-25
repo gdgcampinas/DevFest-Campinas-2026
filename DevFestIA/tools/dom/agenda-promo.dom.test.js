@@ -74,8 +74,8 @@ test("regra de abrir: `public: false` só no modo DEV; `public: true` abre em pr
   assert.equal(promo({ dev: true, config: { ...closedEverywhere, public: true, open: false } }).promo.isOpen(), false, "interruptor manual");
 });
 
-test("o dado nasce fechado em produção (public false): a liberação é uma decisão do Renato", () => {
-  assert.equal(g("AGENDA_PROMO").public, false);
+test("o dado está liberado em produção (public true, 2026-11-25) e o interruptor manual segue ligado", () => {
+  assert.equal(g("AGENDA_PROMO").public, true);
   assert.equal(g("AGENDA_PROMO").open, true);
 });
 
@@ -123,5 +123,5 @@ test("o aviso padrão sai dos favoritos do site e do modo DEV guardado", () => {
   const card = html(g("defaultAgendaPromo")().cardMarkup());
   assert.match(textOf(card), /Monte a sua agenda|Sua agenda no DevFest/);
   window.isDevModeStored = () => false;
-  assert.equal(g("defaultAgendaPromo")().cardMarkup(), "", "produção: fechado até `public: true`");
+  assert.match(textOf(html(g("defaultAgendaPromo")().cardMarkup())), /Monte a sua agenda|Sua agenda no DevFest/, "produção: liberado");
 });
