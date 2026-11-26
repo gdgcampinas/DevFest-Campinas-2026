@@ -136,6 +136,10 @@ function mountSending(mailer) {
   return { root, button, message };
 }
 
+test("o site publicado envia pelo app da web do Google (sendUrl) e usa o repository do envio", () => {
+  assert.match(config.invite.sendUrl, /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/);
+});
+
 test("com envio pelo site: nada de link do Gmail; o 1º toque pede confirmação e o 2º envia assunto, texto e destinatário", async () => {
   const calls = [];
   const { root, button, message } = mountSending({ send: async mail => { calls.push(mail); return [...mail.emails]; } });

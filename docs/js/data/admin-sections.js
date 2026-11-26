@@ -104,7 +104,7 @@ const ADMIN_MODERATORS = {
    */
   invite: {
     public: true, // liberado em PROD em 2026-11-26 (pedido do Renato); false volta a mostrar só no modo DEV
-    sendUrl: "",
+    sendUrl: "https://script.google.com/macros/s/AKfycbz2kOaTAu5-LXP0UTwlrARL7G6-10oKHXJvmOKCdWZRsYRU3NCSnxw3Gg3pflnfBi3Bwg/exec", // público de propósito: só envia com o login do dono; "" volta a abrir o Gmail
     composeUrl: "https://mail.google.com/mail/",
     subject: "Acesso de moderação: DevFest Campinas 2026 (28/11)",
     body: "Oi!\n\nVocê recebeu acesso de moderação do DevFest Campinas 2026 (28/11).\n\nAcesse: {url}\nEntre com o Google usando exatamente este e-mail em que você recebeu a mensagem.\n\nPelo painel você modera as perguntas, o telão e as fotos.\nFaça um teste de acesso antes do evento e responda este e-mail se aparecer algum bloqueio.\n\nObrigado!\nGDG Campinas",
