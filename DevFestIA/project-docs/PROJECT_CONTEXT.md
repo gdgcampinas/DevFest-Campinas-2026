@@ -1331,3 +1331,7 @@ See `project-docs/Continuidade.md` for the full rule.
 - **Regra:** `photoInvitePhase(now, config, { devMode })` em `features/photo-invite-window.js` (pura, dual): `open: false` fecha sempre; modo DEV abre sempre; `public: false` fecha em produção (`isReleased`); senão vale a janela (hoje 28/11 07:30 até 29/11 00:00, fuso do evento). `photoInviteHref` monta o endereço; sem intermediário não há convite.
 - **Peças:** `features/photo-invite.js` (`createPhotoInvite`, `defaultPhotoInvite`), `components/photo-invite.js` (cartão, faixa, link), `css/photo-invite.css`, `features/invite-slot.js` (`initInviteSlot`: espaço que some e volta sozinho; o cartão do mural de recados usa o mesmo). `grade.html` precisa de `features/scheduler.js` por causa do `initInviteSlot`.
 - **Liberado em PRODUÇÃO (2026-11-24, pedido do Renato):** `public: true`. Em produção o convite só aparece de 28/11 07:30 até 29/11 00:00 (relógio do aparelho); antes e depois some sozinho. Fechar na hora: `open: false` e subir o `?v=`.
+
+## Moderadores: convite e quem já entrou (2026-11-26)
+
+Na seção Moderadores do admin (só DEV até `invite.public` em `data/admin-sections.js`): "Convidar" abre o Gmail com o convite pronto (o site não envia e-mail) e a lista mostra quem já entrou no admin (coleção `moderator-seen`, o moderador grava o próprio acesso, só o dono lê). Precisa das regras do Firestore publicadas.

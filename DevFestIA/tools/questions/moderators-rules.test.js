@@ -81,3 +81,27 @@ test("moderators: formato fechado (id em minúsculas, e-mail válido, id igual a
   denied(await putModerator(owner, `${"x".repeat(250)}@g.com`, modData(`${"x".repeat(250)}@g.com`)), "mais de 254 caracteres");
   allowed(await putModerator(owner, email));
 });
+
+test("moderator-seen: o moderador cadastrado grava só o PRÓPRIO acesso (e regrava na entrada seguinte); só o dono lê, lista e apaga", { skip }, async () => {
+  const owner = moderator();
+  const email = listedEmail();
+  const listed = asListed(email);
+  const seen = (who, id, data = { email: id }) => createDoc(who, "moderator-seen", id, data);
+  denied(await seen(listed, email), "ainda não cadastrado não grava");
+  allowed(await putModerator(owner, email));
+  allowed(await seen(listed, email));
+  allowed(await seen(listed, email), "regravar");
+  denied(await seen(listed, listedEmail()), "não grava por outra pessoa");
+  denied(await seen(listed, email, { email: "outro@gmail.com" }), "o campo e-mail é o do id");
+  denied(await seen(listed, email, { email, nome: "x" }), "formato fechado");
+  denied(await getDoc(listed, "moderator-seen", email));
+  denied(await query(listed, "moderator-seen", {}));
+  denied(await deleteDoc(listed, "moderator-seen", email));
+  for (const who of [person(), null, google(nextId("x"), "qualquer@gmail.com")]) {
+    denied(await seen(who, email));
+    denied(await query(who, "moderator-seen", {}));
+  }
+  allowed(await getDoc(owner, "moderator-seen", email));
+  allowed(await query(owner, "moderator-seen", {}));
+  allowed(await deleteDoc(owner, "moderator-seen", email));
+});

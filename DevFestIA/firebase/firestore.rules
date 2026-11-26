@@ -442,6 +442,19 @@ service cloud.firestore {
       allow delete: if isOwner();
     }
 
+    // QUEM JÁ ENTROU no admin (`moderator-seen/<e-mail em minúsculas>`): o moderador cadastrado grava só o PRÓPRIO documento a cada entrada; só o dono lê, lista e apaga.
+    // Formato fechado: { email (igual ao id), createdAt (horário do servidor, o último acesso) }.
+    match /moderator-seen/{email} {
+      allow get, list: if isOwner();
+      allow create, update: if isListedModerator()
+        && email == request.auth.token.email.lower()
+        && request.resource.data.keys().hasOnly(['email', 'createdAt'])
+        && request.resource.data.keys().hasAll(['email', 'createdAt'])
+        && request.resource.data.email == email
+        && request.resource.data.createdAt == request.time;
+      allow delete: if isOwner();
+    }
+
     // CONTROLE REMOTO do mural do telão (avisos, fixar/pausar, recarregar, emergência): UM documento `mural-control/current`. O mural (login anônimo) só LÊ pelo id, com escuta; só o moderador grava
     // (o app regrava o documento inteiro). Ninguém lista nem apaga. Formato fechado: no máximo 5 avisos de até 140 caracteres, emergência de até 160 caracteres, pausa com cena de até 40.
     match /mural-control/{docId} {

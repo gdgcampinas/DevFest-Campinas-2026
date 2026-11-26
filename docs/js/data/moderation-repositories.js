@@ -78,7 +78,14 @@ const moderationModeratorsRepository = window.createFirestoreCollectionRepositor
   collectionName: "moderators",
 });
 
+/** Quem já entrou no admin (`moderator-seen/<e-mail>`): o moderador grava o próprio, só o dono lista (regras do Firestore). */
+const moderationModeratorSeenRepository = window.createFirestoreCollectionRepository({
+  db: window.moderatorClient.db,
+  collectionName: "moderator-seen",
+});
+
 window.moderationModeratorsRepository = moderationModeratorsRepository;
+window.moderationModeratorSeenRepository = moderationModeratorSeenRepository;
 window.moderationMuralControlRepository = moderationMuralControlRepository;
 window.moderationMuralHiddenRepository = moderationMuralHiddenRepository;
 window.moderationMuralApprovedRepository = moderationMuralApprovedRepository;
