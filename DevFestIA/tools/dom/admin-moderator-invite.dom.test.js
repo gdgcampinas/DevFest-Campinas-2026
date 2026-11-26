@@ -40,8 +40,9 @@ test("convidar todos manda pra própria conta, com os moderadores em cópia ocul
 
 test("sem liberação não há convite; em DEV (ou com public: true) há", () => {
   const released = devMode => g("isReleased")(config.invite, { devMode });
-  assert.equal(released(false), false, "hoje só em DEV");
+  assert.equal(released(false), true, "liberado em PROD");
   assert.equal(released(true), true);
+  assert.equal(g("isReleased")({ ...config.invite, public: false }, { devMode: false }), false, "public: false volta a esconder em PROD");
   assert.equal(g("createModeratorInvite")({ invite: config.invite, released: false, sender, adminUrl }), null);
 });
 

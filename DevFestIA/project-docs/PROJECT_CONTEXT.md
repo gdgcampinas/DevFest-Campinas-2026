@@ -1334,4 +1334,4 @@ See `project-docs/Continuidade.md` for the full rule.
 
 ## Moderadores: convite e quem já entrou (2026-11-26)
 
-Na seção Moderadores do admin (só DEV até `invite.public` em `data/admin-sections.js`): "Convidar" abre o Gmail com o convite pronto (o site não envia e-mail) e a lista mostra quem já entrou no admin (coleção `moderator-seen`, o moderador grava o próprio acesso, só o dono lê). Precisa das regras do Firestore publicadas.
+Na seção Moderadores do admin (liberado em PROD em 2026-11-26; `invite.public` em `data/admin-sections.js`): "Convidar" abre o Gmail com o convite pronto (o site não envia e-mail) e a lista mostra quem já entrou no admin (coleção `moderator-seen`, o moderador grava o próprio acesso, só o dono lê). Precisa das regras do Firestore publicadas.

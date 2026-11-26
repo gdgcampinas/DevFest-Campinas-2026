@@ -100,10 +100,10 @@ const ADMIN_MODERATORS = {
   confirmMs: 5000,
   /**
    * Convite por e-mail: o botão abre a tela de escrever do Gmail já preenchida (na conta logada, a dona), e quem envia é a pessoa; o site não manda e-mail sozinho.
-   * Um convite vai em `to`; "Convidar todos" manda pra própria conta com os moderadores em cópia oculta. `{url}` no corpo vira o endereço do admin. Só em modo DEV até `public: true`.
+   * Um convite vai em `to`; "Convidar todos" manda pra própria conta com os moderadores em cópia oculta. `{url}` no corpo vira o endereço do admin. Vale junto pro "quem já entrou" (features/moderator-seen.js).
    */
   invite: {
-    public: false,
+    public: true, // liberado em PROD em 2026-11-26 (pedido do Renato); false volta a mostrar só no modo DEV
     composeUrl: "https://mail.google.com/mail/",
     subject: "Acesso de moderação: DevFest Campinas 2026 (28/11)",
     body: "Oi!\n\nVocê recebeu acesso de moderação do DevFest Campinas 2026 (28/11).\n\nAcesse: {url}\nEntre com o Google usando exatamente este e-mail em que você recebeu a mensagem.\n\nPelo painel você modera as perguntas, o telão e as fotos.\nFaça um teste de acesso antes do evento e responda este e-mail se aparecer algum bloqueio.\n\nObrigado!\nGDG Campinas",
