@@ -19,7 +19,7 @@ function initAdminModerators(containerEl, { repository, rules, config, selfEmail
 
   const paint = () => {
     if (stopped) return;
-    Object.entries(adminModeratorsSlots({ list: rules.sortModerators(list), armedId: confirm.armed(), selfEmail, busy, message, text, formatDate, invite, seen, invited, formatSeen })).forEach(([name, markup]) => {
+    Object.entries(adminModeratorsSlots({ list: rules.sortModerators(list, seen), armedId: confirm.armed(), selfEmail, busy, message, text, formatDate, invite, seen, invited, formatSeen })).forEach(([name, markup]) => {
       containerEl.querySelector(`[data-slot="${name}"]`).innerHTML = markup;
     });
   };

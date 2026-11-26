@@ -145,3 +145,12 @@ test("a página admin.html abre a seção Moderadores com a lista do repository"
   assert.match(textOf(body.querySelector("[data-slot=list]")), /ana@gmail\.com/);
   page.window.close();
 });
+
+test("a ordem é pelo mais recente: cadastro novo ou entrada nova sobem pro topo; empate fica alfabético", () => {
+  const sort = (list, seen) => [...g("sortModerators")(list, seen)].map(item => item.id);
+  const list = [{ id: "c@g.com", createdAtMs: 10 }, { id: "a@g.com", createdAtMs: 10 }, { id: "b@g.com", createdAtMs: 30 }];
+  assert.deepEqual(sort(list), ["b@g.com", "a@g.com", "c@g.com"]);
+  assert.deepEqual(sort(list, new Map([["c@g.com", 50]])), ["c@g.com", "b@g.com", "a@g.com"]);
+  const { rows } = mount({ initial: [{ id: "antigo@g.com", createdAtMs: 1 }, { id: "novo@g.com", createdAtMs: 2 }] });
+  assert.deepEqual(rows(), ["novo@g.com", "antigo@g.com"]);
+});

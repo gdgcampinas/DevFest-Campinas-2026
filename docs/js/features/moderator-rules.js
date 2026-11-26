@@ -26,7 +26,13 @@ function buildModeratorToAdd({ text, list, addedBy, max }) {
   return { id: email, data: { email, addedBy: normalizeModeratorEmail(addedBy) } };
 }
 
-/** A lista em ordem alfabética de e-mail (a leitura do banco não garante ordem). */
-const sortModerators = list => [...list].sort((a, b) => a.id.localeCompare(b.id));
+/**
+ * A lista com o acontecimento MAIS RECENTE em cima: quem acabou de ser cadastrado (`createdAtMs`) ou acabou de entrar (`seen`, Map e-mail → ms do último acesso, opcional). Empate (ou sem horário): ordem
+ * alfabética de e-mail, porque a leitura do banco não garante ordem.
+ */
+function sortModerators(list, seen = null) {
+  const latest = item => Math.max(item.createdAtMs ?? 0, seen?.get(item.id) ?? 0);
+  return [...list].sort((a, b) => latest(b) - latest(a) || a.id.localeCompare(b.id));
+}
 
 if (typeof module !== "undefined") module.exports = { normalizeModeratorEmail, validateModeratorEmail, buildModeratorToAdd, sortModerators, MODERATOR_EMAIL_PATTERN, MODERATOR_EMAIL_MAX };
