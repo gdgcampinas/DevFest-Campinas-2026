@@ -10,7 +10,9 @@ function createFirestoreCollectionRepository({ db, collectionName }) {
   return createRepository(null, {
     /** `onNext([{ id, ...dados }])` roda agora e a cada mudança (1 leitura por mudança); devolve a função que desliga. */
     listen(onNext, onError) {
-      return onSnapshot(col(), snapshot => onNext(snapshot.docs.map(item => ({ id: item.id, ...item.data(), createdAtMs: item.data().createdAt?.toMillis?.() ?? 0 }))), onError);
+      // serverTimestamps "estimate": logo depois de gravar, o horário do servidor ainda não chegou; sem isso ele vem vazio (a tela mostrava 31/12/1969)
+      const read = item => { const data = item.data({ serverTimestamps: "estimate" }); return { id: item.id, ...data, createdAtMs: data.createdAt?.toMillis?.() ?? 0 }; };
+      return onSnapshot(col(), snapshot => onNext(snapshot.docs.map(read)), onError);
     },
     /** Lê a coleção uma vez e descarta: resolve se a conta pode listar, rejeita (`permission-denied`) se não. Serve pra descobrir o que a conta pode usar sem repetir e-mail no código. */
     async probe() {

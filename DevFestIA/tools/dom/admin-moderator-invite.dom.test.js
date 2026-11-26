@@ -208,7 +208,7 @@ test("quem já foi convidado ou já entrou vira 'Reenviar'; 'Convidar todos' vai
   const sent = [];
   const invitedRepository = fakeInvited([{ id: "ana@gmail.com", createdAtMs: 5 }]);
   const { button, row, message, press } = mountTracked({ invitedRepository, seen: [{ id: "bia@gmail.com", createdAtMs: 7 }], mailer: { send: async mail => { sent.push([...mail.emails]); return [...mail.emails]; } } });
-  assert.match(textOf(row("ana@gmail.com")), /convidado em t5/);
+  assert.match(textOf(row("ana@gmail.com")), /✓ convite enviado em t5/);
   assert.equal(textOf(button("ana@gmail.com")), "Reenviar");
   assert.equal(textOf(button("bia@gmail.com")), "Reenviar");
   assert.match(textOf(row("caio@gmail.com")), /ainda não convidado/);
@@ -218,7 +218,7 @@ test("quem já foi convidado ou já entrou vira 'Reenviar'; 'Convidar todos' vai
   await waitFor(() => /Convite enviado: 1\./.test(message()));
   assert.deepEqual(sent, [["caio@gmail.com"]]);
   assert.deepEqual(invitedRepository.saved, [["caio@gmail.com", "caio@gmail.com"]]);
-  assert.match(textOf(row("caio@gmail.com")), /convidado em t9/);
+  assert.match(textOf(row("caio@gmail.com")), /✓ convite enviado em t9/);
   assert.equal(textOf(button("caio@gmail.com")), "Reenviar");
   assert.equal(textOf(button("*")), "Reenviar para todos");
 });
@@ -239,4 +239,15 @@ test("sem permissão pra ler os convites a lista não afirma quem foi convidado"
   const { root, button } = mountTracked({ invitedRepository: { listen: (onNext, onError) => { onError({ code: "permission-denied" }); return () => {}; }, set: async () => {} } });
   assert.equal(root.querySelector(".ad-invited"), null);
   assert.equal(textOf(button("ana@gmail.com")), "Convidar");
+});
+
+test("sem o horário (ainda não chegou do servidor) a linha não mostra data inventada", () => {
+  const { row } = mountTracked({ invitedRepository: fakeInvited([{ id: "ana@gmail.com", createdAtMs: 0 }]) });
+  assert.match(textOf(row("ana@gmail.com")), /✓ convite enviado em/);
+  assert.doesNotMatch(textOf(row("ana@gmail.com")), /t0|1969/);
+});
+
+test("o repository da coleção pede a estimativa do horário do servidor ao ler", () => {
+  const source = require("node:fs").readFileSync(require("node:path").join(__dirname, "..", "..", "..", "docs", "js", "data", "firestore-collection-repository.js"), "utf8");
+  assert.match(source, /serverTimestamps: "estimate"/);
 });

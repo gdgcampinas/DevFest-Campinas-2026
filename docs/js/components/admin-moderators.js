@@ -35,12 +35,13 @@ function adminModeratorInviteControl({ invite, emails, key, label, armedId, busy
 function adminModeratorsSlots({ list, armedId = null, selfEmail = "", busy = false, message = "", text, formatDate = () => "", invite = null, seen = null, invited = null, formatSeen = () => "" }) {
   const meta = item => [item.addedBy ? `${text.addedBy} ${item.addedBy}` : "", item.createdAtMs ? formatDate(item.createdAtMs) : ""].filter(Boolean).join(" · ");
   const others = list.filter(item => item.id !== selfEmail);
+  const at = (label, ms) => escapeHtml(`${label} ${ms ? formatSeen(ms) : ""}`.trim()); // sem horário (ainda não chegou) fica só a frase
   const status = item => (!seen || item.id === selfEmail ? "" : seen.has(item.id)
-    ? `<span class="ad-seen ad-seen--yes">${escapeHtml(`${text.seen} ${formatSeen(seen.get(item.id))}`.trim())}</span>`
+    ? `<span class="ad-seen ad-seen--yes">${at(text.seen, seen.get(item.id))}</span>`
     : `<span class="ad-seen">${escapeHtml(text.notSeen)}</span>`);
   const invitation = item => {
     if (!invited || !invite?.send || item.id === selfEmail) return "";
-    if (invited.has(item.id)) return `<span class="ad-invited">${escapeHtml(`${invite.text.invitedAt} ${formatSeen(invited.get(item.id))}`.trim())}</span>`;
+    if (invited.has(item.id)) return `<span class="ad-invited ad-invited--sent">${at(invite.text.invitedAt, invited.get(item.id))}</span>`;
     return seen?.has(item.id) ? "" : `<span class="ad-invited">${escapeHtml(invite.text.notInvited)}</span>`;
   };
   const alreadyReached = id => Boolean(invite?.send && invited && (invited.has(id) || seen?.has(id)));

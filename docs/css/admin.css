@@ -62,7 +62,7 @@
 .ad-person-main span{font:500 13px var(--font-body);color:var(--muted);overflow-wrap:anywhere}
 .ad-person .chip-btn{flex:none;min-height:40px}
 .ad-person-main .ad-seen,.ad-person-main .ad-invited{font-weight:700}
-.ad-person-main .ad-seen--yes{color:var(--accent)}
+.ad-person-main .ad-seen--yes,.ad-person-main .ad-invited--sent{color:var(--accent)}
 .ad-person-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px}
 .ad-person-actions a.chip-btn{display:inline-flex;align-items:center;text-decoration:none}
 @media(max-width:599px){.ad-person{flex-wrap:wrap}.ad-person-main{flex:1 1 calc(100% - 64px)}.ad-person-actions{width:100%}} /* celular: os botões descem pra uma linha própria, o e-mail não espreme */

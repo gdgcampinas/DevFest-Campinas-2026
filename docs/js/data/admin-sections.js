@@ -117,7 +117,7 @@ const ADMIN_MODERATORS = {
     notMarked: "Não consegui marcar como convidado (confira as regras do Firestore).",
     resend: "Reenviar",
     resendAll: "Reenviar para todos",
-    invitedAt: "convidado em",
+    invitedAt: "✓ convite enviado em",
     notInvited: "ainda não convidado",
     errors: {
       quota: "O limite de e-mails de hoje acabou. Tente amanhã.",
