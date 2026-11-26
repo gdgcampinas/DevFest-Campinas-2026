@@ -14,11 +14,12 @@ const SIGNIN_ERROR_HINTS = {
 
 const signInErrorMessage = error => `${SIGNIN_ERROR_HINTS[error?.code] ?? "Não foi possível entrar. Tente de novo."} (${error?.code ?? "erro desconhecido"})`;
 
-/** Repository padrão do login de moderador: sempre window.moderatorClient (só troca em teste). */
+/** Repository padrão do login de moderador: sempre window.moderatorClient (só troca em teste); quem entra é registrado (features/moderator-seen.js). */
 function defaultModeratorLoginDeps() {
-  return {
+  const login = {
     signIn: () => window.moderatorClient.signInWithGoogle(),
     restore: () => window.moderatorClient.restoreModerator(),
     signOut: () => window.moderatorClient.signOutModerator(),
   };
+  return typeof withModeratorSeen === "function" ? withModeratorSeen(login, () => window.moderationModeratorSeenRepository) : login;
 }

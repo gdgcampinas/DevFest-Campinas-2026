@@ -7,19 +7,13 @@ function initAdminPage() {
   const muralConfig = muralConfigRepository.getAll();
   const liveAlbum = muralAlbumsRepository.enabled({ live: true })[0] ?? null; // o álbum onde o público do evento adiciona fotos: o que o moderador vigia
   const albumsRepository = muralConfig.albums.proxyUrl ? createModerationAlbumsRepository({ proxyUrl: muralConfig.albums.proxyUrl, timeoutMs: muralConfig.albums.timeoutMs }) : null;
-  const session = createAdminSession();
-  const resolveAccess = async () => {
-    const access = await resolveAdminAccess({ probe: () => window.moderationModeratorsRepository.probe(), probeModerator: () => window.moderatorAccessRepository.probe() });
-    recordModeratorSeen({ access, email: session.email(), repository: window.moderationModeratorSeenRepository }); // sem esperar: registrar nunca atrasa a entrada
-    return access;
-  };
   initAdminShell(document.getElementById("adminBody"), {
-    session,
+    session: createAdminSession(),
     router: createHashRouter({ routes: sections.map(section => section.id), fallback: sections[0].id }),
     navEl: document.getElementById("adminNav"),
     sections,
     brand: adminBrandRepository.getAll(),
-    access: { resolve: resolveAccess },
+    access: { resolve: () => resolveAdminAccess({ probe: () => window.moderationModeratorsRepository.probe(), probeModerator: () => window.moderatorAccessRepository.probe() }) },
     mounts: {
       "visao-geral": containerEl => initAdminOverview(containerEl, { cards: buildAdminOverviewCards({ definitions: adminOverviewRepository.getAll(), deps: defaultAdminOverviewDeps({ album: liveAlbum, albumsRepository }) }) }),
       telao: containerEl => initMuralControlPanel(containerEl, { ...defaultMuralControlPanelDeps(), embedded: true }),

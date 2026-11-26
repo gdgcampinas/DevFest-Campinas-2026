@@ -7,7 +7,7 @@ const assert = require("node:assert/strict");
 const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
 const { createFakeClock } = require("../lib/fake-clock.js");
 
-const site = loadSite({ scripts: [...SITE_BASE, "features/scheduler.js", "data/admin-sections.js", "features/two-tap-confirm.js", "features/moderator-rules.js", "data/brand.js", "components/brand.js", "components/admin-icons.js", "components/initial-avatar.js", "components/admin-card.js", "features/admin-access.js", "features/release-gate.js", "features/moderator-invite.js", "features/moderator-seen.js", "components/admin-moderators.js", "features/admin-moderators.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "features/scheduler.js", "data/admin-sections.js", "features/two-tap-confirm.js", "features/moderator-rules.js", "data/brand.js", "components/brand.js", "components/admin-icons.js", "components/initial-avatar.js", "components/admin-card.js", "features/admin-access.js", "features/release-gate.js", "features/moderator-invite.js", "features/moderator-login.js", "features/moderator-seen.js", "components/admin-moderators.js", "features/admin-moderators.js"] });
 const { window, document } = site;
 test.after(() => window.close());
 const g = name => site.get(name);
@@ -78,7 +78,7 @@ test("quem já entrou aparece com a hora; o resto como 'ainda não entrou'; o re
   assert.match(textOf(row("ana@gmail.com")), /entrou em t5/);
   assert.match(textOf(row("bia@gmail.com")), /ainda não entrou/);
   assert.equal(row(sender).querySelector(".ad-seen"), null);
-  assert.match(textOf(root), /1 de 2 já entraram no admin\./);
+  assert.match(textOf(root), /1 de 2 já entraram\./);
 });
 
 test("sem permissão para ler os acessos (regra ainda não publicada) a lista não afirma que ninguém entrou", () => {
@@ -87,15 +87,40 @@ test("sem permissão para ler os acessos (regra ainda não publicada) a lista n�
   assert.doesNotMatch(textOf(root), /já entraram|ainda não entrou/);
 });
 
-test("registrar o acesso: só o moderador que não é o dono, com o e-mail em minúsculas; falha não quebra a entrada", async () => {
+test("registrar o acesso: e-mail em minúsculas, uma vez por abertura de página; falha tenta de novo na próxima entrada", async () => {
   const record = g("recordModeratorSeen");
   const calls = [];
   const repository = { set: async (id, data) => { calls.push([id, data.email]); } };
-  assert.equal(await record({ access: { owner: false, moderator: true }, email: "Ana@Gmail.com", repository }), true);
-  assert.equal(await record({ access: { owner: true, moderator: true }, email: sender, repository }), false);
-  assert.equal(await record({ access: { owner: false, moderator: false }, email: "x@g.com", repository }), false);
-  assert.equal(await record({ access: { owner: null, moderator: true }, email: "x@g.com", repository }), false);
-  assert.equal(await record({ access: { owner: false, moderator: true }, email: "", repository }), false);
+  assert.equal(await record({ email: "Ana@Gmail.com", repository }), true);
+  assert.equal(await record({ email: "ana@gmail.com", repository }), false, "já registrado");
+  assert.equal(await record({ email: "", repository }), false);
+  assert.equal(await record({ email: "x@g.com", repository: undefined }), false);
   assert.deepEqual(calls, [["ana@gmail.com", "ana@gmail.com"]]);
-  assert.equal(await record({ access: { owner: false, moderator: true }, email: "x@g.com", repository: { set: async () => { throw new Error("regra"); } } }), false);
+  assert.equal(await record({ email: "falha@g.com", repository: { set: async () => { throw new Error("regra"); } } }), false);
+  assert.equal(await record({ email: "falha@g.com", repository }), true);
+});
+
+test("o login padrão das telas de moderação registra quem entra (entrar e restaurar) sem mudar o que devolve", async () => {
+  const saved = [];
+  window.moderationModeratorSeenRepository = { set: async id => { saved.push(id); } };
+  window.moderatorClient = { signInWithGoogle: async () => "entrou@g.com", restoreModerator: async () => null, signOutModerator: async () => {} };
+  const login = g("defaultModeratorLoginDeps")();
+  assert.equal(await login.restore(), null, "ninguém logado: nada a registrar");
+  assert.equal(await login.signIn(), "entrou@g.com");
+  window.moderatorClient.restoreModerator = async () => "voltou@g.com";
+  assert.equal(await login.restore(), "voltou@g.com");
+  assert.deepEqual(saved, ["entrou@g.com", "voltou@g.com"]);
+});
+
+test("as telas com login de moderador carregam o registro", () => {
+  const fs = require("node:fs");
+  const path = require("node:path");
+  const docs = path.join(__dirname, "..", "..", "..", "docs");
+  const pages = fs.readdirSync(docs).filter(file => file.endsWith(".html")).filter(file => fs.readFileSync(path.join(docs, file), "utf8").includes("js/features/moderator-login.js"));
+  assert.ok(pages.length >= 5);
+  for (const file of pages) {
+    const html = fs.readFileSync(path.join(docs, file), "utf8");
+    assert.ok(html.includes("js/features/moderator-seen.js"), file);
+    assert.ok(html.includes("js/data/moderation-repositories.js"), file);
+  }
 });

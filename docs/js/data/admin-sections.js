@@ -123,7 +123,7 @@ const ADMIN_MODERATORS = {
     you: "você",
     seen: "entrou em",
     notSeen: "ainda não entrou",
-    seenCount: "{seen} de {total} já entraram no admin.",
+    seenCount: "{seen} de {total} já entraram.",
     empty: "Nenhum moderador cadastrado ainda. O dono sempre pode tudo.",
     added: "Moderador cadastrado.",
     removed: "Moderador removido.",
