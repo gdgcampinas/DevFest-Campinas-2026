@@ -24,15 +24,15 @@ function initAdminModerators(containerEl, { repository, rules, config, selfEmail
   const confirm = createTwoTapConfirm({ schedule, confirmMs: config.confirmMs, onChange: paint });
   const failure = error => (error?.code === "permission-denied" ? text.ownerOnly : text.saveFailed);
 
-  async function run(work, done) {
+  async function run(work, done, explain = failure) {
     busy = true;
     message = "";
     paint();
     try {
-      await work();
-      message = done;
+      const result = await work();
+      message = typeof done === "function" ? done(result) : done;
     } catch (error) {
-      message = failure(error);
+      message = explain(error);
     }
     busy = false;
     paint();
@@ -59,6 +59,15 @@ function initAdminModerators(containerEl, { repository, rules, config, selfEmail
         return paint();
       }
       run(() => repository.set(entry.id, entry.data), text.added).then(() => { if (message === text.added) input.value = ""; });
+      return;
+    }
+    const sendButton = event.target.closest("[data-moderator-send]");
+    if (sendButton) {
+      message = "";
+      const key = sendButton.dataset.moderatorSend;
+      const emails = key === "*" ? list.map(item => item.id).filter(id => id !== selfEmail) : [key];
+      const { sent, errors } = invite.text;
+      confirm.press(`invite:${key}`, () => run(() => invite.send(emails), delivered => sent.replace("{count}", delivered.length), error => errors[error?.code] ?? errors.default));
       return;
     }
     const removeButton = event.target.closest("[data-moderator-remove]");

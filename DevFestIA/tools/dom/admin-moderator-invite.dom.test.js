@@ -4,10 +4,10 @@
  */
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const { loadSite, SITE_BASE, textOf } = require("../lib/dom-harness.js");
+const { loadSite, SITE_BASE, textOf, waitFor } = require("../lib/dom-harness.js");
 const { createFakeClock } = require("../lib/fake-clock.js");
 
-const site = loadSite({ scripts: [...SITE_BASE, "features/scheduler.js", "data/admin-sections.js", "features/two-tap-confirm.js", "features/moderator-rules.js", "data/brand.js", "components/brand.js", "components/admin-icons.js", "components/initial-avatar.js", "components/admin-card.js", "features/admin-access.js", "features/release-gate.js", "features/moderator-invite.js", "features/moderator-login.js", "features/moderator-seen.js", "components/admin-moderators.js", "features/admin-moderators.js"] });
+const site = loadSite({ scripts: [...SITE_BASE, "features/scheduler.js", "data/admin-sections.js", "features/two-tap-confirm.js", "features/moderator-rules.js", "data/brand.js", "components/brand.js", "components/admin-icons.js", "components/initial-avatar.js", "components/admin-card.js", "features/admin-access.js", "features/release-gate.js", "features/moderator-invite.js", "features/moderator-login.js", "features/moderator-seen.js", "data/moderator-invite-repository.js", "components/admin-moderators.js", "features/admin-moderators.js"] });
 const { window, document } = site;
 test.after(() => window.close());
 const g = name => site.get(name);
@@ -61,15 +61,15 @@ test("a lista ganha 'Convidar' em cada linha (menos na própria) e 'Convidar tod
   const { root, row } = mount();
   assert.equal(paramsOf(row("ana@gmail.com").querySelector("[data-moderator-invite]").href).get("to"), "ana@gmail.com");
   assert.equal(row(sender).querySelector("[data-moderator-invite]"), null);
-  const all = root.querySelector("[data-moderator-invite-all]");
+  const all = root.querySelector("[data-moderator-invite='*']");
   assert.equal(all.target, "_blank");
   assert.equal(paramsOf(all.href).get("bcc"), "ana@gmail.com,bia@gmail.com");
-  assert.equal(mount({ withInvite: false }).root.querySelector("[data-moderator-invite], [data-moderator-invite-all]"), null);
+  assert.equal(mount({ withInvite: false }).root.querySelector("[data-moderator-invite], [data-moderator-invite='*']"), null);
 });
 
 test("quem não consegue ler a lista (não é o dono) não vê nenhum botão de convite", () => {
   const { root } = mount({ listenError: { code: "permission-denied" } });
-  assert.equal(root.querySelector("[data-moderator-invite], [data-moderator-invite-all]"), null);
+  assert.equal(root.querySelector("[data-moderator-invite], [data-moderator-invite='*']"), null);
 });
 
 test("quem já entrou aparece com a hora; o resto como 'ainda não entrou'; o resumo conta sem o dono", () => {
@@ -123,4 +123,56 @@ test("as telas com login de moderador carregam o registro", () => {
     assert.ok(html.includes("js/features/moderator-seen.js"), file);
     assert.ok(html.includes("js/data/moderation-repositories.js"), file);
   }
+});
+
+function mountSending(mailer) {
+  document.body.innerHTML = `<div id="view"></div>`;
+  const repository = { listen: onNext => { onNext([{ id: "ana@gmail.com" }, { id: "bia@gmail.com" }, { id: sender }]); return () => {}; }, set: async () => {}, remove: async () => {} };
+  const root = document.getElementById("view");
+  const sending = g("createModeratorInvite")({ invite: config.invite, released: true, sender, adminUrl, mailer });
+  g("initAdminModerators")(root, { repository, rules, config, selfEmail: sender, invite: sending, schedule: createFakeClock().schedule });
+  const button = key => root.querySelector(`[data-moderator-send="${key}"]`);
+  const message = () => textOf(root.querySelector("[data-slot=message]"));
+  return { root, button, message };
+}
+
+test("com envio pelo site: nada de link do Gmail; o 1º toque pede confirmação e o 2º envia assunto, texto e destinatário", async () => {
+  const calls = [];
+  const { root, button, message } = mountSending({ send: async mail => { calls.push(mail); return [...mail.emails]; } });
+  assert.equal(root.querySelector("[data-moderator-invite]"), null);
+  assert.equal(button(sender), null);
+  button("ana@gmail.com").click();
+  assert.match(textOf(button("ana@gmail.com")), /Toque de novo para ENVIAR/);
+  assert.equal(calls.length, 0);
+  button("ana@gmail.com").click();
+  await waitFor(() => /Convite enviado: 1\./.test(message()));
+  assert.deepEqual([...calls[0].emails], ["ana@gmail.com"]);
+  assert.equal(calls[0].subject, config.invite.subject);
+  assert.ok(calls[0].body.includes(adminUrl) && !calls[0].body.includes("{url}"));
+  button("*").click();
+  button("*").click();
+  await waitFor(() => /Convite enviado: 2\./.test(message()));
+  assert.deepEqual([...calls[1].emails], ["ana@gmail.com", "bia@gmail.com"]);
+});
+
+test("envio recusado explica o motivo", async () => {
+  for (const [code, expected] of [["quota", /limite de e-mails/], ["not-owner", /só o dono/], ["qualquer", /Não consegui enviar o convite/]]) {
+    const { button, message } = mountSending({ send: async () => { throw Object.assign(new Error("x"), { code }); } });
+    button("ana@gmail.com").click();
+    button("ana@gmail.com").click();
+    await waitFor(() => expected.test(message()));
+  }
+});
+
+test("o repository do envio manda o login e o convite como texto simples e transforma recusa em erro com código", async () => {
+  const requests = [];
+  const make = response => g("createModeratorInviteRepository")({ url: "https://script/exec", getToken: async () => "tok", fetchImpl: async (url, options) => { requests.push({ url, options }); return { json: async () => response }; } });
+  assert.deepEqual(await make({ ok: true, sent: ["a@g.com"] }).send({ emails: ["a@g.com"], subject: "s", body: "b" }), ["a@g.com"]);
+  assert.equal(requests[0].url, "https://script/exec");
+  assert.equal(requests[0].options.method, "POST");
+  assert.match(requests[0].options.headers["Content-Type"], /^text\/plain/);
+  assert.deepEqual(JSON.parse(requests[0].options.body), { idToken: "tok", emails: ["a@g.com"], subject: "s", body: "b" });
+  await assert.rejects(make({ ok: false, error: "quota" }).send({ emails: [], subject: "", body: "" }), error => error.code === "quota");
+  const offline = g("createModeratorInviteRepository")({ url: "u", getToken: async () => "t", fetchImpl: async () => { throw new Error("rede"); } });
+  await assert.rejects(offline.send({ emails: [], subject: "", body: "" }), error => error.code === "network");
 });

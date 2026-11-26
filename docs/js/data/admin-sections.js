@@ -99,17 +99,27 @@ const ADMIN_MODERATORS = {
   max: 30,
   confirmMs: 5000,
   /**
-   * Convite por e-mail: o botão abre a tela de escrever do Gmail já preenchida (na conta logada, a dona), e quem envia é a pessoa; o site não manda e-mail sozinho.
-   * Um convite vai em `to`; "Convidar todos" manda pra própria conta com os moderadores em cópia oculta. `{url}` no corpo vira o endereço do admin. Vale junto pro "quem já entrou" (features/moderator-seen.js).
+   * Convite por e-mail. Com `sendUrl` (o app da web de DevFestIA/tools/invite-mailer, publicado na conta do GDG) o site ENVIA sozinho, em dois toques, um e-mail por pessoa. Sem `sendUrl` o botão abre a tela
+   * de escrever do Gmail já preenchida ("Convidar todos" manda pra própria conta com os moderadores em cópia oculta). `{url}` no corpo vira o endereço do admin. Vale junto pro "quem já entrou" (features/moderator-seen.js).
    */
   invite: {
     public: true, // liberado em PROD em 2026-11-26 (pedido do Renato); false volta a mostrar só no modo DEV
+    sendUrl: "",
     composeUrl: "https://mail.google.com/mail/",
     subject: "Acesso de moderação: DevFest Campinas 2026 (28/11)",
     body: "Oi!\n\nVocê recebeu acesso de moderação do DevFest Campinas 2026 (28/11).\n\nAcesse: {url}\nEntre com o Google usando exatamente este e-mail em que você recebeu a mensagem.\n\nPelo painel você modera as perguntas, o telão e as fotos.\nFaça um teste de acesso antes do evento e responda este e-mail se aparecer algum bloqueio.\n\nObrigado!\nGDG Campinas",
     button: "Convidar",
     allButton: "Convidar todos",
     hint: "Abre o Gmail com o convite pronto. Confira e toque em enviar.",
+    sendHint: "O convite sai direto pela conta do GDG. Toque duas vezes para enviar.",
+    confirm: "Toque de novo para ENVIAR",
+    sent: "Convite enviado: {count}.",
+    errors: {
+      quota: "O limite de e-mails de hoje acabou. Tente amanhã.",
+      "no-recipient": "Esse e-mail não está mais na lista de moderadores.",
+      "not-owner": "Sem permissão: só o dono da conta envia convites. Saia e entre de novo.",
+      default: "Não consegui enviar o convite. Tente de novo.",
+    },
   },
   text: {
     intro: "Quem entra com o Google pode moderar perguntas, o telão e as fotos. Só o dono da conta (fixo nas regras) cadastra e remove. O e-mail precisa ser de uma conta Google.",
