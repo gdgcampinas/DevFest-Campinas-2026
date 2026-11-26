@@ -84,8 +84,15 @@ const moderationModeratorSeenRepository = window.createFirestoreCollectionReposi
   collectionName: "moderator-seen",
 });
 
+/** Quem já recebeu o convite (`moderator-invites/<e-mail>`): só o dono grava e lista (regras do Firestore). */
+const moderationModeratorInvitesRepository = window.createFirestoreCollectionRepository({
+  db: window.moderatorClient.db,
+  collectionName: "moderator-invites",
+});
+
 window.moderationModeratorsRepository = moderationModeratorsRepository;
 window.moderationModeratorSeenRepository = moderationModeratorSeenRepository;
+window.moderationModeratorInvitesRepository = moderationModeratorInvitesRepository;
 window.moderationMuralControlRepository = moderationMuralControlRepository;
 window.moderationMuralHiddenRepository = moderationMuralHiddenRepository;
 window.moderationMuralApprovedRepository = moderationMuralApprovedRepository;

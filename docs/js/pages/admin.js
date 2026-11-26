@@ -23,7 +23,7 @@ function initAdminPage() {
       "lista-de-espera": containerEl => initAdminWaitlist(containerEl, defaultAdminWaitlistDeps()),
       moderadores: (containerEl, { email }) => {
         const invite = defaultModeratorInvite(email); // convite e "quem já entrou" são liberados juntos (data/admin-sections.js)
-        return initAdminModerators(containerEl, { repository: window.moderationModeratorsRepository, rules: { buildModeratorToAdd, sortModerators }, config: adminModeratorsRepository.getAll(), selfEmail: email, invite, seenRepository: invite ? window.moderationModeratorSeenRepository : null });
+        return initAdminModerators(containerEl, { repository: window.moderationModeratorsRepository, rules: { buildModeratorToAdd, sortModerators }, config: adminModeratorsRepository.getAll(), selfEmail: email, invite, seenRepository: invite ? window.moderationModeratorSeenRepository : null, invitedRepository: invite?.send ? window.moderationModeratorInvitesRepository : null });
       },
       "antes-do-evento": containerEl => initAdminBeforeEvent(containerEl, { config: adminBeforeEventRepository.getAll(), reset: () => resetBrowserData(), resultRows: localResetRows }),
       atalhos: containerEl => initAdminShortcuts(containerEl, { shortcuts: adminShortcutsRepository.getAll() }),

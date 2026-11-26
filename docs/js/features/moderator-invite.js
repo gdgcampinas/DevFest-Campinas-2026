@@ -16,6 +16,15 @@ function moderatorInviteUrl({ invite, emails, sender = "", adminUrl }) {
   return `${invite.composeUrl}?${params}`;
 }
 
+/**
+ * Pra quem vai o botão de "todos": quem ainda não foi convidado nem entrou (`invited` e `seen` = Map por e-mail, ou null quando não dá pra saber); sem ninguém pendente, `resend: true` e a lista inteira.
+ */
+function moderatorInviteAllTargets({ emails, invited = null, seen = null }) {
+  if (!invited) return { emails, resend: false };
+  const pending = emails.filter(email => !invited.has(email) && !seen?.has(email));
+  return pending.length || emails.length === 0 ? { emails: pending, resend: false } : { emails, resend: true };
+}
+
 /** O assunto e o texto prontos: `adminUrl` entra no lugar de `{url}`. */
 const moderatorInviteMessage = (invite, adminUrl) => ({ subject: invite.subject, body: invite.body.replaceAll("{url}", adminUrl) });
 
@@ -33,4 +42,4 @@ function defaultModeratorInvite(sender) {
   return createModeratorInvite({ invite, released: isReleased(invite, { devMode: devLineupRequested() }), sender, adminUrl: new URL("admin.html", document.baseURI).href, mailer });
 }
 
-if (typeof module !== "undefined") module.exports = { moderatorInviteUrl, createModeratorInvite };
+if (typeof module !== "undefined") module.exports = { moderatorInviteUrl, moderatorInviteAllTargets, createModeratorInvite };

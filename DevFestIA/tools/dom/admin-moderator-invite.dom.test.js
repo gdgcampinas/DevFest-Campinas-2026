@@ -180,3 +180,63 @@ test("o repository do envio manda o login e o convite como texto simples e trans
   const offline = g("createModeratorInviteRepository")({ url: "u", getToken: async () => "t", fetchImpl: async () => { throw new Error("rede"); } });
   await assert.rejects(offline.send({ emails: [], subject: "", body: "" }), error => error.code === "network");
 });
+
+function fakeInvited(initial = []) {
+  let notify = () => {};
+  const rows = new Map(initial.map(item => [item.id, item]));
+  const saved = [];
+  return {
+    saved,
+    listen: onNext => { notify = () => onNext([...rows.values()]); notify(); return () => {}; },
+    set: async (id, data) => { saved.push([id, data.email]); rows.set(id, { id, createdAtMs: 9 }); notify(); },
+  };
+}
+function mountTracked({ invitedRepository, seen = [], mailer = { send: async mail => [...mail.emails] } }) {
+  document.body.innerHTML = `<div id="view"></div>`;
+  const repository = { listen: onNext => { onNext([{ id: "ana@gmail.com" }, { id: "bia@gmail.com" }, { id: "caio@gmail.com" }, { id: sender }]); return () => {}; }, set: async () => {}, remove: async () => {} };
+  const root = document.getElementById("view");
+  const sending = g("createModeratorInvite")({ invite: config.invite, released: true, sender, adminUrl, mailer });
+  g("initAdminModerators")(root, { repository, rules, config, selfEmail: sender, invite: sending, invitedRepository, seenRepository: { listen: onNext => { onNext(seen); return () => {}; } }, formatSeen: ms => `t${ms}`, schedule: createFakeClock().schedule });
+  const button = key => root.querySelector(`[data-moderator-send="${key}"]`);
+  const row = email => root.querySelector(`[data-moderator-remove="${email}"]`).closest(".ad-person");
+  const message = () => textOf(root.querySelector("[data-slot=message]"));
+  const press = key => { button(key).click(); button(key).click(); };
+  return { root, button, row, message, press };
+}
+
+test("quem já foi convidado ou já entrou vira 'Reenviar'; 'Convidar todos' vai só pra quem falta e marca depois de enviar", async () => {
+  const sent = [];
+  const invitedRepository = fakeInvited([{ id: "ana@gmail.com", createdAtMs: 5 }]);
+  const { button, row, message, press } = mountTracked({ invitedRepository, seen: [{ id: "bia@gmail.com", createdAtMs: 7 }], mailer: { send: async mail => { sent.push([...mail.emails]); return [...mail.emails]; } } });
+  assert.match(textOf(row("ana@gmail.com")), /convidado em t5/);
+  assert.equal(textOf(button("ana@gmail.com")), "Reenviar");
+  assert.equal(textOf(button("bia@gmail.com")), "Reenviar");
+  assert.match(textOf(row("caio@gmail.com")), /ainda não convidado/);
+  assert.equal(textOf(button("caio@gmail.com")), "Convidar");
+  assert.equal(textOf(button("*")), "Convidar todos");
+  press("*");
+  await waitFor(() => /Convite enviado: 1\./.test(message()));
+  assert.deepEqual(sent, [["caio@gmail.com"]]);
+  assert.deepEqual(invitedRepository.saved, [["caio@gmail.com", "caio@gmail.com"]]);
+  assert.match(textOf(row("caio@gmail.com")), /convidado em t9/);
+  assert.equal(textOf(button("caio@gmail.com")), "Reenviar");
+  assert.equal(textOf(button("*")), "Reenviar para todos");
+});
+
+test("se marcar falhar, o aviso diz que o e-mail saiu mas não ficou marcado; falha no meio marca quem recebeu", async () => {
+  const broken = { ...fakeInvited(), set: async () => { throw new Error("regra"); } };
+  const first = mountTracked({ invitedRepository: broken });
+  first.press("ana@gmail.com");
+  await waitFor(() => /Convite enviado: 1\. Não consegui marcar/.test(first.message()));
+  const partial = fakeInvited();
+  const second = mountTracked({ invitedRepository: partial, mailer: { send: async () => { throw Object.assign(new Error("x"), { code: "send-failed", sent: ["ana@gmail.com"] }); } } });
+  second.press("*");
+  await waitFor(() => /Não consegui enviar/.test(second.message()));
+  assert.deepEqual(partial.saved, [["ana@gmail.com", "ana@gmail.com"]]);
+});
+
+test("sem permissão pra ler os convites a lista não afirma quem foi convidado", () => {
+  const { root, button } = mountTracked({ invitedRepository: { listen: (onNext, onError) => { onError({ code: "permission-denied" }); return () => {}; }, set: async () => {} } });
+  assert.equal(root.querySelector(".ad-invited"), null);
+  assert.equal(textOf(button("ana@gmail.com")), "Convidar");
+});

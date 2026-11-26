@@ -29,17 +29,25 @@ function adminModeratorInviteControl({ invite, emails, key, label, armedId, busy
 
 /**
  * `list` já em ordem; `armedId` = o e-mail com a remoção armada (2º toque confirma); `selfEmail` ganha a etiqueta "você"; `formatDate(ms)` escreve a data do cadastro; `invite` (opcional,
- * features/moderator-invite.js): "Convidar" em cada linha e "Convidar todos" no topo; `seen` (opcional, Map e-mail → ms do último acesso) mostra quem já entrou (`formatSeen(ms)` escreve a hora). A lista só é lida pela conta dona (regras do Firestore), então só ela vê os botões.
+ * features/moderator-invite.js): "Convidar" em cada linha e "Convidar todos" no topo; `seen` (opcional, Map e-mail → ms do último acesso) mostra quem já entrou (`formatSeen(ms)` escreve a hora);
+ * `invited` (opcional, Map e-mail → ms do último envio; só com envio pelo site) mostra quem já foi convidado e troca o botão para "Reenviar". A lista só é lida pela conta dona (regras do Firestore), então só ela vê os botões.
  */
-function adminModeratorsSlots({ list, armedId = null, selfEmail = "", busy = false, message = "", text, formatDate = () => "", invite = null, seen = null, formatSeen = () => "" }) {
+function adminModeratorsSlots({ list, armedId = null, selfEmail = "", busy = false, message = "", text, formatDate = () => "", invite = null, seen = null, invited = null, formatSeen = () => "" }) {
   const meta = item => [item.addedBy ? `${text.addedBy} ${item.addedBy}` : "", item.createdAtMs ? formatDate(item.createdAtMs) : ""].filter(Boolean).join(" · ");
   const others = list.filter(item => item.id !== selfEmail);
   const status = item => (!seen || item.id === selfEmail ? "" : seen.has(item.id)
     ? `<span class="ad-seen ad-seen--yes">${escapeHtml(`${text.seen} ${formatSeen(seen.get(item.id))}`.trim())}</span>`
     : `<span class="ad-seen">${escapeHtml(text.notSeen)}</span>`);
+  const invitation = item => {
+    if (!invited || !invite?.send || item.id === selfEmail) return "";
+    if (invited.has(item.id)) return `<span class="ad-invited">${escapeHtml(`${invite.text.invitedAt} ${formatSeen(invited.get(item.id))}`.trim())}</span>`;
+    return seen?.has(item.id) ? "" : `<span class="ad-invited">${escapeHtml(invite.text.notInvited)}</span>`;
+  };
+  const alreadyReached = id => Boolean(invite?.send && invited && (invited.has(id) || seen?.has(id)));
+  const everyone = invite ? moderatorInviteAllTargets({ emails: others.map(item => item.id), invited: invite.send ? invited : null, seen }) : { emails: [] };
   const summary = seen && others.length ? `<p class="mod-hint">${escapeHtml(text.seenCount.replace("{seen}", others.filter(item => seen.has(item.id)).length).replace("{total}", others.length))}</p>` : "";
-  const row = item => `<li class="ad-person">${initialAvatarMarkup(item.id)}<div class="ad-person-main"><strong>${escapeHtml(item.id)}${item.id === selfEmail ? ` <small>(${escapeHtml(text.you)})</small>` : ""}</strong>${meta(item) ? `<span>${escapeHtml(meta(item))}</span>` : ""}${status(item)}</div><div class="ad-person-actions">${item.id === selfEmail ? "" : adminModeratorInviteControl({ invite, emails: [item.id], key: item.id, label: invite?.text.button, armedId, busy })}<button type="button" class="chip-btn chip-btn--danger" data-moderator-remove="${escapeHtml(item.id)}"${busy ? " disabled" : ""}>${escapeHtml(item.id === armedId ? text.removeConfirm : text.removeButton)}</button></div></li>`;
-  const inviteAll = adminModeratorInviteControl({ invite, emails: others.map(item => item.id), key: "*", label: invite?.text.allButton, armedId, busy });
+  const row = item => `<li class="ad-person">${initialAvatarMarkup(item.id)}<div class="ad-person-main"><strong>${escapeHtml(item.id)}${item.id === selfEmail ? ` <small>(${escapeHtml(text.you)})</small>` : ""}</strong>${meta(item) ? `<span>${escapeHtml(meta(item))}</span>` : ""}${invitation(item)}${status(item)}</div><div class="ad-person-actions">${item.id === selfEmail ? "" : adminModeratorInviteControl({ invite, emails: [item.id], key: item.id, label: alreadyReached(item.id) ? invite.text.resend : invite?.text.button, armedId, busy })}<button type="button" class="chip-btn chip-btn--danger" data-moderator-remove="${escapeHtml(item.id)}"${busy ? " disabled" : ""}>${escapeHtml(item.id === armedId ? text.removeConfirm : text.removeButton)}</button></div></li>`;
+  const inviteAll = adminModeratorInviteControl({ invite, emails: everyone.emails, key: "*", label: everyone.resend ? invite.text.resendAll : invite?.text.allButton, armedId, busy });
   return {
     message: message ? `<p class="mod-hint mod-notice" role="status">${escapeHtml(message)}</p>` : "",
     count: `<div class="ad-card-head"><div><h2 class="mod-section-title">${escapeHtml(text.listTitle)} <span class="ad-count">${list.length}</span></h2></div></div>${summary}${inviteAll ? `<div class="ad-links">${inviteAll}</div><p class="mod-hint">${escapeHtml(invite.send ? invite.text.sendHint : invite.text.hint)}</p>` : ""}`,

@@ -105,3 +105,23 @@ test("moderator-seen: o moderador cadastrado grava só o PRÓPRIO acesso (e regr
   allowed(await query(owner, "moderator-seen", {}));
   allowed(await deleteDoc(owner, "moderator-seen", email));
 });
+
+test("moderator-invites: só o dono marca (e remarca), lê, lista e apaga; formato fechado", { skip }, async () => {
+  const owner = moderator();
+  const email = listedEmail();
+  const mark = (who, id, data = { email: id }) => createDoc(who, "moderator-invites", id, data);
+  allowed(await putModerator(owner, email));
+  allowed(await mark(owner, email));
+  allowed(await mark(owner, email), "reenviar regrava");
+  allowed(await getDoc(owner, "moderator-invites", email));
+  allowed(await query(owner, "moderator-invites", {}));
+  denied(await mark(owner, email, { email: "outro@gmail.com" }), "o campo e-mail é o do id");
+  denied(await mark(owner, email, { email, nome: "x" }), "formato fechado");
+  for (const who of [asListed(email), person(), null, google(nextId("x"), "qualquer@gmail.com")]) {
+    denied(await mark(who, email));
+    denied(await getDoc(who, "moderator-invites", email));
+    denied(await query(who, "moderator-invites", {}));
+    denied(await deleteDoc(who, "moderator-invites", email));
+  }
+  allowed(await deleteDoc(owner, "moderator-invites", email));
+});

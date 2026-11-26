@@ -61,7 +61,7 @@
 .ad-person-main small{font-weight:600;color:var(--accent)}
 .ad-person-main span{font:500 13px var(--font-body);color:var(--muted);overflow-wrap:anywhere}
 .ad-person .chip-btn{flex:none;min-height:40px}
-.ad-person-main .ad-seen{font-weight:700}
+.ad-person-main .ad-seen,.ad-person-main .ad-invited{font-weight:700}
 .ad-person-main .ad-seen--yes{color:var(--accent)}
 .ad-person-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px}
 .ad-person-actions a.chip-btn{display:inline-flex;align-items:center;text-decoration:none}

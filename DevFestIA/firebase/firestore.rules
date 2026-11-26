@@ -455,6 +455,19 @@ service cloud.firestore {
       allow delete: if isOwner();
     }
 
+    // QUEM JÁ FOI CONVIDADO (`moderator-invites/<e-mail em minúsculas>`): o dono grava ao enviar o convite pelo admin (reenviar regrava); só o dono lê, lista e apaga.
+    // Formato fechado: { email (igual ao id), createdAt (horário do servidor, o último envio) }.
+    match /moderator-invites/{email} {
+      allow get, list: if isOwner();
+      allow create, update: if isOwner()
+        && email == email.lower() && email.size() <= 254 && email.matches('^[^@ ]+@[^@ ]+[.][^@ ]+$')
+        && request.resource.data.keys().hasOnly(['email', 'createdAt'])
+        && request.resource.data.keys().hasAll(['email', 'createdAt'])
+        && request.resource.data.email == email
+        && request.resource.data.createdAt == request.time;
+      allow delete: if isOwner();
+    }
+
     // CONTROLE REMOTO do mural do telão (avisos, fixar/pausar, recarregar, emergência): UM documento `mural-control/current`. O mural (login anônimo) só LÊ pelo id, com escuta; só o moderador grava
     // (o app regrava o documento inteiro). Ninguém lista nem apaga. Formato fechado: no máximo 5 avisos de até 140 caracteres, emergência de até 160 caracteres, pausa com cena de até 40.
     match /mural-control/{docId} {
