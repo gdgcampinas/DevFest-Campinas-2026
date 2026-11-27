@@ -21,7 +21,7 @@ const pucScenes = scenes => scenes.filter(scene => /^video-puc-|^apoio-video$/.t
 test("cada cena da PUC toca uma lista que existe, e todo clipe da lista existe e tem legenda registrada", () => {
   const { MURAL_VIDEO_CLIPS, MURAL_VIDEO_PLAYLISTS, MURAL_CAPTIONS, MURAL_SCENES } = loadAll(false);
   const lists = pucScenes(MURAL_SCENES).map(scene => scene.params.playlist ?? scene.params.backdrop?.playlist);
-  assert.deepEqual([...lists].sort(), ["puc-campus", "puc-completo", "puc-fechamento", "puc-fundo", "puc-resumo"]);
+  assert.deepEqual([...lists].sort(), ["puc-85-anos", "puc-campus", "puc-completo", "puc-fechamento", "puc-fundo", "puc-resumo"]);
   for (const name of lists) {
     assert.ok(MURAL_VIDEO_PLAYLISTS[name], `lista ${name}`);
     for (const id of MURAL_VIDEO_PLAYLISTS[name].clips) {

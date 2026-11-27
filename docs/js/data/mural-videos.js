@@ -34,6 +34,8 @@ const MURAL_VIDEO_CLIPS = [
   { id: "puc-campus", file: "puc-campus.mp4", label: "PUC-Campinas: o campus e a vida de estudante", seconds: 20.03, fit: PUC_FIT },
   { id: "puc-fechamento", file: "puc-fechamento.mp4", label: "PUC-Campinas", seconds: 20.03, fit: PUC_FIT },
   { id: "puc-completo", file: "puc-completo.mp4", label: "PUC-Campinas", seconds: 229.57, fit: PUC_FIT }, // 1280 x 720, o vídeo inteiro (almoço e encerramento)
+  // Vídeo dos 85 anos da PUC-Campinas (1920 x 1080, 30 s, sem áudio; recebido em 2560 x 1440 e reduzido). Anexo na release `mural-video-2025` (2026-11-27).
+  { id: "puc-85-anos", file: "puc-85-anos.mp4", label: "PUC-Campinas", seconds: 29.9, fit: PUC_FIT },
   { id: "puc-fundo", file: "puc-fundo.mp4", label: "", seconds: 12, fit: "cover" }, // fundo animado em laço (mural-backdrop.js), sem etiqueta
 ];
 
@@ -49,6 +51,7 @@ const MURAL_VIDEO_PLAYLISTS = {
   "puc-campus": { clips: ["puc-campus"] },
   "puc-fechamento": { clips: ["puc-fechamento"] },
   "puc-completo": { clips: ["puc-completo"] },
+  "puc-85-anos": { clips: ["puc-85-anos"] },
   "puc-fundo": { clips: ["puc-fundo"] },
 };
 

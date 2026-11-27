@@ -16,6 +16,7 @@ const MURAL_CAPTIONS = {
   "puc-campus": { burned: true, cues: [] },
   "puc-fechamento": { burned: true, cues: [] },
   "puc-completo": { burned: true, cues: [] },
+  "puc-85-anos": { burned: true, cues: [] },
   "puc-fundo": { burned: true, cues: [] }, // fundo animado: nunca leva legenda
   "ciandt-institucional": { burned: true, cues: [] }, // institucional da CI&T: o texto já está queimado na própria imagem
   "bosch-institucional": { burned: true, cues: [] }, // institucional da Bosch: o texto já está queimado na própria imagem

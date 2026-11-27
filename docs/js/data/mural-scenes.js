@@ -111,6 +111,7 @@ const MURAL_SCENES = [
   { id: "video-puc-campus", label: "Vídeo PUC-Campinas: o campus e a vida de estudante (20 s)", type: "video", transition: "zoom", enabled: PUC_VIDEO_CONFIG.public, params: { playlist: "puc-campus" } },
   { id: "video-2025-2", label: "Vídeo DevFest 2025 (2ª vez)", type: "video", transition: "zoom", params: { playlist: "devfest-2025" } },
   { id: "album-bosch", label: "Fotos Bosch 2026", type: "album", seconds: 14, requires: { live: "albums" }, params: { album: "gdg-talks-bosch-2026", model: "auto" } },
+  { id: "video-puc-85-anos", label: "Vídeo PUC-Campinas: 85 anos (30 s)", type: "video", transition: "zoom", enabled: PUC_VIDEO_CONFIG.public, params: { playlist: "puc-85-anos" } },
   { id: "fundos-2", label: "Fundos de tela (QR, 2ª vez)", type: "wallpapers", seconds: 16, transition: "zoom", enabled: WALLPAPERS_CONFIG.public, params: { kicker: "Fundos de tela", heading: "O Gumble agora mora no seu celular", hint: "Escaneie e escolha o seu fundo", path: "fundos.html?origem=telao" } },
   { id: "fenix", label: "Fênix", type: "phoenix", seconds: 10, transition: "zoom", params: {} },
   { id: "historia-destaque", label: "Nossa história: foto de destaque em tela cheia", type: "history", seconds: 10, transition: "zoom", enabled: HISTORY_CONFIG.storyPublic, requires: { phases: ["before", "live", "after"] }, params: { view: "destaque" } },
