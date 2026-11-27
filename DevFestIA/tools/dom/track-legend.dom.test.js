@@ -17,9 +17,9 @@ const tracks = [
 ];
 const mount = options => { document.body.innerHTML = `<div class="tracks-legend"></div>`; const el = document.querySelector(".tracks-legend"); g("renderLegend")(tracks, el, options); return el; };
 
-test("hoje só em DEV: PROD segue com a legenda em colunas", () => {
-  assert.equal(g("isReleased")(config, { devMode: false }), false);
-  assert.equal(g("isReleased")(config, { devMode: true }), true);
+test("liberado em PROD; `public: false` volta à legenda em colunas, que continua disponível sem `highlight`", () => {
+  assert.equal(g("isReleased")(config, { devMode: false }), true);
+  assert.equal(g("isReleased")({ ...config, public: false }, { devMode: false }), false);
   const el = mount();
   assert.equal(el.classList.contains("tracks-legend--rows"), false);
   assert.equal(el.querySelector(".tl-row"), null);
