@@ -30,6 +30,8 @@
 
 - **VÍDEO DA CI&T NO TELÃO (2026-11-27, pedido do Renato, PROD):** institucional do Next Gen AI (35 s, 1920x1080, enviado por WhatsApp), publicado como `ciandt-institucional.mp4` na release `mural-video-2025` (mesmo vídeo, só sem áudio). Cena `video-ciandt` (logo depois da Bosch), playlist `ciandt`, `fit: contain` pra não cortar o QR no 4:3. Ensaio: `telao.html?tela=1440x1080&cenas=video-ciandt`. O vídeo anuncia "inscrições 04 a 19 de janeiro".
 
+- **TÍTULO DA PALESTRA DO TOSHI OSSADA (2026-11-27, pedido do Renato, conferido na planilha, PROD e DEV):** passou a "Vamos falar de Inteligência Artificial? Usando O poder da GenUI em seus Apps Flutter" (15:00, Mobile). A DESCRIÇÃO não mudou e ainda fala de Flutter com Gemini e AI Studio: pedir texto novo se fizer sentido.
+
 **DEPENDE DO RENATO (importante):**
 1. **PUBLICAR AS REGRAS DO FIRESTORE** (`DevFestIA/firebase/firestore.rules`, coleção nova `mural-approved`). As regras não sobem pelo CI. Sem isso o moderador não consegue aprovar e o telão não lê a lista: o álbum ao vivo fica sem foto nenhuma. A mesma publicação leva a coleção `moderator-seen` (quem já entrou no admin).
 2. Alguém aprovando no dia: sem aprovação nenhuma foto nova do álbum ao vivo chega ao telão (as cenas dos outros álbuns seguem).
