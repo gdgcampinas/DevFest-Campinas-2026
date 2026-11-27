@@ -68,15 +68,15 @@ const roomFor = place => `Sala ${place}`;
 
 /** As 5 trilhas do evento (2026-11-12): nomes da grade do Renato e frase de cada post. Valem em PROD e em DEV, só as palestras reais esperam a revelação. */
 const TRACKS = [
-  { id: "ia", label: "IA/Vibe Coding", shortLabel: "IA/Vibe Coding", room: roomFor("Observatório"), mc: "MC a definir", color: "var(--ia)", icon: "sparkles",
+  { id: "ia", label: "IA/Vibe Coding", shortLabel: "IA/Vibe Coding", room: roomFor("Observatório"), mc: "MC - Laydianne Naira", color: "var(--ia)", icon: "sparkles",
     description: "Uma pergunta pode abrir um mundo de possibilidades." },
-  { id: "webdata", label: "Front-end / Back-end / Data - Full Stack", shortLabel: "Front/Back/Data - Full Stack", room: roomFor("Estação"), mc: "MC a definir", color: "var(--webdata)", icon: "code",
+  { id: "webdata", label: "Front-end / Back-end / Data - Full Stack", shortLabel: "Front/Back/Data - Full Stack", room: roomFor("Estação"), mc: "MC - Gabriel - GDG Americana", color: "var(--webdata)", icon: "code",
     description: "Da interface aos dados: conecte todas as partes." },
   { id: "mobile", label: "Mobile / Gerência de Projetos", shortLabel: "Mobile/Gerência de Projetos", room: roomFor("Lagoa do Taquaral"), mc: "MC a definir", color: "var(--mobile)", icon: "phone",
     description: "Do app ao plano de ação: ideias avançam em equipe." },
-  { id: "cloudsec", label: "Cyber Segurança (Security) / Cloud", shortLabel: "Cyber Segurança/Cloud", room: roomFor("Torre do Castelo"), mc: "MC a definir", color: "var(--cloudsec)", icon: "shield",
+  { id: "cloudsec", label: "Cyber Segurança (Security) / Cloud", shortLabel: "Cyber Segurança/Cloud", room: roomFor("Torre do Castelo"), mc: "MC - William Lucio de Souza", color: "var(--cloudsec)", icon: "shield",
     description: "Explore com confiança. Proteja o que importa." },
-  { id: "mentoring", label: "Carreira em Tecnologia", shortLabel: "Carreira em Tecnologia", room: roomFor("Mercadão Central"), mc: "MC a definir", color: "var(--mentoring)", icon: "rocket",
+  { id: "mentoring", label: "Carreira em Tecnologia", shortLabel: "Carreira em Tecnologia", room: roomFor("Mercadão Central"), mc: "MC - Alexandra Cavalleiros", color: "var(--mentoring)", icon: "rocket",
     description: "Cada passo abre caminhos. O próximo também é seu." },
 ];
 
