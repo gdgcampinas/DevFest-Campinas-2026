@@ -717,7 +717,7 @@ I18N_DICTIONARIES.en = {
     "Sala Observatório": "Observatory Room",
     "MC - Laydianne Naira": "MC - Laydianne Naira",
     "MC - Joao Lima": "MC - Joao Lima",
-    "MC - Gabriel - GDG Americana": "MC - Gabriel - GDG Americana",
+    "MC - Gabriel Chiareli GDG Americana": "MC - Gabriel Chiareli GDG Americana",
     "MC - Alexandra Cavalleiros": "MC - Alexandra Cavalleiros",
     "MC - William Lucio de Souza": "MC - William Lucio de Souza",
     "Uma pergunta pode abrir um mundo de possibilidades.": "One question can open a world of possibilities.",

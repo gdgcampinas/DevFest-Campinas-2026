@@ -32,6 +32,8 @@
 
 - **TÍTULO DA PALESTRA DO TOSHI OSSADA (2026-11-27, pedido do Renato, conferido na planilha, PROD e DEV):** passou a "Vamos falar de Inteligência Artificial? Usando O poder da GenUI em seus Apps Flutter" (15:00, Mobile). A DESCRIÇÃO não mudou e ainda fala de Flutter com Gemini e AI Studio: pedir texto novo se fizer sentido.
 
+- **MC DA TRILHA FRONT/BACK/DATA (2026-11-27, pedido do Renato, PROD e DEV):** passou a "MC - Gabriel Chiareli GDG Americana" (antes "MC - Gabriel - GDG Americana"; a planilha base ainda precisa ser acertada se estiver com o nome antigo).
+
 **DEPENDE DO RENATO (importante):**
 1. **PUBLICAR AS REGRAS DO FIRESTORE** (`DevFestIA/firebase/firestore.rules`, coleção nova `mural-approved`). As regras não sobem pelo CI. Sem isso o moderador não consegue aprovar e o telão não lê a lista: o álbum ao vivo fica sem foto nenhuma. A mesma publicação leva a coleção `moderator-seen` (quem já entrou no admin).
 2. Alguém aprovando no dia: sem aprovação nenhuma foto nova do álbum ao vivo chega ao telão (as cenas dos outros álbuns seguem).
