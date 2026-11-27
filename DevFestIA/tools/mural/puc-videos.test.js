@@ -50,6 +50,8 @@ test("só a `apoio-video` leva fundo animado, e o laço usa o clipe sem etiqueta
 test("o telão só baixa os arquivos das listas das cenas ligadas: desligados, os vídeos da PUC não gastam a rede", () => {
   const { muralVideosRepository } = loadAll(false);
   assert.deepEqual([...muralVideosRepository.filesFor(["bosch"])], ["bosch-institucional.mp4"]);
+  assert.deepEqual([...muralVideosRepository.filesFor(["ciandt"])], ["ciandt-institucional.mp4"]);
+  assert.equal(muralVideosRepository.playlist("ciandt").clips[0].fit, "contain", "o QR não pode ser cortado no telão 4:3");
   assert.deepEqual([...muralVideosRepository.filesFor(["puc-resumo", "puc-resumo", "puc-fundo", "nao-existe"])], ["puc-resumo.mp4", "puc-fundo.mp4"], "sem repetir e ignorando lista que não existe");
   assert.deepEqual([...muralVideosRepository.filesFor([])], []);
 });

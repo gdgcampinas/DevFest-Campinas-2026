@@ -26,6 +26,9 @@ const MURAL_VIDEO_CLIPS = [
   { id: "fiap-institucional", file: "fiap-institucional.mp4", label: "FIAP", seconds: 15.0, fit: VIDEO_FIT },
   // Institucional da patrocinadora BOSCH (1920 x 1080, 30 s, SEM áudio: reencodado do original, que tinha som; o telão toca mudo). Playlist própria, cena `video-bosch`. Anexo na release `mural-video-2025` (2026-11-06).
   { id: "bosch-institucional", file: "bosch-institucional.mp4", label: "Bosch", seconds: 30.0, fit: VIDEO_FIT },
+  // Institucional da patrocinadora CI&T (programa Next Gen AI, 1920 x 1080, 35 s, SEM áudio: o mesmo vídeo recebido, só sem a trilha de som). Aparece INTEIRO (`contain`): tem QR e texto na lateral, que o `cover`
+  // cortaria no telão 4:3. Playlist própria, cena `video-ciandt`. Anexo na release `mural-video-2025` (2026-11-27).
+  { id: "ciandt-institucional", file: "ciandt-institucional.mp4", label: "CI&T", seconds: 35.13, fit: "contain" },
   // Institucional da PUC-Campinas (1920 x 1080, sem áudio, cortes de cuts-puc.json), todos na release `mural-video-2025` (2026-11-09). Cada corte é uma lista própria porque cada cena toca o seu (data/mural-scenes.js).
   { id: "puc-resumo", file: "puc-resumo.mp4", label: "PUC-Campinas", seconds: 30.03, fit: PUC_FIT },
   { id: "puc-campus", file: "puc-campus.mp4", label: "PUC-Campinas: o campus e a vida de estudante", seconds: 20.03, fit: PUC_FIT },
@@ -41,6 +44,7 @@ const MURAL_VIDEO_PLAYLISTS = {
   },
   fiap: { clips: ["fiap-institucional"] },
   bosch: { clips: ["bosch-institucional"] },
+  ciandt: { clips: ["ciandt-institucional"] },
   "puc-resumo": { clips: ["puc-resumo"] },
   "puc-campus": { clips: ["puc-campus"] },
   "puc-fechamento": { clips: ["puc-fechamento"] },

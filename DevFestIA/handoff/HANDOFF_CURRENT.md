@@ -28,6 +28,8 @@
 
 - **LEGENDA DAS TRILHAS EM LINHAS (2026-11-27, pedido do Renato, SÓ DEV: `public: false` em `data/track-legend.js`; ver em `grade.html?lineup=1`):** layout "I" escolhido no mock: uma linha por trilha com barra na cor, nome da TRILHA grande, MC menor (mic + "MC Nome", sem repetir "MC -") e a SALA num bloco colorido à direita; abaixo de 700 px a sala vira faixa embaixo. No celular a legenda passa a aparecer (a de colunas só aparece a partir de 860 px). Código: `components/track-legend.js`, `css/track-legend.css`, `renderLegend(..., { highlight })` em `features/agenda.js`; teste `track-legend.dom.test.js`. Liberar = `public: true` e subir `?v=`.
 
+- **VÍDEO DA CI&T NO TELÃO (2026-11-27, pedido do Renato, PROD):** institucional do Next Gen AI (35 s, 1920x1080, enviado por WhatsApp), publicado como `ciandt-institucional.mp4` na release `mural-video-2025` (mesmo vídeo, só sem áudio). Cena `video-ciandt` (logo depois da Bosch), playlist `ciandt`, `fit: contain` pra não cortar o QR no 4:3. Ensaio: `telao.html?tela=1440x1080&cenas=video-ciandt`. O vídeo anuncia "inscrições 04 a 19 de janeiro".
+
 **DEPENDE DO RENATO (importante):**
 1. **PUBLICAR AS REGRAS DO FIRESTORE** (`DevFestIA/firebase/firestore.rules`, coleção nova `mural-approved`). As regras não sobem pelo CI. Sem isso o moderador não consegue aprovar e o telão não lê a lista: o álbum ao vivo fica sem foto nenhuma. A mesma publicação leva a coleção `moderator-seen` (quem já entrou no admin).
 2. Alguém aprovando no dia: sem aprovação nenhuma foto nova do álbum ao vivo chega ao telão (as cenas dos outros álbuns seguem).

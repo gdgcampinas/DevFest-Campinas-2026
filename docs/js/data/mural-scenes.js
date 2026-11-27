@@ -106,6 +106,7 @@ const MURAL_SCENES = [
   { id: "arte-gumbleton", enabled: false, label: "Arte do Gumble", type: "art", seconds: 8, transition: "zoom", params: { art: "gumbleton" } },
   { id: "video-fiap", label: "Vídeo FIAP (patrocinadora)", type: "video", transition: "zoom", params: { playlist: "fiap" } },
   { id: "video-bosch", label: "Vídeo Bosch (patrocinadora)", type: "video", transition: "zoom", params: { playlist: "bosch" } },
+  { id: "video-ciandt", label: "Vídeo CI&T (patrocinadora)", type: "video", transition: "zoom", params: { playlist: "ciandt" } },
   { id: "video-puc-resumo", label: "Vídeo PUC-Campinas (30 s)", type: "video", transition: "zoom", enabled: PUC_VIDEO_CONFIG.public, params: { playlist: "puc-resumo" } },
   { id: "video-puc-campus", label: "Vídeo PUC-Campinas: o campus e a vida de estudante (20 s)", type: "video", transition: "zoom", enabled: PUC_VIDEO_CONFIG.public, params: { playlist: "puc-campus" } },
   { id: "video-2025-2", label: "Vídeo DevFest 2025 (2ª vez)", type: "video", transition: "zoom", params: { playlist: "devfest-2025" } },
