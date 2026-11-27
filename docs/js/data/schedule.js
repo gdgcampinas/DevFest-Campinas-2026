@@ -72,7 +72,7 @@ const TRACKS = [
     description: "Uma pergunta pode abrir um mundo de possibilidades." },
   { id: "webdata", label: "Front-end / Back-end / Data - Full Stack", shortLabel: "Front/Back/Data - Full Stack", room: roomFor("Estação"), mc: "MC - Gabriel - GDG Americana", color: "var(--webdata)", icon: "code",
     description: "Da interface aos dados: conecte todas as partes." },
-  { id: "mobile", label: "Mobile / Gerência de Projetos", shortLabel: "Mobile/Gerência de Projetos", room: roomFor("Lagoa do Taquaral"), mc: "MC a definir", color: "var(--mobile)", icon: "phone",
+  { id: "mobile", label: "Mobile / Gerência de Projetos", shortLabel: "Mobile/Gerência de Projetos", room: roomFor("Lagoa do Taquaral"), mc: "MC - Joao Lima", color: "var(--mobile)", icon: "phone",
     description: "Do app ao plano de ação: ideias avançam em equipe." },
   { id: "cloudsec", label: "Cyber Segurança (Security) / Cloud", shortLabel: "Cyber Segurança/Cloud", room: roomFor("Torre do Castelo"), mc: "MC - William Lucio de Souza", color: "var(--cloudsec)", icon: "shield",
     description: "Explore com confiança. Proteja o que importa." },
