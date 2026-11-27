@@ -11,8 +11,7 @@ const SPONSORS = [
     { public: true, name: "Google Developer Groups", link: "https://gdg.community.dev/", imageUrl: "assets/brand/google-developer-groups.webp", description: "Comunidade global de desenvolvedores do Google Developer Groups." },
   ] },
   { id: "especialista", tier: "Especialista", elements: [
-    // REAL, CONFIRMADA e LIBERADA em produção (2026-10-22, `public: true`). Logo oficial do brandbook (preto horizontal, com o slogan; não recolorir nem alterar).
-    { public: true, name: "FalaBoss", link: "https://falaboss.com", imageUrl: "assets/brand/falaboss.svg", description: "Contrate pelo chat. Simples assim!" },
+    // vazia: a FalaBoss saiu em 2026-11-27 (pedido do Renato); a cota não aparece em lugar nenhum enquanto não tiver marca
   ] },
   // cotas ainda sem marca confirmada (ficam prontas; vazias, não aparecem em lugar nenhum):
   { id: "senior", tier: "Sênior", elements: [

@@ -72,7 +72,7 @@ test("em produção (antes da revelação) só as marcas `public` aparecem; cota
   assert.equal(JSON.stringify(publicTiers(tiers).map(tier => [tier.tier, tier.elements.map(e => e.name)])), JSON.stringify([["Master", ["Real"]], ["Apoio", ["Outra real"]]]));
   const real = site.get("sponsorsRepository").getAll();
   const shown = publicTiers(real).flatMap(tier => tier.elements.map(e => e.name));
-  assert.equal(JSON.stringify(shown), JSON.stringify(["Google Developer Groups", "FalaBoss", "Bosch", "FIAP", "PUC-Campinas", "Novatec Editora", "Timbira", "Hacker Rangers", "Datarock", "B&B", "Red Bridge Card Store", "KRIVO", "Agibank", "Jobstar", "Fourlab 3D", "CI&T", "NewHack Campinas", "GDG Americana", "WoHackers", "Liga de TI PUC", "Devpira"]), "hoje o Master (GDG), a FalaBoss (Especialista), a Bosch (Sênior), a FIAP (Pleno), a PUC-Campinas (Apoio), a Novatec, a Timbira, a Hacker Rangers, a Datarock, a B&B, a Red Bridge, a KRIVO, o Agibank, a Jobstar, a Fourlab 3D e a CI&T (Parceiros), a NewHack e o GDG Americana (Comunidades parceiras) estão liberados em produção (a PUC foi liberada em 2026-10-30)");
+  assert.equal(JSON.stringify(shown), JSON.stringify(["Google Developer Groups", "Bosch", "FIAP", "PUC-Campinas", "Novatec Editora", "Timbira", "Hacker Rangers", "Datarock", "B&B", "Red Bridge Card Store", "KRIVO", "Agibank", "Jobstar", "Fourlab 3D", "CI&T", "NewHack Campinas", "GDG Americana", "WoHackers", "Liga de TI PUC", "Devpira"]), "hoje o Master (GDG), a FalaBoss (Especialista), a Bosch (Sênior), a FIAP (Pleno), a PUC-Campinas (Apoio), a Novatec, a Timbira, a Hacker Rangers, a Datarock, a B&B, a Red Bridge, a KRIVO, o Agibank, a Jobstar, a Fourlab 3D e a CI&T (Parceiros), a NewHack e o GDG Americana (Comunidades parceiras) estão liberados em produção (a PUC foi liberada em 2026-10-30)");
 });
 
 test("depois da revelação (DEV) a cota vazia também não aparece, nem como rótulo", () => {
@@ -80,7 +80,7 @@ test("depois da revelação (DEV) a cota vazia também não aparece, nem como r�
   const grid = document.createElement("div");
   site.get("initSponsorsSection")({ reveal: true, tiers: site.get("sponsorsRepository").getAll(), sectionEl: section, gridEl: grid, soonMessage: "em breve" });
   const labels = [...grid.querySelectorAll(".sponsor-tier-label")].map(el => textOf(el));
-  assert.equal(labels.join(), "Master,Especialista,Sênior,Pleno,Apoio,Parceiros,Comunidades parceiras"); // toda marca nova aparece só em DEV até ganhar `public: true`
+  assert.equal(labels.join(), "Master,Sênior,Pleno,Apoio,Parceiros,Comunidades parceiras"); // Especialista vazia desde a saída da FalaBoss // toda marca nova aparece só em DEV até ganhar `public: true`
 });
 
 test("a marca `featured` ganha o destaque do Master sem mudar a cota (PUC-Campinas no Apoio)", () => {

@@ -36,6 +36,8 @@
 
 - **VÍDEO DOS 85 ANOS DA PUC NO TELÃO (2026-11-27, pedido do Renato, PROD):** `puc-85-anos.mp4` (30 s, reduzido de 2560x1440 pra 1920x1080, sem áudio) na release `mural-video-2025`; cena `video-puc-85-anos` (depois do álbum da Bosch, segue a chave `PUC_VIDEO_CONFIG.public`), `fit: contain`. Ensaio: `telao.html?tela=1440x1080&cenas=video-puc-85-anos`.
 
+- **FALABOSS REMOVIDA (2026-11-27, pedido do Renato, PROD e DEV):** saiu de `data/sponsors.js` (cota Especialista ficou vazia e não aparece), a tradução da frase saiu do `en.js` e o logo `assets/brand/falaboss.svg` foi apagado (fica no histórico do git). Artes e vídeos prontos não foram editados.
+
 **DEPENDE DO RENATO (importante):**
 1. **PUBLICAR AS REGRAS DO FIRESTORE** (`DevFestIA/firebase/firestore.rules`, coleção nova `mural-approved`). As regras não sobem pelo CI. Sem isso o moderador não consegue aprovar e o telão não lê a lista: o álbum ao vivo fica sem foto nenhuma. A mesma publicação leva a coleção `moderator-seen` (quem já entrou no admin).
 2. Alguém aprovando no dia: sem aprovação nenhuma foto nova do álbum ao vivo chega ao telão (as cenas dos outros álbuns seguem).
