@@ -1,0 +1,16 @@
+/* Legenda das trilhas em linhas (components/track-legend.js): trilha e sala em destaque, MC menor. Vale em qualquer largura (a legenda em colunas some no celular). */
+.tracks-legend.tracks-legend--rows{display:flex;flex-direction:column;align-items:stretch;gap:8px}
+.tracks-legend--rows .item.tl-row{display:flex;flex-direction:row;align-items:stretch;gap:0;padding:0;background:oklch(17% 0.018 260);border:1px solid var(--card-border);border-radius:var(--radius);overflow:hidden}
+.tl-bar{flex:none;width:8px;background:var(--track-color)}
+.tl-main{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:4px;padding:11px 16px}
+.tl-name{font:700 19px/1.3 var(--font-display);color:oklch(96% 0.006 260)}
+.tl-mc{display:flex;align-items:center;gap:6px;font:500 13px/1.4 var(--font-body);color:var(--text)}
+.tl-mc .icon{flex:none;width:14px;height:14px;color:var(--track-color)}
+.tl-room{flex:none;width:290px;display:flex;align-items:center;gap:10px;padding:11px 18px;background:var(--track-color);color:oklch(14% 0.01 260);font:800 19px/1.25 var(--font-display)}
+.tl-room .icon{flex:none;width:20px;height:20px}
+@media(max-width:699px){
+  .tracks-legend--rows .item.tl-row{flex-wrap:wrap}
+  .tl-main{flex:1 1 calc(100% - 8px);padding:10px 12px}
+  .tl-name{font-size:17px}
+  .tl-room{width:100%;padding:8px 12px;font-size:17px}
+}

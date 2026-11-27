@@ -67,7 +67,12 @@ function parallelFavoriteOptions(placement, favorites) {
   return { talkKey: key, favorite: favorites.has(key) };
 }
 
-function renderLegend(tracks, mountEl) {
+function renderLegend(tracks, mountEl, { highlight = null } = {}) {
+  mountEl.classList.toggle("tracks-legend--rows", Boolean(highlight));
+  if (highlight) { // linhas com trilha e sala em destaque (data/track-legend.js)
+    mountEl.innerHTML = tracks.map(track => trackLegendRowMarkup(track, highlight)).join("");
+    return;
+  }
   mountEl.innerHTML = tracks
     .map(track => {
       const mc = track.mc ? `<span class="mc">${track.mc}</span>` : "";

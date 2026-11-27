@@ -16,7 +16,8 @@ function initGrade() {
 
   const tabsEl = document.querySelector(".tabs");
   const agendaEl = document.getElementById("agenda");
-  renderLegend(TRACKS, document.querySelector(".tracks-legend"));
+  const legend = trackLegendRepository.getAll(); // só DEV até `public` em data/track-legend.js
+  renderLegend(TRACKS, document.querySelector(".tracks-legend"), { highlight: isReleased(legend, { devMode: isDevModeStored() }) ? legend : null });
   renderTabs(TRACKS, tabsEl);
   const parallel = defaultParallelPlacements(); // só DEV até `public` em data/parallel-sessions.js
   renderAgenda(SCHEDULE, TRACKS, EVENT.timezone, agendaEl, { reveal, favorites: favoritesRepository, parallel, parallelTexts: parallelSessionsRepository.texts() });
