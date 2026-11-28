@@ -388,7 +388,7 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .ms-speaker-track{padding:calc(var(--u) * .4) calc(var(--u) * 1.6);border-radius:99px;background:var(--track-color);color:#05060a;font:800 calc(var(--u) * 1.8) var(--font-body);letter-spacing:.06em;text-transform:uppercase}
 .ms-speaker figcaption b{display:block;font:800 calc(var(--u) * 3.2) var(--font-display);color:oklch(97% .005 260)}
 .ms-speaker figcaption span{display:block;margin-top:calc(var(--u) * .4);font:600 calc(var(--u) * 2.1) var(--font-body);color:var(--muted)}
-.ms-speaker figcaption em{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;overflow:hidden;margin-top:calc(var(--u) * 1);font:500 calc(var(--u) * 2.2) var(--font-body);font-style:italic;color:var(--accent)}
+.ms-speaker figcaption em{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;line-clamp:4;overflow:hidden;margin-top:calc(var(--u) * 1);font:500 calc(var(--u) * 2.2) var(--font-body);font-style:italic;color:var(--accent)}
 .mural-stage[data-shape="tall"] .ms-speakers-row{grid-template-columns:1fr;gap:calc(var(--u) * 3)}
 .mural-stage[data-shape="tall"] .ms-speaker{flex-direction:row;text-align:left;gap:calc(var(--u) * 3)}
 .mural-stage[data-shape="tall"] .ms-speaker .ms-avatar{flex:none;width:calc(var(--u) * 16);height:calc(var(--u) * 16)}
