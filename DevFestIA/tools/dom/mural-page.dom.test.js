@@ -125,9 +125,11 @@ test("ensaio ?fundos=: a cena de fundo de foto sorteia só entre as artes pedida
   const page = boot({ search: "cenas=fundo-foto-1&fundos=fundo-v4-12" });
   await waitFor(() => page.active() === "fundo-foto-1");
   assert.equal(page.document.querySelector("img.ms-art-img").getAttribute("src"), `assets/img/mural-art-fundo-v4-12.webp?v=${ART_VERSION}`);
+  assert.ok(page.document.querySelector(".ms-art.ms-full-stage"), "no ensaio também cobre o telão inteiro");
   page.site.window.close();
 });
   await waitFor(() => page.active() === "fundo-foto-1");
+  assert.ok(page.document.querySelector(".ms-art.ms-full-stage"), "a arte cobre o telão inteiro");
   const src = page.document.querySelector("img.ms-art-img").getAttribute("src");
   assert.match(src, new RegExp(`^assets/img/mural-art-fundo-(v4-)?(0[1-9]|[12]\\d|30)\\.webp\\?v=${ART_VERSION}$`));
   assert.ok(fs.existsSync(path.join(DOCS, src.split("?")[0])), "a imagem existe");

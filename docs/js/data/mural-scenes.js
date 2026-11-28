@@ -51,6 +51,9 @@ const MURAL_PHOTO_BACKDROPS = [
   ...Array.from({ length: 30 }, (_, index) => `fundo-v4-${String(index + 1).padStart(2, "0")}`),
 ];
 
+/** As quatro passadas dos fundos de foto dividem o mesmo sorteio e ocupam o telão inteiro (a arte já traz cabeçalho, selo e rodapé). */
+const MURAL_PHOTO_BACKDROP_PARAMS = { pool: MURAL_PHOTO_BACKDROPS, fullStage: true };
+
 const MURAL_SCENES = [
   { id: "abertura", enabled: false, label: "Convite de abertura", type: "art", seconds: 10, transition: "zoom", requires: { phases: ["before"] }, params: { art: "invite" } },
   { id: "agora", label: "Agora e próximas", type: "now-next", seconds: 22, requires: { reveal: true, phases: ["before", "live"] }, params: {} },
@@ -61,7 +64,7 @@ const MURAL_SCENES = [
   { id: "rolando-3", label: "Rolando agora (sala 4)", type: "spotlight", seconds: 8, requires: { reveal: true, phases: ["live"] }, params: { slot: 3 } },
   { id: "rolando-4", label: "Rolando agora (sala 5)", type: "spotlight", seconds: 8, requires: { reveal: true, phases: ["live"] }, params: { slot: 4 } },
   { id: "album-ao-vivo", label: "Fotos ao vivo", type: "album", seconds: 14, requires: { live: "albums" }, params: { album: "ao-vivo", model: "auto" } },
-  { id: "fundo-foto-1", label: "Fundo de foto (sorteado, 1ª passada)", type: "art", seconds: 10, transition: "zoom", params: { pool: MURAL_PHOTO_BACKDROPS } },
+  { id: "fundo-foto-1", label: "Fundo de foto (sorteado, 1ª passada)", type: "art", seconds: 10, transition: "zoom", params: MURAL_PHOTO_BACKDROP_PARAMS },
   { id: "foto-nova", label: "Foto nova da galera", type: "album", seconds: 10, transition: "zoom", requires: { live: "newPhoto" }, params: { album: "ao-vivo", latest: true, badge: "Nova foto da galera" } },
   { id: "album-2025-mosaico", label: "Mosaico DevFest 2025", type: "album", seconds: 14, transition: "zoom", requires: { live: "albums" }, params: { album: "devfest-2025", model: "mosaic" } },
   { id: "patrocinio-master", label: "Patrocínio Master", type: "sponsors", seconds: 12, params: { tiers: ["Master"], title: "Quem faz o DevFest Campinas acontecer" } },
@@ -86,20 +89,20 @@ const MURAL_SCENES = [
   { id: "recados-significou", label: "Recados: o que o DevFest significou", type: "wall", seconds: 16, transition: "zoom", requires: { phases: ["live", "after"], live: "wall" }, params: { prompt: "significou" } },
   { id: "qr-recados", label: "QR: deixe seu recado", type: "qr", seconds: 16, transition: "slide", enabled: WALL_CONFIG.open, from: WALL_CONFIG.window.from, until: WALL_CONFIG.window.until, requires: { live: "wall" }, params: { kicker: "Participe", heading: "Deixe seu recado no telão", hint: "Escaneie, escreva em uma frase e a equipe aprova. A galera vai ver!", path: "recado.html", showUrl: false } },
   { id: "time-1", label: "Quem faz o DevFest Campinas (1)", type: "team", seconds: 11, transition: "rise", params: { kicker: "Gente como você, de casa", title: "Quem faz o DevFest Campinas acontecer" } },
-  { id: "fundo-foto-2", label: "Fundo de foto (sorteado, 2ª passada)", type: "art", seconds: 10, transition: "zoom", params: { pool: MURAL_PHOTO_BACKDROPS } },
+  { id: "fundo-foto-2", label: "Fundo de foto (sorteado, 2ª passada)", type: "art", seconds: 10, transition: "zoom", params: MURAL_PHOTO_BACKDROP_PARAMS },
   { id: "agenda-dica", label: "Dica: monte a sua agenda", type: "tips", seconds: 12, transition: "zoom", enabled: AGENDA_PROMO.public, params: { title: "Monte a sua agenda no site", ids: ["agenda", "agenda-calendario"] } },
   { id: "dicas", label: "Dicas", type: "tips", seconds: 16, params: { title: "Aproveite o DevFest Campinas 2026" } },
   { id: "historia-marco", label: "Nossa história: um marco da linha do tempo", type: "history", seconds: 12, transition: "zoom", enabled: HISTORY_CONFIG.storyPublic, requires: { phases: ["before", "live", "after"] }, params: { view: "marco" } },
   { id: "time-2", label: "Quem faz o DevFest Campinas (2)", type: "team", seconds: 11, transition: "rise", params: { kicker: "Gente como você, de casa", title: "Quem faz o DevFest Campinas acontecer" } },
   { id: "album-2025", label: "Fotos DevFest 2025", type: "album", seconds: 14, requires: { live: "albums" }, params: { album: "devfest-2025", model: "auto" } },
-  { id: "fundo-foto-3", label: "Fundo de foto (sorteado, 3ª passada)", type: "art", seconds: 10, transition: "zoom", params: { pool: MURAL_PHOTO_BACKDROPS } },
+  { id: "fundo-foto-3", label: "Fundo de foto (sorteado, 3ª passada)", type: "art", seconds: 10, transition: "zoom", params: MURAL_PHOTO_BACKDROP_PARAMS },
   { id: "patrocinio-demais", label: "Demais patrocinadores", type: "sponsors", seconds: 14, params: { tiers: ["Especialista", "Sênior", "Pleno"], title: "Quem faz o DevFest Campinas acontecer" } },
   { id: "patrocinio-apoio", label: "Patrocinadores de apoio", type: "sponsors", seconds: 12, params: { tiers: ["Júnior", "Intern", "Cota Permuta"], title: "Quem faz o DevFest Campinas acontecer", layout: "compact" } },
   { id: "apoio", label: "Apoio institucional", type: "sponsors", seconds: 10, enabled: !PUC_VIDEO_CONFIG.public, params: { tiers: ["Apoio"], kicker: "Nossa casa", title: "Quem faz o DevFest Campinas acontecer", layout: "apoio" } },
   { id: "apoio-video", label: "Apoio institucional com fundo animado (PUC)", type: "sponsors", seconds: 12, enabled: PUC_VIDEO_CONFIG.public, params: { tiers: ["Apoio"], kicker: "Nossa casa", title: "Quem faz o DevFest Campinas acontecer", layout: "apoio", backdrop: { playlist: "puc-fundo" } } },
   { id: "parceiros", label: "Parceiros", type: "sponsors", seconds: 10, params: { tiers: ["Parceiros"], kicker: "Quem caminha com a gente", title: "Quem faz o DevFest Campinas acontecer", layout: "compact" } },
   { id: "comunidades", label: "Comunidades parceiras", type: "sponsors", seconds: 10, params: { tiers: ["Comunidades parceiras"], kicker: "Quem caminha com a gente", title: "Comunidades parceiras que fazem o DevFest Campinas acontecer", layout: "compact" } },
-  { id: "fundo-foto-4", label: "Fundo de foto (sorteado, 4ª passada)", type: "art", seconds: 10, transition: "zoom", params: { pool: MURAL_PHOTO_BACKDROPS } },
+  { id: "fundo-foto-4", label: "Fundo de foto (sorteado, 4ª passada)", type: "art", seconds: 10, transition: "zoom", params: MURAL_PHOTO_BACKDROP_PARAMS },
   { id: "agradecimento-patrocinio", label: "Agradecimento aos patrocinadores", type: "sponsors", seconds: 20, transition: "zoom", requires: { moments: ["lunch", "closing"] }, params: { kicker: "Muito obrigado", title: "A quem faz o DevFest acontecer", layout: "thanks" } },
   { id: "selfie", enabled: false, label: "Selfie", type: "selfie", seconds: 20, transition: "zoom", params: { hashtag: "", art: "sunset" } },
   { id: "fundos-1", label: "Fundos de tela (QR)", type: "wallpapers", seconds: 16, transition: "zoom", enabled: WALLPAPERS_CONFIG.public, params: { kicker: "Fundos de tela", heading: "O Gumble agora mora no seu celular", hint: "Escaneie e escolha o seu fundo", path: "fundos.html?origem=telao" } },

@@ -2,6 +2,7 @@
  * Cena de ARTE: uma peça pronta de design em tela cheia. `params.art` é o id em data/mural-arts.js, que diz como a arte se adapta a
  * qualquer proporção de telão (cover ou contain, ponto de foco por forma). Com `params.pool` (lista de ids) a cena SORTEIA uma arte a cada passada,
  * sem repetir antes de todas terem passado (e sem repetir a mesma duas vezes seguidas na virada do saco); todas as cenas que usam a mesma lista dividem o mesmo saco.
+ * Com `params.fullStage` a arte cobre o palco inteiro, sem margem nem rodapé (peça que já traz os dela).
  * A imagem é pré-carregada com tempo limite: se não carregar a cena falha e descansa (a próxima passada sorteia outra).
  * Tudo injetado: `repository` (muralArtsRepository), `preload` (features/image-preload.js) e `random` (Math.random por padrão; os testes passam um fixo).
  */
@@ -36,8 +37,8 @@ function createArtScene({ repository, preload, random = Math.random }) {
       await preload(art.file);
       return art;
     },
-    render(art) {
-      return { markup: `<section class="ms ms-art">${muralArtMarkup(art)}</section>` };
+    render(art, params = {}) {
+      return { markup: `<section class="ms ms-art${params.fullStage ? " ms-full-stage" : ""}">${muralArtMarkup(art)}</section>` };
     },
   };
 }

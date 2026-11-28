@@ -26,6 +26,6 @@ function createNoticeScene({ nowMs = () => Date.now(), kickers = { info: "Aviso"
 function createEmergencyScene({ label = "Atenção" } = {}) {
   return {
     prepare: (_params, ctx) => ctx.live.emergency ?? MURAL_SKIP,
-    render: emergency => ({ markup: `<section class="ms ms-emergency" role="alert"><span class="ms-emergency-label">${escapeHtml(label)}</span><p class="ms-emergency-text">${escapeHtml(emergency.text)}</p></section>` }),
+    render: emergency => ({ markup: `<section class="ms ms-full-stage ms-emergency" role="alert"><span class="ms-emergency-label">${escapeHtml(label)}</span><p class="ms-emergency-text">${escapeHtml(emergency.text)}</p></section>` }),
   };
 }

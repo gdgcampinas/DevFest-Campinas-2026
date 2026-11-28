@@ -102,9 +102,10 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .ms-notice[data-kind="alert"] .ms-notice-text{color:var(--google-yellow)}
 .ms-notice-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:calc(var(--u) * 1.2)}
 .ms-notice-item{padding:calc(var(--u) * 1.2) calc(var(--u) * 2);border-radius:calc(var(--u) * 1.4);background:oklch(22% .02 260);font:700 calc(var(--u) * 3.2) var(--font-body);color:var(--text)}
-/* a emergência cobre o palco inteiro (moldura e rodapé também), pra ninguém confundir com uma cena do rodízio */
-.ms-emergency{position:absolute;inset:calc(var(--m) * -1) calc(var(--m) * -1) calc((var(--m) + var(--footer-h)) * -1);z-index:40;height:auto;align-items:center;justify-content:center;text-align:center;padding:calc(var(--u) * 6);background:oklch(48% .22 27);color:#fff}
-.mural-scene:has(.ms-emergency){z-index:60}
+/* TELA CHEIA: a cena cobre o palco inteiro (margem segura e rodapé também): a emergência, pra ninguém confundir com uma cena do rodízio, e os fundos de foto, que já trazem cabeçalho, selo e rodapé na própria arte */
+.ms.ms-full-stage{position:absolute;inset:calc(var(--m) * -1) calc(var(--m) * -1) calc((var(--m) + var(--footer-h)) * -1);height:auto}
+.mural-scene:has(.ms-full-stage){z-index:60}
+.ms-emergency{z-index:40;align-items:center;justify-content:center;text-align:center;padding:calc(var(--u) * 6);background:oklch(48% .22 27);color:#fff}
 .ms-emergency::after{content:"";position:absolute;inset:0;background:#000;opacity:0;pointer-events:none;animation:ms-emergency-pulse 2.4s ease-in-out infinite}
 .ms-emergency-label{font:800 calc(var(--u) * 4) var(--font-display);text-transform:uppercase;letter-spacing:.2em}
 .ms-emergency-text{margin:0;font:800 calc(var(--u) * 10) / 1.12 var(--font-display);text-wrap:balance}
@@ -259,6 +260,7 @@ html.kiosk,html.kiosk *{cursor:none !important}
 .ms-video{position:relative;border-radius:calc(var(--u) * 1.6);overflow:hidden;background:#000}
 .ms-video-caption{position:absolute;left:calc(var(--u) * 2);top:calc(var(--u) * 1.6);margin:0;padding:calc(var(--u) * .7) calc(var(--u) * 1.8);border-radius:99px;background:oklch(8% .01 260 / .72);font:700 calc(var(--u) * 2.4) var(--font-body);color:#fff}
 .ms-art{position:relative;border-radius:calc(var(--u) * 1.6);overflow:hidden;background:#000}
+.ms-art.ms-full-stage{border-radius:0}
 .ms-art-bg{position:absolute;inset:-6%;background-size:cover;background-position:center;filter:blur(calc(var(--u) * 2.4)) brightness(.45)}
 /* fundo animado atrás de uma cena (components/mural-scenes/mural-backdrop.js): sangra até as bordas do palco (como a emergência), escurecido pra não competir com o conteúdo, que fica por cima */
 .ms-backdrop{position:absolute;inset:calc(var(--m) * -1) calc(var(--m) * -1) calc((var(--m) + var(--footer-h)) * -1);z-index:0;overflow:hidden;background:#000}

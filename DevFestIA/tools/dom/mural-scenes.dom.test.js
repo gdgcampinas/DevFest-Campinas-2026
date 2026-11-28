@@ -363,6 +363,13 @@ test("arte: como ela se adapta a qualquer proporção sai do dado, por forma de 
   assert.deepEqual([plain["--fit"], plain["--focus"]], ["cover", "50% 50%"], "sem dado: preenche e centraliza");
 });
 
+test("arte em tela cheia: só com `params.fullStage` a cena cobre o palco", () => {
+  const scene = g("createArtScene")({ repository: { get: () => null }, preload: async () => {} });
+  const art = { file: "f.webp", fit: "contain" };
+  assert.ok(html(scene.render(art, { fullStage: true }).markup).querySelector(".ms-art.ms-full-stage"));
+  assert.equal(html(scene.render(art).markup).querySelector(".ms-full-stage"), null);
+});
+
 test("as artes do dado: os 40 fundos de foto (10 + 30 do lote v4) aparecem inteiros (contain, o cabeçalho e o rodapé já vêm desenhados), e as antigas saíram", () => {
   const arts = g("muralArtsRepository");
   const ids = [...Array.from({ length: 10 }, (_, index) => `fundo-${String(index + 1).padStart(2, "0")}`), ...Array.from({ length: 30 }, (_, index) => `fundo-v4-${String(index + 1).padStart(2, "0")}`)];
