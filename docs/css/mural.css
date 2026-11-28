@@ -144,6 +144,12 @@ html.kiosk,html.kiosk *{cursor:none !important}
 /* compacto de UMA cota só (Parceiros, Comunidades parceiras): a cota ocupa a largura toda e os cartões ficam lado a lado (até 5 numa linha: com 9 parceiros dá 5 + 4), senão ela cai na 1ª de duas colunas e os logos empilham e passam do palco */
 .ms-sponsors-scene--compact .ms-tiers:has(>.ms-tier:only-child){grid-template-columns:minmax(0,1fr)}
 .ms-sponsors-scene--compact .ms-tiers>.ms-tier:only-child .ms-sponsors{grid-template-columns:repeat(auto-fit,minmax(calc(var(--u) * 22),calc(var(--u) * 30)))}
+/* ...e cabe na ALTURA com qualquer quantidade de logos (em 4:3 são 3 fileiras): as fileiras dividem o espaço que sobra do título, até um teto, e o logo se ajusta ao cartão */
+.ms-sponsors-scene--compact .ms-tiers:has(>.ms-tier:only-child){grid-template-rows:minmax(0,1fr);align-content:stretch}
+.ms-sponsors-scene--compact .ms-tiers>.ms-tier:only-child{display:flex;flex-direction:column;justify-content:center;min-height:0}
+.ms-sponsors-scene--compact .ms-tiers>.ms-tier:only-child .ms-sponsors{flex:0 1 auto;min-height:0;grid-auto-rows:minmax(0,calc(var(--u) * 19))}
+.ms-sponsors-scene--compact .ms-tiers>.ms-tier:only-child .ms-sponsor{min-height:0;padding:calc(var(--u) * 1.6)}
+.ms-sponsors-scene--compact .ms-tiers>.ms-tier:only-child .ms-sponsor img{flex:1 1 0;min-height:0;width:100%;height:auto;max-height:calc(var(--u) * 13)}
 
 /* Apoio (PUC-Campinas, a casa do evento): cota única com um logo horizontal, então o cartão vira um painel largo e o logo cresce */
 .ms-sponsors-scene--apoio .ms-tiers>.ms-tier:only-child .ms-sponsors,.ms-sponsors-scene--apoio .ms-tiers>.ms-tier:only-child[data-count="1"] .ms-sponsors{grid-template-columns:minmax(0,calc(var(--u) * 110))}
