@@ -38,6 +38,8 @@
 
 - **FALABOSS REMOVIDA (2026-11-27, pedido do Renato, PROD e DEV):** saiu de `data/sponsors.js` (cota Especialista ficou vazia e não aparece), a tradução da frase saiu do `en.js` e o logo `assets/brand/falaboss.svg` foi apagado (fica no histórico do git). Artes e vídeos prontos não foram editados.
 
+- **TELÃO NO PAINEL 4:3 (2026-11-28, PROD):** painel de LED P3.91, 4 x 3 m pelo cálculo (1024 x 768; confirmar medida com a Pro Light). Nas fotos de 27/11 o computador mandava 16:9 e o painel achatava a imagem: acertar a saída para 4:3 no local. Ajustes no site: logos de Parceiros cabem na tela com qualquer quantidade; vídeos FIAP e Bosch inteiros (`contain`); os 4 fundos de foto cobrem o palco todo (`params.fullStage`, classe `ms-full-stage`, a mesma da emergência: sem relógio, rodapé e aviso de internet durante eles); palestrantes com até 4 linhas de título. **PENDENTE:** a cena "Agora e próximas" em 4:3 corta a segunda fileira de salas durante as palestras (já cortava antes).
+
 **DEPENDE DO RENATO (importante):**
 1. **PUBLICAR AS REGRAS DO FIRESTORE** (`DevFestIA/firebase/firestore.rules`, coleção nova `mural-approved`). As regras não sobem pelo CI. Sem isso o moderador não consegue aprovar e o telão não lê a lista: o álbum ao vivo fica sem foto nenhuma. A mesma publicação leva a coleção `moderator-seen` (quem já entrou no admin).
 2. Alguém aprovando no dia: sem aprovação nenhuma foto nova do álbum ao vivo chega ao telão (as cenas dos outros álbuns seguem).
