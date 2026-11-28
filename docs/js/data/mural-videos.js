@@ -9,8 +9,8 @@
 /** Os clipes são 2048 x 1080 (quase 1,9:1): preenchem 16:9 e 4:3 (cortam pouco dos lados) e aparecem inteiros no telão ultra largo e no vertical. */
 const VIDEO_FIT = { default: "cover", ultrawide: "contain", tall: "contain" };
 
-/** Os vídeos da PUC levam a marca d'água dela no canto de cima e frases na base: aparecem INTEIROS (`contain`) em qualquer proporção, nunca cortados pelo `cover` (a barra preta dos lados some no fundo do palco). */
-const PUC_FIT = "contain";
+/** Vídeos com marca, texto ou QR dentro da imagem (patrocinadores e apoio) aparecem INTEIROS (`contain`) em qualquer proporção, nunca cortados pelo `cover` no telão 4:3 (a sobra some no fundo do palco). */
+const WHOLE_FIT = "contain";
 
 const MURAL_VIDEO_CLIPS = [
   { id: "devfest-2025-abertura", file: "devfest-2025-abertura.mp4", label: "DevFest 2025: abertura", seconds: 10.6, fit: VIDEO_FIT },
@@ -23,19 +23,19 @@ const MURAL_VIDEO_CLIPS = [
   { id: "devfest-2025-aprendizado", file: "devfest-2025-aprendizado.mp4", label: "DevFest 2025: aprendizado", seconds: 13.8, fit: VIDEO_FIT },
   { id: "devfest-2025-final", file: "devfest-2025-final.mp4", label: "DevFest 2025: final", seconds: 13.4, fit: VIDEO_FIT },
   // Institucional da patrocinadora FIAP (1920 x 1080, 15 s, sem áudio): playlist própria, só entra na cena `video-fiap` (atrás da revelação).
-  { id: "fiap-institucional", file: "fiap-institucional.mp4", label: "FIAP", seconds: 15.0, fit: VIDEO_FIT },
+  { id: "fiap-institucional", file: "fiap-institucional.mp4", label: "FIAP", seconds: 15.0, fit: WHOLE_FIT },
   // Institucional da patrocinadora BOSCH (1920 x 1080, 30 s, SEM áudio: reencodado do original, que tinha som; o telão toca mudo). Playlist própria, cena `video-bosch`. Anexo na release `mural-video-2025` (2026-11-06).
-  { id: "bosch-institucional", file: "bosch-institucional.mp4", label: "Bosch", seconds: 30.0, fit: VIDEO_FIT },
-  // Institucional da patrocinadora CI&T (programa Next Gen AI, 1920 x 1080, 35 s, SEM áudio: o mesmo vídeo recebido, só sem a trilha de som). Aparece INTEIRO (`contain`): tem QR e texto na lateral, que o `cover`
-  // cortaria no telão 4:3. Playlist própria, cena `video-ciandt`. Anexo na release `mural-video-2025` (2026-11-27).
-  { id: "ciandt-institucional", file: "ciandt-institucional.mp4", label: "CI&T", seconds: 35.13, fit: "contain" },
+  { id: "bosch-institucional", file: "bosch-institucional.mp4", label: "Bosch", seconds: 30.0, fit: WHOLE_FIT },
+  // Institucional da patrocinadora CI&T (programa Next Gen AI, 1920 x 1080, 35 s, SEM áudio: o mesmo vídeo recebido, só sem a trilha de som). Tem QR e texto na lateral.
+  // Playlist própria, cena `video-ciandt`. Anexo na release `mural-video-2025` (2026-11-27).
+  { id: "ciandt-institucional", file: "ciandt-institucional.mp4", label: "CI&T", seconds: 35.13, fit: WHOLE_FIT },
   // Institucional da PUC-Campinas (1920 x 1080, sem áudio, cortes de cuts-puc.json), todos na release `mural-video-2025` (2026-11-09). Cada corte é uma lista própria porque cada cena toca o seu (data/mural-scenes.js).
-  { id: "puc-resumo", file: "puc-resumo.mp4", label: "PUC-Campinas", seconds: 30.03, fit: PUC_FIT },
-  { id: "puc-campus", file: "puc-campus.mp4", label: "PUC-Campinas: o campus e a vida de estudante", seconds: 20.03, fit: PUC_FIT },
-  { id: "puc-fechamento", file: "puc-fechamento.mp4", label: "PUC-Campinas", seconds: 20.03, fit: PUC_FIT },
-  { id: "puc-completo", file: "puc-completo.mp4", label: "PUC-Campinas", seconds: 229.57, fit: PUC_FIT }, // 1280 x 720, o vídeo inteiro (almoço e encerramento)
+  { id: "puc-resumo", file: "puc-resumo.mp4", label: "PUC-Campinas", seconds: 30.03, fit: WHOLE_FIT },
+  { id: "puc-campus", file: "puc-campus.mp4", label: "PUC-Campinas: o campus e a vida de estudante", seconds: 20.03, fit: WHOLE_FIT },
+  { id: "puc-fechamento", file: "puc-fechamento.mp4", label: "PUC-Campinas", seconds: 20.03, fit: WHOLE_FIT },
+  { id: "puc-completo", file: "puc-completo.mp4", label: "PUC-Campinas", seconds: 229.57, fit: WHOLE_FIT }, // 1280 x 720, o vídeo inteiro (almoço e encerramento)
   // Vídeo dos 85 anos da PUC-Campinas (1920 x 1080, 30 s, sem áudio; recebido em 2560 x 1440 e reduzido). Anexo na release `mural-video-2025` (2026-11-27).
-  { id: "puc-85-anos", file: "puc-85-anos.mp4", label: "PUC-Campinas", seconds: 29.9, fit: PUC_FIT },
+  { id: "puc-85-anos", file: "puc-85-anos.mp4", label: "PUC-Campinas", seconds: 29.9, fit: WHOLE_FIT },
   { id: "puc-fundo", file: "puc-fundo.mp4", label: "", seconds: 12, fit: "cover" }, // fundo animado em laço (mural-backdrop.js), sem etiqueta
 ];
 

@@ -56,6 +56,11 @@ test("o telão só baixa os arquivos das listas das cenas ligadas: desligados, o
   assert.deepEqual([...muralVideosRepository.filesFor([])], []);
 });
 
+test("os vídeos dos patrocinadores aparecem inteiros em qualquer proporção: no telão 4:3 o `cover` cortava o logo e o texto", () => {
+  const { MURAL_VIDEO_CLIPS } = loadAll(true);
+  for (const id of ["fiap-institucional", "bosch-institucional", "ciandt-institucional"]) assert.equal(MURAL_VIDEO_CLIPS.find(clip => clip.id === id).fit, "contain", id);
+});
+
 test("os vídeos da PUC aparecem inteiros em qualquer proporção (a marca d'água dela fica no canto e o `cover` a cortava); só o fundo animado usa `cover`", () => {
   const { MURAL_VIDEO_CLIPS } = loadAll(true);
   for (const clip of MURAL_VIDEO_CLIPS.filter(item => item.id.startsWith("puc-"))) assert.equal(clip.fit, clip.id === "puc-fundo" ? "cover" : "contain", clip.id);
