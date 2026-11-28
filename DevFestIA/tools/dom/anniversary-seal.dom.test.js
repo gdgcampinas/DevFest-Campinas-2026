@@ -110,5 +110,5 @@ test("o telão carrega o selo e o liga: elemento, scripts na ordem, `?selo=1` de
   const css = fs.readFileSync(path.join(DOCS, "css/mural.css"), "utf8");
   assert.match(css, /\.mural-seal\.is-in\{animation:ms-seal-in/);
   assert.match(css, /@keyframes ms-seal-shine/);
-  assert.match(css, /\.mural-stage\[data-seal\]:not\(\[data-seal-left\]\) :is\(\.ms-head,\.ms-history-top\)\{padding-right:/, "os cabeçalhos deixam o canto livre");
+  assert.match(css, /\.mural-stage\[data-seal\]:not\(\[data-seal-left\]\) :is\(\.ms-head,\.ms-history-top,\.ms-spot-head\)\{padding-right:/, "os cabeçalhos (inclusive o do \"rolando agora\", que tem o horário à direita) deixam o canto livre");
 });
